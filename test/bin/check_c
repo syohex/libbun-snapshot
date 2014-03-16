@@ -1,0 +1,22 @@
+#!/bin/bash
+
+srcfile=$1
+basename=${srcfile##*/}
+exefile=${srcfile%.c}.o
+basename=${exefile##*/}
+exefile=${basename%.*}
+classpath=${srcfile%/*}
+
+CC=`which gcc`
+if [ -n $CC ]; then
+	exit 0
+fi
+
+echo "$CC $srcfile"
+$CC -g3 -c $srcfile -o $exefile
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+
+exit $?
+

@@ -26,12 +26,13 @@ package libbun.main;
 
 import java.io.IOException;
 
-import zen.lang.konoha.KonohaGrammar;
-import zen.parser.ZGenerator;
-import zen.parser.ZParserConst;
-import zen.util.LibZen;
-import zen.util.Var;
-import zen.util.ZStringArray;
+import libbun.lang.konoha.KonohaGrammar;
+import libbun.parser.ZGenerator;
+import libbun.parser.ZParserConst;
+import libbun.util.LibZen;
+import libbun.util.Var;
+import libbun.util.ZStringArray;
+
 
 public class Main {
 

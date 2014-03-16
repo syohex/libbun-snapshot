@@ -1,0 +1,19 @@
+#!/bin/bash
+
+srcfile=$1
+basename=${srcfile##*/}
+exefile=${srcfile%.java}.class
+basename=${exefile##*/}
+exefile=${basename%.*}
+classpath=${srcfile%/*}
+
+echo "javac $srcfile"
+javac $srcfile
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+cd $classpath
+echo "java $exefile"
+java $exefile
+exit $?
+

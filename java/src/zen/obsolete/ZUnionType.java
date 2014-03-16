@@ -1,8 +1,8 @@
 package zen.obsolete;
 
-import zen.type.ZType;
-import zen.util.Field;
-import zen.util.ZArray;
+import libbun.type.ZType;
+import libbun.util.Field;
+import libbun.util.ZArray;
 
 public class ZUnionType extends ZType {
 
