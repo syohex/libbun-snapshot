@@ -64,15 +64,15 @@ public class Main {
 			}
 			Index = Index + 1;
 			if ((Argument.equals("-o") || Argument.equals("--out")) && (Index < Args.length)) {
-				if (!Args[Index].endsWith(".zen")) { // for safety
+				if (!Args[Index].endsWith(".bun")) { // for safety
 					OutputFileName = Args[Index];
 					@Var int loc = OutputFileName.lastIndexOf('.');
 					if(loc > 0) {
 						GuessTarget = OutputFileName.substring(loc+1);
 					}
 					Index += 1;
-					continue;
 				}
+				continue;
 			}
 			if ((Argument.equals("-t") || Argument.equals("--target")) && (Index < Args.length)) {
 				GivenTarget = Args[Index];

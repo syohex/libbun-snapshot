@@ -32,7 +32,7 @@ public class ZLangInfo {
 	}
 
 	public final String GetLibPath(String LibName) {
-		return "lib/" + this.Extension + "/" + LibName + ".zen";
+		return "lib/" + this.Extension + "/" + LibName + ".bun";
 	}
 
 }

@@ -441,7 +441,7 @@ public class ZenTypeSafer extends ZTypeChecker {
 			}
 			@Var int FuncParamSize = Node.GetListSize() + 1;
 			@Var ZFunc Func = this.LookupFunc(NameSpace, Node.MethodName(), Node.GetAstType(ZMethodCallNode._Recv), FuncParamSize);
-			System.out.println("Func: "+Func);
+			//System.out.println("Func: "+Func);
 			if(Func != null) {
 				@Var ZListNode FuncCall = Node.ToFuncCallNode(this, Func);
 				this.ReturnNode(this.TypeListNodeAsFuncCall(FuncCall, Func.GetFuncType()));
