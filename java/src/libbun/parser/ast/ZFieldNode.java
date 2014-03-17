@@ -27,7 +27,7 @@ package libbun.parser.ast;
 import libbun.type.ZClassType;
 import libbun.util.Field;
 
-public final class ZFieldNode extends ZVarNode {
+public class ZFieldNode extends ZVarNode {
 	@Field public  ZClassType  ClassType;
 
 	public ZFieldNode(ZNode ParentNode) {
