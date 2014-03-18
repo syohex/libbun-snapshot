@@ -33,7 +33,7 @@ import libbun.parser.ast.ZDefaultValueNode;
 import libbun.parser.ast.ZDesugarNode;
 import libbun.parser.ast.ZErrorNode;
 import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZLetNode;
+import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZListNode;
 import libbun.parser.ast.ZNode;
 import libbun.parser.ast.ZNullNode;
@@ -158,7 +158,7 @@ public abstract class ZGenerator extends ZVisitor {
 		AsmNode.SourceToken = Node.GetAstToken(ZAsmMacroNode._NameInfo);
 		AsmNode.SetNode(ZAsmNode._Macro, Node.AST[ZAsmNode._Macro]);
 		AsmNode.Type = Node.MacroType();
-		NameSpace.SetLocalSymbol(Node.GetName(), AsmNode);
+		NameSpace.SetSymbol(Node.GetName(), AsmNode);
 	}
 
 	@ZenMethod public void WriteTo(@Nullable String FileName) {
@@ -340,7 +340,7 @@ public abstract class ZGenerator extends ZVisitor {
 				Node = this.TypeChecker.CheckType(Node, ZType.VarType);
 			}
 			if(this.IsVisitable()) {
-				if(Node instanceof ZFunctionNode || Node instanceof ZClassNode || Node instanceof ZLetNode) {
+				if(Node instanceof ZFunctionNode || Node instanceof ZClassNode || Node instanceof ZLetVarNode) {
 					Node.Type = ZType.VoidType;
 					this.GenerateStatement(Node);
 				}

@@ -10,6 +10,7 @@ public class ZLangInfo {
 	@Field public String Extension = null;
 
 	public boolean AllowTopLevelScript = false;
+	public boolean AllowFunctionOverloading = false;
 
 	public ZLangInfo(String LangVersion, String Extension) {
 		this.LangVersion = LangVersion;

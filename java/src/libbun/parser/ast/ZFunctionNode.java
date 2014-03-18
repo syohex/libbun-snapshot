@@ -93,10 +93,10 @@ public class ZFunctionNode extends ZListNode {
 		Visitor.VisitFunctionNode(this);
 	}
 
-	public final ZParamNode GetParamNode(int Index) {
+	public final ZLetVarNode GetParamNode(int Index) {
 		@Var ZNode Node = this.GetListAt(Index);
-		if(Node instanceof ZParamNode) {
-			return (ZParamNode)Node;
+		if(Node instanceof ZLetVarNode) {
+			return (ZLetVarNode)Node;
 		}
 		return null;
 	}
@@ -106,7 +106,7 @@ public class ZFunctionNode extends ZListNode {
 			@Var ZArray<ZType> TypeList = new ZArray<ZType>(new ZType[this.GetListSize()+2]);
 			@Var int i = 0;
 			while(i < this.GetListSize()) {
-				@Var ZParamNode Node = this.GetParamNode(i);
+				@Var ZLetVarNode Node = this.GetParamNode(i);
 				@Var ZType ParamType = Node.DeclType().GetRealType();
 				TypeList.add(ParamType);
 				i = i + 1;

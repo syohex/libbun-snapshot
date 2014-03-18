@@ -30,16 +30,17 @@ import libbun.parser.ast.ZCastNode;
 import libbun.parser.ast.ZDesugarNode;
 import libbun.parser.ast.ZErrorNode;
 import libbun.parser.ast.ZFuncCallNode;
+import libbun.parser.ast.ZFuncNameNode;
 import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZGetNameNode;
-import libbun.parser.ast.ZGlobalNameNode;
+import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZListNode;
 import libbun.parser.ast.ZMacroNode;
 import libbun.parser.ast.ZNode;
 import libbun.parser.ast.ZReturnNode;
 import libbun.parser.ast.ZStupidCastErrorNode;
 import libbun.parser.ast.ZSugarNode;
-import libbun.parser.ast.ZVarNode;
+import libbun.parser.ast.ZVarBlockNode;
 import libbun.type.ZFunc;
 import libbun.type.ZFuncType;
 import libbun.type.ZGreekType;
@@ -320,13 +321,13 @@ public abstract class ZTypeChecker extends ZVisitor {
 		return ReturnNode;
 	}
 
-	public ZVarNode CreateVarNode(ZNode ParentNode, String Name, ZType DeclType, ZNode InitNode) {
-		@Var ZVarNode VarNode = new ZVarNode(ParentNode);
+	public ZVarBlockNode CreateVarNode(ZNode ParentNode, String Name, ZType DeclType, ZNode InitNode) {
+		@Var ZLetVarNode VarNode = new ZLetVarNode(null, ZLetVarNode._ReadOnly);
 		VarNode.GivenName   = Name;
 		VarNode.GivenType   = DeclType;
-		VarNode.SetNode(ZVarNode._InitValue, InitNode);
+		VarNode.SetNode(ZLetVarNode._InitValue, InitNode);
 		VarNode.Type = ZType.VoidType;
-		return VarNode;
+		return new ZVarBlockNode(ParentNode, VarNode);
 	}
 
 	public ZGetNameNode CreateGetNameNode(ZNode ParentNode, String Name, ZType Type) {
@@ -336,7 +337,7 @@ public abstract class ZTypeChecker extends ZVisitor {
 	}
 
 	public ZFuncCallNode CreateFuncCallNode(ZNode ParentNode, ZToken SourceToken, String FuncName, ZFuncType FuncType) {
-		@Var ZFuncCallNode FuncNode = new ZFuncCallNode(ParentNode, new ZGlobalNameNode(null, SourceToken, FuncName, FuncType));
+		@Var ZFuncCallNode FuncNode = new ZFuncCallNode(ParentNode, new ZFuncNameNode(null, SourceToken, FuncName, FuncType));
 		FuncNode.Type = FuncType.GetReturnType();
 		return FuncNode;
 	}

@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZGetNameNode;
 import libbun.parser.ast.ZIfNode;
-import libbun.parser.ast.ZParamNode;
+import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZSetNameNode;
-import libbun.parser.ast.ZVarNode;
+import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
 
 
@@ -81,8 +81,8 @@ public class SSATransformer2 extends ZASTTransformer {
 	}
 
 	@Override
-	public void VisitVarNode(ZVarNode Node) {
-		Variable V = new Variable(Node.GetName(), Node);
+	public void VisitVarBlockNode(ZVarBlockNode Node) {
+		Variable V = new Variable(Node.VarDeclNode().GetName(), Node);  //FIXME
 		this.AddVariable(V);
 		for (int i = 0; i < Node.GetListSize(); i++) {
 			Node.GetListAt(i).Accept(this);
@@ -130,7 +130,7 @@ public class SSATransformer2 extends ZASTTransformer {
 		this.LocalVariables = new ArrayList<Variable>();
 
 		for(int i = 0; i < Node.GetListSize(); i++) {
-			ZParamNode ParamNode = Node.GetParamNode(i);
+			ZLetVarNode ParamNode = Node.GetParamNode(i);
 			this.AddVariable(new Variable(ParamNode.GetName(), ParamNode));
 		}
 		Node.BlockNode().Accept(this);

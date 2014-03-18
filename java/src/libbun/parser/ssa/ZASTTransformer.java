@@ -19,12 +19,11 @@ import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZGetIndexNode;
 import libbun.parser.ast.ZGetNameNode;
 import libbun.parser.ast.ZGetterNode;
-import libbun.parser.ast.ZGlobalNameNode;
 import libbun.parser.ast.ZGroupNode;
 import libbun.parser.ast.ZIfNode;
 import libbun.parser.ast.ZInstanceOfNode;
 import libbun.parser.ast.ZIntNode;
-import libbun.parser.ast.ZLetNode;
+import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZListNode;
 import libbun.parser.ast.ZLocalDefinedNode;
 import libbun.parser.ast.ZMacroNode;
@@ -45,7 +44,7 @@ import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTopLevelNode;
 import libbun.parser.ast.ZTryNode;
 import libbun.parser.ast.ZUnaryNode;
-import libbun.parser.ast.ZVarNode;
+import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
 
 public class ZASTTransformer extends ZVisitor {
@@ -125,11 +124,6 @@ public class ZASTTransformer extends ZVisitor {
 	}
 
 	@Override
-	public void VisitGlobalNameNode(ZGlobalNameNode Node) {
-		/* do nothing */
-	}
-
-	@Override
 	public void VisitGetNameNode(ZGetNameNode Node) {
 		/* do nothing */
 	}
@@ -176,7 +170,7 @@ public class ZASTTransformer extends ZVisitor {
 
 	@Override
 	public void VisitFuncCallNode(ZFuncCallNode Node) {
-		this.Transform(Node, ZFuncCallNode._Func);
+		this.Transform(Node, ZFuncCallNode._Functor);
 		this.VisitListNode(Node);
 	}
 
@@ -230,8 +224,8 @@ public class ZASTTransformer extends ZVisitor {
 	}
 
 	@Override
-	public void VisitVarNode(ZVarNode Node) {
-		this.Transform(Node, ZVarNode._InitValue);
+	public void VisitVarBlockNode(ZVarBlockNode Node) {
+		this.Transform(Node, ZLetVarNode._InitValue);
 		this.VisitListNode(Node);
 	}
 
@@ -275,8 +269,8 @@ public class ZASTTransformer extends ZVisitor {
 	//	}
 
 	@Override
-	public void VisitLetNode(ZLetNode Node) {
-		this.Transform(Node, ZLetNode._InitValue);
+	public void VisitLetNode(ZLetVarNode Node) {
+		this.Transform(Node, ZLetVarNode._InitValue);
 	}
 
 	@Override

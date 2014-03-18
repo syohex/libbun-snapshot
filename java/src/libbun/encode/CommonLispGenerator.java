@@ -31,17 +31,17 @@ import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.ZComparatorNode;
 import libbun.parser.ast.ZErrorNode;
 import libbun.parser.ast.ZFuncCallNode;
+import libbun.parser.ast.ZFuncNameNode;
 import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZGlobalNameNode;
 import libbun.parser.ast.ZIfNode;
+import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZNode;
 import libbun.parser.ast.ZOrNode;
-import libbun.parser.ast.ZParamNode;
 import libbun.parser.ast.ZReturnNode;
 import libbun.parser.ast.ZSetNameNode;
 import libbun.parser.ast.ZTryNode;
 import libbun.parser.ast.ZUnaryNode;
-import libbun.parser.ast.ZVarNode;
+import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
 import libbun.type.ZFuncType;
 import libbun.type.ZType;
@@ -102,7 +102,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 	}
 
 	@Override public void VisitSetNameNode(ZSetNameNode Node) {
-		this.CurrentBuilder.Append("(setq  " + this.NameLocalVariable(Node.GetName(), Node.VarIndex));
+		this.CurrentBuilder.Append("(setq  " + this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
 		this.CurrentBuilder.Append(" ");
 		this.GenerateCode(null, Node.ExprNode());
 		this.CurrentBuilder.Append(")");
@@ -159,16 +159,6 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitBlockNode(ZBlockNode Node) {
-		this.CurrentBuilder.Append("(progn ");
-		this.CurrentBuilder.Indent();
-		this.VisitStmtList(Node);
-		this.CurrentBuilder.Append(")");
-		this.CurrentBuilder.UnIndent();
-		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.AppendIndent();
-	}
-
 	//
 	// Visitor API
 	//
@@ -182,18 +172,50 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitVarNode(ZVarNode Node) {
-		this.CurrentBuilder.Append("(let (", this.NameLocalVariable(Node.GetName(), Node.VarIndex) + ")");
-		this.CurrentBuilder.Indent();
-		this.CurrentBuilder.AppendNewLine();
-		this.CurrentBuilder.Append("(setf  ", this.NameLocalVariable(Node.GetName(), Node.VarIndex), " ");
+	@Override
+	protected void VisitVarDeclNode(ZLetVarNode Node) {
+		this.CurrentBuilder.Append("(", this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()), " ");
 		this.GenerateCode(null, Node.InitValueNode());
+		this.GenerateCode(null, Node.InitValueNode());
+		this.CurrentBuilder.Append(")");
+		if(Node.HasNextVarNode()) {
+			this.VisitVarDeclNode(Node.NextVarNode());
+		}
+	}
+
+	@Override
+	protected void VisitStmtList(ZBlockNode BlockNode) {
+		@Var int Size = BlockNode.GetListSize();
+		if(Size == 0) {
+			this.CurrentBuilder.Append("()");
+		}
+		else if(Size == 1) {
+			this.GenerateStatement(BlockNode.GetListAt(0));
+		}
+		else {
+			this.CurrentBuilder.OpenIndent("(progn");
+			@Var int i = 0;
+			while (i < BlockNode.GetListSize()) {
+				@Var ZNode SubNode = BlockNode.GetListAt(i);
+				this.GenerateStatement(SubNode);
+				i = i + 1;
+			}
+			this.CurrentBuilder.CloseIndent(")");
+		}
+	}
+
+	@Override public void VisitBlockNode(ZBlockNode Node) {
+		this.VisitStmtList(Node);
+	}
+
+	@Override public void VisitVarBlockNode(ZVarBlockNode Node) {
+		this.CurrentBuilder.Append("(let (");
+		this.VisitVarDeclNode(Node.VarDeclNode());
 		this.CurrentBuilder.Append(")");
 		this.VisitStmtList(Node);
 		this.CurrentBuilder.Append(")");
-		this.CurrentBuilder.UnIndent();
-		this.CurrentBuilder.AppendNewLine();
 	}
+
 
 	//	@Override public void VisitTrinaryNode(ZenTrinaryNode Node) {
 	//		this.CurrentBuilder.Append("(if  ");
@@ -221,15 +243,17 @@ public class CommonLispGenerator extends ZSourceGenerator {
 	}
 
 	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
-		ZGlobalNameNode GNode = Node.FuncNameNode();
-		if (GNode != null) {
-			String FuncName = GNode.GlobalName;
-			this.CurrentBuilder.Append("(");
-			this.CurrentBuilder.Append(FuncName);
-			this.VisitListNode(" ", Node, " ");
-			this.CurrentBuilder.Append(")");
-		} else { // lambda
+		this.CurrentBuilder.Append("(");
+		@Var ZFuncNameNode FuncNameNode = Node.FuncNameNode();
+		if(FuncNameNode != null) {
+			this.GenerateFuncName(FuncNameNode);
 		}
+		else {
+			this.CurrentBuilder.Append("funccall ");
+			this.GenerateCode(null, Node.FunctorNode());
+		}
+		this.VisitListNode(" ", Node, " ");
+		this.CurrentBuilder.Append(")");
 	}
 
 	private ZFunctionNode LookupFunctionNode(ZNode Node) {
@@ -259,14 +283,14 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitParamNode(ZParamNode Node) {
-		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetName(), Node.ParamIndex));
+	@Override protected void VisitParamNode(ZLetVarNode Node) {
+		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
 	}
 
 	@Override public void VisitFunctionNode(ZFunctionNode Node) {
 		if(!Node.IsTopLevelDefineFunction()) {
 			this.CurrentBuilder.Append("#'(lambda ");
-			this.VisitListNode("(", Node, ")");
+			this.VisitFuncParamNode("(", Node, ")");
 			this.GenerateCode(null, Node.BlockNode());
 			this.CurrentBuilder.Append(")");
 		}
@@ -274,7 +298,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 			@Var ZFuncType FuncType = Node.GetFuncType();
 			this.CurrentBuilder.Append("(defun ");
 			this.CurrentBuilder.Append(Node.GetSignature());
-			this.VisitListNode(" (", Node, ")");
+			this.VisitFuncParamNode(" (", Node, ")");
 			this.GenerateCode(null, Node.BlockNode());
 			this.CurrentBuilder.Append(")");
 			if(Node.IsExport) {

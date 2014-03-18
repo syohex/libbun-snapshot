@@ -31,7 +31,6 @@ import java.util.HashMap;
 import libbun.encode.ZSourceBuilder;
 import libbun.encode.ZSourceGenerator;
 import libbun.parser.ZLogger;
-import libbun.parser.ZVariable;
 import libbun.parser.ast.ZAndNode;
 import libbun.parser.ast.ZArrayLiteralNode;
 import libbun.parser.ast.ZBinaryNode;
@@ -43,19 +42,18 @@ import libbun.parser.ast.ZClassNode;
 import libbun.parser.ast.ZComparatorNode;
 import libbun.parser.ast.ZConstNode;
 import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.ZFieldNode;
 import libbun.parser.ast.ZFloatNode;
 import libbun.parser.ast.ZFuncCallNode;
+import libbun.parser.ast.ZFuncNameNode;
 import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZGetIndexNode;
 import libbun.parser.ast.ZGetNameNode;
 import libbun.parser.ast.ZGetterNode;
-import libbun.parser.ast.ZGlobalNameNode;
 import libbun.parser.ast.ZGroupNode;
 import libbun.parser.ast.ZIfNode;
 import libbun.parser.ast.ZInstanceOfNode;
 import libbun.parser.ast.ZIntNode;
-import libbun.parser.ast.ZLetNode;
+import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZListNode;
 import libbun.parser.ast.ZLocalDefinedNode;
 import libbun.parser.ast.ZMacroNode;
@@ -66,7 +64,6 @@ import libbun.parser.ast.ZNode;
 import libbun.parser.ast.ZNotNode;
 import libbun.parser.ast.ZNullNode;
 import libbun.parser.ast.ZOrNode;
-import libbun.parser.ast.ZParamNode;
 import libbun.parser.ast.ZReturnNode;
 import libbun.parser.ast.ZSetIndexNode;
 import libbun.parser.ast.ZSetNameNode;
@@ -75,7 +72,7 @@ import libbun.parser.ast.ZStringNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
 import libbun.parser.ast.ZUnaryNode;
-import libbun.parser.ast.ZVarNode;
+import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
 import libbun.type.ZClassType;
 import libbun.type.ZFuncType;
@@ -760,26 +757,21 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 
 	@Override
 	public void VisitFuncCallNode(ZFuncCallNode Node) {
-		// Kimio refatored with new interface of ZFuncCallNode
-		//		@Var ZFuncType FuncType;
-		//		if(Node.ResolvedFuncName != null && Node.ResolvedFunc != null) {
-		//			FuncType = Node.ResolvedFunc.GetFuncType();
-		//		}
-		//		else if(Node.FuncNameNode().Type instanceof ZFuncType) {
-		//			FuncType = (ZFuncType)Node.FuncNameNode().Type;
-		//		}
-		//		else {
-		//			ZLogger._LogError(Node.SourceToken, "Can't interpret this function call");
-		//			return;
-		//		}
 		@Var ZFuncType FuncType = Node.GetFuncType();
 		if(FuncType == null) {
 			ZLogger._LogError(Node.SourceToken, "Can't interpret this function call");
 			return;
 		}
 		@Var ZType ReturnType = FuncType.GetReturnType();
-
-		this.GenerateCode(null, Node.FunctionNode());
+		@Var ZFuncNameNode FuncNameNode = Node.FuncNameNode();
+		if(FuncNameNode != null) {
+			@Var String FuncName = FuncNameNode.GetSignature();
+			this.DefineGlobalSymbol(FuncName);
+			this.CurrentScope.PushValue(this.ToGlobalSymbol(FuncName));
+		}
+		else {
+			this.GenerateCode(null, Node.FunctorNode());
+		}
 		@Var String CallFunc = this.CurrentScope.PopValue();
 		this.VisitListNode(" (", Node, ", ", ")");
 		@Var String Args = this.CurrentScope.PopValue();
@@ -820,7 +812,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 			FuncName = this.ToGlobalSymbol(StringifiedName);
 		}
 		this.CurrentBuilder.Append(" " + FuncName + " ");
-		this.VisitListNode("(", Node, ", ", ")");
+		this.VisitFuncParamNode("(", Node, ")");
 		@Var String Args = this.CurrentScope.PopValue();
 		this.CurrentBuilder.Append(Args);
 		this.CurrentBuilder.OpenIndent(" {");
@@ -888,8 +880,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 
 	@Override
 	public void VisitGetNameNode(ZGetNameNode Node) {
-		@Var ZVariable Var = Node.GetNameSpace().GetLocalVariable(Node.GetName());
-		@Var String VarName = Var.VarName + "__" + Var.VarUniqueIndex;
+		@Var String VarName = this.NameLocalVariable(Node.GetNameSpace(), Node.GetName());
 		if(this.CurrentScope.IsUserDefinedVar(VarName)) {
 			@Var String TempVar = this.CurrentScope.CreateTempLocalSymbol();
 			this.CurrentBuilder.AppendNewLine(TempVar);
@@ -921,29 +912,29 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		this.CurrentScope.PushValue(TempVar);
 	}
 
-	@Override
-	public void VisitGlobalNameNode(ZGlobalNameNode Node) {
-		if(Node.IsUntyped()) {
-			ZLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GlobalName);
-		}
-		if(Node.IsFuncNameNode()) {
-			@Var String FuncName = Node.FuncType.StringfySignature(Node.GlobalName);
-			this.DefineGlobalSymbol(FuncName);
-			this.CurrentScope.PushValue(this.ToGlobalSymbol(FuncName));
-		}
-		//else if(!this.IsPrimitiveType(Node.Type)) {
-		//	this.Writer.PushValue(this.ToGlobalSymbol(Node.GlobalName));
-		//}
-		else {
-			@Var String TempVar = this.CurrentScope.CreateTempLocalSymbol();
-			this.CurrentBuilder.AppendNewLine(TempVar);
-			this.CurrentBuilder.Append(" = load ");
-			this.CurrentBuilder.Append(this.GetTypeExpr(Node.Type) + "*");
-			this.CurrentBuilder.Append(" " + this.ToGlobalSymbol(Node.GlobalName));
-
-			this.CurrentScope.PushValue(TempVar);
-		}
-	}
+	//	@Override
+	//	public void VisitGlobalNameNode(ZFuncNameNode Node) {
+	//		if(Node.IsUntyped()) {
+	//			ZLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GlobalName);
+	//		}
+	//		if(Node.IsFuncNameNode()) {
+	//			@Var String FuncName = Node.FuncType.StringfySignature(Node.GlobalName);
+	//			this.DefineGlobalSymbol(FuncName);
+	//			this.CurrentScope.PushValue(this.ToGlobalSymbol(FuncName));
+	//		}
+	//		//else if(!this.IsPrimitiveType(Node.Type)) {
+	//		//	this.Writer.PushValue(this.ToGlobalSymbol(Node.GlobalName));
+	//		//}
+	//		else {
+	//			@Var String TempVar = this.CurrentScope.CreateTempLocalSymbol();
+	//			this.CurrentBuilder.AppendNewLine(TempVar);
+	//			this.CurrentBuilder.Append(" = load ");
+	//			this.CurrentBuilder.Append(this.GetTypeExpr(Node.Type) + "*");
+	//			this.CurrentBuilder.Append(" " + this.ToGlobalSymbol(Node.GlobalName));
+	//
+	//			this.CurrentScope.PushValue(TempVar);
+	//		}
+	//	}
 
 	@Override
 	public void VisitGroupNode(ZGroupNode Node) {
@@ -1010,7 +1001,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitLetNode(ZLetNode Node) {
+	public void VisitLetNode(ZLetVarNode Node) {
 		@Var LLVMScope PushedScope = this.CurrentScope;
 		this.CurrentScope = new LLVMScope();
 
@@ -1208,14 +1199,13 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		this.CurrentScope.PushValue(AllResult);
 	}
 
-	/* @Override
-	public void VisitParamNode(ZParamNode Node) {
-		this.Writer.DefineLocalSymbol(Node.Name);
-		this.Writer.PushValue(this.ToLocalSymbol(Node.Name));
-	} */
+	@Override protected void VisitParamNode(ZLetVarNode Node) {
+		@Var String SymbolName = Node.GetName();
+		this.CurrentScope.DefineLocalSymbol(SymbolName);
+		this.CurrentScope.PushValue(this.ToLocalSymbol(SymbolName));
+	}
 
-	@Override
-	public void VisitReturnNode(ZReturnNode Node) {
+	@Override public void VisitReturnNode(ZReturnNode Node) {
 		if (Node.HasReturnExpr()) {
 			this.GenerateCode(null, Node.ExprNode());
 			@Var String Expr = this.CurrentScope.PopValue();
@@ -1251,8 +1241,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 
 	@Override
 	public void VisitSetNameNode(ZSetNameNode Node) {
-		@Var ZVariable Var = Node.GetNameSpace().GetLocalVariable(Node.GetName());
-		@Var String VarName = Var.VarName + "__" + Var.VarUniqueIndex;
+		@Var String VarName = this.NameLocalVariable(Node.GetNameSpace(), Node.GetName());
 		if(!this.CurrentScope.IsUserDefinedVar(VarName)) {
 			throw new RuntimeException("Can't assign to argument");
 		}
@@ -1375,14 +1364,11 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override
-	public void VisitVarNode(ZVarNode Node) {
-		assert(Node.InitValueNode() != null); //must be set initial value
+	@Override protected void VisitVarDeclNode(ZLetVarNode Node) {
 		//@Var ZSourceBuilder EntryBlockBuilder = this.CurrentBuilder.Pop();
 		@Var ZSourceBuilder VarDeclBuilder = this.CurrentBuilder; //FIXME
 
-		@Var ZVariable Var = Node.GetNameSpace().GetLocalVariable(Node.GetName());
-		@Var String VarName = Var.VarName + "__" + Var.VarUniqueIndex;
+		@Var String VarName = this.NameLocalVariable(Node.GetNameSpace(), Node.GetName());
 		this.CurrentScope.DefineLocalVar(VarName);
 		@Var String VarSymbol = this.ToLocalSymbol(VarName);
 		VarDeclBuilder.AppendNewLine(VarSymbol);
@@ -1403,9 +1389,13 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(this.GetTypeExpr(Node.DeclType()) + "*");
 		this.CurrentBuilder.Append(" ");
 		this.CurrentBuilder.Append(VarSymbol);
-		//if(!this.IsPrimitiveType(Node.InitValueNode().Type)) {
-		//@llvm.gcwrite
-		//}
+		if(Node.HasNextVarNode()) {
+			this.VisitVarDeclNode(Node.NextVarNode());
+		}
+	}
+
+	@Override public void VisitVarBlockNode(ZVarBlockNode Node) {
+		this.VisitVarDeclNode(Node.VarDeclNode());
 		this.VisitStmtList(Node);
 	}
 
@@ -1445,16 +1435,8 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		this.CurrentScope.SetLabel(EndLabel);
 	}
 
-	@Override
-	public void VisitLocalDefinedNode(ZLocalDefinedNode Node) {
-		if(Node instanceof ZParamNode) {
-			@Var String SymbolName = ((ZParamNode)Node).GetName();
-			this.CurrentScope.DefineLocalSymbol(SymbolName);
-			this.CurrentScope.PushValue(this.ToLocalSymbol(SymbolName));
-		}
-		else {
-			this.VisitUndefinedNode(Node);
-		}
+	@Override public void VisitLocalDefinedNode(ZLocalDefinedNode Node) {
+		this.VisitUndefinedNode(Node);
 	}
 
 	@Override
@@ -1508,7 +1490,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitStmtList(ZListNode BlockNode) {
+	public void VisitStmtList(ZBlockNode BlockNode) {
 		@Var int i = 0;
 		while (i < BlockNode.GetListSize()) {
 			@Var ZNode SubNode = BlockNode.GetListAt(i);
@@ -1524,7 +1506,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		}
 		@Var int i = 0;
 		while(i < ClassNode.GetListSize()) {
-			@Var ZFieldNode FieldNode = ClassNode.GetFieldNode(i);
+			@Var ZLetVarNode FieldNode = ClassNode.GetFieldNode(i);
 			this.CurrentBuilder.Append(",");
 			this.CurrentBuilder.AppendNewLine(this.GetTypeExpr(FieldNode.DeclType()));
 			if(WithInitValue) {

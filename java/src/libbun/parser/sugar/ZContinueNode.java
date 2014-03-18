@@ -10,7 +10,7 @@ import libbun.parser.ast.ZErrorNode;
 import libbun.parser.ast.ZNode;
 import libbun.parser.ast.ZSetNameNode;
 import libbun.parser.ast.ZSugarNode;
-import libbun.parser.ast.ZVarNode;
+import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
 import libbun.type.ZType;
 import libbun.util.LibZen;
@@ -79,7 +79,7 @@ public class ZContinueNode extends ZSugarNode {
 		}
 		@Var ZBlockNode ParentBlockNode = WhileNode.GetScopeBlockNode();
 		@Var String VarName = Generator.NameUniqueSymbol("continue");
-		@Var ZVarNode VarNode = Generator.TypeChecker.CreateVarNode(null, VarName, ZType.BooleanType, new ZBooleanNode(true));
+		@Var ZVarBlockNode VarNode = Generator.TypeChecker.CreateVarNode(null, VarName, ZType.BooleanType, new ZBooleanNode(true));
 		@Var ZWhileNode ContinueWhile = VarNode.SetNewWhileNode(ZNode._AppendIndex, Typer);
 		ContinueWhile.SetNewGetNameNode(ZWhileNode._Cond, Typer, VarName, ZType.BooleanType);
 		@Var ZBlockNode WhileBlockNode = ContinueWhile.SetNewBlockNode(ZWhileNode._Block, Typer);

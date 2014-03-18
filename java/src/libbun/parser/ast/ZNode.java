@@ -33,6 +33,7 @@ import libbun.type.ZFuncType;
 import libbun.type.ZType;
 import libbun.util.Field;
 import libbun.util.LibZen;
+import libbun.util.Nullable;
 import libbun.util.Var;
 
 public abstract class ZNode {
@@ -128,10 +129,6 @@ public abstract class ZNode {
 		return this.SetNode(Index, Node, ZNode._EnforcedParent);
 	}
 
-
-
-
-
 	public final int GetAstSize() {
 		if(this.AST == null) {
 			return 0;
@@ -156,11 +153,20 @@ public abstract class ZNode {
 		return this.SourceToken;
 	}
 
+	@Nullable public final ZFunctionNode GetDefiningFunctionNode() {
+		@Var @Nullable ZNode Cur = this;
+		while(Cur != null) {
+			if(Cur instanceof ZFunctionNode) {
+				return (ZFunctionNode)Cur;
+			}
+			Cur = Cur.ParentNode;
+		}
+		return null;
+	}
 
 
 
-
-	public final ZBlockNode GetScopeBlockNode() {
+	@Nullable public final ZBlockNode GetScopeBlockNode() {
 		@Var int SafeCount = 0;
 		@Var ZNode Node = this;
 		while(Node != null) {

@@ -37,13 +37,12 @@ import libbun.parser.ast.ZComparatorNode;
 import libbun.parser.ast.ZFuncCallNode;
 import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZGetNameNode;
+import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZNode;
-import libbun.parser.ast.ZParamNode;
 import libbun.parser.ast.ZReturnNode;
 import libbun.parser.ast.ZSetNameNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
-import libbun.parser.ast.ZVarNode;
 import libbun.parser.ast.ZWhileNode;
 import libbun.type.ZType;
 import libbun.util.Field;
@@ -156,14 +155,15 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 	}
 
 
-	@Override public void VisitVarNode(ZVarNode Node) {
+	@Override
+	protected void VisitVarDeclNode(ZLetVarNode Node) {
 		this.CurrentBuilder.Append(Node.GetName() + " <- readIORef ");
 		this.CurrentBuilder.Append(Node.GetName() + "_ref");
 		this.GenerateCode(null, Node.InitValueNode());
 		this.CurrentBuilder.AppendLineFeed();
 	}
 
-	@Override public void VisitParamNode(ZParamNode Node) {
+	@Override protected void VisitParamNode(ZLetVarNode Node) {
 		this.CurrentBuilder.Append(Node.GetName());
 	}
 
@@ -174,7 +174,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		}else{
 			this.CurrentBuilder.Append(Node.GetSignature());
 		}
-		this.VisitListNode(" ", Node, " ", " ");
+		this.VisitFuncParamNode(" ", Node, " ");
 
 		this.CurrentBuilder.Append(" = do");
 		this.CurrentBuilder.AppendLineFeed();
@@ -182,7 +182,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		this.Indent(this.CurrentBuilder);
 
 		for (int i = 0; i < Node.GetListSize(); i++) {
-			ZParamNode Param = Node.GetParamNode(i);
+			ZLetVarNode Param = Node.GetParamNode(i);
 			this.Variables.add(Param.GetName());
 
 			this.CurrentBuilder.AppendIndent();
@@ -193,7 +193,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		}
 
 		for (int i = 0; i < Node.GetListSize(); i++) {
-			ZParamNode node1 = Node.GetParamNode(i);
+			ZLetVarNode node1 = Node.GetParamNode(i);
 
 			this.CurrentBuilder.AppendIndent();
 			this.CurrentBuilder.Append(node1.GetName()
@@ -330,12 +330,12 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 
 	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
 		if(Node.ParentNode instanceof ZBlockNode){
-			this.GenerateCode(null, Node.FunctionNode());
+			this.GenerateCode(null, Node.FunctorNode());
 			this.VisitListNode(" ", Node, " ", " ");
 		}else{
 			this.ImportLibrary("System.IO.Unsafe");
 			this.CurrentBuilder.Append("(unsafePerformIO (");
-			this.GenerateCode(null, Node.FunctionNode());
+			this.GenerateCode(null, Node.FunctorNode());
 			this.VisitListNode(" ", Node, " ", " ");
 			this.CurrentBuilder.Append("))");
 		}

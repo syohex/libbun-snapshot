@@ -44,24 +44,24 @@ public final class ZClassNode extends ZListNode {
 
 	public final String ClassName() {
 		if(this.GivenName == null) {
-			this.GivenName = this.AST[ZParamNode._NameInfo].SourceToken.GetTextAsName();
+			this.GivenName = this.AST[ZLetVarNode._NameInfo].SourceToken.GetTextAsName();
 		}
 		return this.GivenName;
 	}
 
 	public final ZType SuperType() {
-		if(this.AST[ZParamNode._TypeInfo] != null) {
-			return this.AST[ZParamNode._TypeInfo].Type;
+		if(this.AST[ZLetVarNode._TypeInfo] != null) {
+			return this.AST[ZLetVarNode._TypeInfo].Type;
 		}
 		else {
 			return ZClassType._ObjectType;
 		}
 	}
 
-	public final ZFieldNode GetFieldNode(int Index) {
+	public final ZLetVarNode GetFieldNode(int Index) {
 		@Var ZNode Node = this.GetListAt(Index);
-		if(Node instanceof ZFieldNode) {
-			return (ZFieldNode)Node;
+		if(Node instanceof ZLetVarNode) {
+			return (ZLetVarNode)Node;
 		}
 		return null;
 	}

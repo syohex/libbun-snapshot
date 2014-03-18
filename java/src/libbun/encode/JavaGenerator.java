@@ -4,23 +4,20 @@ import libbun.parser.ZLogger;
 import libbun.parser.ast.ZArrayLiteralNode;
 import libbun.parser.ast.ZClassNode;
 import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.ZFieldNode;
 import libbun.parser.ast.ZFuncCallNode;
+import libbun.parser.ast.ZFuncNameNode;
 import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZGetIndexNode;
-import libbun.parser.ast.ZGlobalNameNode;
 import libbun.parser.ast.ZInstanceOfNode;
-import libbun.parser.ast.ZLetNode;
+import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZMapEntryNode;
 import libbun.parser.ast.ZMapLiteralNode;
 import libbun.parser.ast.ZMethodCallNode;
 import libbun.parser.ast.ZNewObjectNode;
 import libbun.parser.ast.ZNode;
-import libbun.parser.ast.ZParamNode;
 import libbun.parser.ast.ZSetIndexNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
-import libbun.parser.ast.ZVarNode;
 import libbun.type.ZClassField;
 import libbun.type.ZClassType;
 import libbun.type.ZFuncType;
@@ -81,7 +78,7 @@ public class JavaGenerator extends ZSourceGenerator {
 
 
 	@Override protected void GenerateCode(ZType ContextType, ZNode Node) {
-		if(Node.IsUntyped() && !Node.IsErrorNode() && !(Node instanceof ZGlobalNameNode)) {
+		if(Node.IsUntyped() && !Node.IsErrorNode() && !(Node instanceof ZFuncNameNode)) {
 			ZLogger._LogError(Node.SourceToken, "untyped error: " + Node);
 			Node.Accept(this);
 			this.CurrentBuilder.Append("/*untyped*/");
@@ -93,21 +90,6 @@ public class JavaGenerator extends ZSourceGenerator {
 				this.CurrentBuilder.Append(")");
 			}
 			Node.Accept(this);
-		}
-	}
-
-	@Override public void VisitGlobalNameNode(ZGlobalNameNode Node) {
-		if(Node.IsFuncNameNode()) {
-			this.CurrentBuilder.Append(this.NameFunctionClass(Node.GlobalName,Node.FuncType), ".f");
-		}
-		else {
-			if(Node.IsUntyped()) {
-				ZLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GlobalName);
-				this.CurrentBuilder.Append(this.NullLiteral,"/*"+Node.GlobalName+"*/");
-			}
-			else {
-				this.CurrentBuilder.Append(this.NameGlobalNameClass(Node.GlobalName), "._");
-			}
 		}
 	}
 
@@ -179,15 +161,15 @@ public class JavaGenerator extends ZSourceGenerator {
 	}
 
 	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
-		if(Node.IsStaticFuncCall()) {
-			this.GenerateCode(null, Node.FunctionNode());
-			this.VisitListNode("(", Node, ")");
+		@Var ZFuncNameNode FuncNameNode = Node.FuncNameNode();
+		if(FuncNameNode != null) {
+			this.CurrentBuilder.Append(this.NameFunctionClass(FuncNameNode.FuncName, FuncNameNode.RecvType, FuncNameNode.FuncParamSize), ".f");
 		}
 		else {
-			this.GenerateCode(null, Node.FunctionNode());
+			this.GenerateCode(null, Node.FunctorNode());
 			this.CurrentBuilder.Append(".Invoke");
-			this.VisitListNode("(", Node, ")");
 		}
+		this.VisitListNode("(", Node, ")");
 	}
 
 	//	@Override public void VisitCastNode(ZCastNode Node) {
@@ -296,22 +278,23 @@ public class JavaGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitVarNode(ZVarNode Node) {
+	@Override
+	protected void VisitVarDeclNode(ZLetVarNode Node) {
 		this.GenerateTypeName(Node.DeclType());
 		this.CurrentBuilder.Append(" ");
-		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetName(), Node.VarIndex));
+		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
 		this.CurrentBuilder.Append(" = ");
 		this.GenerateCode(null, Node.InitValueNode());
 		this.CurrentBuilder.Append(this.SemiColon);
-		this.VisitStmtList(Node);
+		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 	}
 
-	@Override public void VisitLetNode(ZLetNode Node) {
+	@Override public void VisitLetNode(ZLetVarNode Node) {
 		@Var String ClassName = this.NameGlobalNameClass(Node.GlobalName);
 		//		this.CurrentBuilder = this.InsertNewSourceBuilder();
 		this.CurrentBuilder.AppendNewLine("final class ", ClassName, "");
 		this.CurrentBuilder.OpenIndent(" {");
-		this.GenerateClassField("static", Node.GetAstType(ZLetNode._InitValue), "_", null);
+		this.GenerateClassField("static", Node.GetAstType(ZLetVarNode._InitValue), "_", null);
 		this.GenerateCode2(" = ", null, Node.InitValueNode(), this.SemiColon);
 		this.CurrentBuilder.CloseIndent("}");
 		//		this.CurrentBuilder = this.CurrentBuilder.Pop();
@@ -319,10 +302,10 @@ public class JavaGenerator extends ZSourceGenerator {
 		//			Node.GetNameSpace().SetLocalSymbol(Node.GetName(), Node.ToGlobalNameNode());
 	}
 
-	@Override public void VisitParamNode(ZParamNode Node) {
+	@Override protected void VisitParamNode(ZLetVarNode Node) {
 		this.GenerateTypeName(Node.Type);
 		this.CurrentBuilder.Append(" ");
-		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetName(), Node.ParamIndex));
+		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
 	}
 
 	@Override public void VisitFunctionNode(ZFunctionNode Node) {
@@ -360,7 +343,7 @@ public class JavaGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.AppendNewLine("static ");
 		this.GenerateTypeName(Node.ReturnType());
 		this.CurrentBuilder.Append(" f");
-		this.VisitListNode("(", Node, ")");
+		this.VisitFuncParamNode("(", Node, ")");
 		this.GenerateCode(null, Node.BlockNode());
 
 		this.GenerateClassField("static ", FuncType, "function", "new " + ClassName + "();");
@@ -429,7 +412,7 @@ public class JavaGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.OpenIndent(" {");
 		@Var int i = 0;
 		while (i < Node.GetListSize()) {
-			@Var ZFieldNode FieldNode = Node.GetFieldNode(i);
+			@Var ZLetVarNode FieldNode = Node.GetFieldNode(i);
 			this.GenerateClassField("", FieldNode.DeclType(), FieldNode.GetName(), null);
 			this.CurrentBuilder.Append(this.SemiColon);
 			i = i + 1;
@@ -450,7 +433,7 @@ public class JavaGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.OpenIndent(" {");
 		this.CurrentBuilder.AppendNewLine("super();");
 		while (i < Node.GetListSize()) {
-			@Var ZFieldNode FieldNode = Node.GetFieldNode(i);
+			@Var ZLetVarNode FieldNode = Node.GetFieldNode(i);
 			this.CurrentBuilder.AppendNewLine("this.", FieldNode.GetName(), "=");
 			this.GenerateCode(null, FieldNode.InitValueNode());
 			this.CurrentBuilder.Append(this.SemiColon);

@@ -33,6 +33,7 @@ public class ZGetNameNode extends ZNode {
 	@Field public boolean IsCaptured = false;
 	@Field public String  GivenName;
 	@Field public int VarIndex = 0;
+	@Field public ZNode ResolvedNode = null;
 
 	public ZGetNameNode(ZNode ParentNode, ZToken SourceToken, String GivenName) {
 		super(ParentNode, SourceToken, 0);

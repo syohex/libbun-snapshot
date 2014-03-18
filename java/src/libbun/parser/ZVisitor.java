@@ -42,12 +42,11 @@ import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZGetIndexNode;
 import libbun.parser.ast.ZGetNameNode;
 import libbun.parser.ast.ZGetterNode;
-import libbun.parser.ast.ZGlobalNameNode;
 import libbun.parser.ast.ZGroupNode;
 import libbun.parser.ast.ZIfNode;
 import libbun.parser.ast.ZInstanceOfNode;
 import libbun.parser.ast.ZIntNode;
-import libbun.parser.ast.ZLetNode;
+import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZLocalDefinedNode;
 import libbun.parser.ast.ZMacroNode;
 import libbun.parser.ast.ZMapLiteralNode;
@@ -66,7 +65,7 @@ import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTopLevelNode;
 import libbun.parser.ast.ZTryNode;
 import libbun.parser.ast.ZUnaryNode;
-import libbun.parser.ast.ZVarNode;
+import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
 
 public abstract class ZVisitor {
@@ -80,7 +79,6 @@ public abstract class ZVisitor {
 	public abstract void VisitMapLiteralNode(ZMapLiteralNode Node);
 	public abstract void VisitNewObjectNode(ZNewObjectNode Node);
 	//	public abstract void VisitNewArrayNode(ZNewArrayNode Node);
-	public abstract void VisitGlobalNameNode(ZGlobalNameNode Node);
 	public abstract void VisitGetNameNode(ZGetNameNode Node);
 	public abstract void VisitSetNameNode(ZSetNameNode Node);
 	public abstract void VisitGroupNode(ZGroupNode Node);
@@ -89,6 +87,7 @@ public abstract class ZVisitor {
 	public abstract void VisitGetIndexNode(ZGetIndexNode Node);
 	public abstract void VisitSetIndexNode(ZSetIndexNode Node);
 	public abstract void VisitMethodCallNode(ZMethodCallNode Node);
+	//	public abstract void VisitGlobalNameNode(ZFuncNameNode Node);
 	public abstract void VisitFuncCallNode(ZFuncCallNode Node);
 	public abstract void VisitMacroNode(ZMacroNode FuncNode);
 	public abstract void VisitUnaryNode(ZUnaryNode Node);
@@ -100,18 +99,20 @@ public abstract class ZVisitor {
 	public abstract void VisitAndNode(ZAndNode Node);
 	public abstract void VisitOrNode(ZOrNode Node);
 	public abstract void VisitBlockNode(ZBlockNode Node);
-	public abstract void VisitVarNode(ZVarNode Node);
+	public abstract void VisitVarBlockNode(ZVarBlockNode Node);
 	public abstract void VisitIfNode(ZIfNode Node);
 	public abstract void VisitReturnNode(ZReturnNode Node);
 	public abstract void VisitWhileNode(ZWhileNode Node);
 	public abstract void VisitBreakNode(ZBreakNode Node);
 	public abstract void VisitThrowNode(ZThrowNode Node);
 	public abstract void VisitTryNode(ZTryNode Node);
-	public abstract void VisitLetNode(ZLetNode Node);
+
+	public abstract void VisitLetNode(ZLetVarNode Node);
 	public abstract void VisitFunctionNode(ZFunctionNode Node);
 	public abstract void VisitClassNode(ZClassNode Node);
 	public abstract void VisitAsmNode(ZAsmNode Node);
 	public abstract void VisitErrorNode(ZErrorNode Node);
+
 	public abstract void VisitTopLevelNode(ZTopLevelNode Node);
 	public abstract void VisitSugarNode(ZSugarNode Node);
 	public abstract void VisitLocalDefinedNode(ZLocalDefinedNode Node);

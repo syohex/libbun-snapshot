@@ -5,7 +5,7 @@ import libbun.parser.ZTokenContext;
 import libbun.parser.ast.ZClassNode;
 import libbun.parser.ast.ZErrorNode;
 import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZLetNode;
+import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZNode;
 import libbun.util.Var;
 import libbun.util.ZMatchFunction;
@@ -20,8 +20,8 @@ public class ExportPatternFunction extends ZMatchFunction {
 			return Node;
 		}
 		Node = TokenContext.ParsePattern(ParentNode, "let", ZTokenContext._Optional);
-		if(Node instanceof ZLetNode) {
-			((ZLetNode)Node).IsExport = true;
+		if(Node instanceof ZLetVarNode) {
+			((ZLetVarNode)Node).IsExport = true;
 			return Node;
 		}
 		Node = TokenContext.ParsePattern(ParentNode, "class", ZTokenContext._Optional);

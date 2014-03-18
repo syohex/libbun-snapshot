@@ -7,10 +7,9 @@ import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.ZCastNode;
 import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZInstanceOfNode;
-import libbun.parser.ast.ZParamNode;
+import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
-import libbun.parser.ast.ZVarNode;
 import libbun.type.ZType;
 
 
@@ -108,22 +107,21 @@ public class RubyGenerator extends ZSourceGenerator {
 	//		this.GenerateCode(null, Node.AST[ZCatchNode._Block]);
 	//	}
 
-	@Override
-	public void VisitVarNode(ZVarNode Node) {
-		this.CurrentBuilder.Append(Node.GetName());
-		this.CurrentBuilder.AppendToken("=");
-		this.GenerateCode(null, Node.InitValueNode());
-	}
+	//	@Override
+	//	public void VisitVarNode(ZVarBlockNode Node) {
+	//		this.CurrentBuilder.Append(Node.GetName());
+	//		this.CurrentBuilder.AppendToken("=");
+	//		this.GenerateCode(null, Node.InitValueNode());
+	//	}
 
 	@Override
-	public void VisitParamNode(ZParamNode Node) {
+	protected void VisitParamNode(ZLetVarNode Node) {
 		this.CurrentBuilder.Append(Node.GetName());
 	}
 
-	@Override
-	public void VisitFunctionNode(ZFunctionNode Node) {
+	@Override public void VisitFunctionNode(ZFunctionNode Node) {
 		this.CurrentBuilder.Append("->");
-		this.VisitListNode("(", Node, ")");
+		this.VisitFuncParamNode("(", Node, ")");
 		this.GenerateCode(null, Node.BlockNode());
 	}
 

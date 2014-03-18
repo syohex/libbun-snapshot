@@ -514,7 +514,7 @@ public class LibZen {
 		GenMap.put("c", libbun.encode.CGenerator.class);
 		GenMap.put("cl", libbun.encode.CommonLispGenerator.class);
 		GenMap.put("cs", libbun.encode.CSharpGenerator.class);
-		GenMap.put("erl", libbun.encode.erlang.ErlSourceCodeGenerator.class);
+		GenMap.put("erl", libbun.encode.erlang.Erlang.class);
 
 		GenMap.put("hs", libbun.encode.haskell.HaskellSourceGenerator.class);
 		GenMap.put("java", libbun.encode.JavaGenerator.class);

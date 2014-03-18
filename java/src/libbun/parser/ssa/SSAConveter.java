@@ -11,7 +11,7 @@ import libbun.parser.ast.ZGetNameNode;
 import libbun.parser.ast.ZNode;
 import libbun.parser.ast.ZNullNode;
 import libbun.parser.ast.ZSetNameNode;
-import libbun.parser.ast.ZVarNode;
+import libbun.parser.ast.ZVarBlockNode;
 
 
 public class SSAConveter extends ZASTTransformer {
@@ -155,8 +155,8 @@ class BlockNode {
 	}
 
 	void InsertPHI() {
-		for(Iterator<ZVarNode> Itr = this.cfg.LocalVars.iterator(); Itr.hasNext();) {
-			ZVarNode Inst = Itr.next();
+		for(Iterator<ZVarBlockNode> Itr = this.cfg.LocalVars.iterator(); Itr.hasNext();) {
+			ZVarBlockNode Inst = Itr.next();
 			Iterator<BlockNode> BlockItr = this.dfront.iterator();
 			while(BlockItr.hasNext()) {
 				BlockNode x = BlockItr.next();
@@ -175,7 +175,7 @@ class BlockNode {
 		HashMap<String, Integer> local = new HashMap<String, Integer>();
 		int i = 0;
 		for(i = 0; i < size; i++) {
-			local.put(this.cfg.LocalVars.get(i).GetName(), -1);
+			local.put(this.cfg.LocalVars.get(i).VarDeclNode().GetName(), -1);
 		}
 
 		while(i < this.block.GetListSize()) {
@@ -192,7 +192,7 @@ class BlockNode {
 		int change = 0;
 		int TailIndex = EntryBB.GetListSize();
 		for(i = 0; i < size; i++) {
-			if(local.get(this.cfg.LocalVars.get(i).GetName()) == -1) {
+			if(local.get(this.cfg.LocalVars.get(i).VarDeclNode().GetName()) == -1) {
 				ZNode LHS = this.cfg.LocalVars.get(i);
 				ZNode RHS = new ZNullNode(null, null);
 				RHS.Type = LHS.Type;
@@ -216,11 +216,11 @@ class BlockNode {
 class ControlFlowGraph { // ControlFlowGraph
 	ArrayList<BlockNode>	BlockNodes;
 	BlockNode			EntryBlock;
-	public final ArrayList<ZVarNode> LocalVars;
+	public final ArrayList<ZVarBlockNode> LocalVars;
 
 	public ControlFlowGraph(ZBlockNode TopLevelBlock) {
 		this.BlockNodes = new ArrayList<BlockNode>(TopLevelBlock.GetListSize());
-		this.LocalVars = new ArrayList<ZVarNode>();
+		this.LocalVars = new ArrayList<ZVarBlockNode>();
 		for (int i = 0; i < TopLevelBlock.GetListSize(); i++) {
 			ZNode x = TopLevelBlock.GetListAt(i);
 			this.CreateBlockNode(x);
@@ -360,7 +360,7 @@ class ControlFlowGraph { // ControlFlowGraph
 		int i = 0, size = this.LocalVars.size();
 		HashMap<String, Stack<ZNode>> stack = new HashMap<String, Stack<ZNode>>();
 		for(i = 0; i < size; i++) {
-			stack.put(this.LocalVars.get(i).GetName(), new Stack<ZNode>());
+			stack.put(this.LocalVars.get(i).VarDeclNode().GetName(), new Stack<ZNode>());
 		}
 		this.Rename(this.EntryBlock, stack);
 	}
@@ -371,8 +371,8 @@ class ControlFlowGraph { // ControlFlowGraph
 			n = ((ZGetNameNode)Node).GetName();
 		}
 		else {
-			assert(Node instanceof ZVarNode);
-			n = ((ZVarNode)Node).GetName();
+			assert(Node instanceof ZVarBlockNode);
+			n = ((ZVarBlockNode)Node).VarDeclNode().GetName();
 		}
 		stack.get(n).push(NewVal);
 	}
@@ -383,8 +383,8 @@ class ControlFlowGraph { // ControlFlowGraph
 			return stack.get(n).peek();
 		}
 		else {
-			assert(Node instanceof ZVarNode);
-			String n = ((ZVarNode)Node).GetName();
+			assert(Node instanceof ZVarBlockNode);
+			String n = ((ZVarBlockNode)Node).VarDeclNode().GetName();
 			return stack.get(n).peek();
 		}
 	}
@@ -396,7 +396,7 @@ class ControlFlowGraph { // ControlFlowGraph
 		}
 		else {
 			assert(Node instanceof ZSetNameNode);
-			String n = ((ZVarNode)Node).GetName();
+			String n = ((ZVarBlockNode)Node).VarDeclNode().GetName();
 			return stack.get(n).peek();
 		}
 	}
@@ -424,8 +424,8 @@ class ControlFlowGraph { // ControlFlowGraph
 
 	@SuppressWarnings("unchecked")
 	public <T> T RewriteInst(T Inst, HashMap<String, Stack<ZNode>> stack) {
-		if(Inst instanceof ZVarNode) {
-			ZNode Node = this.TopStack((ZVarNode) Inst, stack);
+		if(Inst instanceof ZVarBlockNode) {
+			ZNode Node = this.TopStack((ZVarBlockNode) Inst, stack);
 			if(Node == null) {
 				throw new RuntimeException("Error");
 			}

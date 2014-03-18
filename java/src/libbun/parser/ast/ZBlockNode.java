@@ -43,7 +43,7 @@ public class ZBlockNode extends ZListNode {
 		this.NullableNameSpace = NameSpace;
 	}
 
-	public ZBlockNode(ZNode ParentNode, @Nullable ZNameSpace NameSpace, ZLetNode VarNode) {
+	public ZBlockNode(ZNode ParentNode, @Nullable ZNameSpace NameSpace, ZLetVarNode VarNode) {
 		super(ParentNode, null, 1);
 		this.NullableNameSpace = NameSpace;
 		this.SetNode(0, VarNode);
@@ -59,21 +59,6 @@ public class ZBlockNode extends ZListNode {
 
 	@Override public void Accept(ZVisitor Visitor) {
 		Visitor.VisitBlockNode(this);
-	}
-
-	public final boolean HasVarDecl() {
-		if(this.ListStartIndex == 1) {
-			return true;
-		}
-		return false;
-	}
-
-	public final ZLetNode VarNode() {
-		@Var ZNode VarNode = this.AST[0];
-		if(VarNode instanceof ZLetNode) {
-			return (ZLetNode)VarNode;
-		}
-		return null;
 	}
 
 	public final int IndexOf(ZNode ChildNode) {

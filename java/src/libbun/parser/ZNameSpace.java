@@ -25,7 +25,7 @@
 
 package libbun.parser;
 import libbun.parser.ast.ZBlockNode;
-import libbun.parser.ast.ZFunctionNode;
+import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZNode;
 import libbun.parser.ast.ZTypeNode;
 import libbun.type.ZClassType;
@@ -39,16 +39,12 @@ import libbun.util.ZMatchFunction;
 import libbun.util.ZTokenFunction;
 
 public final class ZNameSpace {
-	//	private static int SerialNumber = 0;
-
-	//	@Field public final ZNameSpace   ParentNameSpace;
 	@Field public final ZGenerator   Generator;
 	@Field public final ZBlockNode   BlockNode;
-	@Field ZTokenFunc[]         TokenMatrix = null;
+	@Field ZTokenFunc[]       TokenMatrix = null;
 	@Field ZMap<ZSyntax>      SyntaxTable = null;
-	@Field ZMap<ZSymbolEntry> SymbolTable = null;
-
-	//	@Field private ZNode  FuncNode = null;
+	//	@Field ZMap<ZSymbolEntry> SymbolTable = null;
+	@Field ZMap<ZNode> SymbolTable2 = null;
 
 	public ZNameSpace(ZGenerator Generator, ZBlockNode BlockNode) {
 		this.BlockNode = BlockNode;   // rootname is null
@@ -189,16 +185,16 @@ public final class ZNameSpace {
 		}
 	}
 
-	public final ZSymbolEntry GetSymbol(String Symbol) {
+	public final ZNode GetSymbol(String Symbol) {
 		@Var ZNameSpace NameSpace = this;
 		while(NameSpace != null) {
-			if(NameSpace.SymbolTable != null) {
-				@Var ZSymbolEntry Entry = NameSpace.SymbolTable.GetOrNull(Symbol);
-				if(Entry != null) {
-					if(Entry.IsDisabled) {
-						return null;
-					}
-					return Entry;
+			if(NameSpace.SymbolTable2 != null) {
+				@Var ZNode EntryNode = NameSpace.SymbolTable2.GetOrNull(Symbol);
+				if(EntryNode != null) {
+					//					if(EntryNode.IsDisabled) {
+					//						return null;
+					//					}
+					return EntryNode;
 				}
 			}
 			NameSpace = NameSpace.GetParentNameSpace();
@@ -206,54 +202,109 @@ public final class ZNameSpace {
 		return null;
 	}
 
-	public final ZNode GetSymbolNode(String Symbol) {
-		@Var ZSymbolEntry Entry = this.GetSymbol(Symbol);
-		if(Entry != null) {
-			return Entry.Node;
+	public final int GetNameIndex(String Name) {
+		@Var int NameIndex = -1;
+		@Var ZNameSpace NameSpace = this;
+		while(NameSpace != null) {
+			if(NameSpace.SymbolTable2 != null) {
+				@Var ZNode EntryNode = NameSpace.SymbolTable2.GetOrNull(Name);
+				if(EntryNode != null) {
+					NameIndex = NameIndex + 1;
+				}
+			}
+			NameSpace = NameSpace.GetParentNameSpace();
 		}
-		return null;
+		return NameIndex;
 	}
 
-	private void SetLocalSymbolEntry(String Symbol, ZSymbolEntry Entry) {
-		if(this.SymbolTable == null) {
-			this.SymbolTable = new ZMap<ZSymbolEntry>(null);
+
+	public final void SetSymbol(String Symbol, ZNode EntryNode) {
+		if(this.SymbolTable2 == null) {
+			this.SymbolTable2 = new ZMap<ZNode>(null);
 		}
-		this.SymbolTable.put(Symbol, Entry);
+		this.SymbolTable2.put(Symbol, EntryNode);
 	}
 
-	public final ZSymbolEntry SetLocalSymbol(String Symbol, ZNode Node) {
-		@Var ZSymbolEntry Parent = this.GetSymbol(Symbol);
-		Node.ParentNode = null; // kill links
-		this.SetLocalSymbolEntry(Symbol, new ZSymbolEntry(Parent, Node));
-		return Parent;
+	public final void SetRootSymbol(String Symbol, ZNode EntryNode) {
+		this.GetRootNameSpace().SetSymbol(Symbol, EntryNode);
 	}
 
-	public final ZSymbolEntry SetGlobalSymbol(String Symbol, ZNode Node) {
-		return this.GetRootNameSpace().SetLocalSymbol(Symbol, Node);
-	}
-
-	public final ZVariable GetLocalVariable(String VarName) {
-		@Var ZSymbolEntry Entry = this.GetSymbol(VarName);
+	public final ZLetVarNode GetLocalVariable(String Name) {
+		@Var ZNode EntryNode = this.GetSymbol(Name);
 		//System.out.println("var " + VarName + ", entry=" + Entry + ", NameSpace=" + this);
-		if(Entry instanceof ZVariable) {
-			return (ZVariable)Entry;
+		if(EntryNode instanceof ZLetVarNode) {
+			return (ZLetVarNode)EntryNode;
 		}
 		return null;
 	}
 
-	public final int SetLocalVariable(ZFunctionNode FunctionNode, ZType VarType, String VarName, ZToken SourceToken) {
-		@Var ZSymbolEntry Parent = this.GetSymbol(VarName);
-		@Var ZVariable VarInfo = new ZVariable(Parent, FunctionNode, 0, VarType, VarName, SourceToken);
-		//System.out.println("set var " + VarName + ", entry=" + VarInfo + ", NameSpace=" + this);
-		this.SetLocalSymbolEntry(VarName, VarInfo);
-		return VarInfo.VarUniqueIndex;
-	}
+
+
+	//	public final ZSymbolEntry GetSymbol(String Symbol) {
+	//		@Var ZNameSpace NameSpace = this;
+	//		while(NameSpace != null) {
+	//			if(NameSpace.SymbolTable != null) {
+	//				@Var ZSymbolEntry Entry = NameSpace.SymbolTable.GetOrNull(Symbol);
+	//				if(Entry != null) {
+	//					if(Entry.IsDisabled) {
+	//						return null;
+	//					}
+	//					return Entry;
+	//				}
+	//			}
+	//			NameSpace = NameSpace.GetParentNameSpace();
+	//		}
+	//		return null;
+	//	}
+	//
+	//	public final ZNode GetSymbolNode(String Symbol) {
+	//		@Var ZSymbolEntry Entry = this.GetSymbol(Symbol);
+	//		if(Entry != null) {
+	//			return Entry.Node;
+	//		}
+	//		return null;
+	//	}
+	//
+	//	private void SetLocalSymbolEntry(String Symbol, ZSymbolEntry Entry) {
+	//		if(this.SymbolTable == null) {
+	//			this.SymbolTable = new ZMap<ZSymbolEntry>(null);
+	//		}
+	//		this.SymbolTable.put(Symbol, Entry);
+	//	}
+	//
+	//	public final ZSymbolEntry SetLocalSymbol(String Symbol, ZNode Node) {
+	//		@Var ZSymbolEntry Parent = this.GetSymbol(Symbol);
+	//		Node.ParentNode = null; // kill links
+	//		this.SetLocalSymbolEntry(Symbol, new ZSymbolEntry(Parent, Node));
+	//		return Parent;
+	//	}
+	//
+	//	public final ZSymbolEntry SetGlobalSymbol(String Symbol, ZNode Node) {
+	//		return this.GetRootNameSpace().SetLocalSymbol(Symbol, Node);
+	//	}
+	//
+	//	public final ZVariable GetLocalVariable(String VarName) {
+	//		@Var ZSymbolEntry Entry = this.GetSymbol(VarName);
+	//		//System.out.println("var " + VarName + ", entry=" + Entry + ", NameSpace=" + this);
+	//		if(Entry instanceof ZVariable) {
+	//			return (ZVariable)Entry;
+	//		}
+	//		return null;
+	//	}
+	//
+	//	public final int SetLocalVariable(ZFunctionNode FunctionNode, ZType VarType, String VarName, ZToken SourceToken) {
+	//		@Var ZSymbolEntry Parent = this.GetSymbol(VarName);
+	//		@Var ZVariable VarInfo = new ZVariable(Parent, FunctionNode, 0, VarType, VarName, SourceToken);
+	//		//System.out.println("set var " + VarName + ", entry=" + VarInfo + ", NameSpace=" + this);
+	//		this.SetLocalSymbolEntry(VarName, VarInfo);
+	//		return VarInfo.VarUniqueIndex;
+	//	}
 
 	// Type
 
 	public final void SetTypeName(String Name, ZType Type, @Nullable ZToken SourceToken) {
 		@Var ZTypeNode Node = new ZTypeNode(null, SourceToken, Type);
-		this.SetLocalSymbol(Name, Node);
+		this.SetSymbol(Name, Node);
 	}
 
 	public final void SetTypeName(ZType Type, @Nullable ZToken SourceToken) {
@@ -261,7 +312,7 @@ public final class ZNameSpace {
 	}
 
 	public final ZType GetType(String TypeName, ZToken SourceToken, boolean IsCreation) {
-		@Var ZNode Node = this.GetSymbolNode(TypeName);
+		@Var ZNode Node = this.GetSymbol(TypeName);
 		if(Node instanceof ZTypeNode) {
 			return Node.Type;
 		}
@@ -273,12 +324,5 @@ public final class ZNameSpace {
 		return null;
 	}
 
-	//	public final ZType GetType(String TypeName, ZToken SourceToken) {
-	//		@Var ZTypeNode TypeNode = this.GetTypeNode(TypeName, SourceToken);
-	//		if(TypeNode != null) {
-	//			return TypeNode.Type;
-	//		}
-	//		return null;
-	//	}
 
 }

@@ -28,29 +28,30 @@ import libbun.parser.ZMacroFunc;
 import libbun.parser.ZVisitor;
 import libbun.type.ZFuncType;
 import libbun.type.ZType;
+import libbun.util.Nullable;
 import libbun.util.Var;
 
 public final class ZFuncCallNode extends ZListNode {
-	public final static int _Func = 0;
+	public final static int _Functor = 0;
 
 	public ZFuncCallNode(ZNode ParentNode, ZNode FuncNode) {
 		super(ParentNode, null, 1);
-		this.SetNode(ZFuncCallNode._Func, FuncNode);
+		this.SetNode(ZFuncCallNode._Functor, FuncNode);
 	}
 
-	@Deprecated public ZFuncCallNode(ZNode ParentNode, String FuncName, ZFuncType FuncType) {
-		super(ParentNode, null, 1);
-		this.SetNode(ZFuncCallNode._Func, new ZGlobalNameNode(this, null, FuncName, FuncType));
+	//	@Deprecated public ZFuncCallNode(ZNode ParentNode, String FuncName, ZFuncType FuncType) {
+	//		super(ParentNode, null, 1);
+	//		this.SetNode(ZFuncCallNode._Func, new ZFuncNameNode(this, null, FuncName, FuncType));
+	//	}
+
+	public final ZNode FunctorNode() {
+		return this.AST[ZFuncCallNode._Functor];
 	}
 
-	public final ZNode FunctionNode() {
-		return this.AST[ZFuncCallNode._Func ];
-	}
-
-	public final ZGlobalNameNode FuncNameNode() {
-		@Var ZNode NameNode = this.FunctionNode();
-		if(NameNode instanceof ZGlobalNameNode) {
-			return (ZGlobalNameNode)NameNode;
+	@Nullable public final ZFuncNameNode FuncNameNode() {
+		@Var ZNode NameNode = this.FunctorNode();
+		if(NameNode instanceof ZFuncNameNode) {
+			return (ZFuncNameNode)NameNode;
 		}
 		return null;
 	}
@@ -66,24 +67,8 @@ public final class ZFuncCallNode extends ZListNode {
 		return ZType.VoidType;
 	}
 
-	public final boolean IsStaticFuncCall() {
-		@Var ZNode FNode = this.FunctionNode();
-		if(FNode instanceof ZGlobalNameNode) {
-			return ((ZGlobalNameNode)FNode).IsFuncNameNode();
-		}
-		return false;
-	}
-
-	public final String GetStaticFuncName() {
-		@Var ZNode FNode = this.FunctionNode();
-		if(FNode instanceof ZGlobalNameNode) {
-			return ((ZGlobalNameNode)FNode).GlobalName;
-		}
-		return null;
-	}
-
 	public final ZFuncType GetFuncType() {
-		@Var ZType FType = this.FunctionNode().Type;
+		@Var ZType FType = this.FunctorNode().Type;
 		if(FType instanceof ZFuncType) {
 			return (ZFuncType)FType;
 		}
@@ -91,7 +76,7 @@ public final class ZFuncCallNode extends ZListNode {
 	}
 
 	public ZMacroNode ToMacroNode(ZMacroFunc MacroFunc) {
-		@Var ZMacroNode MacroNode = new ZMacroNode(this.ParentNode, this.FunctionNode().SourceToken, MacroFunc);
+		@Var ZMacroNode MacroNode = new ZMacroNode(this.ParentNode, this.FunctorNode().SourceToken, MacroFunc);
 		@Var int i = 0;
 		while(i < this.GetListSize()) {
 			MacroNode.Append(this.GetListAt(i));
