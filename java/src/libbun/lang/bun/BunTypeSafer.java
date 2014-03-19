@@ -67,7 +67,6 @@ import libbun.parser.ast.ZNode;
 import libbun.parser.ast.ZNotNode;
 import libbun.parser.ast.ZNullNode;
 import libbun.parser.ast.ZOrNode;
-import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZReturnNode;
 import libbun.parser.ast.ZSetIndexNode;
 import libbun.parser.ast.ZSetNameNode;
@@ -236,11 +235,11 @@ public class BunTypeSafer extends ZTypeChecker {
 		}
 		if(SymbolNode instanceof ZLetVarNode) {
 			@Var ZLetVarNode VarNode = (ZLetVarNode)SymbolNode;
-			if(!VarNode.IsReadOnly) {
-				this.CheckTypeAt(Node, ZSetNameNode._Expr, VarNode.DeclType());
-				this.ReturnTypeNode(Node, ZType.VoidType);
-				return;
-			}
+			//			if(!VarNode.IsReadOnly) {
+			this.CheckTypeAt(Node, ZSetNameNode._Expr, VarNode.DeclType());
+			this.ReturnTypeNode(Node, ZType.VoidType);
+			return;
+			//			}
 		}
 		this.ReturnErrorNode(Node, Node.SourceToken, "readonly variable");
 	}

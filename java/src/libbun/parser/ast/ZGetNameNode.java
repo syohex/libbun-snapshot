@@ -26,27 +26,45 @@ package libbun.parser.ast;
 
 import libbun.parser.ZToken;
 import libbun.parser.ZVisitor;
-import libbun.type.ZFunc;
 import libbun.util.Field;
+import libbun.util.Nullable;
+import libbun.util.Var;
 
 public class ZGetNameNode extends ZNode {
 	@Field public boolean IsCaptured = false;
 	@Field public String  GivenName;
-	@Field public int VarIndex = 0;
-	@Field public ZNode ResolvedNode = null;
+	@Field public int   VarIndex = 0;
+	@Field @Nullable public ZNode ResolvedNode = null;
 
 	public ZGetNameNode(ZNode ParentNode, ZToken SourceToken, String GivenName) {
 		super(ParentNode, SourceToken, 0);
 		this.GivenName = GivenName;
 	}
 
-	public ZGetNameNode(ZNode ParentNode, ZFunc ResolvedFunc) {
-		super(ParentNode, null, 0);
-		this.GivenName = ResolvedFunc.FuncName;
-		this.Type = ResolvedFunc.GetFuncType();
+	//	public ZGetNameNode(ZNode ParentNode, ZFunc ResolvedFunc) {
+	//		super(ParentNode, null, 0);
+	//		this.GivenName = ResolvedFunc.FuncName;
+	//		this.Type = ResolvedFunc.GetFuncType();
+	//	}
+
+	public final boolean IsGlobalName() {
+		if(this.ResolvedNode != null) {
+			@Var ZFunctionNode DefNode = this.GetDefiningFunctionNode();
+			return DefNode == null;
+		}
+		return true;
 	}
 
 	public final String GetName() {
+		@Var ZNode ResolvedNode = this.ResolvedNode;
+		if(ResolvedNode != null) {
+			@Var ZFunctionNode DefNode = this.GetDefiningFunctionNode();
+			if(DefNode == null) {
+				if(ResolvedNode instanceof ZLetVarNode) {
+					return ((ZLetVarNode)ResolvedNode).GlobalName;
+				}
+			}
+		}
 		return this.GivenName;
 	}
 

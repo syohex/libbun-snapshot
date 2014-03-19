@@ -37,10 +37,10 @@ import libbun.util.ZStringArray;
 public class Main {
 
 	// -t zen
-	private static String Target = "zen";
+	private static String Target = "bun";
 
 	// -o
-	private static String OutputFileName = "-";
+	private static String OutputFileName = null;
 
 	//	// -l
 	//	private static boolean ShowListMode = false;

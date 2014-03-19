@@ -22,7 +22,6 @@
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // **************************************************************************
 
-
 package libbun.encode;
 
 import libbun.lang.bun.BunTypeSafer;
@@ -322,10 +321,11 @@ public class ZSourceGenerator extends ZGenerator {
 	}
 
 	protected void VisitVarDeclNode(ZLetVarNode Node) {
-		this.CurrentBuilder.AppendNewLine("var ", this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
+		this.CurrentBuilder.Append("var ", this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
 		this.GenerateTypeAnnotation(Node.DeclType());
 		this.GenerateCode2(" = ", null, Node.InitValueNode(), this.SemiColon);
 		if(Node.HasNextVarNode()) {
+			this.CurrentBuilder.AppendNewLine();
 			this.VisitVarDeclNode(Node.NextVarNode());
 		}
 	}
@@ -335,6 +335,7 @@ public class ZSourceGenerator extends ZGenerator {
 		this.VisitVarDeclNode(Node.VarDeclNode());
 		this.VisitStmtList(Node);
 	}
+
 
 
 	@Override public void VisitNullNode(ZNullNode Node) {

@@ -164,8 +164,6 @@ public abstract class ZNode {
 		return null;
 	}
 
-
-
 	@Nullable public final ZBlockNode GetScopeBlockNode() {
 		@Var int SafeCount = 0;
 		@Var ZNode Node = this;
