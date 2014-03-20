@@ -2,7 +2,6 @@ package libbun.parser.ssa;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.ZNode;
@@ -57,18 +56,19 @@ class BlockNode {
 	/* Print Dominator Tree */
 	void printdomtree(int level) {
 		if(SSAConveter.DEBUG_DOMTREE) {
-			for(int i = 0; i < level; i++) {
+			@Var int i = 0;
+			for(i = 0; i < level; i++) {
 				System.out.print("    ");
 			}
 			System.out.print(this.block + " (");
-			Iterator<BlockNode> Itr = this.dfront.iterator();
-			while(Itr.hasNext()) {
-				BlockNode x = Itr.next();
-				System.out.print(x.block + " ");
+			Object[] dfronts = this.dfront.toArray();
+			i = 0;
+			while(i < dfronts.length) {
+				System.out.print(((BlockNode)dfronts[i]).block + " ");
 			}
 			System.out.println(")");
 
-			@Var int i = 0;
+			i = 0;
 			while(i < this.children.size()) {
 				BlockNode x = ZArray.GetIndex(this.children, i);
 				x.printdomtree(level + 1);
@@ -132,9 +132,10 @@ class BlockNode {
 		@Var int i = 0;
 		while(i < conveter.LocalVars.size()) {
 			ZVarBlockNode Inst = ZArray.GetIndex(conveter.LocalVars, i);
-			Iterator<BlockNode> BlockItr = this.dfront.iterator();
-			while(BlockItr.hasNext()) {
-				BlockNode x = BlockItr.next();
+			Object[] dfronts = this.dfront.toArray();
+			i = 0;
+			while(i < dfronts.length) {
+				BlockNode x = (BlockNode)(dfronts[i]);
 				x.addPHI(Inst);
 			}
 			i = i + 1;
