@@ -23,15 +23,13 @@ class BlockNode {
 	BlockNode			idom;			/* Immediate Dominator */
 	BitMap			domset;		/* Dominator Set Bit Vector */
 	ZArray<PHINode>		phis;
-	ControlFlowGraph cfg;
 
-	public BlockNode(ZBlockNode block, ControlFlowGraph cfg) {
+	public BlockNode(ZBlockNode block) {
 		this.idom = null;
 		this.block = block;
 		this.preds = new ZArray<BlockNode>(new BlockNode[0]);
 		this.succs = new ZArray<BlockNode>(new BlockNode[0]);
 		this.phis = new ZArray<PHINode>(new PHINode[0]);
-		this.cfg  = cfg;
 	}
 
 	void addedge(BlockNode ToNode) {
@@ -130,10 +128,10 @@ class BlockNode {
 		this.phis.add(phi);
 	}
 
-	void InsertPHI() {
+	void InsertPHI(SSAConveter conveter) {
 		@Var int i = 0;
-		while(i < this.cfg.LocalVars.size()) {
-			ZVarBlockNode Inst = ZArray.GetIndex(this.cfg.LocalVars, i);
+		while(i < conveter.LocalVars.size()) {
+			ZVarBlockNode Inst = ZArray.GetIndex(conveter.LocalVars, i);
 			Iterator<BlockNode> BlockItr = this.dfront.iterator();
 			while(BlockItr.hasNext()) {
 				BlockNode x = BlockItr.next();
@@ -143,18 +141,18 @@ class BlockNode {
 		}
 		while(i < this.children.size()) {
 			BlockNode Node = ZArray.GetIndex(this.children, i);
-			Node.InsertPHI();
+			Node.InsertPHI(conveter);
 			i = i + 1;
 		}
 	}
 
-	void InsertUndefinedVariables() {
-		int size = this.cfg.LocalVars.size();
+	void InsertUndefinedVariables(SSAConveter conveter) {
+		int size = conveter.LocalVars.size();
 		/* create undefined local variables at entryblock */
 		HashMap<String, Integer> local = new HashMap<String, Integer>();
 		int i = 0;
 		for(i = 0; i < size; i++) {
-			local.put(ZArray.GetIndex(this.cfg.LocalVars, i).VarDeclNode().GetName(), -1);
+			local.put(ZArray.GetIndex(conveter.LocalVars, i).VarDeclNode().GetName(), -1);
 		}
 
 		while(i < this.block.GetListSize()) {
@@ -171,8 +169,8 @@ class BlockNode {
 		int change = 0;
 		int TailIndex = EntryBB.GetListSize();
 		for(i = 0; i < size; i++) {
-			if(local.get(ZArray.GetIndex(this.cfg.LocalVars, i).VarDeclNode().GetName()) == -1) {
-				ZNode LHS = ZArray.GetIndex(this.cfg.LocalVars, i);
+			if(local.get(ZArray.GetIndex(conveter.LocalVars, i).VarDeclNode().GetName()) == -1) {
+				ZNode LHS = ZArray.GetIndex(conveter.LocalVars, i);
 				ZNode RHS = new ZNullNode(null, null);
 				RHS.Type = LHS.Type;
 				System.err.println("FIXME(000) support undefined local variables"); // FIXME

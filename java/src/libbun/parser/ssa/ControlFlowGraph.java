@@ -14,11 +14,9 @@ import libbun.util.ZArray;
 public class ControlFlowGraph {
 	ZArray<BlockNode>	BlockNodes;
 	BlockNode			EntryBlock;
-	public final ZArray<ZVarBlockNode> LocalVars;
 
 	public ControlFlowGraph(ZBlockNode TopLevelBlock) {
 		this.BlockNodes = new ZArray<BlockNode>(new BlockNode[TopLevelBlock.GetListSize()]);
-		this.LocalVars = new ZArray<ZVarBlockNode>(new ZVarBlockNode[0]);
 		for (int i = 0; i < TopLevelBlock.GetListSize(); i++) {
 			ZNode x = TopLevelBlock.GetListAt(i);
 			this.CreateBlockNode(x);
@@ -45,7 +43,7 @@ public class ControlFlowGraph {
 			NewBlock.Append(block);
 			block = NewBlock;
 		}
-		BlockNode p = new BlockNode((ZBlockNode)block, this);
+		BlockNode p = new BlockNode((ZBlockNode)block);
 		this.BlockNodes.add(p);
 		return p;
 	}
@@ -162,11 +160,11 @@ public class ControlFlowGraph {
 		this.EntryBlock.printdomtree(0);
 	}
 
-	void RenamingVariables() {
-		int i = 0, size = this.LocalVars.size();
+	void RenamingVariables(SSAConveter conveter) {
+		int i = 0, size = conveter.LocalVars.size();
 		HashMap<String, Stack<ZNode>> stack = new HashMap<String, Stack<ZNode>>();
 		for(i = 0; i < size; i++) {
-			stack.put(ZArray.GetIndex(this.LocalVars, i).VarDeclNode().GetName(), new Stack<ZNode>());
+			stack.put(ZArray.GetIndex(conveter.LocalVars, i).VarDeclNode().GetName(), new Stack<ZNode>());
 		}
 		this.Rename(this.EntryBlock, stack);
 	}
