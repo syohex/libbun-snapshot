@@ -19,7 +19,6 @@ import libbun.parser.ast.ZReturnNode;
 import libbun.parser.ast.ZSetIndexNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
-import libbun.type.ZClassField;
 import libbun.type.ZClassType;
 import libbun.type.ZFuncType;
 import libbun.type.ZType;
@@ -453,7 +452,7 @@ public class CSharpGenerator extends ZSourceGenerator {
 		}
 		i = 0;
 		while(i < Node.ClassType.GetFieldSize()) {
-			@Var ZClassField Field = Node.ClassType.GetFieldAt(i);
+			//@Var ZClassField Field = Node.ClassType.GetFieldAt(i);
 			//			if(Field.FieldType.IsFuncType()) {
 			//				this.CurrentBuilder.AppendNewLine("if(", this.NameMethod(Node.ClassType, Field.FieldName), " != null) ");
 			//				this.CurrentBuilder.OpenIndent("{");

@@ -23,6 +23,7 @@
 // **************************************************************************
 
 package libbun.parser.ast;
+import libbun.parser.ZNodeUtils;
 import libbun.parser.ZVisitor;
 import libbun.util.Var;
 
@@ -33,6 +34,15 @@ public class ZVarBlockNode extends ZBlockNode {
 		super(ParentNode, null, 1);
 		this.SetNode(ZVarBlockNode._VarDecl, VarNode);
 	}
+
+	public ZVarBlockNode(ZNode ParentNode, ZLetVarNode VarNode, ZBlockNode ParentBlockNode) {
+		super(ParentNode, null, 1);
+		this.SetNode(ZVarBlockNode._VarDecl, VarNode);
+		@Var int Index = ZNodeUtils._AstIndexOf(ParentBlockNode, VarNode);
+		ZNodeUtils._MoveAstList(ParentBlockNode, Index, this);
+	}
+
+
 
 	public final ZLetVarNode VarDeclNode() {
 		@Var ZNode VarNode = this.AST[ZVarBlockNode._VarDecl];

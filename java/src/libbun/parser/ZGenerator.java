@@ -203,7 +203,10 @@ public abstract class ZGenerator extends ZVisitor {
 		return "G__" + Name;
 	}
 
-	public String NameGlobalSymbol(String Symbol) {
+	public String NameGlobalSymbol(String Symbol, boolean IsExport) {
+		if(IsExport) {
+			return Symbol;
+		}
 		return Symbol + "Z" + this.GetUniqueNumber();
 	}
 

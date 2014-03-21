@@ -3,6 +3,7 @@ package libbun.parser.ast;
 import libbun.parser.ZVisitor;
 import libbun.type.ZType;
 import libbun.util.Field;
+import libbun.util.LibZen;
 import libbun.util.Var;
 
 public class ZLetVarNode extends ZListNode {
@@ -12,19 +13,46 @@ public class ZLetVarNode extends ZListNode {
 	// this is used for multiple declaration of variables
 	public final static int _NextVar = 3;
 
-	public final static boolean _ReadOnly = true;
+	public final static int _IsExport   = 1;
+	public final static int _IsReadOnly = 1 << 1;
+	public final static int _IsDefined  = 1 << 2;
+	public final static int _IsUsed     = 1 << 3;
 
-	@Field public boolean IsReadOnly = false;
+	@Field public int NameFlag = 0;
+
 	@Field public ZType   GivenType = null;
 	@Field public String  GivenName = null;
-
 	@Field public String  GlobalName = null;
-	@Field public boolean IsExport = false;
 
-	public ZLetVarNode(ZNode ParentNode, boolean IsReadOnly) {
+	public ZLetVarNode(ZNode ParentNode, int NameFlag) {
 		super(ParentNode, null, 3);
-		this.IsReadOnly = IsReadOnly;
+		this.NameFlag = NameFlag;
 	}
+
+	public final boolean IsExport() {
+		return LibZen._IsFlag(this.NameFlag, ZLetVarNode._IsExport);
+	}
+
+	public final boolean IsReadOnly() {
+		return LibZen._IsFlag(this.NameFlag, ZLetVarNode._IsReadOnly);
+	}
+
+	public final boolean IsDefined() {
+		return LibZen._IsFlag(this.NameFlag, ZLetVarNode._IsDefined);
+	}
+
+	public final boolean IsUsed() {
+		return LibZen._IsFlag(this.NameFlag, ZLetVarNode._IsUsed);
+	}
+
+	public final void Defined() {
+		this.NameFlag = this.NameFlag | ZLetVarNode._IsDefined;
+	}
+
+	public final void Used() {
+		this.NameFlag = this.NameFlag | ZLetVarNode._IsUsed;
+	}
+
 
 	public final ZType DeclType() {
 		if(this.GivenType == null) {

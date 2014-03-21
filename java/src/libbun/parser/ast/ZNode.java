@@ -140,9 +140,9 @@ public abstract class ZNode {
 		return this.AST[Index].Type.GetRealType();
 	}
 
-	public final void SetAstType(int Index) {
+	public final void SetAstType(int Index, ZType Type) {
 		if(this.AST[Index] != null) {
-			this.AST[Index].Type = this.Type;
+			this.AST[Index].Type = Type;
 		}
 	}
 
@@ -151,6 +151,17 @@ public abstract class ZNode {
 			return this.AST[TokenIndex].SourceToken;
 		}
 		return this.SourceToken;
+	}
+
+	public final boolean IsTopLevel() {
+		@Var @Nullable ZNode Cur = this;
+		while(Cur != null) {
+			if(Cur instanceof ZFunctionNode) {
+				return false;
+			}
+			Cur = Cur.ParentNode;
+		}
+		return true;
 	}
 
 	@Nullable public final ZFunctionNode GetDefiningFunctionNode() {
@@ -175,7 +186,7 @@ public abstract class ZNode {
 			//System.out.println("node: " + Node.getClass() + ", " + Node.hashCode() + ", " + SafeCount);
 			Node = Node.ParentNode;
 			SafeCount = SafeCount + 1;
-			assert(SafeCount < 10);
+			assert(SafeCount < 100);
 		}
 		return null;
 	}
@@ -186,10 +197,7 @@ public abstract class ZNode {
 		while(BlockNode.NullableNameSpace == null) {
 			@Var ZBlockNode ParentBlockNode = BlockNode.ParentNode.GetScopeBlockNode();
 			assert(!(BlockNode == ParentBlockNode));
-			//System.out.println("pnode: " + ParentBlockNode.getClass() + ", " + ParentBlockNode.hashCode() + ", " + SafeCount);
-			//System.out.println("node: " + BlockNode.getClass() + ", " + BlockNode.hashCode() + ", " + SafeCount);
 			BlockNode = ParentBlockNode;
-			//			System.out.println("node:" + BlockNode);
 			SafeCount = SafeCount + 1;
 			assert(SafeCount < 100);
 		}

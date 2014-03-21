@@ -11,6 +11,7 @@ public class ZLangInfo {
 
 	public boolean AllowTopLevelScript = false;
 	public boolean AllowFunctionOverloading = false;
+	public boolean AllowUndefinedSymbol = false;
 
 	public ZLangInfo(String LangVersion, String Extension) {
 		this.LangVersion = LangVersion;

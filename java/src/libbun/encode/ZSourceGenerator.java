@@ -338,6 +338,8 @@ public class ZSourceGenerator extends ZGenerator {
 
 
 
+
+
 	@Override public void VisitNullNode(ZNullNode Node) {
 		this.CurrentBuilder.Append(this.NullLiteral);
 	}
@@ -398,20 +400,16 @@ public class ZSourceGenerator extends ZGenerator {
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
-	//	@Override public void VisitGlobalNameNode(ZFuncNameNode Node) {
-	//		if(Node.IsUntyped() && !this.IsDynamicLanguage) {
-	//			ZLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GlobalName);
-	//		}
-	//		if(Node.IsFuncNameNode()) {
-	//			this.CurrentBuilder.Append(Node.Type.StringfySignature(Node.GlobalName));
-	//		}
-	//		else {
-	//			this.CurrentBuilder.Append(Node.GlobalName);
-	//		}
-	//	}
-
 	@Override public void VisitGetNameNode(ZGetNameNode Node) {
-		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
+		if(Node.ResolvedNode == null && !this.LangInfo.AllowUndefinedSymbol) {
+			ZLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GetName());
+		}
+		if(Node.IsGlobalName()) {
+			this.CurrentBuilder.Append(Node.GetName());
+		}
+		else {
+			this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
+		}
 	}
 
 	@Override public void VisitSetNameNode(ZSetNameNode Node) {

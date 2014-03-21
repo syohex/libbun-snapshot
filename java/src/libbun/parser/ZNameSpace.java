@@ -43,7 +43,6 @@ public final class ZNameSpace {
 	@Field public final ZBlockNode   BlockNode;
 	@Field ZTokenFunc[]       TokenMatrix = null;
 	@Field ZMap<ZSyntax>      SyntaxTable = null;
-	//	@Field ZMap<ZSymbolEntry> SymbolTable = null;
 	@Field ZMap<ZNode> SymbolTable2 = null;
 
 	public ZNameSpace(ZGenerator Generator, ZBlockNode BlockNode) {
@@ -185,15 +184,42 @@ public final class ZNameSpace {
 		}
 	}
 
+	public final void SetSymbol(String Symbol, ZNode EntryNode) {
+		if(this.SymbolTable2 == null) {
+			this.SymbolTable2 = new ZMap<ZNode>(null);
+		}
+		this.SymbolTable2.put(Symbol, EntryNode);
+	}
+
 	public final ZNode GetSymbol(String Symbol) {
 		@Var ZNameSpace NameSpace = this;
 		while(NameSpace != null) {
 			if(NameSpace.SymbolTable2 != null) {
 				@Var ZNode EntryNode = NameSpace.SymbolTable2.GetOrNull(Symbol);
 				if(EntryNode != null) {
-					//					if(EntryNode.IsDisabled) {
-					//						return null;
-					//					}
+					return EntryNode;
+				}
+			}
+			NameSpace = NameSpace.GetParentNameSpace();
+		}
+		return null;
+	}
+
+	public final void SetDebugSymbol(String Symbol, ZNode EntryNode) {
+		if(this.SymbolTable2 == null) {
+			this.SymbolTable2 = new ZMap<ZNode>(null);
+		}
+		System.out.println("SetSymbol: " + Symbol + " @" + this);
+		this.SymbolTable2.put(Symbol, EntryNode);
+	}
+
+	public final ZNode GetDebugSymbol(String Symbol) {
+		@Var ZNameSpace NameSpace = this;
+		while(NameSpace != null) {
+			System.out.println("GetSymbol: " + Symbol + " @" + NameSpace);
+			if(NameSpace.SymbolTable2 != null) {
+				@Var ZNode EntryNode = NameSpace.SymbolTable2.GetOrNull(Symbol);
+				if(EntryNode != null) {
 					return EntryNode;
 				}
 			}
@@ -215,14 +241,6 @@ public final class ZNameSpace {
 			NameSpace = NameSpace.GetParentNameSpace();
 		}
 		return NameIndex;
-	}
-
-
-	public final void SetSymbol(String Symbol, ZNode EntryNode) {
-		if(this.SymbolTable2 == null) {
-			this.SymbolTable2 = new ZMap<ZNode>(null);
-		}
-		this.SymbolTable2.put(Symbol, EntryNode);
 	}
 
 	public final void SetRootSymbol(String Symbol, ZNode EntryNode) {

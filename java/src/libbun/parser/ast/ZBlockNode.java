@@ -61,25 +61,6 @@ public class ZBlockNode extends ZListNode {
 		Visitor.VisitBlockNode(this);
 	}
 
-	public final int IndexOf(ZNode ChildNode) {
-		@Var int i = 0;
-		while(i < this.GetListSize()) {
-			if(this.GetListAt(i) == ChildNode) {
-				return i;
-			}
-			i = i + 1;
-		}
-		return -1;
-	}
-
-	public final void CopyTo(int Index, ZBlockNode BlockNode) {
-		@Var int i = Index;
-		while(i < this.GetListSize()) {
-			BlockNode.Append(this.GetListAt(i));
-			i = i + 1;
-		}
-	}
-
 	public final void ReplaceWith(ZNode OldNode, ZNode NewNode) {
 		@Var int i = 0;
 		while(i < this.GetAstSize()) {
@@ -93,7 +74,7 @@ public class ZBlockNode extends ZListNode {
 			}
 			i = i + 1;
 		}
-		System.out.println("no replacement");
+		//		System.out.println("no replacement");
 		assert(OldNode == NewNode);  // this must not happen!!
 	}
 }

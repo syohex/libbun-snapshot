@@ -12,6 +12,19 @@ function WhileTest() {
 	assert(n == 5);
 }
 
+function WhileWhateverTest() {
+        var n : int = 0;
+        while(n < 10 whatever n = n + 1) {
+                assert(n < 10);
+                if(n == 5) {
+                        break;
+                }
+        }
+        println("#while/whatever/break: " + n);
+        assert(n == 5);
+}
+
+
 function NestedWhileTest() {
 	var n : int = 0;
 	while(n < 10) {
@@ -35,7 +48,9 @@ function NestedWhileTest() {
 
 export function main() {
 	WhileTest();
+	WhileWhateverTest();
 	NestedWhileTest();
+	
 }
 
 

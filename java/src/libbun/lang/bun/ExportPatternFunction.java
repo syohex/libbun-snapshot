@@ -21,7 +21,7 @@ public class ExportPatternFunction extends ZMatchFunction {
 		}
 		Node = TokenContext.ParsePattern(ParentNode, "let", ZTokenContext._Optional);
 		if(Node instanceof ZLetVarNode) {
-			((ZLetVarNode)Node).IsExport = true;
+			((ZLetVarNode)Node).NameFlag = ((ZLetVarNode)Node).NameFlag | ZLetVarNode._IsExport;
 			return Node;
 		}
 		Node = TokenContext.ParsePattern(ParentNode, "class", ZTokenContext._Optional);

@@ -135,10 +135,6 @@ public class ZFunctionNode extends ZListNode {
 		return this.ParentFunctionNode;
 	}
 
-	public final boolean IsTopLevel() {
-		return this.ParentFunctionNode == null;
-	}
-
 	public final boolean IsTopLevelDefineFunction() {
 		return (this.Type.IsVoidType());
 	}

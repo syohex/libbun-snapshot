@@ -213,7 +213,7 @@ public class BunTypeSafer extends ZTypeChecker {
 
 	@Override public void VisitGetNameNode(ZGetNameNode Node) {
 		@Var ZNameSpace NameSpace = Node.GetNameSpace();
-		@Var ZNode VarNode = NameSpace.GetSymbol(Node.GetName());
+		@Var ZNode VarNode = NameSpace.GetDebugSymbol(Node.GetName());
 		Node.ResolvedNode = VarNode;
 		if(VarNode instanceof ZLetVarNode) {
 			this.ReturnTypeNode(Node, ((ZLetVarNode)VarNode).DeclType());
@@ -627,25 +627,6 @@ public class BunTypeSafer extends ZTypeChecker {
 		}
 	}
 
-	//	protected void VisitVarDeclNode(ZLetVarNode Node) {
-	//		if(!this.InFunctionScope()) {
-	//			this.ReturnErrorNode(Node, Node.SourceToken, "only available inside function");
-	//			return;
-	//		}
-	//		this.CheckTypeAt(Node, ZLetVarNode._InitValue, Node.DeclType());
-	//		if(Node.DeclType().IsVarType()) {
-	//			Node.SetDeclType(Node.GetAstType(ZLetVarNode._InitValue));
-	//		}
-	//		if(Node.VarIndex == -1) {
-	//			Node.SetDeclType(this.VarScope.NewVarType(Node.DeclType(), Node.GetName(), Node.SourceToken));
-	//			Node.VarIndex = Node.GetBlockNameSpace().SetLocalVariable(this.CurrentFunctionNode, Node.DeclType(), Node.GetName(), Node.SourceToken);
-	//		}
-	//		this.VisitBlockNode(Node);
-	//		if(Node.GetListSize() == 0) {
-	//			ZLogger._LogWarning(Node.SourceToken, "unused variable: " + Node.GetName());
-	//		}
-	//	}
-
 	@Override public void VisitIfNode(ZIfNode Node) {
 		this.CheckTypeAt(Node, ZIfNode._Cond, ZType.BooleanType);
 		this.CheckTypeAt(Node, ZIfNode._Then, ZType.VoidType);
@@ -702,7 +683,7 @@ public class BunTypeSafer extends ZTypeChecker {
 		this.CheckTypeAt(Node, ZTryNode._Try, ZType.VoidType);
 		if(Node.HasCatchBlockNode()) {
 			@Var ZNameSpace NameSpace = Node.CatchBlockNode().GetBlockNameSpace();
-			@Var ZLetVarNode VarNode = new ZLetVarNode(Node, ZLetVarNode._ReadOnly);
+			@Var ZLetVarNode VarNode = new ZLetVarNode(Node, ZLetVarNode._IsReadOnly);
 			VarNode.GivenName = Node.ExceptionName();
 			VarNode.GivenType = ZClassType._ObjectType;
 			NameSpace.SetSymbol(VarNode.GetName(), VarNode);
@@ -715,15 +696,17 @@ public class BunTypeSafer extends ZTypeChecker {
 	}
 
 	@Override public void VisitLetNode(ZLetVarNode Node) {
-		@Var ZType DeclType = Node.DeclType();
-		this.CheckTypeAt(Node, ZLetVarNode._InitValue, DeclType);
-		@Var ZType ConstType = Node.InitValueNode().Type;
-		if(!ConstType.IsVarType()) {
-			if(!Node.IsExport) {
-				Node.GlobalName = this.Generator.NameGlobalSymbol(Node.GetName());
-			}
-			Node.GetNameSpace().SetSymbol(Node.GetName(), Node);
+		if(Node.IsTopLevel()) {
+			@Var ZType DeclType = Node.DeclType();
+			this.CheckTypeAt(Node, ZLetVarNode._InitValue, DeclType);
+			@Var ZType ConstType = Node.InitValueNode().Type;
+			Node.SetAstType(ZLetVarNode._NameInfo, ConstType);
+			Node.GlobalName = this.Generator.NameGlobalSymbol(Node.GetName(), Node.IsExport());
+			Node.GetNameSpace().SetDebugSymbol(Node.GetName(), Node);
 			this.ReturnTypeNode(Node, ZType.VoidType);
+		}
+		else {
+			this.ReturnNode(new ZVarBlockNode(null, Node, Node.GetScopeBlockNode()));
 		}
 	}
 

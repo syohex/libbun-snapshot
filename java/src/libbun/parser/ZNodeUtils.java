@@ -4,6 +4,7 @@ import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.ZBreakNode;
 import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZIfNode;
+import libbun.parser.ast.ZListNode;
 import libbun.parser.ast.ZNode;
 import libbun.parser.ast.ZReturnNode;
 import libbun.parser.ast.ZThrowNode;
@@ -83,4 +84,34 @@ public class ZNodeUtils {
 		}
 		return null;
 	}
+
+
+	public final static int _AstIndexOf(ZListNode LNode, ZNode ChildNode) {
+		@Var int i = 0;
+		while(i < LNode.GetListSize()) {
+			if(LNode.AST[i] == ChildNode) {
+				return i;
+			}
+			i = i + 1;
+		}
+		return -1;
+	}
+
+	public final static void _CopyAstList(ZListNode sNode, int Index, ZListNode dNode) {
+		@Var int i = Index;
+		while(i < sNode.GetAstSize()) {
+			dNode.Append(sNode.AST[i]);
+			i = i + 1;
+		}
+	}
+
+	public final static void _MoveAstList(ZListNode sNode, int Index, ZListNode dNode) {
+		@Var int i = Index;
+		while(i < sNode.GetAstSize()) {
+			dNode.Append(sNode.AST[i]);
+			i = i + 1;
+		}
+		sNode.ClearListAfter(Index);
+	}
+
 }

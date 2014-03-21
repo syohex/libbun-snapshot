@@ -212,7 +212,6 @@ class BlockNode {
 	}
 }
 
-
 class ControlFlowGraph { // ControlFlowGraph
 	ArrayList<BlockNode>	BlockNodes;
 	BlockNode			EntryBlock;

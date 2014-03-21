@@ -1011,7 +1011,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		this.DefineGlobalSymbol(Node.GlobalName);
 		this.HeaderBuilder.AppendNewLine(this.ToGlobalSymbol(Node.GlobalName));
 		this.HeaderBuilder.Append(" = ");
-		if(!Node.IsExport) {
+		if(!Node.IsExport()) {
 			this.HeaderBuilder.Append("private ");
 		}
 		this.HeaderBuilder.Append("constant ");

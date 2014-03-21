@@ -322,7 +322,7 @@ public abstract class ZTypeChecker extends ZVisitor {
 	}
 
 	public ZVarBlockNode CreateVarNode(ZNode ParentNode, String Name, ZType DeclType, ZNode InitNode) {
-		@Var ZLetVarNode VarNode = new ZLetVarNode(null, ZLetVarNode._ReadOnly);
+		@Var ZLetVarNode VarNode = new ZLetVarNode(null, 0);
 		VarNode.GivenName   = Name;
 		VarNode.GivenType   = DeclType;
 		VarNode.SetNode(ZLetVarNode._InitValue, InitNode);

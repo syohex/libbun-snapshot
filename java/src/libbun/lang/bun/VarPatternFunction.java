@@ -10,7 +10,7 @@ import libbun.util.ZMatchFunction;
 public class VarPatternFunction extends ZMatchFunction {
 
 	@Override public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
-		@Var ZNode VarNode = new ZLetVarNode(ParentNode, ZLetVarNode._ReadOnly);
+		@Var ZNode VarNode = new ZLetVarNode(ParentNode, 0);
 		VarNode = TokenContext.MatchToken(VarNode, "var", ZTokenContext._Required);
 		VarNode = TokenContext.MatchPattern(VarNode, ZLetVarNode._NameInfo, "$Name$", ZTokenContext._Required);
 		VarNode = TokenContext.MatchPattern(VarNode, ZLetVarNode._TypeInfo, "$TypeAnnotation$", ZTokenContext._Optional);

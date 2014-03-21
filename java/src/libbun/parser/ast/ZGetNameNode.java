@@ -49,16 +49,15 @@ public class ZGetNameNode extends ZNode {
 
 	public final boolean IsGlobalName() {
 		if(this.ResolvedNode != null) {
-			@Var ZFunctionNode DefNode = this.GetDefiningFunctionNode();
-			return DefNode == null;
+			return this.ResolvedNode.GetDefiningFunctionNode() == null;
 		}
-		return true;
+		return false;
 	}
 
 	public final String GetName() {
 		@Var ZNode ResolvedNode = this.ResolvedNode;
 		if(ResolvedNode != null) {
-			@Var ZFunctionNode DefNode = this.GetDefiningFunctionNode();
+			@Var ZFunctionNode DefNode = this.ResolvedNode.GetDefiningFunctionNode();
 			if(DefNode == null) {
 				if(ResolvedNode instanceof ZLetVarNode) {
 					return ((ZLetVarNode)ResolvedNode).GlobalName;
