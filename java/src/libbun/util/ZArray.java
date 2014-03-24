@@ -28,18 +28,17 @@ public class ZArray<T> {
 	}
 
 	public final static<T> T GetIndex(ZArray<T> a, long Index) {
-		if(Index < a.Size) {
-			return a.ArrayValues[(int)Index];
+		if(!(0 <= Index && Index < a.Size)) {
+			ZArray.ThrowOutOfArrayIndex(a.Size, Index);
 		}
-		ZArray.ThrowOutOfArrayIndex(a.Size, Index);
-		return null;
+		return a.ArrayValues[(int)Index];
 	}
 
 	public final static<T> void SetIndex(ZArray<T> a, long Index, T Value) {
-		if(Index < a.Size) {
-			a.ArrayValues[(int)Index] = Value;
+		if(!(0 <= Index && Index < a.Size)) {
+			ZArray.ThrowOutOfArrayIndex(a.Size, Index);
 		}
-		ZArray.ThrowOutOfArrayIndex(a.Size, Index);
+		a.ArrayValues[(int)Index] = Value;
 	}
 
 	private T[] NewArray(int CopySize, int NewSize) {
