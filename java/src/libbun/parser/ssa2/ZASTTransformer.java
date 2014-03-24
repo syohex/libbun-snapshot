@@ -1,4 +1,4 @@
-package libbun.parser.ssa;
+package libbun.parser.ssa2;
 
 import libbun.parser.ZVisitor;
 import libbun.parser.ast.ZAndNode;
