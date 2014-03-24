@@ -28,6 +28,7 @@ public class SSATransformer2 extends ZASTTransformer {
 			if(V != null && V.Name.equals(Name)) {
 				return V;
 			}
+			i = i - 1;
 		}
 		assert(false); // unreachable
 		return null;

@@ -233,12 +233,16 @@ public class ZASTTransformer extends ZVisitor {
 	public void VisitIfNode(ZIfNode Node) {
 		this.Transform(Node, ZIfNode._Cond);
 		this.Transform(Node, ZIfNode._Then);
-		this.Transform(Node, ZIfNode._Else);
+		if(Node.AST[ZIfNode._Else] != null) {
+			this.Transform(Node, ZIfNode._Else);
+		}
 	}
 
 	@Override
 	public void VisitReturnNode(ZReturnNode Node) {
-		this.Transform(Node, ZReturnNode._Expr);
+		if(Node.AST[ZReturnNode._Expr] != null) {
+			this.Transform(Node, ZReturnNode._Expr);
+		}
 	}
 
 	@Override

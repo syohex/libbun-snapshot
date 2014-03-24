@@ -43,6 +43,7 @@ import libbun.parser.ast.ZSetIndexNode;
 import libbun.parser.ast.ZSetterNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
+import libbun.parser.ssa2.SSATransformer2;
 import libbun.type.ZClassField;
 import libbun.type.ZClassType;
 import libbun.type.ZFunc;
@@ -301,6 +302,7 @@ public class CGenerator extends ZSourceGenerator {
 	}
 
 	@Override public void VisitFunctionNode(ZFunctionNode Node) {
+		Node.Accept(new SSATransformer2());
 		if(!Node.IsTopLevelDefineFunction()) {
 			@Var String FuncName = Node.GetUniqueName(this);
 			this.CurrentBuilder = this.InsertNewSourceBuilder();
