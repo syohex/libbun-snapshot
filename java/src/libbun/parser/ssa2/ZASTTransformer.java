@@ -74,6 +74,7 @@ public class ZASTTransformer extends ZVisitor {
 		@Var int i = 0;
 		while(i < Node.GetListSize()) {
 			this.Transform(Node, i);
+			i = i + 1;
 		}
 	}
 
