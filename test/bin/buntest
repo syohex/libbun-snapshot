@@ -60,7 +60,7 @@ do
 	fi
 	if [ -f $STDERR ]; then
 		cat $STDERR
-		cat $STDERR >> OUTLOG2
+		cat $STDERR >> $OUTLOG2
 		rm -r $STDERR
 	fi
 done

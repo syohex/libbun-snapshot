@@ -1,37 +1,47 @@
 
-define assert "call void (i1)* @ZStdLib_assert ($[0])": Func<boolean,String,void>;
-define print "call void (%ZString*)* @ZString_print ($[0])": Func<String,void>;
-define println "call void (%ZString*)* @ZString_println ($[0])": Func<String,void>;
+define assert "call void (i1)* @BStdLib_assert ($[0])" : Func<boolean,String,void>;
+define print "call void (%BString*)* @BString_print ($[0])" : Func<String,void>;
+define println "call void (%BString*)* @BString_println ($[0])" : Func<String,void>;
 
 // converter
 // define _ "(double)($[0])" : Func<int,float>;
 // define _ "(long)($[0])" : Func<float,int>;
-define _ "call %ZString* (i1)* @ZString_boolean_toString ($[0])" : Func<boolean,String>;
-define _ "call %ZString* (i64)* @ZString_int_toString ($[0])" : Func<int,String>;
-define _ "call %ZString* (double)* @ZString_float_toString ($[0])" : Func<float,String>;
+define _ "call %BString* (i1)* @BString_boolean_toString ($[0])" : Func<boolean,String>;
+define toString "call %BString* (i1)* @BString_boolean_toString ($[0])" : Func<boolean,String>;
+define _ "call %BString* (i64)* @BString_int_toString ($[0])" : Func<int,String>;
+define toString "call %BString* (i64)* @BString_int_toString ($[0])": Func<int,String>;
+define _ "call %BString* (double)* @BString_float_toString ($[0])" : Func<float,String>;
+define toString "call %BString* (double)* @BString_float_toString ($[0])" : Func<float,String>;
 
 // String
-define "+" "call %ZString*  (%ZString*, %ZString*)* @ZString_StrCat ($[0], $[1])": Func<String,String,String>;
-define toString "call %ZString* (i64)* @ZString_int_toString ($[0])": Func<int,String>;
-// define "+" "libzen.h~zStrCat($[0],$[1])" : Func<String,String,String>;
-// define size "stdlib.h~strlen($[0])" : Func<String,int>;
-// define substring "libzen.h~zStrSub($[0],$[1])" : Func<String,int,String>;
-// define substring "libzen.h~zStrSub2($[0],$[1],$[2])" : Func<String,int,int,String>;
-// define indexOf "libzen.h~zStrIndexOf($[0],$[1])" : Func<String,String,int>;
-// define indexOf "libzen.h~zStrIndexOf2($[0],$[1],$[2])" : Func<String,int,String,int>;
-// define equals "libzen.h~zEqualsString($[0],$[1])" : Func<String,String,boolean>;
-// define startsWith "libzen.h~zStartWith($[0],$[1])" : Func<String,String,boolean>;
-// define endsWith "libzen.h~zEndWith($[0],$[1])" : Func<String,String,boolean>;
+define "+" "call %BString* (%BString*, %BString*)* @BString_StrCat ($[0], $[1])" : Func<String,String,String>;
+define size "call i64 (%BString*)* @BString_StrLen ($[0])" : Func<String,int>;
+define substring "call %BString* (%BString*, i64)* @BString_SubString ($[0], $[1])" : Func<String,int,String>;
+define substring "call %BString* (%BString*, i64, i64)* @BString_SubString_withEndIndex ($[0], $[1], $[2])" : Func<String,int,int,String>;
+define indexOf "call i64 (%BString*, %BString*)* @BString_IndexOf ($[0], $[1])" : Func<String,String,int>;
+define indexOf "call i64 (%BString*, i64, %BString*)* @BString_IndexOf_withIndex ($[0], $[1], $[2])" : Func<String,int,String,int>;
+define equals "call i1 (%BString*, %BString*)* @BString_EqualString ($[0], $[1])" : Func<String,String,boolean>;
+define startsWith "call i1 (%BString*, %BString*)* @BString_StartsWith ($[0], $[1])" : Func<String,String,boolean>;
+define endsWith "call i1 (%BString*, %BString*)* @BString_EndsWith ($[0], $[1])" : Func<String,String,boolean>;
 
 // Array
-// define size "libzen.h~zArraySize($[0])" : Func<α[],int>;
-// define clear "libzen.h~zArrayClear($[0], $[1])" : Func<α[],int,void>;
-// define add "libzen.h~zArrayAdd($[0], $[1])" : Func<α[],α,void>;
-// define add "libzen.h~zArrayInsert($[0], $[1], $[2])" : Func<α[],int,α,void>;
+define size "call i64 (%BArray*)* @BObjArray_Length ($[0])" : Func<α[],int>;
+define clear "call void (%BArray*, i64)* @BObjArray_Clear ($[0], $[1])" : Func<α[],int,void>;
+define add "call void (%BArray*, i8*)* @BObjArray_Add ($[0], $[1])" : Func<α[],α,void>;
+define add "call void (%BArray*, i64, i8*)* @BObjArray_Insert ($[0], $[1], $[2])" : Func<α[],int,α,void>;
 
-// define add "libzen.h~zIntArrayAdd($[0], $[1])" : Func<int[],int,void>;
-// define add "libzen.h~zIntArrayInsert($[0], $[1], $[2])" : Func<int[],int,int,void>;
+define size "call i64 (%BArray*)* @BIntArray_Length ($[0])" : Func<int[],int>;
+define clear "call void (%BArray*, i64)* @BIntArray_Clear ($[0], $[1])" : Func<int[],int,void>;
+define add "call void (%BArray*, i64)* @BIntArray_Add ($[0], $[1])" : Func<int[],int,void>;
+define add "call void (%BArray*, i64, i64)* @BIntArray_Insert ($[0], $[1], $[2])" : Func<int[],int,int,void>;
 
-// define add "libzen.h~zStringArrayAdd($[0], $[1])" : Func<String[],String,void>;
-// define add "libzen.h~zStringArrayInsert($[0], $[1], $[2])" : Func<String[],int,String,void>;
+define size "call i64 (%BArray*)* @BFloatArray_Length ($[0])" : Func<float[],int>;
+define clear "call void (%BArray*, i64)* @BFloatArray_Clear ($[0], $[1])" : Func<float[],int,void>;
+define add "call void (%BArray*, double)* @BFloatArray_Add ($[0], $[1])" : Func<float[],float,void>;
+define add "call void (%BArray*, i64, double)* @BFloatArray_Insert ($[0], $[1], $[2])" : Func<float[],int,float,void>;
+
+define size "call i64 (%BArray*)* @BBooleanArray_Length ($[0])" : Func<boolean[],int>;
+define clear "call void (%BArray*, i64)* @BBooleanArray_Clear ($[0], $[1])" : Func<boolean[],int,void>;
+define add "call void (%BArray*, i1)* @BBooleanArray_Add ($[0], $[1])" : Func<boolean[],boolean,void>;
+define add "call void (%BArray*, i64, i1)* B@BooleanArray_Insert ($[0], $[1], $[2])" : Func<boolean[],int,boolean,void>;
 
