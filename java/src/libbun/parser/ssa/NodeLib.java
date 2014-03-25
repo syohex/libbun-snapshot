@@ -1,4 +1,4 @@
-package libbun.parser.ssa2;
+package libbun.parser.ssa;
 
 import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZNode;

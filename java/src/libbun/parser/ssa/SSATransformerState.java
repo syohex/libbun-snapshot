@@ -1,4 +1,4 @@
-package libbun.parser.ssa2;
+package libbun.parser.ssa;
 
 public class SSATransformerState {
 	public SSATransformerState Prev;
