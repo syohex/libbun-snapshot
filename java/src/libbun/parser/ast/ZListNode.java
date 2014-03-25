@@ -46,11 +46,12 @@ public abstract class ZListNode extends ZNode {
 			this.Append(Node);
 		} else {
 			@Var ZNode[] newAST = LibZen._NewNodeArray(this.AST.length + 1);
+			@Var ZNode[] oldAST = this.AST;
 			Index = this.ListStartIndex + Index;
-			LibZen._ArrayCopy(this.AST, 0, newAST, 0, Index);
-			this.SetNode(Index, Node);
-			LibZen._ArrayCopy(this.AST, Index, newAST, Index + 1, this.AST.length - Index);
 			this.AST = newAST;
+			LibZen._ArrayCopy(oldAST, 0, newAST, 0, Index);
+			this.SetNode(Index, Node);
+			LibZen._ArrayCopy(oldAST, Index, newAST, Index + 1, oldAST.length - Index);
 		}
 	}
 
