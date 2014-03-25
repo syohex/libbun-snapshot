@@ -46,6 +46,7 @@ import libbun.parser.ast.ZTryNode;
 import libbun.parser.ast.ZUnaryNode;
 import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
+import libbun.util.Var;
 
 public class ZASTTransformer extends ZVisitor {
 	private ZNode TransformedValue;
@@ -64,16 +65,14 @@ public class ZASTTransformer extends ZVisitor {
 		this.TransformedValue = Node.AST[Index];
 		this.VisitBefore(Node, Index);
 		Node.AST[Index].Accept(this);
-		//		if(Node != this.TransformedValue) {
-		//			Node.ParentNode.SetChild(this.TransformedValue);
-		//		}
 		Node.SetNode(Index, this.TransformedValue);
 		this.VisitAfter(Node, Index);
 		this.TransformedValue = LastTransformed;
 	}
 
 	protected void VisitListNode(ZListNode Node) {
-		for (int i = 0; i < Node.GetListSize(); i++) {
+		@Var int i = 0;
+		while(i < Node.GetListSize()) {
 			this.Transform(Node, i);
 		}
 	}
@@ -233,14 +232,14 @@ public class ZASTTransformer extends ZVisitor {
 	public void VisitIfNode(ZIfNode Node) {
 		this.Transform(Node, ZIfNode._Cond);
 		this.Transform(Node, ZIfNode._Then);
-		if(Node.AST[ZIfNode._Else] != null) {
+		if(Node.HasElseNode()) {
 			this.Transform(Node, ZIfNode._Else);
 		}
 	}
 
 	@Override
 	public void VisitReturnNode(ZReturnNode Node) {
-		if(Node.AST[ZReturnNode._Expr] != null) {
+		if(Node.ExprNode() != null) {
 			this.Transform(Node, ZReturnNode._Expr);
 		}
 	}
@@ -292,8 +291,6 @@ public class ZASTTransformer extends ZVisitor {
 		/* do nothing */
 	}
 
-
-
 	@Override
 	public void EnableVisitor() {
 		/* do nothing */
@@ -310,9 +307,8 @@ public class ZASTTransformer extends ZVisitor {
 	}
 
 	@Override
-	public void VisitMacroNode(ZMacroNode FuncNode) {
-		// TODO Auto-generated method stub
-
+	public void VisitMacroNode(ZMacroNode Node) {
+		this.VisitListNode(Node);
 	}
 
 	@Override

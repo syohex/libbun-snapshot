@@ -2,20 +2,17 @@ package libbun.parser.ssa2;
 
 import libbun.parser.ast.ZNode;
 
-/**
- * @see
- * Brandis, M. M. and Moessenboeck, H.: Single-pass Generation of Static
- * Single-assignment Form for Structured Languages, ACM Trans.
- * Program. Lang. Syst., Vol. 16, No. 6, pp. 1684-1698
- *
- */
-
 class Variable {
-	ZNode  Node;
-	String Name;
-	int    Index;
-	public Variable(String Name, ZNode Node) {
+	public ZNode  Node;
+	public String Name;
+	public int    Index;
+	public Variable(String Name, int Index, ZNode Node) {
 		this.Node = Node;
+		this.Index = Index;
 		this.Name = Name;
+	}
+	@Override
+	public String toString() {
+		return "Variable { Name : " + this.Name + ", Index : " + this.Index + "}";
 	}
 }
