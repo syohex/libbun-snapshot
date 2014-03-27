@@ -1,5 +1,7 @@
 package libbun.parser.ssa;
 
+import java.util.HashMap;
+
 import libbun.parser.ast.ZAndNode;
 import libbun.parser.ast.ZBinaryNode;
 import libbun.parser.ast.ZBlockNode;
@@ -32,12 +34,58 @@ public class SSAConverter extends ZASTTransformer {
 	public ZArray<Variable> LocalVariables;
 	public ValueReplacer Replacer;
 	public ZMap<Integer> ValueNumber;
+	private final HashMap<ZNode, ZArray<Variable>> CurVariableTableBefore;
+	private final HashMap<ZNode, ZArray<Variable>> CurVariableTableAfter;
 
 	public SSAConverter() {
 		this.LocalVariables = null;
 		this.Replacer = new ValueReplacer();
 		this.State = new SSATransformerState(null, -1);
 		this.ValueNumber = new ZMap<Integer>(ZType.IntType);
+		this.CurVariableTableBefore = new HashMap<ZNode, ZArray<Variable>>();
+		this.CurVariableTableAfter = new HashMap<ZNode, ZArray<Variable>>();
+	}
+
+	private void RecordListOfVariablesBeforeVisit(ZNode Node) {
+		this.CurVariableTableBefore.put(Node, this.CloneCurrentValues());
+	}
+
+	private void RecordListOfVariablesAfterVisit(ZNode Node) {
+		this.CurVariableTableAfter.put(Node, this.CloneCurrentValues());
+	}
+
+	/**
+	 * Returns the variable information prior to processing the Node.
+	 * @param Node
+	 * @return	List of information of local variables.
+	 * 			The information contains variable name and variable index
+	 * example:
+	 *   int x = 0;
+	 *   int y = 0;
+	 *   x = y;
+	 *  GetCurrentVariablesBefore(int x = 0) returns []
+	 *  GetCurrentVariablesBefore(int y = 0) returns [(x, 0)]
+	 *  GetCurrentVariablesBefore(x = y    ) returns [(x, 0), (y,0)]
+	 */
+	public ZArray<Variable> GetCurrentVariablesBefore(ZNode Node) {
+		return this.CurVariableTableBefore.get(Node);
+	}
+
+	/**
+	 * Returns the variable information after processing the Node.
+	 * @param Node
+	 * @return	List of information of local variables.
+	 * 			The information contains variable name and variable index
+	 * example:
+	 *   int x = 0;
+	 *   int y = 0;
+	 *   x = y;
+	 *  GetCurrentVariablesAfter(int x = 0) returns []
+	 *  GetCurrentVariablesAfter(int y = 0) returns [(x, 0)]
+	 *  GetCurrentVariablesAfter(x = y    ) returns [(x, 0), (y,0)]
+	 */
+	public ZArray<Variable> GetCurrentVariablesAfter(ZNode Node) {
+		return this.CurVariableTableAfter.get(Node);
 	}
 
 	private void PushState(SSATransformerState State) {
@@ -55,6 +103,10 @@ public class SSAConverter extends ZASTTransformer {
 
 	private int GetCurrentBranchIndex() {
 		return this.State.BranchIndex;
+	}
+
+	private void SetCurrentBranchIndex(int BranchIndex) {
+		this.State.BranchIndex = BranchIndex;
 	}
 
 	private JoinNode GetParentJoinNode() {
@@ -113,6 +165,10 @@ public class SSAConverter extends ZASTTransformer {
 
 	private int GetRefreshNumber(Variable Val) {
 		return this.UpdateValueNumber(Val, true);
+	}
+
+	private ZArray<Variable> CloneCurrentValues() {
+		return new ZArray<Variable>(this.LocalVariables.CompactArray());
 	}
 
 	private void InsertPHI(JoinNode JNode, int BranchIndex, Variable OldVal, Variable NewVal) {
@@ -250,13 +306,19 @@ public class SSAConverter extends ZASTTransformer {
 	@Override
 	public void VisitIfNode(ZIfNode Node) {
 		this.PushState(new SSATransformerState(new JoinNode(Node), 0));
+		this.RecordListOfVariablesBeforeVisit(Node);
 		Node.CondNode().Accept(this);
-		this.State.BranchIndex = IfThenBranchIndex;
+		this.SetCurrentBranchIndex(IfThenBranchIndex);
+		this.RecordListOfVariablesBeforeVisit(Node.ThenNode());
 		Node.ThenNode().Accept(this);
+		this.RecordListOfVariablesAfterVisit(Node.ThenNode());
 		if(Node.HasElseNode()) {
-			this.State.BranchIndex = IfElseBranchIndex;
+			this.RecordListOfVariablesBeforeVisit(Node.ElseNode());
+			this.SetCurrentBranchIndex(IfElseBranchIndex);
 			Node.ElseNode().Accept(this);
+			this.RecordListOfVariablesAfterVisit(Node.ElseNode());
 		}
+		this.RecordListOfVariablesAfterVisit(Node);
 		this.RemoveJoinNode(Node, this.GetCurrentJoinNode());
 		this.CommitPHINode(this.GetCurrentJoinNode());
 		this.PopState();
@@ -265,9 +327,13 @@ public class SSAConverter extends ZASTTransformer {
 	@Override
 	public void VisitWhileNode(ZWhileNode Node) {
 		this.PushState(new SSATransformerState(new JoinNode(Node), 0));
+		this.RecordListOfVariablesBeforeVisit(Node);
 		Node.CondNode().Accept(this);
-		this.State.BranchIndex = WhileBodyBranchIndex;
+		this.RecordListOfVariablesBeforeVisit(Node.BlockNode());
+		this.SetCurrentBranchIndex(WhileBodyBranchIndex);
 		Node.BlockNode().Accept(this);
+		this.RecordListOfVariablesAfterVisit(Node.BlockNode());
+		this.RecordListOfVariablesAfterVisit(Node);
 		this.RemoveJoinNode(Node, this.GetCurrentJoinNode());
 		this.CommitPHINode(this.GetCurrentJoinNode());
 		this.PopState();
