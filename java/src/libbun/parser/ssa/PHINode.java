@@ -19,7 +19,7 @@ public class PHINode extends ZLocalDefinedNode {
 		this.VariableName = VariableName;
 		this.Args = new ZArray<ZNode>(new ZNode[0]);
 		this.Blocks = new ZArray<ZBlockNode>(new ZBlockNode[0]);
-		this.Type = NodeLib.GetType(BackupValue);
+		this.Type = NodeLib.GetType(BackupValue.Node);
 	}
 
 	public void AddIncoming(int Index, ZBlockNode block, ZNode node) {

@@ -7,21 +7,37 @@ import libbun.parser.ast.ZVarBlockNode;
 import libbun.type.ZType;
 
 public class NodeLib {
-	static public ZType GetType(Variable V) {
-		if(V.Node instanceof ZLetVarNode) {
-			ZLetVarNode LNode = (ZLetVarNode) V.Node;
+	static public boolean IsVariableNode(ZNode Node) {
+		if(Node instanceof ZLetVarNode) {
+			return true;
+		}
+		else if(Node instanceof ZVarBlockNode) {
+			return true;
+		}
+		else if(Node instanceof ZSetNameNode) {
+			return true;
+		}
+		else if(Node instanceof PHINode) {
+			return true;
+		}
+		return false;
+	}
+
+	static public ZType GetType(ZNode Node) {
+		if(Node instanceof ZLetVarNode) {
+			ZLetVarNode LNode = (ZLetVarNode) Node;
 			return LNode.DeclType();
 		}
-		else if(V.Node instanceof ZVarBlockNode) {
-			ZVarBlockNode VNode = (ZVarBlockNode) V.Node;
+		else if(Node instanceof ZVarBlockNode) {
+			ZVarBlockNode VNode = (ZVarBlockNode) Node;
 			return VNode.VarDeclNode().DeclType();
 		}
-		else if(V.Node instanceof ZSetNameNode) {
-			ZSetNameNode SNode = (ZSetNameNode) V.Node;
+		else if(Node instanceof ZSetNameNode) {
+			ZSetNameNode SNode = (ZSetNameNode) Node;
 			return SNode.ExprNode().Type;
 		}
-		else if(V.Node instanceof PHINode) {
-			PHINode PNode = (PHINode) V.Node;
+		else if(Node instanceof PHINode) {
+			PHINode PNode = (PHINode) Node;
 			return PNode.Type;
 		}
 		return ZType.VarType;
@@ -45,5 +61,23 @@ public class NodeLib {
 			return PNode.GetName();
 		}
 		return null;
+	}
+
+	static public int GetVarIndex(ZNode Node) {
+		if(Node instanceof ZLetVarNode) {
+			return 0;
+		}
+		else if(Node instanceof ZVarBlockNode) {
+			return 0;
+		}
+		else if(Node instanceof ZSetNameNode) {
+			ZSetNameNode SNode = (ZSetNameNode) Node;
+			return SNode.VarIndex;
+		}
+		else if(Node instanceof PHINode) {
+			PHINode PNode = (PHINode) Node;
+			return PNode.GetVarIndex();
+		}
+		return -1;
 	}
 }

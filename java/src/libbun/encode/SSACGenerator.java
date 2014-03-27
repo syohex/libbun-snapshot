@@ -46,7 +46,7 @@ import libbun.parser.ast.ZSetNameNode;
 import libbun.parser.ast.ZSetterNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
-import libbun.parser.ast.ZVarBlockNode;
+import libbun.parser.ssa.NodeLib;
 import libbun.parser.ssa.PHINode;
 import libbun.parser.ssa.SSAConverter;
 import libbun.type.ZClassField;
@@ -500,26 +500,11 @@ public class SSACGenerator extends ZSourceGenerator {
 		while(i < phi.Args.size()) {
 			ZNode Arg = ZArray.GetIndex(phi.Args, i);
 			// Arg is instanceof ZLetVarNode or ZVarBlockNode or ZSetNameNode or PHINode
+			if(i != 0) {
+				this.CurrentBuilder.Append(", ");
+			}
 			this.CurrentBuilder.Append(phi.VariableName);
-			if(Arg == null) {
-				this.CurrentBuilder.Append("_null");
-			}
-			else if(Arg instanceof ZLetVarNode || Arg instanceof ZVarBlockNode) {
-				this.CurrentBuilder.Append("0");
-			}
-			else if(Arg instanceof ZSetNameNode) {
-				ZSetNameNode SNode = (ZSetNameNode) Arg;
-				this.CurrentBuilder.Append("" + SNode.VarIndex);
-			}
-			else if(Arg instanceof PHINode) {
-				PHINode PNode = (PHINode) Arg;
-				this.CurrentBuilder.Append("" + PNode.GetVarIndex());
-			}
-			else {
-				//System.out.println("?? " + Arg.getClass().toString());
-				assert(false); // unreachable
-			}
-			this.CurrentBuilder.Append(", ");
+			this.CurrentBuilder.Append("" + NodeLib.GetVarIndex(Arg));
 			i = i + 1;
 		}
 		this.CurrentBuilder.Append(")");
