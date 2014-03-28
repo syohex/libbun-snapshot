@@ -28,18 +28,17 @@ public class ZArray<T> {
 	}
 
 	public final static<T> T GetIndex(ZArray<T> a, long Index) {
-		if(Index < a.Size) {
-			return a.ArrayValues[(int)Index];
+		if(!(0 <= Index && Index < a.Size)) {
+			ZArray.ThrowOutOfArrayIndex(a.Size, Index);
 		}
-		ZArray.ThrowOutOfArrayIndex(a.Size, Index);
-		return null;
+		return a.ArrayValues[(int)Index];
 	}
 
 	public final static<T> void SetIndex(ZArray<T> a, long Index, T Value) {
-		if(Index < a.Size) {
-			a.ArrayValues[(int)Index] = Value;
+		if(!(0 <= Index && Index < a.Size)) {
+			ZArray.ThrowOutOfArrayIndex(a.Size, Index);
 		}
-		ZArray.ThrowOutOfArrayIndex(a.Size, Index);
+		a.ArrayValues[(int)Index] = Value;
 	}
 
 	private T[] NewArray(int CopySize, int NewSize) {
@@ -49,18 +48,26 @@ public class ZArray<T> {
 		return newValues;
 	}
 
-	public final void add(T Value) {
-		if(this.Size == this.ArrayValues.length) {
-			this.ArrayValues = this.NewArray(this.Size, this.ArrayValues.length * 2);
+	private void Reserve(int Size) {
+		int CurrentCapacity = this.ArrayValues.length;
+		if(Size < CurrentCapacity) {
+			return;
 		}
+		int NewCapacity = CurrentCapacity * 2;
+		if(NewCapacity < Size) {
+			NewCapacity = Size;
+		}
+		this.ArrayValues = this.NewArray(this.Size, NewCapacity);
+	}
+
+	public final void add(T Value) {
+		this.Reserve(this.Size + 1);
 		this.ArrayValues[this.Size] = Value;
 		this.Size = this.Size + 1;
 	}
 
 	public final void add(int Index, T Value) {
-		if(this.Size == this.ArrayValues.length) {
-			this.ArrayValues = this.NewArray(this.Size, this.ArrayValues.length * 2);
-		}
+		this.Reserve(this.Size + 1);
 		System.arraycopy(this.ArrayValues, Index, this.ArrayValues, Index+1, this.Size - Index);
 		this.ArrayValues[Index] = Value;
 		this.Size = this.Size + 1;

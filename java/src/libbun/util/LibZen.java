@@ -526,6 +526,9 @@ public class LibZen {
 
 		GenMap.put("zen", libbun.encode.ZenGenerator.class);
 
+		//
+		GenMap.put("ssac", libbun.encode.SSACGenerator.class);
+
 		// engine
 		GenMap.put("jvm", libbun.encode.jvm.AsmJavaGenerator.class);
 		GenMap.put("debug-jvm", libbun.encode.jvm.DebugAsmGenerator.class);
