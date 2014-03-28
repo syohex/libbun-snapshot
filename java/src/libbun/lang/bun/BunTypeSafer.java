@@ -105,10 +105,6 @@ public class BunTypeSafer extends ZTypeChecker {
 		return (this.CurrentFunctionNode == null);
 	}
 
-	public final boolean InFunctionScope() {
-		return (this.CurrentFunctionNode != null);
-	}
-
 	@Override public void VisitDefaultValueNode(ZDefaultValueNode Node) {
 		@Var ZType Type = this.GetContextType();
 		if(Type.IsIntType()) {
@@ -616,7 +612,7 @@ public class BunTypeSafer extends ZTypeChecker {
 	}
 
 	@Override public void VisitVarBlockNode(ZVarBlockNode Node) {
-		if(!this.InFunctionScope()) {
+		if(this.IsTopLevel()) {
 			this.ReturnErrorNode(Node, Node.SourceToken, "only available inside function");
 			return;
 		}
@@ -637,7 +633,7 @@ public class BunTypeSafer extends ZTypeChecker {
 	}
 
 	@Override public void VisitReturnNode(ZReturnNode Node) {
-		if(!this.InFunctionScope()) {
+		if(this.IsTopLevel()) {
 			this.ReturnErrorNode(Node, Node.SourceToken, "only available inside function");
 			return;
 		}
