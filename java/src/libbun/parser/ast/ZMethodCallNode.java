@@ -29,6 +29,7 @@ import libbun.parser.ZVisitor;
 import libbun.type.ZFunc;
 import libbun.type.ZFuncType;
 import libbun.util.Field;
+import libbun.util.Nullable;
 import libbun.util.Var;
 
 public final class ZMethodCallNode extends ZListNode {
@@ -78,10 +79,12 @@ public final class ZMethodCallNode extends ZListNode {
 		return FuncNode;
 	}
 
-	public final ZListNode ToFuncCallNode(ZTypeChecker Gamma, ZFunc Func) {
+	public final ZListNode ToFuncCallNode(ZTypeChecker Gamma, ZFunc Func, @Nullable ZNode RecvNode) {
 		@Var ZListNode FuncNode = Gamma.CreateDefinedFuncCallNode(this.ParentNode, this.GetAstToken(ZMethodCallNode._NameInfo), Func);
 		FuncNode.SourceToken = this.GetAstToken(ZMethodCallNode._NameInfo);
-		FuncNode.Append(this.RecvNode());
+		if(RecvNode != null) {
+			FuncNode.Append(RecvNode);
+		}
 		@Var int i = 0;
 		while(i < this.GetListSize()) {
 			FuncNode.Append(this.GetListAt(i));

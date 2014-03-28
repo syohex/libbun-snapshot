@@ -25,8 +25,6 @@
 
 package libbun.parser;
 
-import libbun.parser.ast.ZAsmMacroNode;
-import libbun.parser.ast.ZAsmNode;
 import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.ZClassNode;
 import libbun.parser.ast.ZDefaultValueNode;
@@ -37,7 +35,6 @@ import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZListNode;
 import libbun.parser.ast.ZNode;
 import libbun.parser.ast.ZNullNode;
-import libbun.parser.ast.ZStringNode;
 import libbun.parser.ast.ZSugarNode;
 import libbun.parser.ast.ZTopLevelNode;
 import libbun.type.ZClassType;
@@ -93,11 +90,13 @@ public abstract class ZGenerator extends ZVisitor {
 		//	this.HeaderBuilder.AppendNewLine("require ", LibName, this.LineFeed);
 	}
 
-	public final void ImportLibrary(String LibName) {
-		@Var String Imported = this.ImportedLibraryMap.GetOrNull(LibName);
-		if(Imported == null) {
-			this.GenerateImportLibrary(LibName);
-			this.ImportedLibraryMap.put(LibName, LibName);
+	public final void ImportLibrary(@Nullable String LibName) {
+		if(LibName != null) {
+			@Var String Imported = this.ImportedLibraryMap.GetOrNull(LibName);
+			if(Imported == null) {
+				this.GenerateImportLibrary(LibName);
+				this.ImportedLibraryMap.put(LibName, LibName);
+			}
 		}
 	}
 
@@ -105,24 +104,7 @@ public abstract class ZGenerator extends ZVisitor {
 		this.DefinedFuncMap.put(Func.GetSignature(), Func);
 	}
 
-	public final void SetAsmMacro(ZNameSpace NameSpace, String Symbol, ZFuncType MacroType, String MacroText) {
-		@Var ZMacroFunc MacroFunc = null;
-		@Var int loc = MacroText.indexOf("~");
-		if(loc > 0) {
-			@Var String LibName = MacroText.substring(0, loc);
-			MacroText = MacroText.substring(loc+1);
-			MacroFunc = new ZMacroFunc(Symbol, MacroType, MacroText);
-			MacroFunc.RequiredLibrary = LibName;
-		}
-		else {
-			MacroFunc = new ZMacroFunc(Symbol, MacroType, MacroText);
-		}
-		if(Symbol.equals("_")) {
-			this.SetConverterFunc(MacroType.GetRecvType(), MacroType.GetReturnType(), MacroFunc);
-		}
-		else {
-			this.SetDefinedFunc(MacroFunc);
-		}
+	public final void SetAsmMacro(ZNameSpace NameSpace, String Symbol, String LibName, String MacroText, ZFuncType MacroType) {
 	}
 
 	private String NameConverterFunc(ZType FromType, ZType ToType) {
@@ -144,21 +126,6 @@ public abstract class ZGenerator extends ZVisitor {
 			FromType = FromType.GetSuperType();
 		}
 		return null;
-	}
-
-	public final void SetAsmSymbol(ZNameSpace NameSpace, ZAsmMacroNode Node) {
-		@Var String MacroText = Node.GetMacroText();
-		@Var int loc = MacroText.indexOf("~");
-		if(loc > 0) {
-			@Var String LibName = MacroText.substring(0, loc);
-			this.ImportLibrary(LibName);
-			Node.SetNode(ZAsmNode._Macro, new ZStringNode(Node, Node.GetAstToken(ZAsmMacroNode._Macro), MacroText.substring(loc+1)));
-		}
-		@Var ZAsmNode AsmNode = new ZAsmNode(null);
-		AsmNode.SourceToken = Node.GetAstToken(ZAsmMacroNode._NameInfo);
-		AsmNode.SetNode(ZAsmNode._Macro, Node.AST[ZAsmNode._Macro]);
-		AsmNode.Type = Node.MacroType();
-		NameSpace.SetSymbol(Node.GetName(), AsmNode);
 	}
 
 	@ZenMethod public void WriteTo(@Nullable String FileName) {

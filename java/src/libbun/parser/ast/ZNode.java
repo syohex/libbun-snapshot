@@ -137,7 +137,10 @@ public abstract class ZNode {
 	}
 
 	public final ZType GetAstType(int Index) {
-		return this.AST[Index].Type.GetRealType();
+		if(Index < this.AST.length) {
+			return this.AST[Index].Type.GetRealType();
+		}
+		return ZType.VoidType;  // to retrieve RecvType
 	}
 
 	public final void SetAstType(int Index, ZType Type) {

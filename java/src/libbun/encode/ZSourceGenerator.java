@@ -681,6 +681,7 @@ public class ZSourceGenerator extends ZGenerator {
 	}
 
 	@Override public void VisitAsmNode(ZAsmNode Node) {
+		this.ImportLibrary(Node.RequiredLibrary);
 		this.CurrentBuilder.AppendCode(Node.GetMacroText());
 	}
 

@@ -143,6 +143,10 @@ public class BunGrammar {
 		NameSpace.DefineStatement("asm", new AsmPatternFunction());
 		NameSpace.DefineStatement("require", new RequirePatternFunction());
 
+		NameSpace.DefineStatement("$DefineName$", new BunDefineNamePatternFunction());
+		NameSpace.DefineStatement("define", new BunDefinePatternFunction());
+
+
 		NameSpace.Generator.LangInfo.AppendGrammarInfo("zen-0.1");
 
 		NameSpace.DefineStatement("try", new TryPatternFunction());

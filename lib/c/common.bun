@@ -33,3 +33,4 @@ asm macro add "libzen.h~zIntArrayInsert($[0], $[1], $[2])" : Func<int[],int,int,
 asm macro add "libzen.h~zStringArrayAdd($[0], $[1])" : Func<String[],String,void>;
 asm macro add "libzen.h~zStringArrayInsert($[0], $[1], $[2])" : Func<String[],int,String,void>;
 
+
