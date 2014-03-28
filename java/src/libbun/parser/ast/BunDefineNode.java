@@ -53,6 +53,7 @@ public class BunDefineNode extends ZTopLevelNode {
 				NameSpace.Generator.SetConverterFunc(MacroFuncType.GetRecvType(), MacroFuncType.GetReturnType(), MacroFunc);
 			}
 			else {
+				//				System.out.println("Func: " + MacroFunc + " by " + MacroFunc.GetSignature());
 				NameSpace.Generator.SetDefinedFunc(MacroFunc);
 			}
 		}

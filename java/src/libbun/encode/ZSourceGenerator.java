@@ -401,14 +401,20 @@ public class ZSourceGenerator extends ZGenerator {
 	}
 
 	@Override public void VisitGetNameNode(ZGetNameNode Node) {
-		if(Node.ResolvedNode == null && !this.LangInfo.AllowUndefinedSymbol) {
+		@Var ZNode ResolvedNode = Node.ResolvedNode;
+		if(ResolvedNode == null && !this.LangInfo.AllowUndefinedSymbol) {
 			ZLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GetName());
 		}
-		if(Node.IsGlobalName()) {
-			this.CurrentBuilder.Append(Node.GetName());
+		if(ResolvedNode instanceof ZAsmNode) {
+			this.VisitAsmNode((ZAsmNode)ResolvedNode);
 		}
 		else {
-			this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
+			if(Node.IsGlobalName()) {
+				this.CurrentBuilder.Append(Node.GetName());
+			}
+			else {
+				this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
+			}
 		}
 	}
 

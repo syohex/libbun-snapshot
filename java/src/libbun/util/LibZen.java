@@ -37,8 +37,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 
+import libbun.encode.BunGenerator;
 import libbun.encode.ZSourceBuilder;
-import libbun.encode.ZSourceGenerator;
 import libbun.encode.jvm.JavaTypeTable;
 import libbun.lang.bun.BunTypeSafer;
 import libbun.parser.ZGenerator;
@@ -540,9 +540,6 @@ public class LibZen {
 	}
 
 	public final static ZGenerator _LoadGenerator(@Nullable String ClassName, String OutputFile) {
-		if(ClassName == null) {
-			ClassName = System.getenv("ZENCODE");
-		}
 		if (ClassName != null) {
 			try {
 				Class<?> GeneratorClass = GenMap.GetOrNull(ClassName.toLowerCase());
@@ -554,7 +551,7 @@ public class LibZen {
 				LibZen._FixMe(e);
 			}
 		}
-		return new ZSourceGenerator("zen", "0.1");
+		return new BunGenerator();
 	}
 
 	public final static ZGenerator _InitGenerator(@Nullable String ClassName, String GrammarClass) {

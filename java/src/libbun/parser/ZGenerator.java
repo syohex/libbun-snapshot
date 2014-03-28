@@ -101,10 +101,8 @@ public abstract class ZGenerator extends ZVisitor {
 	}
 
 	public final void SetDefinedFunc(ZFunc Func) {
-		this.DefinedFuncMap.put(Func.GetSignature(), Func);
-	}
 
-	public final void SetAsmMacro(ZNameSpace NameSpace, String Symbol, String LibName, String MacroText, ZFuncType MacroType) {
+		this.DefinedFuncMap.put(Func.GetSignature(), Func);
 	}
 
 	private String NameConverterFunc(ZType FromType, ZType ToType) {

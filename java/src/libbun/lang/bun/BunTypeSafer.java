@@ -341,7 +341,8 @@ public class BunTypeSafer extends ZTypeChecker {
 
 	@Override public void VisitGetterNode(ZGetterNode Node) {
 		this.CheckTypeAt(Node, ZGetterNode._Recv, ZType.VarType);
-		if(!Node.RecvNode().IsUntyped()) {
+		@Var ZNode RecvNode = Node.RecvNode();
+		if(!RecvNode.IsUntyped()) {
 			@Var ZType FieldType = this.LookupFieldType(Node.GetNameSpace(), Node.GetAstType(ZGetterNode._Recv), Node.GetName());
 			if(FieldType.IsVoidType()) {
 				this.ReturnNode(this.UndefinedFieldNode(Node, Node.GetName()));
@@ -349,6 +350,16 @@ public class BunTypeSafer extends ZTypeChecker {
 			}
 			this.ReturnTypeNode(Node, FieldType);
 			return;
+		}
+		if(RecvNode instanceof ZGetNameNode) {
+			@Var String Symbol = ((ZGetNameNode)RecvNode).GetName() + "." + Node.GetName();
+			@Var ZNode VarNode = Node.GetNameSpace().GetSymbol(Symbol);
+			if(VarNode instanceof ZAsmNode) {
+				((ZGetNameNode) RecvNode).GivenName = Symbol;
+				((ZGetNameNode) RecvNode).ResolvedNode = VarNode;
+				this.ReturnTypeNode(RecvNode, VarNode.Type);
+				return;
+			}
 		}
 		this.ReturnTypeNode(Node, ZType.VarType);
 	}
@@ -425,7 +436,7 @@ public class BunTypeSafer extends ZTypeChecker {
 			@Var String Symbol = ((ZGetNameNode)RecvNode).GetName();
 			@Var String FuncName = Symbol + "." + Node.MethodName();
 			@Var int FuncParamSize = Node.GetListSize();
-			@Var ZFunc Func = this.LookupFunc(NameSpace, FuncName, Node.GetAstType(ZMethodCallNode._Recv+1), FuncParamSize);
+			@Var ZFunc Func = this.LookupFunc(NameSpace, FuncName, Node.GetAstType(ZMethodCallNode._NameInfo+1), FuncParamSize);
 			if(Func != null) {
 				@Var ZListNode FuncCallNode = Node.ToFuncCallNode(this, Func, null);
 				this.ReturnNode(this.TypeListNodeAsFuncCall(FuncCallNode, Func.GetFuncType()));
@@ -436,8 +447,8 @@ public class BunTypeSafer extends ZTypeChecker {
 				this.ReturnTypeNode(Node, ZType.VarType);
 				return;
 			}
-			LibZen._PrintLine("FIXME: undefined function call:" + FuncName);
-			//TODO: undefined function
+			//			LibZen._PrintLine("FIXME: undefined function call:" + FuncName);
+			//			//TODO: undefined function
 		}
 		this.ReturnTypeNode(Node, ZType.VarType);
 	}
@@ -861,22 +872,9 @@ public class BunTypeSafer extends ZTypeChecker {
 	private ZFunc LookupFunc(ZNameSpace NameSpace, String FuncName, ZType RecvType, int FuncParamSize) {
 		@Var String Signature = ZFunc._StringfySignature(FuncName, FuncParamSize, RecvType);
 		@Var ZFunc Func = this.Generator.GetDefinedFunc(Signature);
+		//System.out.println("LookupFunc: " + Func + " by " + Signature);
 		if(Func != null) {
 			return Func;
-		}
-		if(RecvType.IsIntType()) {
-			Signature = ZFunc._StringfySignature(FuncName, FuncParamSize, ZType.FloatType);
-			Func = this.Generator.GetDefinedFunc(Signature);
-			if(Func != null) {
-				return Func;
-			}
-		}
-		if(RecvType.IsFloatType()) {
-			Signature = ZFunc._StringfySignature(FuncName, FuncParamSize, ZType.IntType);
-			Func = this.Generator.GetDefinedFunc(Signature);
-			if(Func != null) {
-				return Func;
-			}
 		}
 		RecvType = RecvType.GetSuperType();
 		while(RecvType != null) {

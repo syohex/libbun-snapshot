@@ -11,7 +11,7 @@ public class BunDefineNamePatternFunction extends ZMatchFunction {
 
 	@Override public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
 		@Var ZToken NameToken = TokenContext.ParseLargeToken();
-		System.out.println("'"+ NameToken.GetText() + "'");
+		//System.out.println("'"+ NameToken.GetText() + "'");
 		return new ZGetNameNode(ParentNode, NameToken, NameToken.GetText());
 	}
 

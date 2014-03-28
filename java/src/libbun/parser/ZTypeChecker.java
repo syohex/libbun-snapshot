@@ -214,22 +214,14 @@ public abstract class ZTypeChecker extends ZVisitor {
 		//		}
 	}
 
-	public final boolean TypeCheckNodeList(ZListNode List) {
-		if(this.IsVisitable()) {
-			@Var boolean AllTyped = true;
-			@Var int i = 0;
-			while(i < List.GetListSize()) {
-				@Var ZNode SubNode = List.GetListAt(i);
-				SubNode = this.CheckType(SubNode, ZType.VarType);
-				List.SetListAt(i, SubNode);
-				if(SubNode.IsUntyped()) {
-					AllTyped = false;
-				}
-				i = i + 1;
-			}
-			return AllTyped;
+	public final void TypeCheckNodeList(ZListNode List) {
+		@Var int i = 0;
+		while(i < List.GetListSize()) {
+			@Var ZNode SubNode = List.GetListAt(i);
+			SubNode = this.CheckType(SubNode, ZType.VarType);
+			List.SetListAt(i, SubNode);
+			i = i + 1;
 		}
-		return false;
 	}
 
 	public final ZNode TypeListNodeAsFuncCall(ZListNode FuncNode, ZFuncType FuncType) {

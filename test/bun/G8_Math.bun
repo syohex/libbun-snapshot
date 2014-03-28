@@ -1,6 +1,9 @@
 require math;
 
 export function main() {
-	println("#sin(0.1): " + sin(0.1));
+	println("#pi: " + Math.PI);
+	println("#sin(0.1): " + Math.sin(0.1));
+	assert(Math.PI > 3.1415);
+	assert(Math.PI < 3.1416);
 }
 
