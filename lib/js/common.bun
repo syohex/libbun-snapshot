@@ -1,31 +1,31 @@
-asm macro assert  "console.assert($[0], $[1])": Func<boolean,String,void>;
-asm macro print   "console.log($[0])" : Func<String,void>;
-asm macro println "console.log($[0])" : Func<String,void>;
+define assert  "console.assert($[0], $[1])": Func<boolean,String,void>;
+define print   "console.log($[0])" : Func<String,void>;
+define println "console.log($[0])" : Func<String,void>;
 
 // converter
-asm macro _ "$[0]" : Func<int,float>;
-asm macro _ "($[0]|0)" : Func<float,int>;
-asm macro _ "$[0].toString()" : Func<boolean,String>;
-asm macro _ "($[0]).toString()" : Func<int,String>;
-asm macro _ "($[0]).toString()" : Func<float,String>;
-asm macro _ "parseInt($[0])" : Func<String,int>;
-asm macro _ "parseFloat($[0])" : Func<String,float>;
-asm macro _ "$[0].toString()" : Func<α[],String>;
-asm macro _ "$[0].toString()" : Func<Object,String>;
+define _ "$[0]" : Func<int,float>;
+define _ "($[0]|0)" : Func<float,int>;
+define _ "$[0].toString()" : Func<boolean,String>;
+define _ "($[0]).toString()" : Func<int,String>;
+define _ "($[0]).toString()" : Func<float,String>;
+define _ "parseInt($[0])" : Func<String,int>;
+define _ "parseFloat($[0])" : Func<String,float>;
+define _ "$[0].toString()" : Func<α[],String>;
+define _ "$[0].toString()" : Func<Object,String>;
 
 // String
-//asm macro + "zstr($[0]) + zstr($[1])" : Func<String,String,String>;
-asm macro size "$[0].length" : Func<String,int>;
-asm macro substring "$[0].substring($[1])" : Func<String,int,String>;
-asm macro substring "$[0].substring($[1],$[2])" : Func<String,int,int,String>;
-asm macro indexOf "$[0].indexOf($[1])" : Func<String,String,int>;
-asm macro indexOf "$[0].indexOf($[1], $[2])" : Func<String,int,String,int>;
-asm macro equals "($[0] === $[1])" : Func<String,String,boolean>;
-asm macro startsWith "($[0].lastIndexOf($[1], 0) === 0)" : Func<String,String,boolean>;
-asm macro endsWith "($[0].slice(- $[1].length) === $[1])" : Func<String,String,boolean>;
+//define + "zstr($[0]) + zstr($[1])" : Func<String,String,String>;
+define size "$[0].length" : Func<String,int>;
+define substring "$[0].substring($[1])" : Func<String,int,String>;
+define substring "$[0].substring($[1],$[2])" : Func<String,int,int,String>;
+define indexOf "$[0].indexOf($[1])" : Func<String,String,int>;
+define indexOf "$[0].indexOf($[1], $[2])" : Func<String,int,String,int>;
+define equals "($[0] === $[1])" : Func<String,String,boolean>;
+define startsWith "($[0].lastIndexOf($[1], 0) === 0)" : Func<String,String,boolean>;
+define endsWith "($[0].slice(- $[1].length) === $[1])" : Func<String,String,boolean>;
 
 // Array
-asm macro size "$[0].length" : Func<α[],int>;
-asm macro clear "$[0].splice(0, $[0].length)" : Func<α[],int,void>;
-asm macro add "$[0].push($[1])" : Func<α[],α,void>;
-asm macro add "$[0].splice($[1], 0, $[2])" : Func<α[],int,α,void>;
+define size "$[0].length" : Func<α[],int>;
+define clear "$[0].splice(0, $[0].length)" : Func<α[],int,void>;
+define add "$[0].push($[1])" : Func<α[],α,void>;
+define add "$[0].splice($[1], 0, $[2])" : Func<α[],int,α,void>;
