@@ -235,6 +235,10 @@ public class LibZen {
 		return Character.isLetter(ch) || ch == '_' || ch > 255;
 	}
 
+	public final static boolean _IsDigitOrLetter(char ch) {
+		return _IsDigit(ch) || _IsLetter(ch);
+	}
+
 	//	public final static boolean _EqualsString(String s, String s2) {
 	//		return s.equals(s2);
 	//	}
