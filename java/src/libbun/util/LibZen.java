@@ -528,7 +528,7 @@ public class LibZen {
 		GenMap.put("py", libbun.encode.PythonGenerator.class);
 		GenMap.put("rb", libbun.encode.RubyGenerator.class);
 
-		GenMap.put("zen", libbun.encode.ZenGenerator.class);
+		GenMap.put("zen", libbun.encode.BunGenerator.class);
 
 		//
 		GenMap.put("ssac", libbun.encode.SSACGenerator.class);
