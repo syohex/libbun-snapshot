@@ -1,27 +1,29 @@
 define assert  "(assert $[0])": Func<boolean,String,void>;
-define print   "(format t \"~a\" $[0])" : Func<String,void>;
-define println "(format t \"~a~%\" $[0])" : Func<String,void>;
+define print   "~(format t \"~a\" $[0])" : Func<String,void>;
+define println "~(format t \"~a~%\" $[0])" : Func<String,void>;
 
 // converter
 define _ "(coerce $[0] 'float)" : Func<int,float>;
 define _ "(round $[0])" : Func<float,int>;
-define _ "(format nil \"~a\" $[0])" : Func<boolean,String>;
-define _ "(format nil \"~a\" $[0])" : Func<int,String>;
-define _ "(format nil \"~a\" $[0])" : Func<float,String>;
+define _ "~(format nil \"~a\" $[0])" : Func<boolean,String>;
+define _ "~(format nil \"~a\" $[0])" : Func<int,String>;
+define _ "~(format nil \"~a\" $[0])" : Func<float,String>;
+define _ "~(format nil \"~a\" $[0])" : Func<int[],String>;
+define _ "~(format nil \"~a\" $[0])" : Func<Object,String>;
 
 // String
-define + "(concatenate 'string $[0] $[1])" : Func<String,String,String>;
+define + "~(format nil \"~a~a\" $[0] $[1])" : Func<String,String,String>;
 define size "(length $[0])" : Func<String,int>;
 define substring "(subseq $[0] $[1])" : Func<String,int,String>;
 define substring "(subseq $[0] $[1] $[2])" : Func<String,int,int,String>;
 define indexOf "(or (search $[1] $[0]) -1)" : Func<String,String,int>;
 define indexOf "(or (search $[2] $[0] :start2 $[1]) -1)" : Func<String,int,String,int>;
 define equals "(string= $[0] $[1])" : Func<String,String,boolean>;
-define startsWith "(string= (subseq $[0] 0 (length $[1])) $[1])" : Func<String,String,boolean>;
+define startsWith "(and (>= (length $[0]) (length $[1])) (string= (subseq $[0] 0 (length $[1])) $[1]))" : Func<String,String,boolean>;
 define endsWith "(let ((spos (- (length $[0]) (length $[1])))) (and (>= spos 0) (string= (subseq $[0] spos (length $[0])) $[1])))" : Func<String,String,boolean>;
 
 // Array
 define size "(length $[0])" : Func<α[],int>;
 define clear "(setf (nthcdr $[1] $[0]) nil)" : Func<α[],int,void>;
-define add "(append $[0] (list $[1]))" : Func<α[],α,void>;
-define add "(progn (push $[2] (cdr (nthcdr $[1] $[0]))) $[0])" : Func<α[],int,α,void>;
+define add "(setf $[0] (append $[0] (list $[1])))" : Func<α[],α,void>;
+define add "(progn (push $[2] (cdr (nthcdr (1- $[1]) $[0]))) $[0])" : Func<α[],int,α,void>;

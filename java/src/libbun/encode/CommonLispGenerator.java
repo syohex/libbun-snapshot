@@ -26,19 +26,26 @@ package libbun.encode;
 
 import libbun.parser.ZToken;
 import libbun.parser.ast.ZAndNode;
+import libbun.parser.ast.ZArrayLiteralNode;
 import libbun.parser.ast.ZBinaryNode;
 import libbun.parser.ast.ZBlockNode;
+import libbun.parser.ast.ZBreakNode;
 import libbun.parser.ast.ZComparatorNode;
 import libbun.parser.ast.ZErrorNode;
 import libbun.parser.ast.ZFuncCallNode;
 import libbun.parser.ast.ZFuncNameNode;
 import libbun.parser.ast.ZFunctionNode;
+import libbun.parser.ast.ZGetIndexNode;
+import libbun.parser.ast.ZGroupNode;
 import libbun.parser.ast.ZIfNode;
 import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZNode;
+import libbun.parser.ast.ZNotNode;
 import libbun.parser.ast.ZOrNode;
 import libbun.parser.ast.ZReturnNode;
+import libbun.parser.ast.ZSetIndexNode;
 import libbun.parser.ast.ZSetNameNode;
+import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
 import libbun.parser.ast.ZUnaryNode;
 import libbun.parser.ast.ZVarBlockNode;
@@ -46,9 +53,10 @@ import libbun.parser.ast.ZWhileNode;
 import libbun.type.ZFuncType;
 import libbun.type.ZType;
 import libbun.util.Var;
+import libbun.util.ZenMethod;
 
 public class CommonLispGenerator extends ZSourceGenerator {
-
+	private boolean hasMain = false;
 	public CommonLispGenerator() {
 		super("cl", "CommonLisp");
 
@@ -71,34 +79,6 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		this.SetNativeType(ZType.IntType, "int");
 		this.SetNativeType(ZType.FloatType, "float");
 		this.SetNativeType(ZType.StringType, "str");
-
-		// FIXME: lib/cl/common.zen
-		//		this.SetMacro("assert", "assert $[0], $[1]", ZType.VoidType, ZType.BooleanType, ZType.StringType);
-		//		this.SetMacro("print", "print $[0],", ZType.VoidType, ZType.StringType);
-		//		this.SetMacro("println", "print $[0]", ZType.VoidType, ZType.StringType);
-		//
-		//		// Converter
-		//		this.SetConverterMacro("float($[0])", ZType.FloatType, ZType.IntType);
-		//		this.SetConverterMacro("int($[0])", ZType.IntType, ZType.FloatType);
-		//		this.SetConverterMacro("('true' if $[0] else 'false')", ZType.StringType, ZType.BooleanType);
-		//		this.SetConverterMacro("str($[0])", ZType.StringType, ZType.IntType);
-		//		this.SetConverterMacro("str($[0])", ZType.StringType, ZType.FloatType);
-		//
-		//		// String
-		//		this.SetMacro("size", "len($[0])", ZType.IntType, ZType.StringType);
-		//		this.SetMacro("substring", "$[0][$[1]:]", ZType.StringType, ZType.StringType, ZType.IntType);
-		//		this.SetMacro("substring", "$[0][$[1]:$[2]]", ZType.StringType, ZType.StringType, ZType.IntType, ZType.IntType);
-		//		this.SetMacro("indexOf", "$[0].find($[1])", ZType.IntType, ZType.StringType, ZType.StringType);
-		//		this.SetMacro("indexOf", "$[0].find($[1], $[2])", ZType.IntType, ZType.StringType, ZType.StringType, ZType.IntType);
-		//		this.SetMacro("equals", "$[0] == $[1]", ZType.BooleanType, ZType.StringType, ZType.StringType);
-		//		this.SetMacro("startsWith", "$[0].startswith($[1])", ZType.BooleanType, ZType.StringType, ZType.StringType);
-		//		this.SetMacro("endsWith", "$[0].endswith($[1])", ZType.BooleanType, ZType.StringType, ZType.StringType);
-		//
-		//		// Array
-		//		this.SetMacro("size", "len($[0])", ZType.IntType, ZGenericType._ArrayType);
-		//		this.SetMacro("clear", "LibZen_ArrayClear($[0], $[1])", ZType.VoidType, ZGenericType._ArrayType, ZType.IntType);
-		//		this.SetMacro("add", "$[0].append($[1])", ZType.VoidType, ZGenericType._ArrayType, ZType.VarType);
-
 	}
 
 	@Override public void VisitSetNameNode(ZSetNameNode Node) {
@@ -116,6 +96,24 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
+	@Override
+	protected void GenerateSurroundCode(ZNode Node) {
+		this.GenerateCode(null, Node);
+	}
+
+	private String GetBinaryOperator(ZToken Token) {
+		if(Token.EqualsText("!=")) {
+			return "!=";
+		} else if(Token.EqualsText("==")) {
+			return "equal";
+		} else if(Token.EqualsText("%")) {
+			return "mod";
+		} else if(Token.EqualsText("/")) {
+			return "/";
+		}
+		return Token.GetText();
+	}
+
 	@Override public void VisitBinaryNode(ZBinaryNode Node) {
 		this.CurrentBuilder.Append("(");
 		this.CurrentBuilder.Append(Node.SourceToken.GetText());
@@ -124,13 +122,6 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(" ");
 		this.GenerateCode(null, Node.RightNode());
 		this.CurrentBuilder.Append(")");
-	}
-
-	private String GetBinaryOperator(ZToken Token) {
-		if(Token.EqualsText("!=")) {
-			return "/=";
-		}
-		return Token.GetText();
 	}
 
 	@Override public void VisitComparatorNode(ZComparatorNode Node) {
@@ -302,11 +293,9 @@ public class CommonLispGenerator extends ZSourceGenerator {
 			this.GenerateCode(null, Node.BlockNode());
 			this.CurrentBuilder.Append(")");
 			if(Node.IsExport) {
-				//				this.CurrentBuilder.Append(Node.FuncName, " = ", FuncType.StringfySignature(Node.FuncName));
-				//				this.CurrentBuilder.AppendLineFeed();
-				//				if(Node.FuncName.equals("main")) {
-				//					this.HasMainFunction = true;
-				//				}
+				if(Node.FuncName().equals("main")) {
+					this.hasMain = true;
+				}
 			}
 			if(this.IsMethod(Node.FuncName(), FuncType)) {
 				//				this.CurrentBuilder.Append(this.NameMethod(FuncType.GetRecvType(), Node.FuncName));
@@ -337,6 +326,65 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		if(Node.HasFinallyBlockNode()) {
 			this.GenerateCode(null, Node.FinallyBlockNode());
 		}
+		this.CurrentBuilder.Append(")");
+	}
+
+
+	@Override @ZenMethod protected void Finish(String FileName) {
+		if(this.hasMain) {
+			this.CurrentBuilder.AppendNewLine("(main)");
+			this.CurrentBuilder.AppendLineFeed();
+		}
+	}
+
+	@Override public void VisitGroupNode(ZGroupNode Node) {
+		this.GenerateCode2("", null, Node.ExprNode(), "");
+	}
+
+	@Override public void VisitNotNode(ZNotNode Node) {
+		this.CurrentBuilder.Append("(");
+		this.CurrentBuilder.AppendToken(this.NotOperator);
+		this.GenerateSurroundCode(Node.RecvNode());
+		this.CurrentBuilder.Append(") ");
+	}
+
+	@Override public void VisitLetNode(ZLetVarNode Node) {
+		this.CurrentBuilder.AppendNewLine("(setf *", Node.GlobalName, "*");
+		this.GenerateTypeAnnotation(Node.DeclType());
+		this.CurrentBuilder.Append(" ");
+		this.GenerateCode(null, Node.InitValueNode());
+		this.CurrentBuilder.Append(")");
+	}
+
+	@Override public void VisitThrowNode(ZThrowNode Node) {
+		this.CurrentBuilder.Append("(throw nil ");
+		this.GenerateCode(null, Node.ExprNode());
+		this.CurrentBuilder.Append(")");
+	}
+
+	@Override public void VisitBreakNode(ZBreakNode Node) {
+		this.CurrentBuilder.Append("(return)");
+	}
+
+	@Override public void VisitArrayLiteralNode(ZArrayLiteralNode Node) {
+		this.VisitListNode("#(", Node, ")");
+	}
+
+	@Override public void VisitGetIndexNode(ZGetIndexNode Node) {
+		this.CurrentBuilder.Append("(aref ");
+		this.GenerateCode(null, Node.RecvNode());
+		this.CurrentBuilder.Append(" ");
+		this.GenerateCode(null, Node.IndexNode());
+		this.CurrentBuilder.Append(")");
+	}
+
+	@Override public void VisitSetIndexNode(ZSetIndexNode Node) {
+		this.CurrentBuilder.Append("(setf (aref ");
+		this.GenerateCode(null, Node.RecvNode());
+		this.CurrentBuilder.Append(" ");
+		this.GenerateCode(null, Node.IndexNode());
+		this.CurrentBuilder.Append(") ");
+		this.GenerateCode(null, Node.ExprNode());
 		this.CurrentBuilder.Append(")");
 	}
 }
