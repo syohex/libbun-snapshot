@@ -583,7 +583,7 @@ public class BunTypeSafer extends ZTypeChecker {
 		this.ReturnTypeNode(Node, ZType.BooleanType);
 	}
 
-	private void VisitVarDeclNode(ZNameSpace NameSpace, ZLetVarNode Node1) {
+	protected void VisitVarDeclNode(ZNameSpace NameSpace, ZLetVarNode Node1) {
 		@Var @Nullable ZLetVarNode CurNode = Node1;
 		while(CurNode != null) {
 			CurNode.InitValueNode();
