@@ -388,8 +388,7 @@ public class AsmJavaGenerator extends ZGenerator {
 
 	@Override public void VisitArrayLiteralNode(ZArrayLiteralNode Node) {
 		if(Node.IsUntyped()) {
-			ZLogger._LogError(Node.SourceToken, "ambigious array");
-			this.AsmBuilder.visitInsn(Opcodes.ACONST_NULL);
+			this.VisitErrorNode(new ZErrorNode(Node, "ambigious array"));
 		}
 		else {
 			Class<?> ArrayClass = LibAsm.AsArrayClass(Node.Type);
@@ -405,8 +404,7 @@ public class AsmJavaGenerator extends ZGenerator {
 
 	@Override public void VisitMapLiteralNode(ZMapLiteralNode Node) {
 		if(Node.IsUntyped()) {
-			ZLogger._LogError(Node.SourceToken, "ambigious map");
-			this.AsmBuilder.visitInsn(Opcodes.ACONST_NULL);
+			this.VisitErrorNode(new ZErrorNode(Node, "ambigious map"));
 		}
 		else {
 			String Owner = Type.getInternalName(ZObjectMap.class);
@@ -442,8 +440,7 @@ public class AsmJavaGenerator extends ZGenerator {
 
 	@Override public void VisitNewObjectNode(ZNewObjectNode Node) {
 		if(Node.IsUntyped()) {
-			ZLogger._LogError(Node.SourceToken, "no class for new operator");
-			this.AsmBuilder.visitInsn(Opcodes.ACONST_NULL);
+			this.VisitErrorNode(new ZErrorNode(Node, "no class for new operator"));
 		}
 		else {
 			String ClassName = Type.getInternalName(this.GetJavaClass(Node.Type));
@@ -459,8 +456,7 @@ public class AsmJavaGenerator extends ZGenerator {
 				this.AsmBuilder.visitMethodInsn(INVOKESPECIAL, ClassName, "<init>", Type.getConstructorDescriptor(jMethod));
 			}
 			else {
-				ZLogger._LogError(Node.SourceToken, "no constructor: " + Node.Type);
-				this.AsmBuilder.visitInsn(Opcodes.ACONST_NULL);
+				this.VisitErrorNode(new ZErrorNode(Node, "no constructor: " + Node.Type));
 			}
 		}
 	}
@@ -649,8 +645,7 @@ public class AsmJavaGenerator extends ZGenerator {
 			}
 		}
 		else {
-			ZLogger._LogError(Node.SourceToken, "not function");
-			this.AsmBuilder.visitInsn(Opcodes.ACONST_NULL);
+			this.VisitErrorNode(new ZErrorNode(Node, "not function"));
 		}
 	}
 
