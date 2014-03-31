@@ -91,4 +91,4 @@ GSYMS
 #############
 ## Playground Server Edition
 #############
-playgroundserver/node_modules/
+playground-server/node_modules/
