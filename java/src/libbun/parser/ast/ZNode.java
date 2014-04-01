@@ -51,7 +51,7 @@ public abstract class ZNode {
 
 	public ZNode(ZNode ParentNode, ZToken SourceToken, int Size) {
 		assert(this != ParentNode);
-		ParentNode.SetChild(this, ZNode._EnforcedParent);
+		this.ParentNode = ParentNode;
 		this.SourceToken = SourceToken;
 		if(Size > 0) {
 			this.AST = LibZen._NewNodeArray(Size);
