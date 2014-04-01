@@ -66,7 +66,7 @@ public class ZBlockNode extends ZListNode {
 		while(i < this.GetAstSize()) {
 			if(this.AST[i] == OldNode) {
 				this.AST[i] = NewNode;
-				NewNode.ParentNode = this;
+				this.SetChild(NewNode, ZNode._EnforcedParent);
 				if(NewNode.HasUntypedNode()) {
 					this.HasUntyped = true;
 				}

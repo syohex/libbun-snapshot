@@ -12,14 +12,14 @@ public class ZDesugarNode extends ZSugarNode {
 	public ZDesugarNode(ZNode OriginalNode, ZNode DesugaredNode) {
 		super(OriginalNode.ParentNode, null, 1);
 		this.OriginalNode = OriginalNode;
-		OriginalNode.ParentNode = this;
+		this.SetChild(OriginalNode, ZNode._EnforcedParent);
 		this.SetNode(0, DesugaredNode);
 	}
 
 	public ZDesugarNode(ZNode OriginalNode, ZNode[] Nodes) {
 		super(OriginalNode.ParentNode, null, Nodes.length);
 		this.OriginalNode = OriginalNode;
-		OriginalNode.ParentNode = this;
+		this.SetChild(OriginalNode, ZNode._EnforcedParent);
 		@Var int i = 0;
 		while(i < Nodes.length) {
 			this.SetNode(i, Nodes[i]);
