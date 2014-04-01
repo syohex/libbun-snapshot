@@ -33,6 +33,9 @@ public class NumberLiteralTokenFunction extends ZTokenFunction {
 						SourceContext.MoveNext();
 					}
 				}
+				if(SourceContext.HasChar() && !LibZen._IsDigit(SourceContext.GetCurrentChar())) {
+					SourceContext.LogWarning(StartIndex, "exponent has no digits");
+				}
 				NumberLiteralTokenFunction._ParseDigit(SourceContext);
 			}
 			SourceContext.Tokenize("$FloatLiteral$", StartIndex, SourceContext.GetPosition());
