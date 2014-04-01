@@ -1,0 +1,29 @@
+language: java
+
+jdk:
+    - openjdk6
+
+python:
+    - "2.7"
+
+ruby:
+    - "1.9"
+
+node_js:
+    - "0.10"
+
+before_install:
+    - "npm install -g typescript"
+
+before_script:
+    - "ant"
+
+script: "sh ./test/bin/test_python || echo"
+
+notifications:
+    email:
+        - imasahiro9@gmail.com
+        - matsumura.t.lab@gmail.com
+        - kkuramitsu@gmail.com
+    on_success: change
+    on_failure: always
