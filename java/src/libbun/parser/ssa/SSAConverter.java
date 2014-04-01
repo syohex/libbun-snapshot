@@ -207,6 +207,7 @@ public class SSAConverter extends ZASTTransformer {
 			PHINode phi = JNode.ListAt(i);
 			ZNode node;
 			if (JNode.isJoinNodeOfRepeatNode()) {
+				//this.State.Prev != null && this.GetParentJoinNode().ParentNode instanceof ZWhileNode
 				node = phi.GetArgument(phi.Args.size() - 1);
 			} else {
 				node = phi.GetArgument(this.GetCurrentBranchIndex());
@@ -269,6 +270,7 @@ public class SSAConverter extends ZASTTransformer {
 				And.SetNode(ZBinaryNode._Right, CondNode);
 				And.Type = ZType.BooleanType;
 				CondNode = And;
+				this.ReplaceNodeWith(TargetNode, phi.VarRef, phi);
 				this.UpdateVariable(phi.VarRef);
 				i = i - 1;
 			}
