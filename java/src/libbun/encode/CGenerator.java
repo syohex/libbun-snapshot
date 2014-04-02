@@ -172,7 +172,13 @@ public class CGenerator extends ZSourceGenerator {
 	}
 
 	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
-		this.GenerateCode(null, Node.FunctorNode());
+		@Var ZFuncNameNode FuncNameNode = Node.FuncNameNode();
+		if(FuncNameNode != null) {
+			this.GenerateFuncName(FuncNameNode);
+		}
+		else {
+			this.GenerateCode(null, Node.FunctorNode());
+		}
 		this.VisitListNode("(", Node, ")");
 	}
 
