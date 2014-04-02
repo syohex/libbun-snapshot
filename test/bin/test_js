@@ -1,0 +1,4 @@
+#!/bin/bash
+
+OUTDIR=test/w TARGET=js CHECK=node test/bin/buntest test/bun/*.bun
+
