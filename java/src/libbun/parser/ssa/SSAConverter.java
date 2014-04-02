@@ -30,7 +30,7 @@ public class SSAConverter extends ZASTTransformer {
 	private static final int IfElseBranchIndex = 1;
 	private static final int WhileBodyBranchIndex = IfElseBranchIndex;
 
-	public SSATransformerState State;
+	public SSAConverterState State;
 	public ZArray<Variable> LocalVariables;
 	public ValueReplacer Replacer;
 	public ZMap<Integer> ValueNumber;
@@ -40,7 +40,7 @@ public class SSAConverter extends ZASTTransformer {
 	public SSAConverter() {
 		this.LocalVariables = null;
 		this.Replacer = new ValueReplacer();
-		this.State = new SSATransformerState(null, -1);
+		this.State = new SSAConverterState(null, -1);
 		this.ValueNumber = new ZMap<Integer>(ZType.IntType);
 		this.CurVariableTableBefore = new HashMap<ZNode, ZArray<Variable>>();
 		this.CurVariableTableAfter = new HashMap<ZNode, ZArray<Variable>>();
@@ -88,7 +88,7 @@ public class SSAConverter extends ZASTTransformer {
 		return this.CurVariableTableAfter.get(Node);
 	}
 
-	private void PushState(SSATransformerState State) {
+	private void PushState(SSAConverterState State) {
 		State.SetPrev(this.State);
 		this.State = State;
 	}
@@ -207,6 +207,7 @@ public class SSAConverter extends ZASTTransformer {
 			PHINode phi = JNode.ListAt(i);
 			ZNode node;
 			if (JNode.isJoinNodeOfRepeatNode()) {
+				//this.State.Prev != null && this.GetParentJoinNode().ParentNode instanceof ZWhileNode
 				node = phi.GetArgument(phi.Args.size() - 1);
 			} else {
 				node = phi.GetArgument(this.GetCurrentBranchIndex());
@@ -269,6 +270,7 @@ public class SSAConverter extends ZASTTransformer {
 				And.SetNode(ZBinaryNode._Right, CondNode);
 				And.Type = ZType.BooleanType;
 				CondNode = And;
+				this.ReplaceNodeWith(TargetNode, phi.VarRef, phi);
 				this.UpdateVariable(phi.VarRef);
 				i = i - 1;
 			}
@@ -305,7 +307,7 @@ public class SSAConverter extends ZASTTransformer {
 
 	@Override
 	public void VisitIfNode(ZIfNode Node) {
-		this.PushState(new SSATransformerState(new JoinNode(Node), 0));
+		this.PushState(new SSAConverterState(new JoinNode(Node), 0));
 		this.RecordListOfVariablesBeforeVisit(Node);
 		Node.CondNode().Accept(this);
 		this.SetCurrentBranchIndex(IfThenBranchIndex);
@@ -326,7 +328,7 @@ public class SSAConverter extends ZASTTransformer {
 
 	@Override
 	public void VisitWhileNode(ZWhileNode Node) {
-		this.PushState(new SSATransformerState(new JoinNode(Node), 0));
+		this.PushState(new SSAConverterState(new JoinNode(Node), 0));
 		this.RecordListOfVariablesBeforeVisit(Node);
 		Node.CondNode().Accept(this);
 		this.RecordListOfVariablesBeforeVisit(Node.BlockNode());
