@@ -195,6 +195,26 @@ public class ZSourceGenerator extends ZGenerator {
 	//		return Name + "__" + Index;
 	//	}
 
+	protected void GenerateName(ZNode Node) {
+		if(Node instanceof ZGetNameNode) {
+			@Var ZGetNameNode NameNode = (ZGetNameNode)Node;
+			@Var String Name = NameNode.GetName();
+			if(NameNode.ResolvedNode != null) {
+				@Var String SafeName = this.ReservedNameMap.GetOrNull(Name);
+				if(SafeName != null) {
+					Name = SafeName;
+				}
+				@Var int NameIndex = Node.GetNameSpace().GetNameIndex(Name);
+				if(NameIndex > 0) {
+					Name = Name + "__" + NameIndex;
+				}
+			}
+			this.CurrentBuilder.Append(Name);
+			return;
+		}
+		this.CurrentBuilder.Append(Node.toString());
+	}
+
 	public String NameLocalVariable(ZNameSpace NameSpace, String Name) {
 		@Var String SafeName = this.ReservedNameMap.GetOrNull(Name);
 		if(SafeName != null) {

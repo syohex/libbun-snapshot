@@ -96,8 +96,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override
-	protected void GenerateSurroundCode(ZNode Node) {
+	@Override protected void GenerateSurroundCode(ZNode Node) {
 		this.GenerateCode(null, Node);
 	}
 
