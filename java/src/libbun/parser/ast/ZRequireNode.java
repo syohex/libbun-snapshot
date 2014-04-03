@@ -7,7 +7,7 @@ import libbun.util.Var;
 public class ZRequireNode extends ZTopLevelNode {
 	public final static int _Path = 0;
 
-	public ZRequireNode(ZNode ParentNode) {
+	public ZRequireNode(BNode ParentNode) {
 		super(ParentNode, null, 1);
 	}
 

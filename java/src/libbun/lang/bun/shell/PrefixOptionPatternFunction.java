@@ -1,6 +1,6 @@
 package libbun.lang.bun.shell;
 
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.util.LibZen;
 import libbun.util.Var;
 import libbun.util.ZMatchFunction;
@@ -11,11 +11,11 @@ import libbun.parser.ZTokenContext;
 public class PrefixOptionPatternFunction extends ZMatchFunction {
 	public final static String _PatternName = "$PrefixOption$";
 
-	@Override public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
+	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var ZToken Token = TokenContext.GetToken(ZTokenContext._MoveNext);
 		@Var String Symbol = Token.GetText();
 		if(Symbol.equals(ShellUtils._trace)) {
-			@Var ZNode CommandNode = TokenContext.ParsePattern(ParentNode, CommandSymbolPatternFunction._PatternName, ZTokenContext._Required);
+			@Var BNode CommandNode = TokenContext.ParsePattern(ParentNode, CommandSymbolPatternFunction._PatternName, ZTokenContext._Required);
 			if(CommandNode.IsErrorNode()) {
 				return CommandNode;
 			}
@@ -23,11 +23,11 @@ public class PrefixOptionPatternFunction extends ZMatchFunction {
 			return Node.AppendPipedNextNode((CommandNode) CommandNode);
 		}
 		if(Symbol.equals(ShellUtils._timeout) && LeftNode == null) {
-			@Var ZNode TimeNode = this.ParseTimeout(ParentNode, TokenContext);
+			@Var BNode TimeNode = this.ParseTimeout(ParentNode, TokenContext);
 			if(TimeNode.IsErrorNode()) {
 				return TimeNode;
 			}
-			@Var ZNode CommandNode = TokenContext.ParsePattern(ParentNode, CommandSymbolPatternFunction._PatternName, ZTokenContext._Required);
+			@Var BNode CommandNode = TokenContext.ParsePattern(ParentNode, CommandSymbolPatternFunction._PatternName, ZTokenContext._Required);
 			if(CommandNode.IsErrorNode()) {
 				return CommandNode;
 			}
@@ -38,7 +38,7 @@ public class PrefixOptionPatternFunction extends ZMatchFunction {
 		return null;
 	}
 
-	public ZNode ParseTimeout(ZNode ParentNode, ZTokenContext TokenContext) {
+	public BNode ParseTimeout(BNode ParentNode, ZTokenContext TokenContext) {
 		@Var ZToken NumToken = TokenContext.GetToken(ZTokenContext._MoveNext);
 		if((NumToken instanceof ZPatternToken)) {
 			if(((ZPatternToken)NumToken).PresetPattern.PatternName.equals(("$IntegerLiteral$"))) {

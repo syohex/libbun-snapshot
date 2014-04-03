@@ -1,7 +1,7 @@
 package libbun.lang.bun.shell;
 
 import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.util.Var;
 import libbun.util.ZMatchFunction;
 import libbun.parser.ZToken;
@@ -10,7 +10,7 @@ import libbun.parser.ZTokenContext;
 public class SuffixOptionPatternFunction extends ZMatchFunction {
 	public final static String _PatternName = "$SuffixOption$";
 
-	@Override public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
+	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var ZToken Token = TokenContext.GetToken();
 		TokenContext.MoveNext();
 		@Var String OptionSymbol = Token.GetText();
@@ -20,9 +20,9 @@ public class SuffixOptionPatternFunction extends ZMatchFunction {
 		return null;
 	}
 
-	public ZNode CreateNodeAndMatchNextOption(ZNode ParentNode, ZTokenContext TokenContext, String OptionSymbol) {
+	public BNode CreateNodeAndMatchNextOption(BNode ParentNode, ZTokenContext TokenContext, String OptionSymbol) {
 		@Var CommandNode Node = new CommandNode(ParentNode, null, OptionSymbol);
-		@Var ZNode PipedNode = TokenContext.ParsePattern(ParentNode, SuffixOptionPatternFunction._PatternName, ZTokenContext._Optional);
+		@Var BNode PipedNode = TokenContext.ParsePattern(ParentNode, SuffixOptionPatternFunction._PatternName, ZTokenContext._Optional);
 		if(PipedNode != null) {
 			Node.AppendPipedNextNode((CommandNode)PipedNode);
 		}

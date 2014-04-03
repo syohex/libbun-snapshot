@@ -26,20 +26,20 @@ package libbun.parser.ast;
 
 import libbun.parser.ZVisitor;
 
-public final class ZIfNode extends ZNode {
+public final class ZIfNode extends BNode {
 	public final static int _Cond = 0;
 	public final static int _Then = 1;
 	public final static int _Else = 2;
 
-	public ZIfNode(ZNode ParentNode) {
+	public ZIfNode(BNode ParentNode) {
 		super(ParentNode, null, 3);
 	}
 
-	public final ZNode CondNode() {
+	public final BNode CondNode() {
 		return this.AST[ZIfNode._Cond ];
 	}
 
-	public final ZNode ThenNode() {
+	public final BNode ThenNode() {
 		return this.AST[ZIfNode._Then ];
 	}
 
@@ -47,7 +47,7 @@ public final class ZIfNode extends ZNode {
 		return this.AST[ZIfNode._Else ] != null;
 	}
 
-	public final ZNode ElseNode() {
+	public final BNode ElseNode() {
 		return this.AST[ZIfNode._Else ];
 	}
 

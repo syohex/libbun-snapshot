@@ -38,12 +38,12 @@ public final class ZMethodCallNode extends ZListNode {
 
 	@Field public String  GivenName = null;
 
-	public ZMethodCallNode(ZNode ParentNode, ZNode RecvNode) {
+	public ZMethodCallNode(BNode ParentNode, BNode RecvNode) {
 		super(ParentNode, null, 2);
 		this.SetNode(ZMethodCallNode._Recv, RecvNode);
 	}
 
-	public final ZNode RecvNode() {
+	public final BNode RecvNode() {
 		return this.AST[ZMethodCallNode._Recv ];
 	}
 
@@ -79,7 +79,7 @@ public final class ZMethodCallNode extends ZListNode {
 		return FuncNode;
 	}
 
-	public final ZListNode ToFuncCallNode(ZTypeChecker Gamma, ZFunc Func, @Nullable ZNode RecvNode) {
+	public final ZListNode ToFuncCallNode(ZTypeChecker Gamma, ZFunc Func, @Nullable BNode RecvNode) {
 		@Var ZListNode FuncNode = Gamma.CreateDefinedFuncCallNode(this.ParentNode, this.GetAstToken(ZMethodCallNode._NameInfo), Func);
 		FuncNode.SourceToken = this.GetAstToken(ZMethodCallNode._NameInfo);
 		if(RecvNode != null) {

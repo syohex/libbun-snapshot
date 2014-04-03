@@ -28,7 +28,7 @@ import libbun.parser.ZToken;
 import libbun.type.ZType;
 
 public final class ZTypeNode extends ZLocalDefinedNode {
-	public ZTypeNode(ZNode ParentNode, ZToken SourceToken, ZType Type) {
+	public ZTypeNode(BNode ParentNode, ZToken SourceToken, ZType Type) {
 		super(ParentNode, SourceToken, 0);
 		this.Type = Type;
 	}

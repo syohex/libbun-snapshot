@@ -1,7 +1,7 @@
 package libbun.util;
 
 import libbun.parser.ZTokenContext;
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 
 public abstract class ZMatchFunction extends ZFunction {
 	public ZMatchFunction(int TypeId, String Name) {
@@ -10,6 +10,6 @@ public abstract class ZMatchFunction extends ZFunction {
 	protected ZMatchFunction() {
 		super(0, null);
 	}
-	public abstract ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode);
+	public abstract BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode);
 }
 

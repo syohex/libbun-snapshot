@@ -3,7 +3,7 @@ package libbun.parser.ast;
 import libbun.parser.ZVisitor;
 
 
-public class ZDefaultValueNode extends ZNode {
+public class ZDefaultValueNode extends BNode {
 
 	public ZDefaultValueNode() {
 		super(null, null, 0);

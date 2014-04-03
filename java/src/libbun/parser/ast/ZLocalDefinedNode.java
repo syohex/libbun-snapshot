@@ -4,10 +4,10 @@ import libbun.parser.ZToken;
 import libbun.parser.ZVisitor;
 
 
-public abstract class ZLocalDefinedNode extends ZNode {
+public abstract class ZLocalDefinedNode extends BNode {
 
 
-	public ZLocalDefinedNode(ZNode ParentNode, ZToken SourceToken, int Size) {
+	public ZLocalDefinedNode(BNode ParentNode, ZToken SourceToken, int Size) {
 		super(ParentNode, SourceToken, Size);
 	}
 

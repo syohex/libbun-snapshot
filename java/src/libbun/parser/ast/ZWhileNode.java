@@ -28,16 +28,16 @@ import libbun.parser.ZVisitor;
 import libbun.type.ZType;
 import libbun.util.Var;
 
-public final class ZWhileNode extends ZNode {
+public final class ZWhileNode extends BNode {
 	public final static int _Cond  = 0;
 	public final static int _Block = 1;
 	public final static int _Next  = 2;   // optional iteration statement
 
-	public ZWhileNode(ZNode ParentNode) {
+	public ZWhileNode(BNode ParentNode) {
 		super(ParentNode, null, 3);
 	}
 
-	public ZWhileNode(ZNode CondNode, ZBlockNode BlockNode) {
+	public ZWhileNode(BNode CondNode, ZBlockNode BlockNode) {
 		super(null, null, 3);
 		this.SetNode(ZWhileNode._Cond, CondNode);
 		this.SetNode(ZWhileNode._Block, BlockNode);
@@ -48,12 +48,12 @@ public final class ZWhileNode extends ZNode {
 		Visitor.VisitWhileNode(this);
 	}
 
-	public final ZNode CondNode() {
+	public final BNode CondNode() {
 		return this.AST[ZWhileNode._Cond];
 	}
 
 	public final ZBlockNode BlockNode() {
-		@Var ZNode BlockNode = this.AST[ZWhileNode._Block];
+		@Var BNode BlockNode = this.AST[ZWhileNode._Block];
 		if(BlockNode instanceof ZBlockNode) {
 			return (ZBlockNode)BlockNode;
 		}
@@ -65,7 +65,7 @@ public final class ZWhileNode extends ZNode {
 		return (this.AST[ZWhileNode._Next] != null);
 	}
 
-	public final ZNode NextNode() {
+	public final BNode NextNode() {
 		return this.AST[ZWhileNode._Next];
 	}
 

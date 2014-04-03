@@ -30,17 +30,17 @@ import java.util.ArrayList;
 import libbun.encode.ZSourceBuilder;
 import libbun.encode.ZSourceGenerator;
 import libbun.parser.ZNodeUtils;
+import libbun.parser.ast.BGetNameNode;
+import libbun.parser.ast.BLetVarNode;
+import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZBinaryNode;
 import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.ZCastNode;
 import libbun.parser.ast.ZComparatorNode;
 import libbun.parser.ast.ZFuncCallNode;
 import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZGetNameNode;
-import libbun.parser.ast.ZLetVarNode;
-import libbun.parser.ast.ZNode;
 import libbun.parser.ast.ZReturnNode;
-import libbun.parser.ast.ZSetNameNode;
+import libbun.parser.ast.BSetNameNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
 import libbun.parser.ast.ZWhileNode;
@@ -105,7 +105,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 
 		@Var int limit = Node.GetListSize();
 		for (@Var int i = 0; i < limit; i++) {
-			ZNode SubNode = Node.GetListAt(i);
+			BNode SubNode = Node.GetListAt(i);
 			this.CurrentBuilder.AppendLineFeed();
 			this.CurrentBuilder.AppendIndent();
 
@@ -156,15 +156,15 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 
 
 	@Override
-	protected void VisitVarDeclNode(ZLetVarNode Node) {
-		this.CurrentBuilder.Append(Node.GetName() + " <- readIORef ");
-		this.CurrentBuilder.Append(Node.GetName() + "_ref");
+	protected void VisitVarDeclNode(BLetVarNode Node) {
+		this.CurrentBuilder.Append(Node.GetGivenName() + " <- readIORef ");
+		this.CurrentBuilder.Append(Node.GetGivenName() + "_ref");
 		this.GenerateCode(null, Node.InitValueNode());
 		this.CurrentBuilder.AppendLineFeed();
 	}
 
-	@Override protected void VisitParamNode(ZLetVarNode Node) {
-		this.CurrentBuilder.Append(Node.GetName());
+	@Override protected void VisitParamNode(BLetVarNode Node) {
+		this.CurrentBuilder.Append(Node.GetGivenName());
 	}
 
 	@Override public void VisitFunctionNode(ZFunctionNode Node) {
@@ -182,23 +182,23 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		this.Indent(this.CurrentBuilder);
 
 		for (int i = 0; i < Node.GetListSize(); i++) {
-			ZLetVarNode Param = Node.GetParamNode(i);
-			this.Variables.add(Param.GetName());
+			BLetVarNode Param = Node.GetParamNode(i);
+			this.Variables.add(Param.GetGivenName());
 
 			this.CurrentBuilder.AppendIndent();
-			this.CurrentBuilder.Append(Param.GetName()
+			this.CurrentBuilder.Append(Param.GetGivenName()
 					+ "_ref <- newIORef "
-					+ Param.GetName());
+					+ Param.GetGivenName());
 			this.CurrentBuilder.AppendLineFeed();
 		}
 
 		for (int i = 0; i < Node.GetListSize(); i++) {
-			ZLetVarNode node1 = Node.GetParamNode(i);
+			BLetVarNode node1 = Node.GetParamNode(i);
 
 			this.CurrentBuilder.AppendIndent();
-			this.CurrentBuilder.Append(node1.GetName()
+			this.CurrentBuilder.Append(node1.GetGivenName()
 					+ " <- readIORef "
-					+ node1.GetName() + "_ref");
+					+ node1.GetGivenName() + "_ref");
 			this.CurrentBuilder.AppendLineFeed();
 		}
 		this.UnIndent(this.CurrentBuilder);
@@ -218,12 +218,12 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitGetNameNode(ZGetNameNode Node) {
-		this.CurrentBuilder.Append(Node.GetName());
+	public void VisitGetNameNode(BGetNameNode Node) {
+		this.CurrentBuilder.Append(Node.GetUniqueName(this));
 	}
 
 	@Override
-	public void VisitSetNameNode(ZSetNameNode Node) {
+	public void VisitSetNameNode(BSetNameNode Node) {
 		this.CurrentBuilder.Append("writeIORef ");
 		this.CurrentBuilder.Append(Node.GetName() + "_ref ");
 		this.GenerateCode(null, Node.ExprNode());
@@ -300,8 +300,8 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.AppendLineFeed();
 
 		// XXX Is this correct node type ?
-		ZNode LoopNode = new ZGetNameNode(Node, null, "__loop");
-		Node.BlockNode().SetNode(ZNode._AppendIndex, LoopNode);
+		BNode LoopNode = new BGetNameNode(Node, null, "__loop");
+		Node.BlockNode().SetNode(BNode._AppendIndex, LoopNode);
 		Node.BlockNode().Accept(this);
 
 		this.CurrentBuilder.AppendIndent();

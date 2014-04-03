@@ -38,30 +38,30 @@ public final class ZClassNode extends ZListNode {
 	@Field public ZClassType ClassType = null;
 	@Field public boolean IsExport = false;
 
-	public ZClassNode(ZNode ParentNode) {
+	public ZClassNode(BNode ParentNode) {
 		super(ParentNode, null, 2);
 	}
 
 	public final String ClassName() {
 		if(this.GivenName == null) {
-			this.GivenName = this.AST[ZLetVarNode._NameInfo].SourceToken.GetTextAsName();
+			this.GivenName = this.AST[BLetVarNode._NameInfo].SourceToken.GetTextAsName();
 		}
 		return this.GivenName;
 	}
 
 	public final ZType SuperType() {
-		if(this.AST[ZLetVarNode._TypeInfo] != null) {
-			return this.AST[ZLetVarNode._TypeInfo].Type;
+		if(this.AST[BLetVarNode._TypeInfo] != null) {
+			return this.AST[BLetVarNode._TypeInfo].Type;
 		}
 		else {
 			return ZClassType._ObjectType;
 		}
 	}
 
-	public final ZLetVarNode GetFieldNode(int Index) {
-		@Var ZNode Node = this.GetListAt(Index);
-		if(Node instanceof ZLetVarNode) {
-			return (ZLetVarNode)Node;
+	public final BLetVarNode GetFieldNode(int Index) {
+		@Var BNode Node = this.GetListAt(Index);
+		if(Node instanceof BLetVarNode) {
+			return (BLetVarNode)Node;
 		}
 		return null;
 	}

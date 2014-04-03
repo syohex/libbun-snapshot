@@ -2,15 +2,15 @@ package libbun.parser.ssa;
 
 import java.util.HashMap;
 
+import libbun.parser.ast.BGetNameNode;
+import libbun.parser.ast.BLetVarNode;
+import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZAndNode;
 import libbun.parser.ast.ZBinaryNode;
 import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZGetNameNode;
 import libbun.parser.ast.ZIfNode;
-import libbun.parser.ast.ZLetVarNode;
-import libbun.parser.ast.ZNode;
-import libbun.parser.ast.ZSetNameNode;
+import libbun.parser.ast.BSetNameNode;
 import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
 import libbun.type.ZType;
@@ -34,23 +34,23 @@ public class SSAConverter extends ZASTTransformer {
 	public ZArray<Variable> LocalVariables;
 	public ValueReplacer Replacer;
 	public ZMap<Integer> ValueNumber;
-	private final HashMap<ZNode, ZArray<Variable>> CurVariableTableBefore;
-	private final HashMap<ZNode, ZArray<Variable>> CurVariableTableAfter;
+	private final HashMap<BNode, ZArray<Variable>> CurVariableTableBefore;
+	private final HashMap<BNode, ZArray<Variable>> CurVariableTableAfter;
 
 	public SSAConverter() {
 		this.LocalVariables = null;
 		this.Replacer = new ValueReplacer();
 		this.State = new SSAConverterState(null, -1);
 		this.ValueNumber = new ZMap<Integer>(ZType.IntType);
-		this.CurVariableTableBefore = new HashMap<ZNode, ZArray<Variable>>();
-		this.CurVariableTableAfter = new HashMap<ZNode, ZArray<Variable>>();
+		this.CurVariableTableBefore = new HashMap<BNode, ZArray<Variable>>();
+		this.CurVariableTableAfter = new HashMap<BNode, ZArray<Variable>>();
 	}
 
-	private void RecordListOfVariablesBeforeVisit(ZNode Node) {
+	private void RecordListOfVariablesBeforeVisit(BNode Node) {
 		this.CurVariableTableBefore.put(Node, this.CloneCurrentValues());
 	}
 
-	private void RecordListOfVariablesAfterVisit(ZNode Node) {
+	private void RecordListOfVariablesAfterVisit(BNode Node) {
 		this.CurVariableTableAfter.put(Node, this.CloneCurrentValues());
 	}
 
@@ -67,7 +67,7 @@ public class SSAConverter extends ZASTTransformer {
 	 *  GetCurrentVariablesBefore(int y = 0) returns [(x, 0)]
 	 *  GetCurrentVariablesBefore(x = y    ) returns [(x, 0), (y,0)]
 	 */
-	public ZArray<Variable> GetCurrentVariablesBefore(ZNode Node) {
+	public ZArray<Variable> GetCurrentVariablesBefore(BNode Node) {
 		return this.CurVariableTableBefore.get(Node);
 	}
 
@@ -84,7 +84,7 @@ public class SSAConverter extends ZASTTransformer {
 	 *  GetCurrentVariablesAfter(int y = 0) returns [(x, 0)]
 	 *  GetCurrentVariablesAfter(x = y    ) returns [(x, 0), (y,0)]
 	 */
-	public ZArray<Variable> GetCurrentVariablesAfter(ZNode Node) {
+	public ZArray<Variable> GetCurrentVariablesAfter(BNode Node) {
 		return this.CurVariableTableAfter.get(Node);
 	}
 
@@ -189,7 +189,7 @@ public class SSAConverter extends ZASTTransformer {
 		phi.AddIncoming(BranchIndex, null/*FIXME*/, NewVal.Node);
 	}
 
-	private void ReplaceNodeWith(ZNode Node, Variable OldVal, PHINode PHI) {
+	private void ReplaceNodeWith(BNode Node, Variable OldVal, PHINode PHI) {
 		this.Replacer.SetTarget(OldVal.Node, PHI);
 		Node.Accept(this.Replacer);
 	}
@@ -205,7 +205,7 @@ public class SSAConverter extends ZASTTransformer {
 		@Var int i = JNode.size() - 1;
 		while(i >= 0) {
 			PHINode phi = JNode.ListAt(i);
-			ZNode node;
+			BNode node;
 			if (JNode.isJoinNodeOfRepeatNode()) {
 				//this.State.Prev != null && this.GetParentJoinNode().ParentNode instanceof ZWhileNode
 				node = phi.GetArgument(phi.Args.size() - 1);
@@ -236,12 +236,12 @@ public class SSAConverter extends ZASTTransformer {
 	 *                |  x2 = phi(x0, x1)
 	 * }              | }
 	 */
-	private void RemoveJoinNode(ZNode TargetNode, JoinNode JNode) {
+	private void RemoveJoinNode(BNode TargetNode, JoinNode JNode) {
 		@Var ZBlockNode Parent = TargetNode.GetScopeBlockNode();
 		@Var int Index = 0;
 		assert(Parent != null);
 		while(Index < Parent.GetListSize()) {
-			ZNode Node = Parent.GetListAt(Index);
+			BNode Node = Parent.GetListAt(Index);
 			Index = Index + 1;
 			if(Node == TargetNode) {
 				break;
@@ -262,7 +262,7 @@ public class SSAConverter extends ZASTTransformer {
 			// JoinNode for WhileNode is placed at a header of loop.
 			// ... while((x1 = phi() && i1 = phi()) && x1 == true) {...}
 			@Var ZWhileNode WNode = (ZWhileNode) TargetNode;
-			@Var ZNode CondNode = WNode.CondNode();
+			@Var BNode CondNode = WNode.CondNode();
 			@Var int i = JNode.size() - 1;
 			while(i >= 0) {
 				@Var PHINode phi = JNode.ListAt(i);
@@ -279,13 +279,13 @@ public class SSAConverter extends ZASTTransformer {
 	}
 
 	@Override
-	public void VisitGetNameNode(ZGetNameNode Node) {
-		@Var Variable V = this.FindVariable(Node.GetName());
+	public void VisitGetNameNode(BGetNameNode Node) {
+		@Var Variable V = this.FindVariable(Node.GivenName);  //FIXME
 		Node.VarIndex = V.Index;
 	}
 
 	@Override
-	public void VisitSetNameNode(ZSetNameNode Node) {
+	public void VisitSetNameNode(BSetNameNode Node) {
 		@Var Variable OldVal = this.FindVariable(Node.GetName());
 		@Var Variable NewVal = new Variable(OldVal.Name, this.GetRefreshNumber(OldVal), Node);
 		this.UpdateVariable(NewVal);
@@ -295,7 +295,7 @@ public class SSAConverter extends ZASTTransformer {
 
 	@Override
 	public void VisitVarBlockNode(ZVarBlockNode Node) {
-		@Var Variable V = new Variable(Node.VarDeclNode().GetName(), 0, Node);
+		@Var Variable V = new Variable(Node.VarDeclNode().GetGivenName(), 0, Node);
 		this.AddVariable(V);
 		@Var int i = 0;
 		while(i < Node.GetListSize()) {
@@ -346,8 +346,8 @@ public class SSAConverter extends ZASTTransformer {
 		this.LocalVariables = new ZArray<Variable>(new Variable[0]);
 		@Var int i = 0;
 		while(i < Node.GetListSize()) {
-			ZLetVarNode ParamNode = Node.GetParamNode(i);
-			this.AddVariable(new Variable(ParamNode.GetName(), 0, ParamNode));
+			BLetVarNode ParamNode = Node.GetParamNode(i);
+			this.AddVariable(new Variable(ParamNode.GetGivenName(), 0, ParamNode));
 			i = i + 1;
 		}
 		Node.BlockNode().Accept(this);

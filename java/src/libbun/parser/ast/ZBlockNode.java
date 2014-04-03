@@ -33,17 +33,17 @@ import libbun.util.Var;
 public class ZBlockNode extends ZListNode {
 	@Field public ZNameSpace NullableNameSpace;
 
-	public ZBlockNode(ZNode ParentNode, @Nullable ZNameSpace NameSpace) {
+	public ZBlockNode(BNode ParentNode, @Nullable ZNameSpace NameSpace) {
 		super(ParentNode, null, 0);
 		this.NullableNameSpace = NameSpace;
 	}
 
-	protected ZBlockNode(ZNode ParentNode, @Nullable ZNameSpace NameSpace, int Init) {  // call by ZVarNode
+	protected ZBlockNode(BNode ParentNode, @Nullable ZNameSpace NameSpace, int Init) {  // call by ZVarNode
 		super(ParentNode, null, Init);
 		this.NullableNameSpace = NameSpace;
 	}
 
-	public ZBlockNode(ZNode ParentNode, @Nullable ZNameSpace NameSpace, ZLetVarNode VarNode) {
+	public ZBlockNode(BNode ParentNode, @Nullable ZNameSpace NameSpace, BLetVarNode VarNode) {
 		super(ParentNode, null, 1);
 		this.NullableNameSpace = NameSpace;
 		this.SetNode(0, VarNode);
@@ -61,12 +61,12 @@ public class ZBlockNode extends ZListNode {
 		Visitor.VisitBlockNode(this);
 	}
 
-	public final void ReplaceWith(ZNode OldNode, ZNode NewNode) {
+	public final void ReplaceWith(BNode OldNode, BNode NewNode) {
 		@Var int i = 0;
 		while(i < this.GetAstSize()) {
 			if(this.AST[i] == OldNode) {
 				this.AST[i] = NewNode;
-				this.SetChild(NewNode, ZNode._EnforcedParent);
+				this.SetChild(NewNode, BNode._EnforcedParent);
 				if(NewNode.HasUntypedNode()) {
 					this.HasUntyped = true;
 				}

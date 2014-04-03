@@ -29,7 +29,7 @@ import libbun.parser.ZToken;
 import libbun.parser.ZVisitor;
 
 public class ZComparatorNode extends ZBinaryNode {
-	public ZComparatorNode(ZNode ParentNode, ZToken SourceToken, ZNode Left, ZSyntax Pattern) {
+	public ZComparatorNode(BNode ParentNode, ZToken SourceToken, BNode Left, ZSyntax Pattern) {
 		super(ParentNode, SourceToken, Left, Pattern);
 	}
 	@Override public void Accept(ZVisitor Visitor) {

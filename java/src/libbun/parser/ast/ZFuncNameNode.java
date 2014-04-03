@@ -11,7 +11,7 @@ public class ZFuncNameNode extends ZLocalDefinedNode {
 	@Field public final ZType RecvType;
 	@Field public final int FuncParamSize;
 
-	public ZFuncNameNode(ZNode ParentNode, ZToken SourceToken, String FuncName, ZFuncType FuncType) {
+	public ZFuncNameNode(BNode ParentNode, ZToken SourceToken, String FuncName, ZFuncType FuncType) {
 		super(ParentNode, SourceToken, 0);
 		this.FuncName = FuncName;
 		this.RecvType = FuncType.GetRecvType();
@@ -19,7 +19,7 @@ public class ZFuncNameNode extends ZLocalDefinedNode {
 		this.Type = FuncType;
 	}
 
-	public ZFuncNameNode(ZNode ParentNode, ZToken SourceToken, String FuncName, ZType RecvType, int FuncParamSize) {
+	public ZFuncNameNode(BNode ParentNode, ZToken SourceToken, String FuncName, ZType RecvType, int FuncParamSize) {
 		super(ParentNode, SourceToken, 0);
 		this.FuncName = FuncName;
 		this.RecvType = RecvType;

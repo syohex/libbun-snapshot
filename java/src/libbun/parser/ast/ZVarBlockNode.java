@@ -30,24 +30,24 @@ import libbun.util.Var;
 public class ZVarBlockNode extends ZBlockNode {
 	public static final int _VarDecl = 0;
 
-	public ZVarBlockNode(ZNode ParentNode, ZLetVarNode VarNode) {
+	public ZVarBlockNode(BNode ParentNode, BLetVarNode VarNode) {
 		super(ParentNode, null, 1);
 		this.SetNode(ZVarBlockNode._VarDecl, VarNode);
 	}
 
-	public ZVarBlockNode(ZNode ParentNode, ZLetVarNode VarNode, ZBlockNode ParentBlockNode) {
+	public ZVarBlockNode(BNode ParentNode, BLetVarNode VarNode, ZBlockNode ParentBlockNode) {
 		super(ParentNode, null, 1);
 		this.SetNode(ZVarBlockNode._VarDecl, VarNode);
 		@Var int Index = ZNodeUtils._AstIndexOf(ParentBlockNode, VarNode);
-		ZNodeUtils._MoveAstList(ParentBlockNode, Index, this);
+		ZNodeUtils._MoveAstList(ParentBlockNode, Index+1, this);
 	}
 
 
 
-	public final ZLetVarNode VarDeclNode() {
-		@Var ZNode VarNode = this.AST[ZVarBlockNode._VarDecl];
-		if(VarNode instanceof ZLetVarNode) {
-			return (ZLetVarNode)VarNode;
+	public final BLetVarNode VarDeclNode() {
+		@Var BNode VarNode = this.AST[ZVarBlockNode._VarDecl];
+		if(VarNode instanceof BLetVarNode) {
+			return (BLetVarNode)VarNode;
 		}
 		return null;
 	}

@@ -26,6 +26,9 @@
 package libbun.encode;
 
 import libbun.parser.ZLogger;
+import libbun.parser.ast.BLetVarNode;
+import libbun.parser.ast.BNode;
+import libbun.parser.ast.BNullNode;
 import libbun.parser.ast.ZCastNode;
 import libbun.parser.ast.ZClassNode;
 import libbun.parser.ast.ZErrorNode;
@@ -33,11 +36,8 @@ import libbun.parser.ast.ZFuncCallNode;
 import libbun.parser.ast.ZFuncNameNode;
 import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZInstanceOfNode;
-import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZMapLiteralNode;
 import libbun.parser.ast.ZMethodCallNode;
-import libbun.parser.ast.ZNode;
-import libbun.parser.ast.ZNullNode;
 import libbun.parser.ast.ZStupidCastErrorNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
@@ -118,18 +118,18 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 	//	}
 
 	@Override
-	protected void VisitVarDeclNode(ZLetVarNode Node) {
+	protected void VisitVarDeclNode(BLetVarNode Node) {
 		this.CurrentBuilder.AppendToken("var");
 		this.CurrentBuilder.AppendWhiteSpace();
-		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
+		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 		this.CurrentBuilder.AppendToken("=");
 		this.GenerateCode(null, Node.InitValueNode());
 		this.CurrentBuilder.Append(this.SemiColon);
 		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 	}
 
-	@Override protected void VisitParamNode(ZLetVarNode Node) {
-		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
+	@Override protected void VisitParamNode(BLetVarNode Node) {
+		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 	}
 
 	private boolean IsUserDefinedType(ZType SelfType){
@@ -146,12 +146,12 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 
 	@Override public void VisitFunctionNode(ZFunctionNode Node) {
 		@Var boolean IsLambda = (Node.FuncName() == null);
-		@Var boolean IsInstanceMethod = (!IsLambda && Node.AST.length > 1 && Node.AST[1/*first param*/] instanceof ZLetVarNode);
+		@Var boolean IsInstanceMethod = (!IsLambda && Node.AST.length > 1 && Node.AST[1/*first param*/] instanceof BLetVarNode);
 		@Var ZType SelfType = IsInstanceMethod ? Node.AST[1/*first param*/].Type : null;
 		@Var boolean IsConstructor = IsInstanceMethod && Node.FuncName().equals(SelfType.GetName());
 
 		if(IsConstructor){
-			@Var ZNode Block = Node.BlockNode();
+			@Var BNode Block = Node.BlockNode();
 			Block.AST[Block.AST.length - 1].AST[0] = Node.AST[1];
 		}
 		if(IsLambda) {
@@ -246,7 +246,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 
 	@Override public void VisitMethodCallNode(ZMethodCallNode Node) {
 		// (recv.method || Type_method)(...)
-		@Var ZNode RecvNode = Node.RecvNode();
+		@Var BNode RecvNode = Node.RecvNode();
 
 		if(this.IsUserDefinedType(RecvNode.Type)){
 			this.CurrentBuilder.Append("(");
@@ -271,7 +271,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		@Var int ListSize =  Node.GetListSize();
 		@Var int i = 0;
 		while(i < ListSize) {
-			@Var ZNode KeyNode = Node.GetListAt(i);
+			@Var BNode KeyNode = Node.GetListAt(i);
 			if(KeyNode instanceof ZErrorNode){
 				this.GenerateCode(null, KeyNode);
 				return;
@@ -280,7 +280,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		}
 		this.CurrentBuilder.Append("{");
 		while(i < ListSize) {
-			@Var ZNode KeyNode = Node.GetListAt(i);
+			@Var BNode KeyNode = Node.GetListAt(i);
 			if (i > 0) {
 				this.CurrentBuilder.Append(", ");
 			}
@@ -288,7 +288,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 			this.CurrentBuilder.Append(": ");
 			i = i + 1;
 			if(i < Node.GetListSize()){
-				@Var ZNode ValueNode = Node.GetListAt(i);
+				@Var BNode ValueNode = Node.GetListAt(i);
 				this.GenerateCode(null, ValueNode);
 				i = i + 1;
 			}else{
@@ -298,8 +298,8 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append("}");
 	}
 
-	@Override public void VisitLetNode(ZLetVarNode Node) {
-		this.CurrentBuilder.AppendNewLine("var ", Node.GlobalName, " = ");
+	@Override public void VisitLetNode(BLetVarNode Node) {
+		this.CurrentBuilder.AppendNewLine("var ", Node.GetUniqueName(this), " = ");
 		this.GenerateCode(null, Node.InitValueNode());
 		this.CurrentBuilder.Append(this.SemiColon);
 	}
@@ -356,11 +356,11 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 
 		@Var int i = 0;
 		while (i < Node.GetListSize()) {
-			@Var ZLetVarNode FieldNode = Node.GetFieldNode(i);
-			@Var ZNode ValueNode = FieldNode.InitValueNode();
-			if(!(ValueNode instanceof ZNullNode)) {
+			@Var BLetVarNode FieldNode = Node.GetFieldNode(i);
+			@Var BNode ValueNode = FieldNode.InitValueNode();
+			if(!(ValueNode instanceof BNullNode)) {
 				this.CurrentBuilder.AppendNewLine("this.");
-				this.CurrentBuilder.Append(FieldNode.GetName());
+				this.CurrentBuilder.Append(FieldNode.GetGivenName());
 				this.CurrentBuilder.Append(" = ");
 				this.GenerateCode(null, FieldNode.InitValueNode());
 				this.CurrentBuilder.Append(this.SemiColon);

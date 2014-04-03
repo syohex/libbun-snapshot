@@ -1,15 +1,15 @@
 package libbun.lang.bun;
 
 import libbun.parser.ZTokenContext;
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZWhileNode;
 import libbun.util.Var;
 import libbun.util.ZMatchFunction;
 
 public class WhilePatternFunction extends ZMatchFunction {
 
-	@Override public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
-		@Var ZNode WhileNode = new ZWhileNode(ParentNode);
+	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
+		@Var BNode WhileNode = new ZWhileNode(ParentNode);
 		WhileNode = TokenContext.MatchToken(WhileNode, "while", ZTokenContext._Required);
 		WhileNode = TokenContext.MatchToken(WhileNode, "(", ZTokenContext._Required);
 		WhileNode = TokenContext.MatchPattern(WhileNode, ZWhileNode._Cond, "$Expression$", ZTokenContext._Required, ZTokenContext._AllowSkipIndent);

@@ -25,41 +25,9 @@
 package libbun.parser.ast;
 
 import libbun.parser.ZToken;
-import libbun.parser.ZVisitor;
-import libbun.type.ZType;
-import libbun.util.Field;
 
-// E.g., $NativeName = $ValueNode
-public class ZSetNameNode extends ZNode {
-	public final static int _Expr = 0;
-
-	@Field public String  GivenName;
-	@Field public int     VarIndex = 0;
-	@Field public boolean IsCaptured = false;
-
-	public ZSetNameNode(ZNode ParentNode, ZToken Token, String GivenName) {
-		super(ParentNode, Token, 1);
-		this.GivenName = GivenName;
-	}
-
-	public ZSetNameNode(String Name, ZNode ExprNode) {
-		super(null, null, 1);
-		this.GivenName = Name;
-		this.SetNode(ZSetNameNode._Expr, ExprNode);
-		if(!ExprNode.IsUntyped()) {
-			this.Type = ZType.VoidType;
-		}
-	}
-
-	public final String GetName() {
-		return this.GivenName;
-	}
-
-	public final ZNode ExprNode() {
-		return this.AST[ZSetNameNode._Expr ];
-	}
-
-	@Override public void Accept(ZVisitor Visitor) {
-		Visitor.VisitSetNameNode(this);
+public abstract class BConstNode extends BNode {
+	protected BConstNode(BNode ParentNode, ZToken SourceToken) {
+		super(ParentNode, SourceToken, 0);
 	}
 }

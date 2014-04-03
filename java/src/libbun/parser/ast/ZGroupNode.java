@@ -26,15 +26,15 @@ package libbun.parser.ast;
 
 import libbun.parser.ZVisitor;
 
-public final class ZGroupNode extends ZNode {
+public final class ZGroupNode extends BNode {
 	public final static int _Expr = 0;
-	public ZGroupNode(ZNode ParentNode) {
+	public ZGroupNode(BNode ParentNode) {
 		super(ParentNode, null, 1);
 	}
 	@Override public void Accept(ZVisitor Visitor) {
 		Visitor.VisitGroupNode(this);
 	}
-	public final ZNode ExprNode() {
+	public final BNode ExprNode() {
 		return this.AST[ZGroupNode._Expr];
 	}
 }

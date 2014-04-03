@@ -30,7 +30,7 @@ import libbun.parser.ZToken;
 import libbun.parser.ZVisitor;
 
 public final class ZAndNode extends ZBinaryNode {
-	public ZAndNode(ZNode ParentNode, ZToken Token, ZNode Left, ZSyntax Pattern) {
+	public ZAndNode(BNode ParentNode, ZToken Token, BNode Left, ZSyntax Pattern) {
 		super(ParentNode, Token, Left, Pattern);
 	}
 	@Override public void Accept(ZVisitor Visitor) {

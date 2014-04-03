@@ -6,13 +6,13 @@ import libbun.parser.ZSyntax;
 import libbun.parser.ZToken;
 import libbun.parser.ZTokenContext;
 import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.util.Var;
 import libbun.util.ZMatchFunction;
 
 public class ExpressionPatternFunction extends ZMatchFunction {
 
-	@Override public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
+	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		return ExpressionPatternFunction._DispatchPattern(ParentNode, TokenContext, LeftNode, false, true);
 	}
 
@@ -25,7 +25,7 @@ public class ExpressionPatternFunction extends ZMatchFunction {
 		return null;
 	}
 
-	public final static ZNode _DispatchPattern(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode, boolean AllowStatement, boolean AllowBinary) {
+	public final static BNode _DispatchPattern(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode, boolean AllowStatement, boolean AllowBinary) {
 		@Var ZToken Token = TokenContext.GetToken();
 		@Var ZSyntax Pattern = null;
 		@Var ZNameSpace NameSpace = ParentNode.GetNameSpace();

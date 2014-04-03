@@ -6,9 +6,9 @@ import libbun.parser.ZTypeChecker;
 import libbun.parser.ZVisitor;
 
 
-public abstract class ZSugarNode extends ZNode {
+public abstract class ZSugarNode extends BNode {
 
-	public ZSugarNode(ZNode ParentNode, ZToken SourceToken, int Size) {
+	public ZSugarNode(BNode ParentNode, ZToken SourceToken, int Size) {
 		super(ParentNode, SourceToken, Size);
 	}
 

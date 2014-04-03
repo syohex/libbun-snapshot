@@ -27,22 +27,22 @@ package libbun.parser.ast;
 import libbun.parser.ZVisitor;
 
 //E.g., $Recv[$Index] = $ValueNode
-public final class ZSetIndexNode extends ZNode {
+public final class ZSetIndexNode extends BNode {
 	public final static int _Recv  = 0;
 	public final static int _Index = 1;
 	public final static int _Expr  = 2;
 
-	public ZSetIndexNode(ZNode ParentNode, ZNode LeftNode) {
+	public ZSetIndexNode(BNode ParentNode, BNode LeftNode) {
 		super(ParentNode, null, 3);
 		this.SetNode(ZSetIndexNode._Recv, LeftNode);
 	}
-	public final ZNode RecvNode() {
+	public final BNode RecvNode() {
 		return this.AST[ZSetIndexNode._Recv ];
 	}
-	public final ZNode IndexNode() {
+	public final BNode IndexNode() {
 		return this.AST[ZSetIndexNode._Index ];
 	}
-	public final ZNode ExprNode() {
+	public final BNode ExprNode() {
 		return this.AST[ZSetIndexNode._Expr ];
 	}
 

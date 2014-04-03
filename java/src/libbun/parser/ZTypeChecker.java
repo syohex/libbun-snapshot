@@ -24,7 +24,10 @@
 
 package libbun.parser;
 
-import libbun.parser.ast.ZAsmNode;
+import libbun.parser.ast.BGetNameNode;
+import libbun.parser.ast.BLetVarNode;
+import libbun.parser.ast.BNode;
+import libbun.parser.ast.BAsmNode;
 import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.ZCastNode;
 import libbun.parser.ast.ZDesugarNode;
@@ -32,11 +35,8 @@ import libbun.parser.ast.ZErrorNode;
 import libbun.parser.ast.ZFuncCallNode;
 import libbun.parser.ast.ZFuncNameNode;
 import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZGetNameNode;
-import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZListNode;
 import libbun.parser.ast.ZMacroNode;
-import libbun.parser.ast.ZNode;
 import libbun.parser.ast.ZReturnNode;
 import libbun.parser.ast.ZStupidCastErrorNode;
 import libbun.parser.ast.ZSugarNode;
@@ -55,7 +55,7 @@ public abstract class ZTypeChecker extends ZVisitor {
 	public final static int _NoCheckPolicy                  = 1;
 
 	@Field private ZType      StackedContextType;
-	@Field private ZNode      ReturnedNode;
+	@Field private BNode      ReturnedNode;
 
 	@Field public ZGenerator  Generator;
 	@Field public ZLogger     Logger;
@@ -89,36 +89,36 @@ public abstract class ZTypeChecker extends ZVisitor {
 		return this.StackedContextType;
 	}
 
-	public final void ReturnNode(ZNode Node) {
+	public final void ReturnNode(BNode Node) {
 		if(this.ReturnedNode != null) {
 			LibZen._PrintDebug("previous returned node " + Node);
 		}
 		this.ReturnedNode = Node;
 	}
 
-	public final void ReturnTypeNode(ZNode Node, ZType Type) {
+	public final void ReturnTypeNode(BNode Node, ZType Type) {
 		this.VarScope.TypeNode(Node, Type);
 		this.ReturnNode(Node);
 	}
 
-	public final void ReturnErrorNode(ZNode Node, ZToken ErrorToken, String Message) {
+	public final void ReturnErrorNode(BNode Node, ZToken ErrorToken, String Message) {
 		if(ErrorToken == null) {
 			ErrorToken = Node.SourceToken;
 		}
 		this.ReturnNode(new ZErrorNode(Node.ParentNode, ErrorToken, Message));
 	}
 
-	protected final ZNode CreateStupidCastNode(ZType Requested, ZNode Node, ZToken SourceToken, String Message) {
-		@Var ZNode ErrorNode = new ZStupidCastErrorNode(Node, SourceToken,  Message + ": " + Node.Type.GetName() + " => " + Requested.GetName());
+	protected final BNode CreateStupidCastNode(ZType Requested, BNode Node, ZToken SourceToken, String Message) {
+		@Var BNode ErrorNode = new ZStupidCastErrorNode(Node, SourceToken,  Message + ": " + Node.Type.GetName() + " => " + Requested.GetName());
 		ErrorNode.Type = Requested;
 		return ErrorNode;
 	}
 
-	protected final ZNode CreateStupidCastNode(ZType Requested, ZNode Node) {
+	protected final BNode CreateStupidCastNode(ZType Requested, BNode Node) {
 		return this.CreateStupidCastNode(Requested, Node, Node.SourceToken, "type error");
 	}
 
-	protected final ZNode EnforceNodeType(ZNode Node, ZType EnforcedType) {
+	protected final BNode EnforceNodeType(BNode Node, ZType EnforcedType) {
 		@Var ZFunc Func = this.Generator.LookupConverterFunc(Node.Type, EnforcedType);
 		if(Func == null && EnforcedType.IsStringType()) {
 			Func = this.Generator.LookupFunc("toString", Node.Type, 1);
@@ -131,7 +131,7 @@ public abstract class ZTypeChecker extends ZVisitor {
 		return this.CreateStupidCastNode(EnforcedType, Node);
 	}
 
-	private final ZNode TypeCheckImpl(ZNode Node, ZType ContextType, int TypeCheckPolicy) {
+	private final BNode TypeCheckImpl(BNode Node, ZType ContextType, int TypeCheckPolicy) {
 		if(Node.IsErrorNode()) {
 			if(!ContextType.IsVarType()) {
 				this.VarScope.TypeNode(Node, ContextType);
@@ -156,8 +156,8 @@ public abstract class ZTypeChecker extends ZVisitor {
 		return this.CreateStupidCastNode(ContextType, Node);
 	}
 
-	private ZNode VisitNode(ZNode Node, ZType ContextType) {
-		@Var ZNode ParentNode = Node.ParentNode;
+	private BNode VisitNode(BNode Node, ZType ContextType) {
+		@Var BNode ParentNode = Node.ParentNode;
 		this.StackedContextType = ContextType;
 		this.ReturnedNode = null;
 		Node.Accept(this);
@@ -171,12 +171,12 @@ public abstract class ZTypeChecker extends ZVisitor {
 			if(Node.ParentNode != null) {
 				LibZen._PrintDebug("Preserving parent of typed new node: " + Node);
 			}
-			ParentNode.SetChild(Node, ZNode._PreservedParent);
+			ParentNode.SetChild(Node, BNode._PreservedParent);
 		}
 		return Node;
 	}
 
-	private final ZNode TypeCheck(ZNode Node, ZType ContextType, int TypeCheckPolicy) {
+	private final BNode TypeCheck(BNode Node, ZType ContextType, int TypeCheckPolicy) {
 		if(this.IsVisitable() && Node != null) {
 			if(Node.HasUntypedNode()) {
 				Node = this.VisitNode(Node, ContextType);
@@ -190,11 +190,11 @@ public abstract class ZTypeChecker extends ZVisitor {
 	}
 
 
-	public final ZNode TryType(ZNode Node, ZType ContextType) {
+	public final BNode TryType(BNode Node, ZType ContextType) {
 		return this.TypeCheck(Node, ContextType, ZTypeChecker._NoCheckPolicy);
 	}
 
-	public final void TryTypeAt(ZNode Node, int Index, ZType ContextType) {
+	public final void TryTypeAt(BNode Node, int Index, ZType ContextType) {
 		//		@Var ZNode N = Node.AST[Index];
 		Node.SetNode(Index, this.TypeCheck(Node.AST[Index], ContextType, ZTypeChecker._NoCheckPolicy));
 		//		if(N != Node.AST[Index]) {
@@ -202,11 +202,11 @@ public abstract class ZTypeChecker extends ZVisitor {
 		//		}
 	}
 
-	public final ZNode CheckType(ZNode Node, ZType ContextType) {
+	public final BNode CheckType(BNode Node, ZType ContextType) {
 		return this.TypeCheck(Node, ContextType, ZTypeChecker._DefaultTypeCheckPolicy);
 	}
 
-	public final void CheckTypeAt(ZNode Node, int Index, ZType ContextType) {
+	public final void CheckTypeAt(BNode Node, int Index, ZType ContextType) {
 		//		@Var ZNode N = Node.AST[Index];
 		Node.SetNode(Index, this.TypeCheck(Node.AST[Index], ContextType, ZTypeChecker._DefaultTypeCheckPolicy));
 		//		if(N != Node.AST[Index]) {
@@ -217,21 +217,21 @@ public abstract class ZTypeChecker extends ZVisitor {
 	public final void TypeCheckNodeList(ZListNode List) {
 		@Var int i = 0;
 		while(i < List.GetListSize()) {
-			@Var ZNode SubNode = List.GetListAt(i);
+			@Var BNode SubNode = List.GetListAt(i);
 			SubNode = this.CheckType(SubNode, ZType.VarType);
 			List.SetListAt(i, SubNode);
 			i = i + 1;
 		}
 	}
 
-	public final ZNode TypeListNodeAsFuncCall(ZListNode FuncNode, ZFuncType FuncType) {
+	public final BNode TypeListNodeAsFuncCall(ZListNode FuncNode, ZFuncType FuncType) {
 		@Var int i = 0;
 		@Var ZType[] Greek = ZGreekType._NewGreekTypes(null);
 		//		if(FuncNode.GetListSize() != FuncType.GetFuncParamSize()) {
 		//			System.err.println(ZLogger._LogError(FuncNode.SourceToken, "mismatch " + FuncType + ", " + FuncNode.GetListSize()+": " + FuncNode));
 		//		}
 		while(i < FuncNode.GetListSize()) {
-			@Var ZNode SubNode = FuncNode.GetListAt(i);
+			@Var BNode SubNode = FuncNode.GetListAt(i);
 			@Var ZType ParamType =  FuncType.GetFuncParamType(i);
 			SubNode = this.TryType(SubNode, ParamType);
 			if(!SubNode.IsUntyped() || !ParamType.IsVarType()) {
@@ -270,14 +270,14 @@ public abstract class ZTypeChecker extends ZVisitor {
 		this.ReturnTypeNode(DesugarNode, DesugarNode.GetAstType(DesugarNode.GetAstSize()-1));
 	}
 
-	@Override public void VisitAsmNode(ZAsmNode Node) {
+	@Override public void VisitAsmNode(BAsmNode Node) {
 		this.ReturnTypeNode(Node, Node.MacroType());
 	}
 
 	// ----------------------------------------------------------------------
 	/* Note : the CreateNode serise are designed to treat typed node */
 
-	public ZFunctionNode CreateFunctionNode(ZNode ParentNode, String FuncName, ZNode Node) {
+	public ZFunctionNode CreateFunctionNode(BNode ParentNode, String FuncName, BNode Node) {
 		@Var ZFunctionNode FuncNode = new ZFunctionNode(ParentNode);
 		FuncNode.GivenName = FuncName;
 		FuncNode.GivenType = Node.Type;
@@ -294,47 +294,47 @@ public abstract class ZTypeChecker extends ZVisitor {
 		return FuncNode;
 	}
 
-	public ZBlockNode CreateBlockNode(ZNode ParentNode) {
+	public ZBlockNode CreateBlockNode(BNode ParentNode) {
 		@Var ZBlockNode BlockNode = new ZBlockNode(ParentNode, null);
 		BlockNode.Type = ZType.VoidType;
 		return BlockNode;
 	}
 
-	public ZReturnNode CreateReturnNode(ZNode ParentNode) {
+	public ZReturnNode CreateReturnNode(BNode ParentNode) {
 		@Var ZReturnNode ReturnNode = new ZReturnNode(ParentNode);
 		ReturnNode.Type = ZType.VoidType;
 		return ReturnNode;
 	}
 
-	public ZReturnNode CreateReturnNode(ZNode ParentNode, ZNode ExprNode) {
+	public ZReturnNode CreateReturnNode(BNode ParentNode, BNode ExprNode) {
 		@Var ZReturnNode ReturnNode = new ZReturnNode(ParentNode);
 		ReturnNode.SetNode(ZReturnNode._Expr, ExprNode);
 		ReturnNode.Type = ZType.VoidType;
 		return ReturnNode;
 	}
 
-	public ZVarBlockNode CreateVarNode(ZNode ParentNode, String Name, ZType DeclType, ZNode InitNode) {
-		@Var ZLetVarNode VarNode = new ZLetVarNode(null, 0);
+	public ZVarBlockNode CreateVarNode(BNode ParentNode, String Name, ZType DeclType, BNode InitNode) {
+		@Var BLetVarNode VarNode = new BLetVarNode(null, 0, null, null);
 		VarNode.GivenName   = Name;
 		VarNode.GivenType   = DeclType;
-		VarNode.SetNode(ZLetVarNode._InitValue, InitNode);
+		VarNode.SetNode(BLetVarNode._InitValue, InitNode);
 		VarNode.Type = ZType.VoidType;
 		return new ZVarBlockNode(ParentNode, VarNode);
 	}
 
-	public ZGetNameNode CreateGetNameNode(ZNode ParentNode, String Name, ZType Type) {
-		@Var ZGetNameNode NameNode = new ZGetNameNode(ParentNode, null, Name);
+	public BGetNameNode CreateGetNameNode(BNode ParentNode, String Name, ZType Type) {
+		@Var BGetNameNode NameNode = new BGetNameNode(ParentNode, null, Name);
 		NameNode.Type = Type;
 		return NameNode;
 	}
 
-	public ZFuncCallNode CreateFuncCallNode(ZNode ParentNode, ZToken SourceToken, String FuncName, ZFuncType FuncType) {
+	public ZFuncCallNode CreateFuncCallNode(BNode ParentNode, ZToken SourceToken, String FuncName, ZFuncType FuncType) {
 		@Var ZFuncCallNode FuncNode = new ZFuncCallNode(ParentNode, new ZFuncNameNode(null, SourceToken, FuncName, FuncType));
 		FuncNode.Type = FuncType.GetReturnType();
 		return FuncNode;
 	}
 
-	public final ZListNode CreateDefinedFuncCallNode(ZNode ParentNode, ZToken SourceToken, ZFunc Func) {
+	public final ZListNode CreateDefinedFuncCallNode(BNode ParentNode, ZToken SourceToken, ZFunc Func) {
 		@Var ZListNode FuncNode = null;
 		if(Func instanceof ZMacroFunc) {
 			FuncNode = new ZMacroNode(ParentNode, SourceToken, (ZMacroFunc)Func);

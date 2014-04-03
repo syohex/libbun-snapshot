@@ -3,7 +3,7 @@ package libbun.parser.ast;
 import libbun.type.ZType;
 import libbun.util.Field;
 
-public abstract class ZDefineNameNode extends ZNode {
+public abstract class ZDefineNameNode extends BNode {
 	public static final int _NameInfo = 0;
 	public static final int _TypeInfo = 1;
 	public final static int _InitValue = 2;
@@ -12,14 +12,14 @@ public abstract class ZDefineNameNode extends ZNode {
 	@Field public ZType   GivenType = null;
 	@Field public String  GivenName = null;
 
-	protected ZDefineNameNode(ZNode ParentNode, int Size) {
+	protected ZDefineNameNode(BNode ParentNode, int Size) {
 		super(ParentNode, null, Size);
 	}
 
 	public final ZType DeclType() {
 		if(this.GivenType == null) {
-			if(this.AST[ZLetVarNode._TypeInfo] != null) {
-				this.GivenType = this.AST[ZLetVarNode._TypeInfo].Type;
+			if(this.AST[BLetVarNode._TypeInfo] != null) {
+				this.GivenType = this.AST[BLetVarNode._TypeInfo].Type;
 			}
 			else {
 				this.GivenType = ZType.VarType;
@@ -35,16 +35,16 @@ public abstract class ZDefineNameNode extends ZNode {
 
 	public final String GetName() {
 		if(this.GivenName == null) {
-			this.GivenName = this.AST[ZLetVarNode._NameInfo].SourceToken.GetTextAsName();
+			this.GivenName = this.AST[BLetVarNode._NameInfo].SourceToken.GetTextAsName();
 		}
 		return this.GivenName;
 	}
 
-	public final ZNode InitValueNode() {
-		if(this.AST[ZLetVarNode._InitValue] == null) {
-			this.SetNode(ZLetVarNode._InitValue, new ZDefaultValueNode());
+	public final BNode InitValueNode() {
+		if(this.AST[BLetVarNode._InitValue] == null) {
+			this.SetNode(BLetVarNode._InitValue, new ZDefaultValueNode());
 		}
-		return this.AST[ZLetVarNode._InitValue];
+		return this.AST[BLetVarNode._InitValue];
 	}
 
 }

@@ -3,12 +3,12 @@ package libbun.parser.sugar;
 import libbun.parser.ZGenerator;
 import libbun.parser.ZTypeChecker;
 import libbun.parser.ast.ZBlockNode;
-import libbun.parser.ast.ZBooleanNode;
+import libbun.parser.ast.BBooleanNode;
 import libbun.parser.ast.ZBreakNode;
 import libbun.parser.ast.ZDesugarNode;
 import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.ZNode;
-import libbun.parser.ast.ZSetNameNode;
+import libbun.parser.ast.BNode;
+import libbun.parser.ast.BSetNameNode;
 import libbun.parser.ast.ZSugarNode;
 import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
@@ -18,7 +18,7 @@ import libbun.util.Var;
 
 public class ZContinueNode extends ZSugarNode {
 
-	public ZContinueNode(ZNode ParentNode) {
+	public ZContinueNode(BNode ParentNode) {
 		super(ParentNode, null, 0);
 	}
 
@@ -40,7 +40,7 @@ public class ZContinueNode extends ZSugarNode {
 	 **/
 
 	private ZWhileNode LookupWhileNode() {
-		@Var ZNode Node = this;
+		@Var BNode Node = this;
 		while(Node != null) {
 			if(Node instanceof ZWhileNode) {
 				return (ZWhileNode)Node;
@@ -50,10 +50,10 @@ public class ZContinueNode extends ZSugarNode {
 		return null;
 	}
 
-	private ZDesugarNode ReplaceContinue(ZNode Node, ZContinueNode FirstNode, ZNode[] NodeList, ZDesugarNode FirstDesugarNode) {
+	private ZDesugarNode ReplaceContinue(BNode Node, ZContinueNode FirstNode, BNode[] NodeList, ZDesugarNode FirstDesugarNode) {
 		@Var int i = 0;
 		while(i < Node.GetAstSize()) {
-			@Var ZNode SubNode = Node.AST[i];
+			@Var BNode SubNode = Node.AST[i];
 			if(SubNode instanceof ZContinueNode) {
 				@Var ZDesugarNode DesugarNode = new ZDesugarNode(SubNode, NodeList);
 				if(SubNode == FirstNode) {
@@ -79,23 +79,23 @@ public class ZContinueNode extends ZSugarNode {
 		}
 		@Var ZBlockNode ParentBlockNode = WhileNode.GetScopeBlockNode();
 		@Var String VarName = Generator.NameUniqueSymbol("continue");
-		@Var ZVarBlockNode VarNode = Generator.TypeChecker.CreateVarNode(null, VarName, ZType.BooleanType, new ZBooleanNode(true));
-		@Var ZWhileNode ContinueWhile = VarNode.SetNewWhileNode(ZNode._AppendIndex, Typer);
+		@Var ZVarBlockNode VarNode = Generator.TypeChecker.CreateVarNode(null, VarName, ZType.BooleanType, new BBooleanNode(true));
+		@Var ZWhileNode ContinueWhile = VarNode.SetNewWhileNode(BNode._AppendIndex, Typer);
 		ContinueWhile.SetNewGetNameNode(ZWhileNode._Cond, Typer, VarName, ZType.BooleanType);
 		@Var ZBlockNode WhileBlockNode = ContinueWhile.SetNewBlockNode(ZWhileNode._Block, Typer);
-		WhileBlockNode.Append(new ZSetNameNode(VarName, new ZBooleanNode(false)));
+		WhileBlockNode.Append(new BSetNameNode(VarName, new BBooleanNode(false)));
 		WhileBlockNode.Append(WhileNode);
 
-		@Var ZNode[] Nodes = null;
+		@Var BNode[] Nodes = null;
 		if(WhileNode.HasNextNode()) {
 			Nodes = LibZen._NewNodeArray(3);
-			Nodes[0] = new ZSetNameNode(VarName, new ZBooleanNode(true));
+			Nodes[0] = new BSetNameNode(VarName, new BBooleanNode(true));
 			Nodes[1] = WhileNode.NextNode();
 			Nodes[2] = new ZBreakNode(null);
 		}
 		else {
 			Nodes = LibZen._NewNodeArray(2);
-			Nodes[0] = new ZSetNameNode(VarName, new ZBooleanNode(true));
+			Nodes[0] = new BSetNameNode(VarName, new BBooleanNode(true));
 			Nodes[1] = new ZBreakNode(null);
 		}
 		ParentBlockNode.ReplaceWith(WhileNode, VarNode);

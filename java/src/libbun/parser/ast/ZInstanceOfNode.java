@@ -29,16 +29,16 @@ import libbun.parser.ZVisitor;
 import libbun.type.ZType;
 
 //E.g., $ExprNode instanceof TypeInfo
-public final class ZInstanceOfNode extends ZNode {
+public final class ZInstanceOfNode extends BNode {
 	public final static int _Left = 0;
 	public final static int _TypeInfo = 1;
 
-	public ZInstanceOfNode(ZNode ParentNode, ZToken Token, ZNode LeftNode) {
+	public ZInstanceOfNode(BNode ParentNode, ZToken Token, BNode LeftNode) {
 		super(ParentNode, Token, 2);
 		this.SetNode(ZInstanceOfNode._Left, LeftNode);
 	}
 
-	public final ZNode LeftNode() {
+	public final BNode LeftNode() {
 		return this.AST[ZInstanceOfNode._Left ];
 	}
 

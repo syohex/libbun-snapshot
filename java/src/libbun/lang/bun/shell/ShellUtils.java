@@ -7,8 +7,8 @@ import libbun.parser.ZSyntax;
 import libbun.parser.ZToken;
 import libbun.parser.ZTokenContext;
 import libbun.parser.ast.ZBinaryNode;
-import libbun.parser.ast.ZNode;
-import libbun.parser.ast.ZStringNode;
+import libbun.parser.ast.BNode;
+import libbun.parser.ast.BStringNode;
 import libbun.util.ZArray;
 
 // you must implement this class if you use shell grammar
@@ -38,12 +38,12 @@ public class ShellUtils {
 		return false;
 	}
 
-	public static ZNode _ToNode(ZNode ParentNode, ZTokenContext TokenContext, ZArray<ZNode> NodeList) {
+	public static BNode _ToNode(BNode ParentNode, ZTokenContext TokenContext, ZArray<BNode> NodeList) {
 		ZToken Token = TokenContext.GetToken();
-		ZNode Node = new ZStringNode(ParentNode, null, "");
+		BNode Node = new BStringNode(ParentNode, null, "");
 		ZSyntax Pattern = TokenContext.NameSpace.GetRightSyntaxPattern("+");
 		ZToken PlusToken = new ZToken(new ZSource(Token.GetFileName(), Token.GetLineNumber(), "+", TokenContext), 0, "+".length());
-		for(ZNode CurrentNode : NodeList.ArrayValues) {
+		for(BNode CurrentNode : NodeList.ArrayValues) {
 			ZBinaryNode BinaryNode = new ZBinaryNode(ParentNode, PlusToken, Node, Pattern);
 			BinaryNode.SetNode(ZBinaryNode._Right, CurrentNode);
 			Node = BinaryNode;

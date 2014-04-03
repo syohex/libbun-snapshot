@@ -1,23 +1,23 @@
 package libbun.lang.bun;
 
 import libbun.parser.ZTokenContext;
-import libbun.parser.ast.ZLetVarNode;
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BLetVarNode;
+import libbun.parser.ast.BNode;
 import libbun.util.Var;
 import libbun.util.ZMatchFunction;
 
 public class FieldPatternFunction extends ZMatchFunction {
 
-	@Override public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
+	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var boolean Rememberd = TokenContext.SetParseFlag(false);
-		@Var ZNode FieldNode = new ZLetVarNode(ParentNode, 0);
+		@Var BNode FieldNode = new BLetVarNode(ParentNode, 0, null, null);
 		FieldNode = TokenContext.MatchToken(FieldNode, "var", ZTokenContext._Required);
-		FieldNode = TokenContext.MatchPattern(FieldNode, ZLetVarNode._NameInfo, "$Name$", ZTokenContext._Required);
-		FieldNode = TokenContext.MatchPattern(FieldNode, ZLetVarNode._TypeInfo, "$TypeAnnotation$", ZTokenContext._Optional);
+		FieldNode = TokenContext.MatchPattern(FieldNode, BLetVarNode._NameInfo, "$Name$", ZTokenContext._Required);
+		FieldNode = TokenContext.MatchPattern(FieldNode, BLetVarNode._TypeInfo, "$TypeAnnotation$", ZTokenContext._Optional);
 		if(TokenContext.MatchToken("=")) {
-			FieldNode = TokenContext.MatchPattern(FieldNode, ZLetVarNode._InitValue, "$Expression$", ZTokenContext._Required);
+			FieldNode = TokenContext.MatchPattern(FieldNode, BLetVarNode._InitValue, "$Expression$", ZTokenContext._Required);
 		}
-		FieldNode = TokenContext.MatchPattern(FieldNode, ZNode._Nop, ";", ZTokenContext._Required);
+		FieldNode = TokenContext.MatchPattern(FieldNode, BNode._Nop, ";", ZTokenContext._Required);
 		TokenContext.SetParseFlag(Rememberd);
 		return FieldNode;
 	}

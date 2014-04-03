@@ -26,6 +26,8 @@
 package libbun.encode;
 
 import libbun.parser.ZLogger;
+import libbun.parser.ast.BLetVarNode;
+import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZArrayLiteralNode;
 import libbun.parser.ast.ZClassNode;
 import libbun.parser.ast.ZFuncCallNode;
@@ -34,11 +36,9 @@ import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZGetIndexNode;
 import libbun.parser.ast.ZGetterNode;
 import libbun.parser.ast.ZInstanceOfNode;
-import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZMapLiteralNode;
 import libbun.parser.ast.ZMethodCallNode;
 import libbun.parser.ast.ZNewObjectNode;
-import libbun.parser.ast.ZNode;
 import libbun.parser.ast.ZSetIndexNode;
 import libbun.parser.ast.ZSetterNode;
 import libbun.parser.ast.ZThrowNode;
@@ -72,7 +72,7 @@ public class CGenerator extends ZSourceGenerator {
 		this.HeaderBuilder.AppendNewLine("#include<", LibName, ">");
 	}
 
-	@Override protected void GenerateCode(ZType ContextType, ZNode Node) {
+	@Override protected void GenerateCode(ZType ContextType, BNode Node) {
 		if(Node.IsUntyped() && !Node.IsErrorNode() && !(Node instanceof ZFuncNameNode)) {
 			this.CurrentBuilder.Append("/*untyped*/" + this.NullLiteral);
 			ZLogger._LogError(Node.SourceToken, "untyped error: " + Node);
@@ -276,32 +276,32 @@ public class CGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override protected void VisitVarDeclNode(ZLetVarNode Node) {
+	@Override protected void VisitVarDeclNode(BLetVarNode Node) {
 		this.GenerateTypeName(Node.DeclType());
 		this.CurrentBuilder.Append(" ");
-		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
+		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 		this.GenerateCode2(" = ", null, Node.InitValueNode(), this.SemiColon);
 		if(Node.HasNextVarNode()) {
 			this.VisitVarDeclNode(Node.NextVarNode());
 		}
 	}
 
-	@Override public void VisitLetNode(ZLetVarNode Node) {
+	@Override public void VisitLetNode(BLetVarNode Node) {
 		this.CurrentBuilder.Append("static ");
-		this.GenerateTypeName(Node.GetAstType(ZLetVarNode._InitValue));
+		this.GenerateTypeName(Node.GetAstType(BLetVarNode._InitValue));
 		this.CurrentBuilder.Append(" ");
-		this.CurrentBuilder.Append(Node.GlobalName);
+		this.CurrentBuilder.Append(Node.GetUniqueName(this));
 		this.GenerateCode2(" = ", null, Node.InitValueNode(), this.SemiColon);
 	}
 
-	@Override protected void VisitParamNode(ZLetVarNode Node) {
+	@Override protected void VisitParamNode(BLetVarNode Node) {
 		if(Node.Type.IsFuncType()) {
-			this.GenerateFuncTypeName(Node.DeclType(), this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
+			this.GenerateFuncTypeName(Node.DeclType(), this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 		}
 		else {
 			this.GenerateTypeName(Node.DeclType());
 			this.CurrentBuilder.Append(" ");
-			this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
+			this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 		}
 	}
 
@@ -427,8 +427,8 @@ public class CGenerator extends ZSourceGenerator {
 		}
 		@Var int i = 0;
 		while (i < Node.GetListSize()) {
-			@Var ZLetVarNode FieldNode = Node.GetFieldNode(i);
-			this.CurrentBuilder.AppendNewLine("o->", FieldNode.GetName(), " = ");
+			@Var BLetVarNode FieldNode = Node.GetFieldNode(i);
+			this.CurrentBuilder.AppendNewLine("o->", FieldNode.GetGivenName(), " = ");
 			if(FieldNode.DeclType().IsFuncType()) {
 				this.CurrentBuilder.Append("NULL");
 			}

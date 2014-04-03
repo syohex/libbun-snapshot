@@ -31,11 +31,11 @@ import libbun.type.ZType;
 import libbun.util.Var;
 
 //E.g., (T) $Expr
-public class ZCastNode extends ZNode {
+public class ZCastNode extends BNode {
 	public final static int _Expr = 0;
 	public final static int _TypeInfo = 1;
 
-	public ZCastNode(ZNode ParentNode, ZType CastType, ZNode Node) {
+	public ZCastNode(BNode ParentNode, ZType CastType, BNode Node) {
 		super(ParentNode, null, 2);
 		this.Type = CastType;
 		if(Node != null) {
@@ -43,7 +43,7 @@ public class ZCastNode extends ZNode {
 		}
 	}
 
-	public final ZNode ExprNode() {
+	public final BNode ExprNode() {
 		return this.AST[ZCastNode._Expr ];
 	}
 

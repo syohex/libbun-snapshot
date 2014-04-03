@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import libbun.parser.ast.ZListNode;
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.type.ZFuncType;
 import libbun.type.ZType;
 
@@ -59,7 +59,7 @@ class AsmMethodBuilder extends MethodNode {
 		}
 	}
 
-	void SetLineNumber(ZNode Node) {
+	void SetLineNumber(BNode Node) {
 		if(Node != null && Node.SourceToken != null) {
 			this.SetLineNumber(Node.SourceToken.GetLineNumber());
 		}
@@ -212,7 +212,7 @@ class AsmMethodBuilder extends MethodNode {
 		}
 	}
 
-	void CheckParamCast(Class<?> TaargetClass, ZNode Node) {
+	void CheckParamCast(Class<?> TaargetClass, BNode Node) {
 		Class<?> SourceClass = this.Generator.GetJavaClass(Node.Type);
 		if(TaargetClass != SourceClass) {
 			this.Generator.Debug("C2="+Node + ": " + Node.Type);
@@ -220,7 +220,7 @@ class AsmMethodBuilder extends MethodNode {
 		}
 	}
 
-	void CheckReturnCast(ZNode Node, Class<?> SouceClass) {
+	void CheckReturnCast(BNode Node, Class<?> SouceClass) {
 		Class<?> TargetClass = this.Generator.GetJavaClass(Node.Type);
 		if(TargetClass != SouceClass) {
 			this.Generator.Debug("C1 "+Node + ": " + Node.Type);
@@ -228,21 +228,21 @@ class AsmMethodBuilder extends MethodNode {
 		}
 	}
 
-	void PushNode(Class<?> TagetClass, ZNode Node) {
+	void PushNode(Class<?> TagetClass, BNode Node) {
 		Node.Accept(this.Generator);
 		if(TagetClass != null) {
 			this.CheckParamCast(TagetClass, Node);
 		}
 	}
 
-	void ApplyStaticMethod(ZNode Node, Method sMethod) {
+	void ApplyStaticMethod(BNode Node, Method sMethod) {
 		String owner = Type.getInternalName(sMethod.getDeclaringClass());
 		this.SetLineNumber(Node);
 		this.visitMethodInsn(INVOKESTATIC, owner, sMethod.getName(), Type.getMethodDescriptor(sMethod));
 		this.CheckReturnCast(Node, sMethod.getReturnType());
 	}
 
-	void ApplyStaticMethod(ZNode Node, Method sMethod, ZNode[] Nodes) {
+	void ApplyStaticMethod(BNode Node, Method sMethod, BNode[] Nodes) {
 		Class<?>[] P = sMethod.getParameterTypes();
 		for(int i = 0; i < P.length; i++) {
 			this.PushNode(P[i], Nodes[i]);
@@ -250,7 +250,7 @@ class AsmMethodBuilder extends MethodNode {
 		this.ApplyStaticMethod(Node, sMethod);
 	}
 
-	void ApplyStaticMethod(ZNode Node, Method sMethod, ZListNode ListNode) {
+	void ApplyStaticMethod(BNode Node, Method sMethod, ZListNode ListNode) {
 		Class<?>[] P = sMethod.getParameterTypes();
 		for(int i = 0; i < P.length; i++) {
 			this.PushNode(P[i], ListNode.GetListAt(i));
@@ -258,7 +258,7 @@ class AsmMethodBuilder extends MethodNode {
 		this.ApplyStaticMethod(Node, sMethod);
 	}
 
-	void ApplyFuncName(ZNode Node, String FuncName, ZFuncType FuncType, ZListNode ListNode) {
+	void ApplyFuncName(BNode Node, String FuncName, ZFuncType FuncType, ZListNode ListNode) {
 		if(ListNode != null) {
 			for(int i = 0; i < ListNode.GetListSize(); i++) {
 				this.PushNode(null, ListNode.GetListAt(i));
@@ -276,7 +276,7 @@ class AsmMethodBuilder extends MethodNode {
 		}
 	}
 
-	void ApplyFuncObject(ZNode Node, Class<?> FuncClass, ZNode FuncNode, ZFuncType FuncType, ZListNode ListNode) {
+	void ApplyFuncObject(BNode Node, Class<?> FuncClass, BNode FuncNode, ZFuncType FuncType, ZListNode ListNode) {
 		this.PushNode(FuncClass, FuncNode);
 		for(int i = 0; i < ListNode.GetListSize(); i++) {
 			this.PushNode(null, ListNode.GetListAt(i));

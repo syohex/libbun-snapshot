@@ -1,20 +1,20 @@
 package libbun.parser.ssa;
 
-import libbun.parser.ast.ZLetVarNode;
-import libbun.parser.ast.ZNode;
-import libbun.parser.ast.ZSetNameNode;
+import libbun.parser.ast.BLetVarNode;
+import libbun.parser.ast.BNode;
+import libbun.parser.ast.BSetNameNode;
 import libbun.parser.ast.ZVarBlockNode;
 import libbun.type.ZType;
 
 public class NodeLib {
-	static public boolean IsVariableNode(ZNode Node) {
-		if(Node instanceof ZLetVarNode) {
+	static public boolean IsVariableNode(BNode Node) {
+		if(Node instanceof BLetVarNode) {
 			return true;
 		}
 		else if(Node instanceof ZVarBlockNode) {
 			return true;
 		}
-		else if(Node instanceof ZSetNameNode) {
+		else if(Node instanceof BSetNameNode) {
 			return true;
 		}
 		else if(Node instanceof PHINode) {
@@ -23,17 +23,17 @@ public class NodeLib {
 		return false;
 	}
 
-	static public ZType GetType(ZNode Node) {
-		if(Node instanceof ZLetVarNode) {
-			ZLetVarNode LNode = (ZLetVarNode) Node;
+	static public ZType GetType(BNode Node) {
+		if(Node instanceof BLetVarNode) {
+			BLetVarNode LNode = (BLetVarNode) Node;
 			return LNode.DeclType();
 		}
 		else if(Node instanceof ZVarBlockNode) {
 			ZVarBlockNode VNode = (ZVarBlockNode) Node;
 			return VNode.VarDeclNode().DeclType();
 		}
-		else if(Node instanceof ZSetNameNode) {
-			ZSetNameNode SNode = (ZSetNameNode) Node;
+		else if(Node instanceof BSetNameNode) {
+			BSetNameNode SNode = (BSetNameNode) Node;
 			return SNode.ExprNode().Type;
 		}
 		else if(Node instanceof PHINode) {
@@ -43,17 +43,17 @@ public class NodeLib {
 		return ZType.VarType;
 	}
 
-	static public String GetVarName(ZNode Node) {
-		if(Node instanceof ZLetVarNode) {
-			ZLetVarNode LNode = (ZLetVarNode) Node;
-			return LNode.GetName();
+	static public String GetVarName(BNode Node) {
+		if(Node instanceof BLetVarNode) {
+			BLetVarNode LNode = (BLetVarNode) Node;
+			return LNode.GetGivenName();
 		}
 		else if(Node instanceof ZVarBlockNode) {
 			ZVarBlockNode VNode = (ZVarBlockNode) Node;
-			return VNode.VarDeclNode().GetName();
+			return VNode.VarDeclNode().GetGivenName();
 		}
-		else if(Node instanceof ZSetNameNode) {
-			ZSetNameNode SNode = (ZSetNameNode) Node;
+		else if(Node instanceof BSetNameNode) {
+			BSetNameNode SNode = (BSetNameNode) Node;
 			return SNode.GetName();
 		}
 		else if(Node instanceof PHINode) {
@@ -63,15 +63,15 @@ public class NodeLib {
 		return null;
 	}
 
-	static public int GetVarIndex(ZNode Node) {
-		if(Node instanceof ZLetVarNode) {
+	static public int GetVarIndex(BNode Node) {
+		if(Node instanceof BLetVarNode) {
 			return 0;
 		}
 		else if(Node instanceof ZVarBlockNode) {
 			return 0;
 		}
-		else if(Node instanceof ZSetNameNode) {
-			ZSetNameNode SNode = (ZSetNameNode) Node;
+		else if(Node instanceof BSetNameNode) {
+			BSetNameNode SNode = (BSetNameNode) Node;
 			return SNode.VarIndex;
 		}
 		else if(Node instanceof PHINode) {

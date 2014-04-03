@@ -139,7 +139,6 @@ public class BunGrammar {
 		NameSpace.DefineRightExpression("instanceof", BunPrecedence._Instanceof, new InstanceOfPatternFunction());
 
 		NameSpace.DefineStatement("assert", new AssertPatternFunction());
-		NameSpace.DefineStatement("asm", new AsmMacroPatternFunction());
 		NameSpace.DefineStatement("asm", new AsmPatternFunction());
 		NameSpace.DefineStatement("require", new RequirePatternFunction());
 

@@ -29,13 +29,13 @@ import libbun.parser.ZVisitor;
 import libbun.util.Field;
 import libbun.util.ZenIgnored;
 
-public class ZErrorNode extends ZConstNode {
+public class ZErrorNode extends BConstNode {
 	@Field public String ErrorMessage;
-	public ZErrorNode(ZNode ParentNode, ZToken SourceToken, String ErrorMessage) {
+	public ZErrorNode(BNode ParentNode, ZToken SourceToken, String ErrorMessage) {
 		super(ParentNode, SourceToken);
 		this.ErrorMessage = ErrorMessage;
 	}
-	public ZErrorNode(ZNode Node, String ErrorMessage) {
+	public ZErrorNode(BNode Node, String ErrorMessage) {
 		super(Node.ParentNode, Node.SourceToken);
 		this.ErrorMessage = ErrorMessage;
 	}

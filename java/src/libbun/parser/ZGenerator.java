@@ -25,16 +25,16 @@
 
 package libbun.parser;
 
+import libbun.parser.ast.BLetVarNode;
+import libbun.parser.ast.BNode;
+import libbun.parser.ast.BNullNode;
 import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.ZClassNode;
 import libbun.parser.ast.ZDefaultValueNode;
 import libbun.parser.ast.ZDesugarNode;
 import libbun.parser.ast.ZErrorNode;
 import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZListNode;
-import libbun.parser.ast.ZNode;
-import libbun.parser.ast.ZNullNode;
 import libbun.parser.ast.ZSugarNode;
 import libbun.parser.ast.ZTopLevelNode;
 import libbun.type.ZClassType;
@@ -164,15 +164,12 @@ public abstract class ZGenerator extends ZVisitor {
 		return Symbol + "Z" + this.GetUniqueNumber();
 	}
 
-	public String NameGlobalNameClass(String Name) {
-		return "G__" + Name;
+	public final String NameUniqueSymbol(String Symbol, int NameIndex) {
+		return Symbol + "__B" + this.GetUniqueNumber();
 	}
 
-	public String NameGlobalSymbol(String Symbol, boolean IsExport) {
-		if(IsExport) {
-			return Symbol;
-		}
-		return Symbol + "Z" + this.GetUniqueNumber();
+	public String NameGlobalNameClass(String Name) {
+		return "G__" + Name;
 	}
 
 	public final String NameClass(ZType ClassType) {
@@ -211,7 +208,7 @@ public abstract class ZGenerator extends ZVisitor {
 
 	//
 
-	public final ZPrototype SetPrototype(ZNode Node, String FuncName, ZFuncType FuncType) {
+	public final ZPrototype SetPrototype(BNode Node, String FuncName, ZFuncType FuncType) {
 		@Var ZFunc Func = this.GetDefinedFunc(FuncName, FuncType);
 		if(Func != null) {
 			if(!FuncType.Equals(Func.GetFuncType())) {
@@ -270,13 +267,13 @@ public abstract class ZGenerator extends ZVisitor {
 		return null;
 	}
 
-	public final void VisitUndefinedNode(ZNode Node) {
+	public final void VisitUndefinedNode(BNode Node) {
 		@Var ZErrorNode ErrorNode = new ZErrorNode(Node.ParentNode, Node.SourceToken, "undefined node:" + Node.toString());
 		this.VisitErrorNode(ErrorNode);
 	}
 
 	@Override public final void VisitDefaultValueNode(ZDefaultValueNode Node) {
-		this.VisitNullNode(new ZNullNode(Node.ParentNode, null));
+		this.VisitNullNode(new BNullNode(Node.ParentNode, null));
 	}
 
 	@Override public void VisitSugarNode(ZSugarNode Node) {
@@ -288,15 +285,15 @@ public abstract class ZGenerator extends ZVisitor {
 		}
 	}
 
-	@ZenMethod protected void GenerateCode(ZType ContextType, ZNode Node) {
+	@ZenMethod protected void GenerateCode(ZType ContextType, BNode Node) {
 		Node.Accept(this);
 	}
 
-	@ZenMethod public void GenerateStatement(ZNode Node) {
+	@ZenMethod public void GenerateStatement(BNode Node) {
 		Node.Accept(this);
 	}
 
-	protected boolean ExecStatement(ZNode Node, boolean IsInteractive) {
+	protected boolean ExecStatement(BNode Node, boolean IsInteractive) {
 		//this.InteractiveContext = IsInteractive;
 		this.EnableVisitor();
 		this.TopLevelSymbol = null;
@@ -308,7 +305,7 @@ public abstract class ZGenerator extends ZVisitor {
 				Node = this.TypeChecker.CheckType(Node, ZType.VarType);
 			}
 			if(this.IsVisitable()) {
-				if(Node instanceof ZFunctionNode || Node instanceof ZClassNode || Node instanceof ZLetVarNode) {
+				if(Node instanceof ZFunctionNode || Node instanceof ZClassNode || Node instanceof BLetVarNode) {
 					Node.Type = ZType.VoidType;
 					this.GenerateStatement(Node);
 				}
@@ -333,9 +330,9 @@ public abstract class ZGenerator extends ZVisitor {
 		@Var ZToken SkipToken = TokenContext.GetToken();
 		while(TokenContext.HasNext()) {
 			TokenContext.SetParseFlag(ZTokenContext._NotAllowSkipIndent);
-			TopBlockNode.ClearListAfter(0);
+			TopBlockNode.ClearListToSize(0);
 			SkipToken = TokenContext.GetToken();
-			@Var ZNode StmtNode = TokenContext.ParsePattern(TopBlockNode, "$Statement$", ZTokenContext._Required);
+			@Var BNode StmtNode = TokenContext.ParsePattern(TopBlockNode, "$Statement$", ZTokenContext._Required);
 			if(StmtNode.IsErrorNode()) {
 				TokenContext.SkipError(SkipToken);
 			}

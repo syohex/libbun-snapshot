@@ -29,7 +29,7 @@ import libbun.parser.ZToken;
 import libbun.parser.ZVisitor;
 
 public final class ZOrNode extends ZBinaryNode {
-	public ZOrNode(ZNode ParentNode, ZToken Token, ZNode Left, ZSyntax Pattern) {
+	public ZOrNode(BNode ParentNode, ZToken Token, BNode Left, ZSyntax Pattern) {
 		super(ParentNode, Token, Left, Pattern);
 	}
 	@Override public void Accept(ZVisitor Visitor) {

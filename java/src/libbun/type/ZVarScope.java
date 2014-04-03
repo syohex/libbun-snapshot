@@ -4,7 +4,7 @@ import libbun.parser.ZLogger;
 import libbun.parser.ZToken;
 import libbun.parser.ZTypeChecker;
 import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.util.Field;
 import libbun.util.Var;
 import libbun.util.ZArray;
@@ -27,7 +27,7 @@ public final class ZVarScope {
 		}
 	}
 
-	public void TypeNode(ZNode Node, ZType Type) {
+	public void TypeNode(BNode Node, ZType Type) {
 		if(Type instanceof ZVarType) {
 			if(!Type.IsVarType()) {
 				Type = Type.GetRealType();
@@ -52,7 +52,7 @@ public final class ZVarScope {
 		this.UnresolvedSymbolCount = this.UnresolvedSymbolCount + 1;
 	}
 
-	public final void InferType(ZType ContextType, ZNode Node) {
+	public final void InferType(ZType ContextType, BNode Node) {
 		//System.out.println("@@ infering .. ContextType=" + ContextType + " Node.Type = " + Node.Type + ", at " + Node);
 		if(Node.IsUntyped()) {
 			this.VarNodeCount = this.VarNodeCount + 1;

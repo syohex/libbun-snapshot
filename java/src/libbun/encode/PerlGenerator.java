@@ -25,15 +25,15 @@
 //ifdef  JAVA
 package libbun.encode;
 import libbun.parser.ZToken;
+import libbun.parser.ast.BGetNameNode;
+import libbun.parser.ast.BLetVarNode;
+import libbun.parser.ast.BNode;
+import libbun.parser.ast.BSetNameNode;
 import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.ZBreakNode;
 import libbun.parser.ast.ZClassNode;
 import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZGetNameNode;
 import libbun.parser.ast.ZGetterNode;
-import libbun.parser.ast.ZLetVarNode;
-import libbun.parser.ast.ZNode;
-import libbun.parser.ast.ZSetNameNode;
 import libbun.parser.ast.ZSetterNode;
 import libbun.type.ZClassField;
 import libbun.type.ZClassType;
@@ -95,12 +95,14 @@ public class PerlGenerator extends ZSourceGenerator {
 		return "$";
 	}
 
-	@Override public void VisitGetNameNode(ZGetNameNode Node) {
-		this.CurrentBuilder.Append(this.VariablePrefix(Node.Type), this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
+	@Override public void VisitGetNameNode(BGetNameNode Node) {
+		this.CurrentBuilder.Append(this.VariablePrefix(Node.Type), this.NameLocalVariable(Node.GetNameSpace(), Node.GetUniqueName(this)));
 	}
 
-	@Override public void VisitSetNameNode(ZSetNameNode Node) {
-		this.CurrentBuilder.Append(this.VariablePrefix(Node.GetAstType(ZSetNameNode._Expr)), this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()), " = ");
+	@Override public void VisitSetNameNode(BSetNameNode Node) {
+		this.CurrentBuilder.Append(this.VariablePrefix(Node.GetAstType(BSetNameNode._Expr)));
+		this.VisitGetNameNode(Node.NameNode());
+		this.CurrentBuilder.Append(" = ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
@@ -116,16 +118,16 @@ public class PerlGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	protected void VisitVarDeclNode(ZLetVarNode Node) {
+	protected void VisitVarDeclNode(BLetVarNode Node) {
 		this.CurrentBuilder.Append("my ", this.VariablePrefix(Node.DeclType().GetRealType()));
-		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()), " = ");
+		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = ");
 		this.GenerateCode(null, Node.InitValueNode());
 		this.CurrentBuilder.Append(this.SemiColon);
 		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 	}
 
-	@Override public void VisitLetNode(ZLetVarNode Node) {
-		this.CurrentBuilder.Append(this.VariablePrefix(Node.DeclType().GetRealType()), Node.GlobalName, " = ");
+	@Override public void VisitLetNode(BLetVarNode Node) {
+		this.CurrentBuilder.Append(this.VariablePrefix(Node.DeclType().GetRealType()), Node.GetUniqueName(this), " = ");
 		this.GenerateCode(null, Node.InitValueNode());
 	}
 
@@ -152,9 +154,9 @@ public class PerlGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append("last");
 	}
 
-	@Override protected void VisitParamNode(ZLetVarNode Node) {
+	@Override protected void VisitParamNode(BLetVarNode Node) {
 		this.CurrentBuilder.Append("my ", this.VariablePrefix(Node.Type));
-		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()), " = shift");
+		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = shift");
 	}
 
 	@Override public void VisitFunctionNode(ZFunctionNode Node) {
@@ -167,7 +169,7 @@ public class PerlGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Indent();
 		//		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 		this.CurrentBuilder.Append(this.SemiColon);
-		@Var ZNode BlockNode = Node.BlockNode();
+		@Var BNode BlockNode = Node.BlockNode();
 		if(BlockNode instanceof ZBlockNode) {
 			this.VisitStmtList((ZBlockNode)BlockNode);
 		}
@@ -218,9 +220,9 @@ public class PerlGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(this.SemiColon);
 		@Var int i = 0;
 		while (i < Node.GetListSize()) {
-			@Var ZLetVarNode FieldNode = Node.GetFieldNode(i);
+			@Var BLetVarNode FieldNode = Node.GetFieldNode(i);
 			this.CurrentBuilder.AppendNewLine();
-			this.CurrentBuilder.Append("$o{", LibZen._QuoteString(FieldNode.GetName()), "} = ");
+			this.CurrentBuilder.Append("$o{", LibZen._QuoteString(FieldNode.GetGivenName()), "} = ");
 			this.GenerateCode(null, FieldNode.InitValueNode());
 			this.CurrentBuilder.Append(this.SemiColon);
 			i = i + 1;

@@ -2,15 +2,15 @@ package libbun.lang.bun;
 
 import libbun.parser.ZTokenContext;
 import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZTryNode;
 import libbun.util.Var;
 import libbun.util.ZMatchFunction;
 
 public class TryPatternFunction extends ZMatchFunction {
 
-	@Override public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
-		@Var ZNode TryNode = new ZTryNode(ParentNode);
+	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
+		@Var BNode TryNode = new ZTryNode(ParentNode);
 		TryNode = TokenContext.MatchToken(TryNode, "try", ZTokenContext._Required);
 		TryNode = TokenContext.MatchPattern(TryNode, ZTryNode._Try, "$Block$", ZTokenContext._Required);
 		@Var int count = 0;

@@ -1,14 +1,14 @@
 package libbun.lang.bun;
 
 import libbun.parser.ZTokenContext;
-import libbun.parser.ast.ZNode;
-import libbun.parser.ast.ZNullNode;
+import libbun.parser.ast.BNode;
+import libbun.parser.ast.BNullNode;
 import libbun.util.ZMatchFunction;
 
 public class NullPatternFunction extends ZMatchFunction {
 
-	@Override public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
-		return new ZNullNode(ParentNode, TokenContext.GetToken(ZTokenContext._MoveNext));
+	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
+		return new BNullNode(ParentNode, TokenContext.GetToken(ZTokenContext._MoveNext));
 	}
 
 }

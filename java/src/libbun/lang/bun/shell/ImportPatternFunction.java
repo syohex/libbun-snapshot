@@ -1,13 +1,13 @@
 package libbun.lang.bun.shell;
 
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.util.ZMatchFunction;
 import libbun.parser.ZToken;
 import libbun.parser.ZTokenContext;
 
 public class ImportPatternFunction extends ZMatchFunction {
 	@Override
-	public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
+	public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		TokenContext.MoveNext();
 		ZToken Token = TokenContext.GetToken();
 		if(Token.EqualsText("command")) {
@@ -16,7 +16,7 @@ public class ImportPatternFunction extends ZMatchFunction {
 		return this.MatchEnvPattern(ParentNode, TokenContext, Token);
 	}
 
-	public ZNode MatchEnvPattern(ZNode ParentNode, ZTokenContext TokenContext, ZToken Token) {
+	public BNode MatchEnvPattern(BNode ParentNode, ZTokenContext TokenContext, ZToken Token) {
 //		if(Token.EqualsText("env")) {
 //			return TokenContext.ParsePattern(ParentNode, ImportEnvPatternFunc.PatternName, ZTokenContext._Required);
 //		}

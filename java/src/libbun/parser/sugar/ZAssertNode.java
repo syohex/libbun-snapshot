@@ -6,8 +6,8 @@ import libbun.parser.ZTypeChecker;
 import libbun.parser.ast.ZDesugarNode;
 import libbun.parser.ast.ZFuncCallNode;
 import libbun.parser.ast.ZListNode;
-import libbun.parser.ast.ZNode;
-import libbun.parser.ast.ZStringNode;
+import libbun.parser.ast.BNode;
+import libbun.parser.ast.BStringNode;
 import libbun.parser.ast.ZSugarNode;
 import libbun.type.ZFuncType;
 import libbun.type.ZType;
@@ -16,7 +16,7 @@ import libbun.util.Var;
 public class ZAssertNode extends ZSugarNode {
 	public final static int _Expr = 0;
 
-	public ZAssertNode(ZNode ParentNode) {
+	public ZAssertNode(BNode ParentNode) {
 		super(ParentNode, null, 1);
 	}
 
@@ -25,7 +25,7 @@ public class ZAssertNode extends ZSugarNode {
 		if(Func != null) {
 			@Var ZListNode FuncNode = TypeChecker.CreateDefinedFuncCallNode(this.ParentNode, this.SourceToken, Func);
 			FuncNode.Append(this.AST[ZAssertNode._Expr]);
-			FuncNode.Append(new ZStringNode(FuncNode, null, this.GetSourceLocation()));
+			FuncNode.Append(new BStringNode(FuncNode, null, this.GetSourceLocation()));
 			return new ZDesugarNode(this, FuncNode);
 		}
 		else {

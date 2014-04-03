@@ -3,42 +3,42 @@ package libbun.parser.ssa;
 import libbun.parser.ZVisitor;
 import libbun.parser.ast.ZAndNode;
 import libbun.parser.ast.ZArrayLiteralNode;
-import libbun.parser.ast.ZAsmNode;
+import libbun.parser.ast.BAsmNode;
 import libbun.parser.ast.ZBinaryNode;
 import libbun.parser.ast.ZBlockNode;
-import libbun.parser.ast.ZBooleanNode;
+import libbun.parser.ast.BBooleanNode;
 import libbun.parser.ast.ZBreakNode;
 import libbun.parser.ast.ZCastNode;
 import libbun.parser.ast.ZClassNode;
 import libbun.parser.ast.ZComparatorNode;
 import libbun.parser.ast.ZDefaultValueNode;
 import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.ZFloatNode;
+import libbun.parser.ast.BFloatNode;
 import libbun.parser.ast.ZFuncCallNode;
 import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZGetIndexNode;
-import libbun.parser.ast.ZGetNameNode;
+import libbun.parser.ast.BGetNameNode;
 import libbun.parser.ast.ZGetterNode;
 import libbun.parser.ast.ZGroupNode;
 import libbun.parser.ast.ZIfNode;
 import libbun.parser.ast.ZInstanceOfNode;
-import libbun.parser.ast.ZIntNode;
-import libbun.parser.ast.ZLetVarNode;
+import libbun.parser.ast.BIntNode;
+import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.ZListNode;
 import libbun.parser.ast.ZLocalDefinedNode;
 import libbun.parser.ast.ZMacroNode;
 import libbun.parser.ast.ZMapLiteralNode;
 import libbun.parser.ast.ZMethodCallNode;
 import libbun.parser.ast.ZNewObjectNode;
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZNotNode;
-import libbun.parser.ast.ZNullNode;
+import libbun.parser.ast.BNullNode;
 import libbun.parser.ast.ZOrNode;
 import libbun.parser.ast.ZReturnNode;
 import libbun.parser.ast.ZSetIndexNode;
-import libbun.parser.ast.ZSetNameNode;
+import libbun.parser.ast.BSetNameNode;
 import libbun.parser.ast.ZSetterNode;
-import libbun.parser.ast.ZStringNode;
+import libbun.parser.ast.BStringNode;
 import libbun.parser.ast.ZSugarNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTopLevelNode;
@@ -49,19 +49,19 @@ import libbun.parser.ast.ZWhileNode;
 import libbun.util.Var;
 
 public class ZASTTransformer extends ZVisitor {
-	private ZNode TransformedValue;
+	private BNode TransformedValue;
 	public ZASTTransformer() {
 		this.TransformedValue = null;
 	}
 
-	protected void VisitBefore(ZNode Node, int Index) {
+	protected void VisitBefore(BNode Node, int Index) {
 	}
 
-	protected void VisitAfter(ZNode Node, int Index) {
+	protected void VisitAfter(BNode Node, int Index) {
 	}
 
-	protected void Transform(ZNode Node, int Index) {
-		ZNode LastTransformed = this.TransformedValue;
+	protected void Transform(BNode Node, int Index) {
+		BNode LastTransformed = this.TransformedValue;
 		this.TransformedValue = Node.AST[Index];
 		this.VisitBefore(Node, Index);
 		Node.AST[Index].Accept(this);
@@ -79,27 +79,27 @@ public class ZASTTransformer extends ZVisitor {
 	}
 
 	@Override
-	public void VisitNullNode(ZNullNode Node) {
+	public void VisitNullNode(BNullNode Node) {
 		/* do nothing */
 	}
 
 	@Override
-	public void VisitBooleanNode(ZBooleanNode Node) {
+	public void VisitBooleanNode(BBooleanNode Node) {
 		/* do nothing */
 	}
 
 	@Override
-	public void VisitIntNode(ZIntNode Node) {
+	public void VisitIntNode(BIntNode Node) {
 		/* do nothing */
 	}
 
 	@Override
-	public void VisitFloatNode(ZFloatNode Node) {
+	public void VisitFloatNode(BFloatNode Node) {
 		/* do nothing */
 	}
 
 	@Override
-	public void VisitStringNode(ZStringNode Node) {
+	public void VisitStringNode(BStringNode Node) {
 		/* do nothing */
 	}
 
@@ -124,13 +124,13 @@ public class ZASTTransformer extends ZVisitor {
 	}
 
 	@Override
-	public void VisitGetNameNode(ZGetNameNode Node) {
+	public void VisitGetNameNode(BGetNameNode Node) {
 		/* do nothing */
 	}
 
 	@Override
-	public void VisitSetNameNode(ZSetNameNode Node) {
-		this.Transform(Node, ZSetNameNode._Expr);
+	public void VisitSetNameNode(BSetNameNode Node) {
+		this.Transform(Node, BSetNameNode._Expr);
 	}
 
 	@Override
@@ -225,7 +225,7 @@ public class ZASTTransformer extends ZVisitor {
 
 	@Override
 	public void VisitVarBlockNode(ZVarBlockNode Node) {
-		this.Transform(Node, ZLetVarNode._InitValue);
+		this.Transform(Node, BLetVarNode._InitValue);
 		this.VisitListNode(Node);
 	}
 
@@ -273,8 +273,8 @@ public class ZASTTransformer extends ZVisitor {
 	//	}
 
 	@Override
-	public void VisitLetNode(ZLetVarNode Node) {
-		this.Transform(Node, ZLetVarNode._InitValue);
+	public void VisitLetNode(BLetVarNode Node) {
+		this.Transform(Node, BLetVarNode._InitValue);
 	}
 
 	@Override
@@ -313,7 +313,7 @@ public class ZASTTransformer extends ZVisitor {
 	}
 
 	@Override
-	public void VisitAsmNode(ZAsmNode Node) {
+	public void VisitAsmNode(BAsmNode Node) {
 		// TODO Auto-generated method stub
 
 	}

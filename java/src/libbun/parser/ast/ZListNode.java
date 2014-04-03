@@ -5,48 +5,48 @@ import libbun.util.Field;
 import libbun.util.LibZen;
 import libbun.util.Var;
 
-public abstract class ZListNode extends ZNode {
+public abstract class ZListNode extends BNode {
 	@Field public int ListStartIndex;
-	public ZListNode(ZNode ParentNode, ZToken SourceToken, int Size) {
+	public ZListNode(BNode ParentNode, ZToken SourceToken, int Size) {
 		super(ParentNode, SourceToken, Size);
 		this.ListStartIndex = Size;
 	}
 
-	public final void Append(ZNode Node, boolean EnforcedParent) {
+	public final void Append(BNode Node, boolean EnforcedParent) {
 		if(this.AST == null) {
 			this.AST = LibZen._NewNodeArray(1);
 			this.SetNode(0, Node, EnforcedParent);
 		}
 		else {
-			@Var ZNode[] newAST = LibZen._NewNodeArray(this.AST.length+1);
+			@Var BNode[] newAST = LibZen._NewNodeArray(this.AST.length+1);
 			LibZen._ArrayCopy(this.AST, 0, newAST, 0, this.AST.length);
 			this.AST = newAST;
 			this.SetNode(this.AST.length - 1, Node, EnforcedParent);
 		}
 	}
 
-	public final void Append(ZNode Node) {
-		this.Append(Node, ZNode._EnforcedParent);
+	public final void Append(BNode Node) {
+		this.Append(Node, BNode._EnforcedParent);
 	}
 
 	public final int GetListSize() {
 		return this.GetAstSize() - this.ListStartIndex;
 	}
 
-	public final ZNode GetListAt(int Index) {
+	public final BNode GetListAt(int Index) {
 		return this.AST[this.ListStartIndex + Index];
 	}
 
-	public final void SetListAt(int Index, ZNode Node) {
+	public final void SetListAt(int Index, BNode Node) {
 		this.SetNode(Index + this.ListStartIndex, Node);
 	}
 
-	public final void InsertListAt(int Index, ZNode Node) {
+	public final void InsertListAt(int Index, BNode Node) {
 		if(this.AST == null || Index < 0 || this.AST.length == Index) {
 			this.Append(Node);
 		} else {
-			@Var ZNode[] newAST = LibZen._NewNodeArray(this.AST.length + 1);
-			@Var ZNode[] oldAST = this.AST;
+			@Var BNode[] newAST = LibZen._NewNodeArray(this.AST.length + 1);
+			@Var BNode[] oldAST = this.AST;
 			Index = this.ListStartIndex + Index;
 			this.AST = newAST;
 			LibZen._ArrayCopy(oldAST, 0, newAST, 0, Index);
@@ -55,9 +55,9 @@ public abstract class ZListNode extends ZNode {
 		}
 	}
 
-	public final ZNode RemoveListAt(int Index) {
-		@Var ZNode Removed = this.GetListAt(Index);
-		@Var ZNode[] newAST = LibZen._NewNodeArray(this.AST.length - 1);
+	public final BNode RemoveListAt(int Index) {
+		@Var BNode Removed = this.GetListAt(Index);
+		@Var BNode[] newAST = LibZen._NewNodeArray(this.AST.length - 1);
 		@Var int RemovedIndex = this.ListStartIndex + Index;
 		LibZen._ArrayCopy(this.AST, 0, newAST, 0, RemovedIndex);
 		LibZen._ArrayCopy(this.AST, RemovedIndex + 1, newAST, RemovedIndex, this.AST.length - (RemovedIndex + 1));
@@ -65,14 +65,14 @@ public abstract class ZListNode extends ZNode {
 		return Removed;
 	}
 
-	public final void ClearListAfter(int Size) {
+	public final void ClearListToSize(int Size) {
 		if(Size < this.GetListSize()) {
 			@Var int newsize = this.ListStartIndex + Size;
 			if(newsize == 0) {
 				this.AST = null;
 			}
 			else {
-				@Var ZNode[] newAST = LibZen._NewNodeArray(newsize);
+				@Var BNode[] newAST = LibZen._NewNodeArray(newsize);
 				LibZen._ArrayCopy(this.AST, 0, newAST, 0, newsize);
 				this.AST = newAST;
 			}

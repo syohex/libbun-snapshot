@@ -28,7 +28,7 @@ import libbun.parser.ZToken;
 import libbun.parser.ZVisitor;
 
 public class ZNotNode extends ZUnaryNode {
-	public ZNotNode(ZNode ParentNode, ZToken Token) {
+	public ZNotNode(BNode ParentNode, ZToken Token) {
 		super(ParentNode, Token);
 	}
 	@Override public void Accept(ZVisitor Visitor) {

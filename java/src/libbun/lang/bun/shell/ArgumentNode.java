@@ -2,9 +2,9 @@ package libbun.lang.bun.shell;
 
 import libbun.parser.ast.ZDesugarNode;
 import libbun.parser.ast.ZFuncCallNode;
-import libbun.parser.ast.ZGetNameNode;
-import libbun.parser.ast.ZNode;
-import libbun.parser.ast.ZStringNode;
+import libbun.parser.ast.BGetNameNode;
+import libbun.parser.ast.BNode;
+import libbun.parser.ast.BStringNode;
 import libbun.parser.ast.ZSugarNode;
 import libbun.parser.ZGenerator;
 import libbun.parser.ZTypeChecker;
@@ -20,19 +20,19 @@ public class ArgumentNode extends ZSugarNode {
 
 	@Field private final int ArgType;
 
-	public ArgumentNode(ZNode ParentNode, int ArgType) {
+	public ArgumentNode(BNode ParentNode, int ArgType) {
 		super(ParentNode, null, 1);
 		this.ArgType = ArgType;
 	}
 
-	public ArgumentNode(ZNode ParentNode, String Value) {
+	public ArgumentNode(BNode ParentNode, String Value) {
 		this(ParentNode, _Normal);
-		this.SetNode(_Expr, new ZStringNode(this, null, Value));
+		this.SetNode(_Expr, new BStringNode(this, null, Value));
 	}
 
 	@Override public ZDesugarNode DeSugar(ZGenerator Generator, ZTypeChecker TypeChekcer) {
-		@Var ZNode Node = new ZFuncCallNode(this, new ZGetNameNode(this, null, _funcNames[this.ArgType]));
-		Node.SetNode(ZNode._AppendIndex, this.AST[_Expr]);
+		@Var BNode Node = new ZFuncCallNode(this, new BGetNameNode(this, null, _funcNames[this.ArgType]));
+		Node.SetNode(BNode._AppendIndex, this.AST[_Expr]);
 		return new ZDesugarNode(this, Node);
 	}
 }

@@ -26,8 +26,8 @@ package libbun.parser.ast;
 
 import libbun.parser.ZVisitor;
 
-public final class ZBreakNode extends ZNode {
-	public ZBreakNode(ZNode ParentNode) {
+public final class ZBreakNode extends BNode {
+	public ZBreakNode(BNode ParentNode) {
 		super(ParentNode, null, 0);
 	}
 	@Override public void Accept(ZVisitor Visitor) {

@@ -34,7 +34,7 @@ import libbun.util.Var;
 public final class ZFuncCallNode extends ZListNode {
 	public final static int _Functor = 0;
 
-	public ZFuncCallNode(ZNode ParentNode, ZNode FuncNode) {
+	public ZFuncCallNode(BNode ParentNode, BNode FuncNode) {
 		super(ParentNode, null, 1);
 		this.SetNode(ZFuncCallNode._Functor, FuncNode);
 	}
@@ -44,12 +44,12 @@ public final class ZFuncCallNode extends ZListNode {
 	//		this.SetNode(ZFuncCallNode._Func, new ZFuncNameNode(this, null, FuncName, FuncType));
 	//	}
 
-	public final ZNode FunctorNode() {
+	public final BNode FunctorNode() {
 		return this.AST[ZFuncCallNode._Functor];
 	}
 
 	@Nullable public final ZFuncNameNode FuncNameNode() {
-		@Var ZNode NameNode = this.FunctorNode();
+		@Var BNode NameNode = this.FunctorNode();
 		if(NameNode instanceof ZFuncNameNode) {
 			return (ZFuncNameNode)NameNode;
 		}

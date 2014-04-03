@@ -9,7 +9,7 @@ import libbun.util.Field;
 public class ZMacroNode extends ZListNode {
 	@Field public final ZMacroFunc MacroFunc;
 
-	public ZMacroNode(ZNode ParentNode, ZToken SourceToken, ZMacroFunc MacroFunc) {
+	public ZMacroNode(BNode ParentNode, ZToken SourceToken, ZMacroFunc MacroFunc) {
 		super(ParentNode, SourceToken, 0);
 		this.MacroFunc = MacroFunc;
 		assert(MacroFunc != null);

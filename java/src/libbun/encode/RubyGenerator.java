@@ -7,7 +7,7 @@ import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.ZCastNode;
 import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZInstanceOfNode;
-import libbun.parser.ast.ZLetVarNode;
+import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
 import libbun.type.ZType;
@@ -115,8 +115,8 @@ public class RubyGenerator extends ZSourceGenerator {
 	//	}
 
 	@Override
-	protected void VisitParamNode(ZLetVarNode Node) {
-		this.CurrentBuilder.Append(Node.GetName());
+	protected void VisitParamNode(BLetVarNode Node) {
+		this.CurrentBuilder.Append(Node.GetGivenName());
 	}
 
 	@Override public void VisitFunctionNode(ZFunctionNode Node) {

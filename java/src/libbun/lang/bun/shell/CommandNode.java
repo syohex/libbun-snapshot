@@ -4,8 +4,8 @@ import libbun.parser.ast.ZArrayLiteralNode;
 import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.ZDesugarNode;
 import libbun.parser.ast.ZFuncCallNode;
-import libbun.parser.ast.ZGetNameNode;
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BGetNameNode;
+import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZSugarNode;
 import libbun.parser.ZGenerator;
 import libbun.parser.ZToken;
@@ -16,22 +16,22 @@ import libbun.util.Var;
 import libbun.util.ZArray;
 
 public class CommandNode extends ZSugarNode {
-	@Field private final ZArray<ZNode> ArgList;
+	@Field private final ZArray<BNode> ArgList;
 	@Field private ZType RetType = ZType.VarType;
 	@Field public CommandNode PipedNextNode;
 
-	public CommandNode(ZNode ParentNode, ZToken Token, String Command) {
+	public CommandNode(BNode ParentNode, ZToken Token, String Command) {
 		super(ParentNode, Token, 0);
 		this.PipedNextNode = null;
-		this.ArgList = new ZArray<ZNode>(new ZNode[]{});
+		this.ArgList = new ZArray<BNode>(new BNode[]{});
 		this.AppendArgNode(new ArgumentNode(ParentNode, Command));
 	}
 
-	public void AppendArgNode(ZNode Node) {
+	public void AppendArgNode(BNode Node) {
 		this.ArgList.add(this.SetChild(Node, true));
 	}
 
-	public ZNode AppendPipedNextNode(CommandNode Node) {
+	public BNode AppendPipedNextNode(CommandNode Node) {
 		@Var CommandNode CurrentNode = this;
 		while(CurrentNode.PipedNextNode != null) {
 			CurrentNode = (CommandNode) CurrentNode.PipedNextNode;
@@ -44,11 +44,11 @@ public class CommandNode extends ZSugarNode {
 		return this.ArgList.size();
 	}
 
-	public void SetArgAt(int Index, ZNode ArgNode) {
+	public void SetArgAt(int Index, BNode ArgNode) {
 		ZArray.SetIndex(this.ArgList, Index, ArgNode);
 	}
 
-	public ZNode GetArgAt(int Index) {
+	public BNode GetArgAt(int Index) {
 		return ZArray.GetIndex(this.ArgList, Index);
 	}
 
@@ -93,7 +93,7 @@ public class CommandNode extends ZSugarNode {
 			ArrayNode.Append(SubArrayNode);
 			CurrentNode = CurrentNode.PipedNextNode;
 		}
-		@Var ZFuncCallNode Node = new ZFuncCallNode(this.ParentNode, new ZGetNameNode(this.ParentNode, null, FuncName));
+		@Var ZFuncCallNode Node = new ZFuncCallNode(this.ParentNode, new BGetNameNode(this.ParentNode, null, FuncName));
 		Node.Append(ArrayNode);
 		return new ZDesugarNode(this, Node);
 	}

@@ -4,9 +4,9 @@ import libbun.parser.ZNameSpace;
 import libbun.parser.ZToken;
 import libbun.parser.ZVisitor;
 
-public abstract class ZTopLevelNode extends ZNode {
+public abstract class ZTopLevelNode extends BNode {
 
-	public ZTopLevelNode(ZNode ParentNode, ZToken SourceToken, int Size) {
+	public ZTopLevelNode(BNode ParentNode, ZToken SourceToken, int Size) {
 		super(ParentNode, SourceToken, Size);
 	}
 

@@ -28,11 +28,11 @@ import libbun.parser.ZVisitor;
 import libbun.util.Var;
 
 public final class ZMapLiteralNode extends ZListNode {
-	public ZMapLiteralNode(ZNode ParentNode) {
+	public ZMapLiteralNode(BNode ParentNode) {
 		super(ParentNode, null, 0);
 	}
 	public final ZMapEntryNode GetMapEntryNode(int Index) {
-		@Var ZNode Node = this.GetListAt(Index);
+		@Var BNode Node = this.GetListAt(Index);
 		if(Node instanceof ZMapEntryNode) {
 			return (ZMapEntryNode)Node;
 		}

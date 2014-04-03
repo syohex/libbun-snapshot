@@ -1,14 +1,14 @@
 package libbun.parser.ssa;
 
 import libbun.parser.ast.ZLocalDefinedNode;
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.util.Var;
 import libbun.util.ZArray;
 
 public class JoinNode extends ZLocalDefinedNode {
 	private final ZArray<PHINode> PHIs;
 
-	public JoinNode(ZNode Parent) {
+	public JoinNode(BNode Parent) {
 		super(null, null, 0);
 		Parent.SetChild(this, true);
 		this.PHIs = new ZArray<PHINode>(new PHINode[0]);

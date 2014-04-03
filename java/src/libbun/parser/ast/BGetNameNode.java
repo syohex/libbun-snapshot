@@ -24,19 +24,55 @@
 
 package libbun.parser.ast;
 
+import libbun.parser.ZGenerator;
 import libbun.parser.ZToken;
 import libbun.parser.ZVisitor;
 import libbun.type.ZType;
 import libbun.util.Field;
+import libbun.util.Nullable;
 
-public final class ZFloatNode extends ZConstNode {
-	@Field public double	FloatValue;
-	public ZFloatNode(ZNode ParentNode, ZToken Token, double Value) {
-		super(ParentNode, Token);
-		this.Type = ZType.FloatType;
-		this.FloatValue = Value;
+public class BGetNameNode extends BNode {
+	@Field public boolean IsCaptured = false;
+	@Field public String  GivenName;
+	@Field public int     VarIndex = 0;
+	@Field @Nullable public BLetVarNode ResolvedNode = null;
+
+	public BGetNameNode(BNode ParentNode, ZToken SourceToken, String GivenName) {
+		super(ParentNode, SourceToken, 0);
+		this.GivenName = GivenName;
+		this.Type = ZType.VoidType; // FIXME
 	}
+
+	//	public final boolean IsGlobalName() {
+	//		if(this.ResolvedNode != null) {
+	//			return this.ResolvedNode.GetDefiningFunctionNode() == null;
+	//		}
+	//		return false;
+	//	}
+	//
+	//	public final String GetName() {
+	//		@Var BNode ResolvedNode = this.ResolvedNode;
+	//		if(ResolvedNode != null) {
+	//			@Var ZFunctionNode DefNode = this.ResolvedNode.GetDefiningFunctionNode();
+	//			if(DefNode == null) {
+	//				if(ResolvedNode instanceof BLetVarNode) {
+	//					return ((BLetVarNode)ResolvedNode).UniqueName;
+	//				}
+	//			}
+	//		}
+	//		return this.GivenName;
+	//	}
+
+	public final String GetUniqueName(ZGenerator Generator) {
+		if(this.ResolvedNode != null) {
+			return this.ResolvedNode.GetUniqueName(Generator);
+		}
+		return this.GivenName;
+	}
+
+
 	@Override public void Accept(ZVisitor Visitor) {
-		Visitor.VisitFloatNode(this);
+		Visitor.VisitGetNameNode(this);
 	}
+
 }

@@ -2,15 +2,15 @@ package libbun.lang.bun;
 
 import libbun.parser.ZToken;
 import libbun.parser.ZTokenContext;
-import libbun.parser.ast.ZNode;
-import libbun.parser.ast.ZStringNode;
+import libbun.parser.ast.BNode;
+import libbun.parser.ast.BStringNode;
 import libbun.util.LibZen;
 import libbun.util.Var;
 import libbun.util.ZMatchFunction;
 
 public class StringLiteralPatternFunction extends ZMatchFunction {
-	@Override public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
+	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var ZToken Token = TokenContext.GetToken(ZTokenContext._MoveNext);
-		return new ZStringNode(ParentNode, Token, LibZen._UnquoteString(Token.GetText()));
+		return new BStringNode(ParentNode, Token, LibZen._UnquoteString(Token.GetText()));
 	}
 }

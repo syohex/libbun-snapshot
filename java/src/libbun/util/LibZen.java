@@ -46,7 +46,7 @@ import libbun.parser.ZNameSpace;
 import libbun.parser.ZSourceContext;
 import libbun.parser.ZTokenContext;
 import libbun.parser.ZTokenFunc;
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.type.ZType;
 
 
@@ -507,7 +507,7 @@ public class LibZen {
 		return TokenFunc.Invoke(SourceContext);
 	}
 
-	public final static ZNode _ApplyMatchFunc(ZMatchFunction MatchFunc, ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
+	public final static BNode _ApplyMatchFunc(ZMatchFunction MatchFunc, BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		return MatchFunc.Invoke(ParentNode, TokenContext, LeftNode);
 	}
 
@@ -584,8 +584,8 @@ public class LibZen {
 		return new ZType[Size];
 	}
 
-	public final static ZNode[] _NewNodeArray(int Size) {
-		return new ZNode[Size];
+	public final static BNode[] _NewNodeArray(int Size) {
+		return new BNode[Size];
 	}
 
 	public final static void _ArrayCopy(Object src, int sIndex, Object dst, int dIndex, int length) {

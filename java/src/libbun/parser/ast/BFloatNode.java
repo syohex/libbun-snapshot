@@ -26,12 +26,17 @@ package libbun.parser.ast;
 
 import libbun.parser.ZToken;
 import libbun.parser.ZVisitor;
+import libbun.type.ZType;
+import libbun.util.Field;
 
-public final class ZNullNode extends ZConstNode {
-	public ZNullNode(ZNode ParentNode, ZToken SourceToken) {
-		super(ParentNode, SourceToken);
+public final class BFloatNode extends BConstNode {
+	@Field public double	FloatValue;
+	public BFloatNode(BNode ParentNode, ZToken Token, double Value) {
+		super(ParentNode, Token);
+		this.Type = ZType.FloatType;
+		this.FloatValue = Value;
 	}
 	@Override public void Accept(ZVisitor Visitor) {
-		Visitor.VisitNullNode(this);
+		Visitor.VisitFloatNode(this);
 	}
 }

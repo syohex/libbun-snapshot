@@ -36,7 +36,7 @@ public final class ZNewObjectNode extends ZListNode {
 
 	@Field public ZType GivenType = null;
 
-	public ZNewObjectNode(ZNode ParentNode) {
+	public ZNewObjectNode(BNode ParentNode) {
 		super(ParentNode, null, 1);
 	}
 
@@ -65,7 +65,7 @@ public final class ZNewObjectNode extends ZListNode {
 			i = i + 1;
 		}
 		this.Type = this.ClassType();
-		this.ClearListAfter(0);
+		this.ClearListToSize(0);
 		return FuncNode;
 	}
 }

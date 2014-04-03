@@ -34,36 +34,36 @@ import libbun.type.ZFunc;
 import libbun.util.Field;
 import libbun.util.Var;
 
-public class ZBinaryNode extends ZNode {
+public class ZBinaryNode extends BNode {
 	public final static int _Left = 0;
 	public final static int _Right = 1;
 	@Field public ZSyntax Pattern;
 
-	public ZBinaryNode(ZNode ParentNode, ZToken SourceToken, ZNode Left, ZSyntax Pattern) {
+	public ZBinaryNode(BNode ParentNode, ZToken SourceToken, BNode Left, ZSyntax Pattern) {
 		super(ParentNode, SourceToken, 2);
 		this.SetNode(ZBinaryNode._Left, Left);
 		assert(Pattern != null);
 		this.Pattern = Pattern;
 	}
 
-	public final ZNode LeftNode() {
+	public final BNode LeftNode() {
 		return this.AST[ZBinaryNode._Left ];
 	}
 
-	public final ZNode RightNode() {
+	public final BNode RightNode() {
 		return this.AST[ZBinaryNode._Right ];
 	}
 
 
-	private final boolean IsRightJoin(ZNode Node) {
+	private final boolean IsRightJoin(BNode Node) {
 		if(Node instanceof ZBinaryNode) {
 			return this.Pattern.IsRightJoin(((ZBinaryNode)Node).Pattern);
 		}
 		return false;
 	}
 
-	private final ZNode RightJoin(ZNode ParentNode, ZBinaryNode RightNode) {
-		@Var ZNode RightLeftNode = RightNode.LeftNode();
+	private final BNode RightJoin(BNode ParentNode, ZBinaryNode RightNode) {
+		@Var BNode RightLeftNode = RightNode.LeftNode();
 		if(this.IsRightJoin(RightLeftNode)) {
 			RightNode.SetNode(ZBinaryNode._Left, this.RightJoin(ParentNode, (ZBinaryNode) RightLeftNode));
 		}
@@ -74,8 +74,8 @@ public class ZBinaryNode extends ZNode {
 		return RightNode;
 	}
 
-	public final ZNode AppendParsedRightNode(ZNode ParentNode, ZTokenContext TokenContext) {
-		@Var ZNode RightNode = TokenContext.ParsePattern(ParentNode, "$Expression$", ZTokenContext._Required);
+	public final BNode AppendParsedRightNode(BNode ParentNode, ZTokenContext TokenContext) {
+		@Var BNode RightNode = TokenContext.ParsePattern(ParentNode, "$Expression$", ZTokenContext._Required);
 		if(RightNode.IsErrorNode()) {
 			return RightNode;
 		}
@@ -86,7 +86,7 @@ public class ZBinaryNode extends ZNode {
 		return this;
 	}
 
-	public final ZNode TryMacroNode(ZGenerator Generator) {
+	public final BNode TryMacroNode(ZGenerator Generator) {
 		if(!this.GetAstType(ZBinaryNode._Left).IsVarType() && !this.GetAstType(ZBinaryNode._Right).IsVarType()) {
 			@Var String Op = this.SourceToken.GetText();
 			@Var ZFunc Func = Generator.GetDefinedFunc(Op, this.GetAstType(ZBinaryNode._Left), 2);

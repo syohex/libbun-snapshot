@@ -27,18 +27,18 @@ package libbun.parser.ast;
 import libbun.parser.ZVisitor;
 
 //E.g., $Recv[$Index]
-public final class ZGetIndexNode extends ZNode {
+public final class ZGetIndexNode extends BNode {
 	public final static int _Recv = 0;
 	public final static int _Index = 1;
 
-	public ZGetIndexNode(ZNode ParentNode, ZNode RecvNode) {
+	public ZGetIndexNode(BNode ParentNode, BNode RecvNode) {
 		super(ParentNode, null, 2);
 		this.SetNode(ZGetIndexNode._Recv, RecvNode);
 	}
-	public final ZNode RecvNode() {
+	public final BNode RecvNode() {
 		return this.AST[ZGetIndexNode._Recv ];
 	}
-	public final ZNode IndexNode() {
+	public final BNode IndexNode() {
 		return this.AST[ZGetIndexNode._Index ];
 	}
 	@Override public void Accept(ZVisitor Visitor) {

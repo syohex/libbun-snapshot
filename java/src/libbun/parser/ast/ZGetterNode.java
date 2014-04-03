@@ -24,37 +24,35 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZNameSpace;
 import libbun.parser.ZVisitor;
 import libbun.util.Field;
-import libbun.util.Var;
 
-public class ZGetterNode extends ZNode {
+public class ZGetterNode extends BNode {
 	public final static int _Recv = 0;
 	public static final int _NameInfo = 1;
 
 	@Field public String  GivenName = null;
 
-	protected ZGetterNode(ZNode ParentNode, ZNode RecvNode, int Size) {
+	protected ZGetterNode(BNode ParentNode, BNode RecvNode, int Size) {
 		super(ParentNode, null, Size);
 		this.SetNode(ZGetterNode._Recv, RecvNode);
 	}
 
-	public ZGetterNode(ZNode ParentNode, ZNode RecvNode) {
+	public ZGetterNode(BNode ParentNode, BNode RecvNode) {
 		super(ParentNode, null, 2);
 		this.SetNode(ZGetterNode._Recv, RecvNode);
 	}
 
-	public final ZNameSpace GetPrefixNameSpace() {
-		@Var ZNode Node = this.AST[ZGetterNode._Recv ];
-		if(Node instanceof ZGetNameNode) {
-			@Var String Name = ((ZGetNameNode)Node).GetName();
-			@Var ZNode NameSpaceName = Node.GetNameSpace().GetSymbol(Name);
-		}
-		return null;
-	}
+	//	public final ZNameSpace GetPrefixNameSpace() {
+	//		@Var BNode Node = this.AST[ZGetterNode._Recv ];
+	//		if(Node instanceof BGetNameNode) {
+	//			@Var String Name = ((BGetNameNode)Node).GetName();
+	//			@Var BNode NameSpaceName = Node.GetNameSpace().GetSymbol(Name);
+	//		}
+	//		return null;
+	//	}
 
-	public final ZNode RecvNode() {
+	public final BNode RecvNode() {
 		return this.AST[ZGetterNode._Recv ];
 	}
 

@@ -2,16 +2,15 @@ package libbun.lang.bun.shell;
 
 import java.util.ArrayList;
 
-import libbun.parser.ast.ZEmptyNode;
-import libbun.parser.ast.ZNode;
-import libbun.parser.ast.ZStringNode;
-import libbun.util.LibZen;
-import libbun.util.Var;
-import libbun.util.ZMatchFunction;
 import libbun.parser.ZNameSpace;
 import libbun.parser.ZSyntax;
 import libbun.parser.ZToken;
 import libbun.parser.ZTokenContext;
+import libbun.parser.ast.BNode;
+import libbun.parser.ast.ZEmptyNode;
+import libbun.util.LibZen;
+import libbun.util.Var;
+import libbun.util.ZMatchFunction;
 
 public class ImportCommandPatternFunction extends ZMatchFunction {
 	public final static String _PatternName = "$ImportCommand$";
@@ -39,7 +38,7 @@ public class ImportCommandPatternFunction extends ZMatchFunction {
 		return CommandToken;
 	}
 
-	private void SetCommandSymbol(ZNode ParentNode, ArrayList<ZToken> TokenList) {
+	private void SetCommandSymbol(BNode ParentNode, ArrayList<ZToken> TokenList) {
 		@Var ZToken CommandToken = this.ToCommandToken(TokenList);
 		if(CommandToken == null) {
 			return;
@@ -70,11 +69,13 @@ public class ImportCommandPatternFunction extends ZMatchFunction {
 			}
 			return;
 		}
-		NameSpace.SetSymbol(ShellUtils._ToCommandSymbol(Command), new ZStringNode(ParentNode, null, CommandPath));
+		// FIXME:: SetSymbol was changed to accept only BLetVarBode
+		throw new RuntimeException("// FIXME:: SetSymbol was changed to accept only BLetVarBode ");
+		//NameSpace.SetSymbol(ShellUtils._ToCommandSymbol(Command), new BStringNode(ParentNode, null, CommandPath));
 	}
 
 	@Override
-	public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
+	public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var ArrayList<ZToken> TokenList = new ArrayList<ZToken>();
 		TokenContext.MoveNext();
 		while(TokenContext.HasNext()) {

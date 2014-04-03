@@ -27,7 +27,7 @@ package libbun.parser.ast;
 import libbun.parser.ZVisitor;
 
 public final class ZArrayLiteralNode extends ZListNode {
-	public ZArrayLiteralNode(ZNode ParentNode) {
+	public ZArrayLiteralNode(BNode ParentNode) {
 		super(ParentNode, null, 0);
 	}
 	@Override public void Accept(ZVisitor Visitor) {

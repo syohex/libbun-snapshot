@@ -2,7 +2,7 @@ package libbun.encode.jvm;
 
 import libbun.parser.ZLogger;
 import libbun.parser.ZNameSpace;
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZTopLevelNode;
 import libbun.type.ZType;
 import libbun.util.Var;
@@ -10,7 +10,7 @@ import libbun.util.Var;
 public class JavaImportNode extends ZTopLevelNode {
 	public final static int _Path  = 0;
 
-	public JavaImportNode(ZNode ParentNode) {
+	public JavaImportNode(BNode ParentNode) {
 		super(ParentNode, null, 1);
 	}
 

@@ -36,20 +36,20 @@ import libbun.util.LibZen;
 import libbun.util.Nullable;
 import libbun.util.Var;
 
-public abstract class ZNode {
+public abstract class BNode {
 	public final static int _AppendIndex = -1;
 	public final static int _NestedAppendIndex = -2;
 	public final static int _Nop =      -3;
 	public final static boolean _EnforcedParent = true;
 	public final static boolean _PreservedParent = false;
 
-	@Field public ZNode ParentNode;
+	@Field public BNode  ParentNode;
 	@Field public ZToken SourceToken;
-	@Field public ZNode  AST[];
+	@Field public BNode  AST[];
 	@Field public ZType	Type = ZType.VarType;
 	@Field public boolean HasUntyped = true;
 
-	public ZNode(ZNode ParentNode, ZToken SourceToken, int Size) {
+	public BNode(@Nullable BNode ParentNode, @Nullable ZToken SourceToken, int Size) {
 		assert(this != ParentNode);
 		this.ParentNode = ParentNode;
 		this.SourceToken = SourceToken;
@@ -101,7 +101,16 @@ public abstract class ZNode {
 		return Self;
 	}
 
-	public final ZNode SetChild(ZNode Node, boolean EnforcedParent) {
+	// AST[]
+
+	public final int GetAstSize() {
+		if(this.AST == null) {
+			return 0;
+		}
+		return this.AST.length;
+	}
+
+	@Deprecated public final BNode SetChild(BNode Node, boolean EnforcedParent) {
 		assert(this != Node);
 		if(EnforcedParent || Node.ParentNode == null) {
 			Node.ParentNode = this;
@@ -109,12 +118,20 @@ public abstract class ZNode {
 		return Node;
 	}
 
-	public final ZNode SetNode(int Index, ZNode Node, boolean EnforcedParent) {
+	public final BNode SetParent(BNode Node, boolean Enforced) {
+		if(Enforced || this.ParentNode == null) {
+			this.ParentNode = Node;
+		}
+		return this;
+	}
+
+	public final BNode SetNode(int Index, BNode Node, boolean EnforcedParent) {
 		if(Index >= 0) {
+			assert(Index < this.GetAstSize());
 			this.AST[Index] = this.SetChild(Node, EnforcedParent);
 		}
-		else if(Index == ZNode._AppendIndex) {
-			@Var ZNode ListNode = this;
+		else if(Index == BNode._AppendIndex) {
+			@Var BNode ListNode = this;
 			if(ListNode instanceof ZListNode) {
 				((ZListNode)ListNode).Append(Node);
 			}
@@ -125,15 +142,8 @@ public abstract class ZNode {
 		return Node;
 	}
 
-	public final ZNode SetNode(int Index, ZNode Node) {
-		return this.SetNode(Index, Node, ZNode._EnforcedParent);
-	}
-
-	public final int GetAstSize() {
-		if(this.AST == null) {
-			return 0;
-		}
-		return this.AST.length;
+	public final BNode SetNode(int Index, BNode Node) {
+		return this.SetNode(Index, Node, BNode._EnforcedParent);
 	}
 
 	public final ZType GetAstType(int Index) {
@@ -156,8 +166,10 @@ public abstract class ZNode {
 		return this.SourceToken;
 	}
 
+	// ParentNode
+
 	public final boolean IsTopLevel() {
-		@Var @Nullable ZNode Cur = this;
+		@Var @Nullable BNode Cur = this;
 		while(Cur != null) {
 			if(Cur instanceof ZFunctionNode) {
 				return false;
@@ -168,7 +180,7 @@ public abstract class ZNode {
 	}
 
 	@Nullable public final ZFunctionNode GetDefiningFunctionNode() {
-		@Var @Nullable ZNode Cur = this;
+		@Var @Nullable BNode Cur = this;
 		while(Cur != null) {
 			if(Cur instanceof ZFunctionNode) {
 				return (ZFunctionNode)Cur;
@@ -180,7 +192,7 @@ public abstract class ZNode {
 
 	@Nullable public final ZBlockNode GetScopeBlockNode() {
 		@Var int SafeCount = 0;
-		@Var ZNode Node = this;
+		@Var BNode Node = this;
 		while(Node != null) {
 			if(Node instanceof ZBlockNode) {
 				return (ZBlockNode)Node;
@@ -188,8 +200,10 @@ public abstract class ZNode {
 			assert(!(Node == Node.ParentNode));
 			//System.out.println("node: " + Node.getClass() + ", " + Node.hashCode() + ", " + SafeCount);
 			Node = Node.ParentNode;
-			SafeCount = SafeCount + 1;
-			assert(SafeCount < 100);
+			if(LibZen.DebugMode) {
+				SafeCount = SafeCount + 1;
+				assert(SafeCount < 100);
+			}
 		}
 		return null;
 	}
@@ -199,10 +213,11 @@ public abstract class ZNode {
 		@Var ZBlockNode BlockNode = this.GetScopeBlockNode();
 		while(BlockNode.NullableNameSpace == null) {
 			@Var ZBlockNode ParentBlockNode = BlockNode.ParentNode.GetScopeBlockNode();
-			assert(!(BlockNode == ParentBlockNode));
 			BlockNode = ParentBlockNode;
-			SafeCount = SafeCount + 1;
-			assert(SafeCount < 100);
+			if(LibZen.DebugMode) {
+				SafeCount = SafeCount + 1;
+				assert(SafeCount < 100);
+			}
 		}
 		return BlockNode.NullableNameSpace;
 	}
@@ -234,9 +249,9 @@ public abstract class ZNode {
 		return this.HasUntyped;
 	}
 
-	// convinient interface
-	public final ZGetNameNode SetNewGetNameNode(int Index, ZTypeChecker Typer, String Name, ZType Type) {
-		@Var ZGetNameNode Node = Typer.CreateGetNameNode(null, Name, Type);
+	// Convenient short cut interface
+	public final BGetNameNode SetNewGetNameNode(int Index, ZTypeChecker Typer, String Name, ZType Type) {
+		@Var BGetNameNode Node = Typer.CreateGetNameNode(null, Name, Type);
 		this.SetNode(Index, Node);
 		return Node;
 	}

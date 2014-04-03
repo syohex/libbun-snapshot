@@ -29,18 +29,16 @@ import libbun.parser.ZVisitor;
 import libbun.type.ZType;
 import libbun.util.Field;
 
-public final class ZBooleanNode extends ZConstNode {
+public final class BBooleanNode extends BConstNode {
 	@Field public boolean	BooleanValue;
-	public ZBooleanNode(ZNode ParentNode, ZToken Token, boolean Value) {
+	public BBooleanNode(BNode ParentNode, ZToken Token, boolean Value) {
 		super(ParentNode, Token);
 		this.Type = ZType.BooleanType;
 		this.BooleanValue = Value;
 	}
 
-	public ZBooleanNode(boolean Value) {
-		super(null, null);
-		this.Type = ZType.BooleanType;
-		this.BooleanValue = Value;
+	public BBooleanNode(boolean Value) {
+		this(null, null, Value);
 	}
 
 	@Override public void Accept(ZVisitor Visitor) {

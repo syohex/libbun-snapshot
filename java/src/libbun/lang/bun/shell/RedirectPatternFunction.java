@@ -1,6 +1,6 @@
 package libbun.lang.bun.shell;
 
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.util.Var;
 import libbun.util.ZMatchFunction;
 import libbun.parser.ZToken;
@@ -10,7 +10,7 @@ public class RedirectPatternFunction extends ZMatchFunction {
 	public final static String _PatternName = "$Redirect$";
 
 	// <, >, >>, >&, 1>, 2>, 1>>, 2>>, &>, &>>
-	@Override public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
+	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var ZToken Token = TokenContext.GetToken(ZTokenContext._MoveNext);
 		@Var String RedirectSymbol = Token.GetText();
 		if(Token.EqualsText(">>") || Token.EqualsText("<")) {
@@ -51,10 +51,10 @@ public class RedirectPatternFunction extends ZMatchFunction {
 		return null;
 	}
 
-	private ZNode CreateRedirectNode(ZNode ParentNode, ZTokenContext TokenContext, String RedirectSymbol, boolean existTarget) {
+	private BNode CreateRedirectNode(BNode ParentNode, ZTokenContext TokenContext, String RedirectSymbol, boolean existTarget) {
 		@Var CommandNode Node = new CommandNode(ParentNode, null, RedirectSymbol);
 		if(existTarget) {
-			@Var ZNode TargetNode = TokenContext.ParsePattern(Node, SimpleArgumentPatternFunction._PatternName, ZTokenContext._Required);
+			@Var BNode TargetNode = TokenContext.ParsePattern(Node, SimpleArgumentPatternFunction._PatternName, ZTokenContext._Required);
 			if(TargetNode.IsErrorNode()) {
 				return TargetNode;
 			}

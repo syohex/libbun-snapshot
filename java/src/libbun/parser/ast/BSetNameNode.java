@@ -26,49 +26,44 @@ package libbun.parser.ast;
 
 import libbun.parser.ZToken;
 import libbun.parser.ZVisitor;
-import libbun.util.Field;
-import libbun.util.Nullable;
+import libbun.type.ZType;
 import libbun.util.Var;
 
-public class ZGetNameNode extends ZNode {
-	@Field public boolean IsCaptured = false;
-	@Field public String  GivenName;
-	@Field public int   VarIndex = 0;
-	@Field @Nullable public ZNode ResolvedNode = null;
+// E.g., $NativeName = $ValueNode
+public class BSetNameNode extends BNode {
+	public final static int _NameInfo = 0;
+	public final static int _Expr = 0;
 
-	public ZGetNameNode(ZNode ParentNode, ZToken SourceToken, String GivenName) {
-		super(ParentNode, SourceToken, 0);
-		this.GivenName = GivenName;
+	public BSetNameNode(BNode ParentNode, ZToken Token, BGetNameNode NameNode) {
+		super(ParentNode, Token, 2);
+		this.SetNode(BSetNameNode._NameInfo, NameNode);
 	}
 
-	//	public ZGetNameNode(ZNode ParentNode, ZFunc ResolvedFunc) {
-	//		super(ParentNode, null, 0);
-	//		this.GivenName = ResolvedFunc.FuncName;
-	//		this.Type = ResolvedFunc.GetFuncType();
+	public BSetNameNode(String Name, BNode ExprNode) {
+		this(null, null, new BGetNameNode(null, null, Name));
+		this.SetNode(BSetNameNode._Expr, ExprNode);
+		if(!ExprNode.IsUntyped()) {
+			this.Type = ZType.VoidType;
+		}
+	}
+
+	//	public final String GetName() {
+	//		return this.GivenName;
 	//	}
 
-	public final boolean IsGlobalName() {
-		if(this.ResolvedNode != null) {
-			return this.ResolvedNode.GetDefiningFunctionNode() == null;
+	public final BGetNameNode NameNode() {
+		@Var BNode NameNode = this.AST[BSetNameNode._NameInfo ];
+		if(NameNode instanceof BGetNameNode) {
+			return (BGetNameNode)NameNode;
 		}
-		return false;
+		return null;
 	}
 
-	public final String GetName() {
-		@Var ZNode ResolvedNode = this.ResolvedNode;
-		if(ResolvedNode != null) {
-			@Var ZFunctionNode DefNode = this.ResolvedNode.GetDefiningFunctionNode();
-			if(DefNode == null) {
-				if(ResolvedNode instanceof ZLetVarNode) {
-					return ((ZLetVarNode)ResolvedNode).GlobalName;
-				}
-			}
-		}
-		return this.GivenName;
+	public final BNode ExprNode() {
+		return this.AST[BSetNameNode._Expr ];
 	}
 
 	@Override public void Accept(ZVisitor Visitor) {
-		Visitor.VisitGetNameNode(this);
+		Visitor.VisitSetNameNode(this);
 	}
-
 }

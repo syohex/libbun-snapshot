@@ -1,6 +1,9 @@
 package libbun.encode;
 
 import libbun.parser.ZLogger;
+import libbun.parser.ast.BLetVarNode;
+import libbun.parser.ast.BNode;
+import libbun.parser.ast.BNullNode;
 import libbun.parser.ast.ZArrayLiteralNode;
 import libbun.parser.ast.ZClassNode;
 import libbun.parser.ast.ZErrorNode;
@@ -8,13 +11,10 @@ import libbun.parser.ast.ZFuncNameNode;
 import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZGetIndexNode;
 import libbun.parser.ast.ZInstanceOfNode;
-import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZMapEntryNode;
 import libbun.parser.ast.ZMapLiteralNode;
 import libbun.parser.ast.ZMethodCallNode;
 import libbun.parser.ast.ZNewObjectNode;
-import libbun.parser.ast.ZNode;
-import libbun.parser.ast.ZNullNode;
 import libbun.parser.ast.ZReturnNode;
 import libbun.parser.ast.ZSetIndexNode;
 import libbun.parser.ast.ZThrowNode;
@@ -80,7 +80,7 @@ public class CSharpGenerator extends ZSourceGenerator {
 	}
 
 
-	@Override protected void GenerateCode(ZType ContextType, ZNode Node) {
+	@Override protected void GenerateCode(ZType ContextType, BNode Node) {
 		if(Node.IsUntyped() && !Node.IsErrorNode() && !(Node instanceof ZFuncNameNode)) {
 			ZLogger._LogError(Node.SourceToken, "untyped error: " + Node);
 			Node.Accept(this);
@@ -273,8 +273,8 @@ public class CSharpGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	protected void VisitVarDeclNode(ZLetVarNode Node) {
-		if(Node.InitValueNode() instanceof ZNullNode){
+	protected void VisitVarDeclNode(BLetVarNode Node) {
+		if(Node.InitValueNode() instanceof BNullNode){
 			this.GenerateTypeName(Node.DeclType());
 			this.CurrentBuilder.Append(" ");
 		}else if(Node.InitValueNode() instanceof ZFunctionNode){
@@ -283,25 +283,25 @@ public class CSharpGenerator extends ZSourceGenerator {
 		}else{
 			this.CurrentBuilder.Append("var ");
 		}
-		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
+		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 		this.CurrentBuilder.Append(" = ");
 		this.GenerateCode(null, Node.InitValueNode());
 		this.CurrentBuilder.Append(this.SemiColon);
 		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 	}
 
-	@Override public void VisitLetNode(ZLetVarNode Node) {
+	@Override public void VisitLetNode(BLetVarNode Node) {
 		this.CurrentBuilder.AppendNewLine("public static partial class ZenMain");
 		this.CurrentBuilder.OpenIndent(" {");
-		this.GenerateClassField("static readonly ", Node.GetAstType(ZLetVarNode._InitValue), Node.GlobalName, null);
+		this.GenerateClassField("static readonly ", Node.GetAstType(BLetVarNode._InitValue), Node.GetUniqueName(this), null);
 		this.GenerateCode2(" = ", null, Node.InitValueNode(), this.SemiColon);
 		this.CurrentBuilder.CloseIndent("}");
 	}
 
-	@Override protected void VisitParamNode(ZLetVarNode Node) {
+	@Override protected void VisitParamNode(BLetVarNode Node) {
 		this.GenerateTypeName(Node.Type);
 		this.CurrentBuilder.Append(" ");
-		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
+		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 	}
 
 	@Override public void VisitFunctionNode(ZFunctionNode Node) {
@@ -334,7 +334,7 @@ public class CSharpGenerator extends ZSourceGenerator {
 	private void GenerateLambdaFunction(ZFunctionNode Node){
 		this.VisitListNode("(", Node, ") => ");
 		if(Node.BlockNode().GetListSize() == 1){
-			@Var ZNode FirstNode = Node.BlockNode().GetListAt(0);
+			@Var BNode FirstNode = Node.BlockNode().GetListAt(0);
 			if(FirstNode instanceof ZReturnNode){
 				this.GenerateCode(null, ((ZReturnNode)FirstNode).ExprNode());
 				return;
@@ -347,7 +347,7 @@ public class CSharpGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append("(");
 		@Var int i = 1;
 		while(i < VargNode.GetListSize()) {
-			@Var ZNode ParamNode = VargNode.GetListAt(i);
+			@Var BNode ParamNode = VargNode.GetListAt(i);
 			if (i > 0) {
 				this.CurrentBuilder.Append(this.Camma);
 			}
@@ -358,8 +358,8 @@ public class CSharpGenerator extends ZSourceGenerator {
 	}
 
 	private String GenerateFunctionAsClass(String FuncName, ZFunctionNode Node) {
-		@Var ZLetVarNode FirstParam = Node.GetListSize() == 0 ? null : (ZLetVarNode)Node.GetListAt(0);
-		@Var boolean IsInstanceMethod = FirstParam != null && FirstParam.GetName().equals("this");
+		@Var BLetVarNode FirstParam = Node.GetListSize() == 0 ? null : (BLetVarNode)Node.GetListAt(0);
+		@Var boolean IsInstanceMethod = FirstParam != null && FirstParam.GetGivenName().equals("this");
 
 		this.GenerateClass("public static", "ZenMain", Node.GetFuncType());
 		this.CurrentBuilder.OpenIndent(" { ");
@@ -423,8 +423,8 @@ public class CSharpGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.OpenIndent(" {");
 		@Var int i = 0;
 		while (i < Node.GetListSize()) {
-			@Var ZLetVarNode FieldNode = Node.GetFieldNode(i);
-			this.GenerateClassField("", FieldNode.DeclType(), FieldNode.GetName(), null);
+			@Var BLetVarNode FieldNode = Node.GetFieldNode(i);
+			this.GenerateClassField("", FieldNode.DeclType(), FieldNode.GetGivenName(), null);
 			this.CurrentBuilder.Append(this.SemiColon);
 			i = i + 1;
 		}
@@ -444,8 +444,8 @@ public class CSharpGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.OpenIndent(" {");
 		//this.CurrentBuilder.AppendNewLine("super();");
 		while (i < Node.GetListSize()) {
-			@Var ZLetVarNode FieldNode = Node.GetFieldNode(i);
-			this.CurrentBuilder.AppendNewLine("this.", FieldNode.GetName(), "=");
+			@Var BLetVarNode FieldNode = Node.GetFieldNode(i);
+			this.CurrentBuilder.AppendNewLine("this.", FieldNode.GetGivenName(), "=");
 			this.GenerateCode(null, FieldNode.InitValueNode());
 			this.CurrentBuilder.Append(this.SemiColon);
 			i = i + 1;

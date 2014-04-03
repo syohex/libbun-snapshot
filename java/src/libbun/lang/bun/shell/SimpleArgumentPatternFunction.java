@@ -1,7 +1,7 @@
 package libbun.lang.bun.shell;
 
-import libbun.parser.ast.ZNode;
-import libbun.parser.ast.ZStringNode;
+import libbun.parser.ast.BNode;
+import libbun.parser.ast.BStringNode;
 import libbun.util.LibZen;
 import libbun.util.Var;
 import libbun.util.ZArray;
@@ -13,19 +13,19 @@ import libbun.parser.ZTokenContext;
 public class SimpleArgumentPatternFunction extends ZMatchFunction {	// subset of CommandArgPatternFunc
 	public final static String _PatternName = "$CommandArg$";
 
-	@Override public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
+	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		if(ShellUtils._MatchStopToken(TokenContext)) {
 			return null;
 		}
 		@Var boolean FoundSubstitution = false;
 		@Var boolean FoundEscape = false;
 		@Var ZArray<ZToken> TokenList = new ZArray<ZToken>(new ZToken[]{});
-		@Var ZArray<ZNode> NodeList = new ZArray<ZNode>(new ZNode[]{});
+		@Var ZArray<BNode> NodeList = new ZArray<BNode>(new BNode[]{});
 		while(!ShellUtils._MatchStopToken(TokenContext)) {
 			@Var ZToken Token = TokenContext.GetToken(ZTokenContext._MoveNext);
 			if(Token instanceof ZPatternToken && ((ZPatternToken)Token).PresetPattern.equals("$StringLiteral$")) {
 				this.Flush(TokenContext, NodeList, TokenList);
-				NodeList.add(new ZStringNode(ParentNode, null, LibZen._UnquoteString(Token.GetText())));
+				NodeList.add(new BStringNode(ParentNode, null, LibZen._UnquoteString(Token.GetText())));
 			}
 			else {
 				TokenList.add(Token);
@@ -36,7 +36,7 @@ public class SimpleArgumentPatternFunction extends ZMatchFunction {	// subset of
 			FoundEscape = this.CheckEscape(Token, FoundEscape);
 		}
 		this.Flush(TokenContext, NodeList, TokenList);
-		@Var ZNode ArgNode = new ArgumentNode(ParentNode, FoundSubstitution ? ArgumentNode._Substitution : ArgumentNode._Normal);
+		@Var BNode ArgNode = new ArgumentNode(ParentNode, FoundSubstitution ? ArgumentNode._Substitution : ArgumentNode._Normal);
 		ArgNode.SetNode(ArgumentNode._Expr, ShellUtils._ToNode(ParentNode, TokenContext, NodeList));
 		return ArgNode;
 	}
@@ -48,7 +48,7 @@ public class SimpleArgumentPatternFunction extends ZMatchFunction {	// subset of
 		return false;
 	}
 
-	private void Flush(ZTokenContext TokenContext, ZArray<ZNode> NodeList, ZArray<ZToken> TokenList) {
+	private void Flush(ZTokenContext TokenContext, ZArray<BNode> NodeList, ZArray<ZToken> TokenList) {
 		@Var int size = TokenList.size();
 		if(size == 0) {
 			return;
@@ -64,7 +64,7 @@ public class SimpleArgumentPatternFunction extends ZMatchFunction {	// subset of
 			}
 		}
 		@Var ZToken Token = new ZToken(TokenContext.Source, StartIndex, EndIndex);
-		NodeList.add(new ZStringNode(null, Token, LibZen._UnquoteString(this.ResolveHome(Token.GetText()))));
+		NodeList.add(new BStringNode(null, Token, LibZen._UnquoteString(this.ResolveHome(Token.GetText()))));
 		TokenList.clear(0);
 	}
 

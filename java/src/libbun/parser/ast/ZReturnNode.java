@@ -26,10 +26,10 @@ package libbun.parser.ast;
 
 import libbun.parser.ZVisitor;
 
-public final class ZReturnNode extends ZNode {
+public final class ZReturnNode extends BNode {
 	public final static int _Expr = 0;  // optional
 
-	public ZReturnNode(ZNode ParentNode) {
+	public ZReturnNode(BNode ParentNode) {
 		super(ParentNode, null, 1);
 	}
 
@@ -41,7 +41,7 @@ public final class ZReturnNode extends ZNode {
 		return this.AST[ZReturnNode._Expr] != null;
 	}
 
-	public final ZNode ExprNode() {
+	public final BNode ExprNode() {
 		return this.AST[ZReturnNode._Expr];
 	}
 

@@ -2,14 +2,14 @@ package libbun.lang.bun;
 
 import libbun.parser.ZTokenContext;
 import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.util.Var;
 import libbun.util.ZMatchFunction;
 
 public class FunctionPatternFunction extends ZMatchFunction {
 
-	@Override public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
-		@Var ZNode FuncNode = new ZFunctionNode(ParentNode);
+	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
+		@Var BNode FuncNode = new ZFunctionNode(ParentNode);
 		FuncNode = TokenContext.MatchToken(FuncNode, "function", ZTokenContext._Required);
 		FuncNode = TokenContext.MatchPattern(FuncNode, ZFunctionNode._NameInfo, "$Name$", ZTokenContext._Optional);
 		FuncNode = TokenContext.MatchNtimes(FuncNode, "(", "$Param$", ",", ")");

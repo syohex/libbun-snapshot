@@ -7,15 +7,15 @@ public class ZMapEntryNode extends ZLocalDefinedNode {
 	public final static int _Value = 1;
 	@Field public String  Name = null;
 
-	public ZMapEntryNode(ZNode ParentNode) {
+	public ZMapEntryNode(BNode ParentNode) {
 		super(ParentNode, null, 2);
 	}
 
-	public final ZNode KeyNode() {
+	public final BNode KeyNode() {
 		return this.AST[ZMapEntryNode._Key];
 	}
 
-	public final ZNode ValueNode() {
+	public final BNode ValueNode() {
 		return this.AST[ZMapEntryNode._Value];
 	}
 }

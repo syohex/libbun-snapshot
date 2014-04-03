@@ -4,6 +4,9 @@ package libbun.encode.erlang;
 import libbun.encode.ZSourceBuilder;
 import libbun.encode.ZSourceGenerator;
 import libbun.parser.ZToken;
+import libbun.parser.ast.BGetNameNode;
+import libbun.parser.ast.BLetVarNode;
+import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZAndNode;
 import libbun.parser.ast.ZBinaryNode;
 import libbun.parser.ast.ZBlockNode;
@@ -15,17 +18,14 @@ import libbun.parser.ast.ZFuncCallNode;
 import libbun.parser.ast.ZFuncNameNode;
 import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZGetIndexNode;
-import libbun.parser.ast.ZGetNameNode;
 import libbun.parser.ast.ZGetterNode;
 import libbun.parser.ast.ZIfNode;
-import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZListNode;
 import libbun.parser.ast.ZNewObjectNode;
-import libbun.parser.ast.ZNode;
 import libbun.parser.ast.ZNotNode;
 import libbun.parser.ast.ZOrNode;
 import libbun.parser.ast.ZReturnNode;
-import libbun.parser.ast.ZSetNameNode;
+import libbun.parser.ast.BSetNameNode;
 import libbun.parser.ast.ZSetterNode;
 import libbun.parser.ast.ZWhileNode;
 import libbun.type.ZClassType;
@@ -69,7 +69,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		@Var int i = 0;
 		@Var int size = BlockNode.GetListSize();
 		while (i < size) {
-			@Var ZNode SubNode = BlockNode.GetListAt(i);
+			@Var BNode SubNode = BlockNode.GetListAt(i);
 			this.CurrentBuilder.AppendLineFeed();
 			this.CurrentBuilder.AppendIndent();
 			this.GenerateCode(null, SubNode);
@@ -177,13 +177,13 @@ public class ErlangGenerator extends ZSourceGenerator {
 	// 	}
 	// }
 
-	@Override public void VisitGetNameNode(ZGetNameNode Node) {
-		String VarName = this.ToErlangVarName(Node.GetName());
+	@Override public void VisitGetNameNode(BGetNameNode Node) {
+		String VarName = this.ToErlangVarName(Node.GetUniqueName(this));
 		VarName = this.VarMgr.GenVariableName(VarName);
 		this.CurrentBuilder.Append(VarName);
 	}
 
-	@Override public void VisitSetNameNode(ZSetNameNode Node) {
+	@Override public void VisitSetNameNode(BSetNameNode Node) {
 		int mark = this.GetLazyMark();
 
 		this.GenerateCode(null, Node.ExprNode());
@@ -205,7 +205,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 	@Override public void VisitSetterNode(ZSetterNode Node) {
 		int mark = this.GetLazyMark();
 
-		ZGetNameNode GetNameNode = (ZGetNameNode)Node.RecvNode();
+		BGetNameNode GetNameNode = (BGetNameNode)Node.RecvNode();
 		this.GenerateSurroundCode(GetNameNode);
 		this.CurrentBuilder.Append("#");
 		this.CurrentBuilder.Append(this.ToErlangTypeName(Node.RecvNode().Type.ShortName));
@@ -214,7 +214,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.AppendToken("=");
 		this.GenerateCode(null, Node.ExprNode());
 		this.CurrentBuilder.Append("}");
-		this.VarMgr.AssignVariable(GetNameNode.GetName());
+		this.VarMgr.AssignVariable(GetNameNode.GetUniqueName(this));
 		ZSourceBuilder LazyBuilder = new ZSourceBuilder(this, this.CurrentBuilder);
 		ZSourceBuilder BodyBuilder = this.CurrentBuilder;
 		this.CurrentBuilder = LazyBuilder;
@@ -345,7 +345,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.GenerateSurroundCode(Node.RightNode());
 	}
 
-	public void AppendGuardAndBlock(ZNode Node) {
+	public void AppendGuardAndBlock(BNode Node) {
 		if (Node instanceof ZIfNode) {
 			ZIfNode IfNode = (ZIfNode)Node;
 			this.CurrentBuilder.AppendIndent();
@@ -479,12 +479,12 @@ public class ErlangGenerator extends ZSourceGenerator {
 	// }
 
 	@Override
-	protected void VisitVarDeclNode(ZLetVarNode Node) {
+	protected void VisitVarDeclNode(BLetVarNode Node) {
 		@Var int mark = this.GetLazyMark();
 
 		this.GenerateCode(null, Node.InitValueNode());
 
-		@Var String VarName = this.ToErlangVarName(Node.GetName());
+		@Var String VarName = this.ToErlangVarName(Node.GetGivenName());
 		this.VarMgr.DefineVariable(VarName);
 		this.AppendLazy(mark, this.VarMgr.GenVariableName(VarName) + " = ");
 
@@ -501,17 +501,17 @@ public class ErlangGenerator extends ZSourceGenerator {
 	// 	this.GenerateTypeName(Type);
 	// }
 
-	@Override public void VisitLetNode(ZLetVarNode Node) {
+	@Override public void VisitLetNode(BLetVarNode Node) {
 		this.CurrentBuilder.Append("put(");
-		this.CurrentBuilder.Append(Node.GlobalName);
+		this.CurrentBuilder.Append(Node.GetUniqueName(this));
 		this.CurrentBuilder.Append(", ");
 		this.GenerateCode(null, Node.InitValueNode());
 		this.CurrentBuilder.Append(")");
 	}
 
 	@Override
-	protected void VisitParamNode(ZLetVarNode Node) {
-		String VarName = this.ToErlangVarName(Node.GetName());
+	protected void VisitParamNode(BLetVarNode Node) {
+		String VarName = this.ToErlangVarName(Node.GetGivenName());
 		VarName = this.VarMgr.GenVariableName(VarName);
 		this.CurrentBuilder.Append(VarName);
 	}
@@ -556,8 +556,8 @@ public class ErlangGenerator extends ZSourceGenerator {
 		@Var int i = 0;
 		@Var int size = Node.GetListSize();
 		while (i < size) {
-			@Var ZLetVarNode FieldNode = Node.GetFieldNode(i);
-			this.CurrentBuilder.Append(this.ToErlangTypeName(FieldNode.GetName()));
+			@Var BLetVarNode FieldNode = Node.GetFieldNode(i);
+			this.CurrentBuilder.Append(this.ToErlangTypeName(FieldNode.GetGivenName()));
 			this.CurrentBuilder.AppendToken("=");
 			this.GenerateCode(null, FieldNode.InitValueNode());
 			if (i < size - 1) {
@@ -603,7 +603,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(OpenToken);
 		@Var int i = 0;
 		while(i < VargNode.GetListSize()) {
-			@Var ZNode ParamNode = VargNode.GetListAt(i);
+			@Var BNode ParamNode = VargNode.GetListAt(i);
 			if (i > 0) {
 				this.CurrentBuilder.Append(DelimToken);
 			}
@@ -704,8 +704,8 @@ public class ErlangGenerator extends ZSourceGenerator {
 	private void DefineVariables(ZListNode VargNode) {
 		@Var int i = 0;
 		while(i < VargNode.GetListSize()) {
-			@Var ZLetVarNode ParamNode = (ZLetVarNode)VargNode.GetListAt(i);
-			this.VarMgr.DefineVariable(this.ToErlangVarName(ParamNode.GetName()));
+			@Var BLetVarNode ParamNode = (BLetVarNode)VargNode.GetListAt(i);
+			this.VarMgr.DefineVariable(this.ToErlangVarName(ParamNode.GetGivenName()));
 			i += 1;
 		}
 	}

@@ -28,11 +28,11 @@ import libbun.parser.ZVisitor;
 import libbun.util.Field;
 import libbun.util.ZMap;
 
-public final class ZAnnotationNode extends ZNode {
+public final class ZAnnotationNode extends BNode {
 	//@Field public ZenMap<Object> Annotation;
-	@Field public ZNode AnnotatedNode = null;
+	@Field public BNode AnnotatedNode = null;
 
-	public ZAnnotationNode(ZNode ParentNode, ZToken Token, ZMap<Object> Anno) {
+	public ZAnnotationNode(BNode ParentNode, ZToken Token, ZMap<Object> Anno) {
 		super(ParentNode, Token, 0);
 		//this.Annotation = Anno;
 	}

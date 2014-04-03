@@ -27,18 +27,18 @@ package libbun.parser.ast;
 import libbun.parser.ZVisitor;
 import libbun.util.Var;
 
-public final class ZTryNode extends ZNode {
+public final class ZTryNode extends BNode {
 	public final static int _Try      = 0;
 	public static final int _NameInfo = 1;
 	public final static int _Catch    = 2;
 	public final static int _Finally  = 3;
 
-	public ZTryNode(ZNode ParentNode) {
+	public ZTryNode(BNode ParentNode) {
 		super(ParentNode, null, 4);
 	}
 
 	public final ZBlockNode TryBlockNode() {
-		@Var ZNode BlockNode = this.AST[ZTryNode._Try ];
+		@Var BNode BlockNode = this.AST[ZTryNode._Try ];
 		if(BlockNode instanceof ZBlockNode) {
 			return (ZBlockNode)BlockNode;
 		}
@@ -55,7 +55,7 @@ public final class ZTryNode extends ZNode {
 	}
 
 	public final ZBlockNode CatchBlockNode() {
-		@Var ZNode BlockNode = this.AST[ZTryNode._Catch ];
+		@Var BNode BlockNode = this.AST[ZTryNode._Catch ];
 		if(BlockNode instanceof ZBlockNode) {
 			return (ZBlockNode)BlockNode;
 		}
@@ -68,7 +68,7 @@ public final class ZTryNode extends ZNode {
 	}
 
 	public final ZBlockNode FinallyBlockNode() {
-		@Var ZNode BlockNode = this.AST[ZTryNode._Finally ];
+		@Var BNode BlockNode = this.AST[ZTryNode._Finally ];
 		if(BlockNode instanceof ZBlockNode) {
 			return (ZBlockNode)BlockNode;
 		}

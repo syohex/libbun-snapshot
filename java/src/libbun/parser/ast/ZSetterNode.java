@@ -31,11 +31,11 @@ public final class ZSetterNode extends ZGetterNode {
 	public static final int _NameInfo = 1;
 	public final static int _Expr = 2;
 
-	public ZSetterNode(ZNode ParentNode, ZNode RecvNode) {
+	public ZSetterNode(BNode ParentNode, BNode RecvNode) {
 		super(ParentNode, RecvNode, 3);
 	}
 
-	public final ZNode ExprNode() {
+	public final BNode ExprNode() {
 		return this.AST[ZSetterNode._Expr ];
 	}
 

@@ -3,13 +3,13 @@ package libbun.lang.bun;
 import libbun.parser.ZToken;
 import libbun.parser.ZTokenContext;
 import libbun.parser.ast.ZEmptyNode;
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.util.Var;
 import libbun.util.ZMatchFunction;
 
 public class StatementEndPatternFunction extends ZMatchFunction {
 
-	@Override public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
+	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var boolean ContextAllowance = TokenContext.SetParseFlag(false);
 		@Var ZToken Token = null;
 		if(TokenContext.HasNext()) {

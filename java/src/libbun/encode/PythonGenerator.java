@@ -26,6 +26,8 @@
 package libbun.encode;
 
 import libbun.parser.ZLogger;
+import libbun.parser.ast.BLetVarNode;
+import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.ZCastNode;
 import libbun.parser.ast.ZClassNode;
@@ -34,9 +36,7 @@ import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZGetIndexNode;
 import libbun.parser.ast.ZIfNode;
 import libbun.parser.ast.ZInstanceOfNode;
-import libbun.parser.ast.ZLetVarNode;
 import libbun.parser.ast.ZNewObjectNode;
-import libbun.parser.ast.ZNode;
 import libbun.parser.ast.ZStupidCastErrorNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
@@ -106,7 +106,7 @@ public class PythonGenerator extends ZSourceGenerator {
 	public void VisitStmtList(ZBlockNode BlockNode) {
 		@Var int i = 0;
 		while (i < BlockNode.GetListSize()) {
-			ZNode SubNode = BlockNode.GetListAt(i);
+			BNode SubNode = BlockNode.GetListAt(i);
 			this.GenerateStatement(SubNode);
 			i = i + 1;
 		}
@@ -121,8 +121,8 @@ public class PythonGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.CloseIndent("");
 	}
 
-	@Override protected void VisitVarDeclNode(ZLetVarNode Node) {
-		this.CurrentBuilder.AppendNewLine(this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()), " = ");
+	@Override protected void VisitVarDeclNode(BLetVarNode Node) {
+		this.CurrentBuilder.AppendNewLine(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = ");
 		this.GenerateCode(null, Node.InitValueNode());
 		if(Node.HasNextVarNode()) {
 			this.VisitVarDeclNode(Node.NextVarNode());
@@ -174,7 +174,7 @@ public class PythonGenerator extends ZSourceGenerator {
 		this.GenerateCode(null, Node.CondNode());
 		this.GenerateCode(null, Node.ThenNode());
 		if (Node.HasElseNode()) {
-			ZNode ElseNode = Node.ElseNode();
+			BNode ElseNode = Node.ElseNode();
 			if(ElseNode instanceof ZIfNode) {
 				this.CurrentBuilder.AppendNewLine("el");
 			}
@@ -185,16 +185,16 @@ public class PythonGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitLetNode(ZLetVarNode Node) {
+	@Override public void VisitLetNode(BLetVarNode Node) {
 		if(this.ReadableCode || !Node.IsConstValue()) {
-			this.CurrentBuilder.Append(Node.GlobalName);
+			this.CurrentBuilder.Append(Node.GetUniqueName(this));
 			this.CurrentBuilder.Append(" = ");
 			this.GenerateCode(null, Node.InitValueNode());
 		}
 	}
 
-	@Override protected void VisitParamNode(ZLetVarNode Node) {
-		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetName()));
+	@Override protected void VisitParamNode(BLetVarNode Node) {
+		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 	}
 
 	/**
@@ -278,10 +278,10 @@ public class PythonGenerator extends ZSourceGenerator {
 		}
 		@Var int i = 0;
 		while (i < Node.GetListSize()) {
-			@Var ZLetVarNode FieldNode = Node.GetFieldNode(i);
+			@Var BLetVarNode FieldNode = Node.GetFieldNode(i);
 			if(!FieldNode.DeclType().IsFuncType()) {
 				this.CurrentBuilder.AppendNewLine();
-				this.CurrentBuilder.Append("self." + FieldNode.GetName() + " = ");
+				this.CurrentBuilder.Append("self." + FieldNode.GetGivenName() + " = ");
 				this.GenerateCode(null, FieldNode.InitValueNode());
 			}
 			this.CurrentBuilder.Append(this.SemiColon);

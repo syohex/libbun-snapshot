@@ -28,12 +28,12 @@ package libbun.parser.ast;
 import libbun.parser.ZToken;
 import libbun.parser.ZVisitor;
 
-public class ZUnaryNode extends ZNode {
+public class ZUnaryNode extends BNode {
 	public final static int _Recv = 0;
-	public ZUnaryNode(ZNode ParentNode, ZToken Token) {
+	public ZUnaryNode(BNode ParentNode, ZToken Token) {
 		super(ParentNode, Token, 1);
 	}
-	public final ZNode RecvNode() {
+	public final BNode RecvNode() {
 		return this.AST[ZUnaryNode._Recv ];
 	}
 	@Override public void Accept(ZVisitor Visitor) {

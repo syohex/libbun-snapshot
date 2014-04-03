@@ -1,12 +1,12 @@
 package libbun.lang.bun;
 
 import libbun.parser.ZTokenContext;
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.util.ZMatchFunction;
 
 public class InStatementPatternFunction extends ZMatchFunction {
 
-	@Override public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
+	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		TokenContext.SetParseFlag(ZTokenContext._AllowSkipIndent);
 		return ExpressionPatternFunction._DispatchPattern(ParentNode, TokenContext, null, true, true);
 	}

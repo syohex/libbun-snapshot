@@ -2,7 +2,7 @@ package libbun.encode.jvm;
 
 import java.util.HashMap;
 
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.util.LibZen;
 import libbun.util.Var;
 
@@ -17,7 +17,7 @@ class AsmClassLoader extends ClassLoader {
 		this.Generator = Generator;
 	}
 
-	AsmClassBuilder NewClass(int ClassQualifer, ZNode Node, String ClassName, String SuperClass) {
+	AsmClassBuilder NewClass(int ClassQualifer, BNode Node, String ClassName, String SuperClass) {
 		@Var String SourceFile = null;
 		if(Node != null && Node.SourceToken != null) {
 			SourceFile = Node.SourceToken.GetFileName();
@@ -27,7 +27,7 @@ class AsmClassLoader extends ClassLoader {
 		return ClassBuilder;
 	}
 
-	AsmClassBuilder NewClass(int ClassQualifer, ZNode Node, String ClassName, Class<?> SuperClass) {
+	AsmClassBuilder NewClass(int ClassQualifer, BNode Node, String ClassName, Class<?> SuperClass) {
 		return this.NewClass(ClassQualifer, Node, ClassName, Type.getInternalName(SuperClass));
 	}
 

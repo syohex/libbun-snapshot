@@ -1,12 +1,12 @@
 package libbun.lang.bun;
 
 import libbun.parser.ZTokenContext;
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.util.ZMatchFunction;
 
 public class TypeAnnotationPatternFunction extends ZMatchFunction {
 
-	@Override public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftNode) {
+	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		if(TokenContext.MatchToken(":")) {
 			return TokenContext.ParsePattern(ParentNode, "$OpenType$", ZTokenContext._Required);
 		}

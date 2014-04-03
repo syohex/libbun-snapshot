@@ -29,9 +29,9 @@ import libbun.parser.ZVisitor;
 import libbun.type.ZType;
 import libbun.util.Field;
 
-public final class ZStringNode extends ZConstNode {
+public final class BStringNode extends BConstNode {
 	@Field public String	StringValue;
-	public ZStringNode(ZNode ParentNode, ZToken Token, String Value) {
+	public BStringNode(BNode ParentNode, ZToken Token, String Value) {
 		super(ParentNode, Token);
 		this.Type = ZType.StringType;
 		this.StringValue = Value;

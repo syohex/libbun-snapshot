@@ -2,7 +2,7 @@ package libbun.lang.bun;
 
 import libbun.parser.ZToken;
 import libbun.parser.ZTokenContext;
-import libbun.parser.ast.ZNode;
+import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZTypeNode;
 import libbun.type.ZGenericType;
 import libbun.type.ZType;
@@ -13,7 +13,7 @@ import libbun.util.ZMatchFunction;
 
 public class RightTypePatternFunction extends ZMatchFunction {
 
-	@Override public ZNode Invoke(ZNode ParentNode, ZTokenContext TokenContext, ZNode LeftTypeNode) {
+	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftTypeNode) {
 		@Var ZToken SourceToken = TokenContext.GetToken();
 		if(LeftTypeNode.Type.GetParamSize() > 0) {
 			if(TokenContext.MatchToken("<")) {  // Generics

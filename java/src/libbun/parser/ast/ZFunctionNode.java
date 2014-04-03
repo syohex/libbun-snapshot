@@ -45,7 +45,7 @@ public class ZFunctionNode extends ZListNode {
 	@Field public ZFunctionNode ParentFunctionNode = null;
 	@Field public ZFuncType     ResolvedFuncType = null;
 
-	public ZFunctionNode(ZNode ParentNode) {
+	public ZFunctionNode(BNode ParentNode) {
 		super(ParentNode, null, 3);
 	}
 
@@ -81,7 +81,7 @@ public class ZFunctionNode extends ZListNode {
 	}
 
 	public final ZBlockNode BlockNode() {
-		@Var ZNode BlockNode = this.AST[ZFunctionNode._Block];
+		@Var BNode BlockNode = this.AST[ZFunctionNode._Block];
 		if(BlockNode instanceof ZBlockNode) {
 			return (ZBlockNode)BlockNode;
 		}
@@ -93,10 +93,10 @@ public class ZFunctionNode extends ZListNode {
 		Visitor.VisitFunctionNode(this);
 	}
 
-	public final ZLetVarNode GetParamNode(int Index) {
-		@Var ZNode Node = this.GetListAt(Index);
-		if(Node instanceof ZLetVarNode) {
-			return (ZLetVarNode)Node;
+	public final BLetVarNode GetParamNode(int Index) {
+		@Var BNode Node = this.GetListAt(Index);
+		if(Node instanceof BLetVarNode) {
+			return (BLetVarNode)Node;
 		}
 		return null;
 	}
@@ -106,7 +106,7 @@ public class ZFunctionNode extends ZListNode {
 			@Var ZArray<ZType> TypeList = new ZArray<ZType>(new ZType[this.GetListSize()+2]);
 			@Var int i = 0;
 			while(i < this.GetListSize()) {
-				@Var ZLetVarNode Node = this.GetParamNode(i);
+				@Var BLetVarNode Node = this.GetParamNode(i);
 				@Var ZType ParamType = Node.DeclType().GetRealType();
 				TypeList.add(ParamType);
 				i = i + 1;
