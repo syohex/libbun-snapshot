@@ -1,14 +1,14 @@
 package libbun.lang.bun.shell;
 
 import libbun.parser.ast.BNode;
-import libbun.util.LibZen;
+import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 import libbun.parser.ZPatternToken;
 import libbun.parser.ZToken;
 import libbun.parser.ZTokenContext;
 
-public class PrefixOptionPatternFunction extends ZMatchFunction {
+public class PrefixOptionPatternFunction extends BMatchFunction {
 	public final static String _PatternName = "$PrefixOption$";
 
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
@@ -42,7 +42,7 @@ public class PrefixOptionPatternFunction extends ZMatchFunction {
 		@Var ZToken NumToken = TokenContext.GetToken(ZTokenContext._MoveNext);
 		if((NumToken instanceof ZPatternToken)) {
 			if(((ZPatternToken)NumToken).PresetPattern.PatternName.equals(("$IntegerLiteral$"))) {
-				@Var long Num = LibZen._ParseInt(NumToken.GetText());
+				@Var long Num = BLib._ParseInt(NumToken.GetText());
 				if(Num > 0) {
 					if(NumToken.IsNextWhiteSpace()) {
 						return new ArgumentNode(ParentNode, Long.toString(Num));

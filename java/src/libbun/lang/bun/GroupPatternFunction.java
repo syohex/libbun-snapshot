@@ -4,9 +4,9 @@ import libbun.parser.ZTokenContext;
 import libbun.parser.ast.ZGroupNode;
 import libbun.parser.ast.BNode;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
-public class GroupPatternFunction extends ZMatchFunction {
+public class GroupPatternFunction extends BMatchFunction {
 
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var BNode GroupNode = new ZGroupNode(ParentNode);

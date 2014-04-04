@@ -2,9 +2,9 @@ package libbun.lang.bun;
 
 import libbun.parser.ZSourceContext;
 import libbun.util.Var;
-import libbun.util.ZTokenFunction;
+import libbun.util.BTokenFunction;
 
-public class StringLiteralTokenFunction extends ZTokenFunction {
+public class StringLiteralTokenFunction extends BTokenFunction {
 	@Override public boolean Invoke(ZSourceContext SourceContext) {
 		@Var int StartIndex = SourceContext.GetPosition();
 		SourceContext.MoveNext();

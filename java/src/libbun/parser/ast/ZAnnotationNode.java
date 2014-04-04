@@ -25,14 +25,14 @@
 package libbun.parser.ast;
 import libbun.parser.ZToken;
 import libbun.parser.ZVisitor;
-import libbun.util.Field;
-import libbun.util.ZMap;
+import libbun.util.BField;
+import libbun.util.BMap;
 
 public final class ZAnnotationNode extends BNode {
 	//@Field public ZenMap<Object> Annotation;
-	@Field public BNode AnnotatedNode = null;
+	@BField public BNode AnnotatedNode = null;
 
-	public ZAnnotationNode(BNode ParentNode, ZToken Token, ZMap<Object> Anno) {
+	public ZAnnotationNode(BNode ParentNode, ZToken Token, BMap<Object> Anno) {
 		super(ParentNode, Token, 0);
 		//this.Annotation = Anno;
 	}

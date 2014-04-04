@@ -25,18 +25,18 @@
 package libbun.type;
 
 import libbun.parser.ZToken;
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.Var;
-import libbun.util.ZArray;
-import libbun.util.ZenIgnored;
+import libbun.util.BArray;
+import libbun.util.BIgnored;
 
 public class ZVarType extends ZType {
 
-	@Field public final ZArray<ZVarType> VarList;
-	@Field public ZToken SourceToken;
-	@Field public int GreekId;
+	@BField public final BArray<ZVarType> VarList;
+	@BField public ZToken SourceToken;
+	@BField public int GreekId;
 
-	public ZVarType(ZArray<ZVarType> VarList, String Name, ZToken SourceToken) {
+	public ZVarType(BArray<ZVarType> VarList, String Name, ZToken SourceToken) {
 		super(0, Name, ZType.VarType);
 		this.VarList = VarList;
 		this.SourceToken = SourceToken;
@@ -65,7 +65,7 @@ public class ZVarType extends ZType {
 		return this.RefType.IsVarType();
 	}
 
-	@ZenIgnored @Override public String toString() {
+	@BIgnored @Override public String toString() {
 		return "typeof(" + this.ShortName + "): " + this.RefType;
 	}
 

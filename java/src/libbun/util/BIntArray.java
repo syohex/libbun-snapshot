@@ -1,14 +1,14 @@
 package libbun.util;
 
 
-public class ZBooleanArray extends ZObject {
-	@Field private int    Size;
-	@Field public boolean[] ArrayValues;
+public class BIntArray extends BObject {
+	@BField private int    Size;
+	@BField public long[] ArrayValues;
 
-	public ZBooleanArray(int TypeId, boolean[] Values) {
+	public BIntArray(int TypeId, long[] Values) {
 		super(TypeId);
 		if(Values == null || Values.length == 0) {
-			this.ArrayValues = new boolean[1];
+			this.ArrayValues = new long[1];
 			this.Size = 0;
 		}
 		else {
@@ -36,15 +36,15 @@ public class ZBooleanArray extends ZObject {
 		this.Size = (int) Index;
 	}
 
-	public final static boolean GetIndex(ZBooleanArray a, long Index) {
+	public final static long GetIndex(BIntArray a, long Index) {
 		if(Index < a.Size) {
 			return a.ArrayValues[(int)Index];
 		}
 		ZObjectArray.ThrowOutOfArrayIndex(a.Size, Index);
-		return false;
+		return 0;
 	}
 
-	public final static void SetIndex(ZBooleanArray a, long Index, boolean Value) {
+	public final static void SetIndex(BIntArray a, long Index, long Value) {
 		if(Index < a.Size) {
 			a.ArrayValues[(int)Index] = Value;
 			return;
@@ -52,9 +52,9 @@ public class ZBooleanArray extends ZObject {
 		ZObjectArray.ThrowOutOfArrayIndex(a.Size, Index);
 	}
 
-	public final void Add(boolean Value) {
+	public final void Add(long Value) {
 		if(this.Size == this.ArrayValues.length) {
-			boolean[] newValues = new boolean[this.ArrayValues.length * 2];
+			long[] newValues = new long[this.ArrayValues.length * 2];
 			System.arraycopy(this.ArrayValues, 0, newValues, 0, this.Size);
 			this.ArrayValues = newValues;
 		}
@@ -62,10 +62,10 @@ public class ZBooleanArray extends ZObject {
 		this.Size = this.Size + 1;
 	}
 
-	public final void Insert(long Index, boolean Value) {
+	public final void Insert(long Index, long Value) {
 		int index = (int) Index;
 		if(this.Size == this.ArrayValues.length) {
-			boolean[] NewValues = new boolean[this.ArrayValues.length * 2];
+			long[] NewValues = new long[this.ArrayValues.length * 2];
 			System.arraycopy(this.ArrayValues, 0, NewValues, 0, this.Size);
 			this.ArrayValues = NewValues;
 		}

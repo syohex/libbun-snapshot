@@ -4,11 +4,11 @@ import libbun.parser.ZMacroFunc;
 import libbun.parser.ZNameSpace;
 import libbun.type.ZFuncType;
 import libbun.type.ZType;
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.Var;
 
 public class BDefineNode extends ZTopLevelNode {
-	@Field public BLetVarNode DefineNode;
+	@BField public BLetVarNode DefineNode;
 
 	public BDefineNode(BNode ParentNode, BLetVarNode DefineNode) {
 		super(ParentNode, null, 3);

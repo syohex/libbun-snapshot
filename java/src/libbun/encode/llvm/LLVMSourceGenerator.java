@@ -78,19 +78,19 @@ import libbun.type.ZClassType;
 import libbun.type.ZFuncType;
 import libbun.type.ZGenericType;
 import libbun.type.ZType;
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Var;
 
 
 class LLVMScope {
-	@Field private int TempLocalSymbolNumber;
-	@Field private boolean IsBlockTerminated;
-	@Field private String CurrentLabel;
-	@Field private final ArrayList<String> ValueStack = new ArrayList<String>();
-	@Field private final ArrayList<String> BreakLabelStack = new ArrayList<String>();
-	@Field private final ArrayList<String> LocalSymbolList = new ArrayList<String>();
-	@Field private final ArrayList<String> LocalVarList = new ArrayList<String>();
+	@BField private int TempLocalSymbolNumber;
+	@BField private boolean IsBlockTerminated;
+	@BField private String CurrentLabel;
+	@BField private final ArrayList<String> ValueStack = new ArrayList<String>();
+	@BField private final ArrayList<String> BreakLabelStack = new ArrayList<String>();
+	@BField private final ArrayList<String> LocalSymbolList = new ArrayList<String>();
+	@BField private final ArrayList<String> LocalVarList = new ArrayList<String>();
 
 
 	public LLVMScope() {
@@ -173,12 +173,12 @@ class LLVMScope {
 }
 
 public class LLVMSourceGenerator extends ZSourceGenerator {
-	@Field private int TempGlobalSymbolNumber;
-	@Field private final ArrayList<String> GlobalSymbolList;
-	@Field private final ArrayList<String> ExternalStructList;
-	@Field private final HashMap<String, String> ExternalFunctionMap;
-	@Field private final HashMap<String, ZClassNode> ClassFieldMap;
-	@Field private LLVMScope CurrentScope;
+	@BField private int TempGlobalSymbolNumber;
+	@BField private final ArrayList<String> GlobalSymbolList;
+	@BField private final ArrayList<String> ExternalStructList;
+	@BField private final HashMap<String, String> ExternalFunctionMap;
+	@BField private final HashMap<String, ZClassNode> ClassFieldMap;
+	@BField private LLVMScope CurrentScope;
 
 	private static final boolean WithInitValue = true;
 
@@ -296,7 +296,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 	private String GetFuncParamTypeExpr(ZFuncType FuncType) {
 		@Var int Size = FuncType.GetFuncParamSize();
-		LibZen._Assert(Size >= 0);
+		BLib._Assert(Size >= 0);
 
 		@Var StringBuilder sb = new StringBuilder();
 		sb.append("(");
@@ -1042,7 +1042,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 				break;
 			}
 			sb.append(Macro.substring(fromIndex, BeginNum));
-			@Var int Index = (int)LibZen._ParseInt(Macro.substring(BeginNum+2, EndNum));
+			@Var int Index = (int)BLib._ParseInt(Macro.substring(BeginNum+2, EndNum));
 			if(Node.AST[Index] != null) {
 				sb.append(this.GetTypeExpr(Node.AST[Index].Type));
 				sb.append(" ");

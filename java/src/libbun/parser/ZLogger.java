@@ -24,14 +24,14 @@
 
 package libbun.parser;
 
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.ZArray;
+import libbun.util.BArray;
 
 public final class ZLogger {
 
-	@Field public ZArray<String>  ReportedErrorList = new ZArray<String>(new String[10]);
+	@BField public BArray<String>  ReportedErrorList = new BArray<String>(new String[10]);
 	//	@Field public ZenMap<ZCounter> StatMap;
 
 	//	public ZLogger() {
@@ -53,7 +53,7 @@ public final class ZLogger {
 			Token.Source.Logger.Report(Message);
 		}
 		else {
-			LibZen._Exit(1, Message);
+			BLib._Exit(1, Message);
 		}
 	}
 
@@ -87,8 +87,8 @@ public final class ZLogger {
 	}
 
 	public final String[] GetReportedErrors() {
-		@Var ZArray<String> List = this.ReportedErrorList;
-		this.ReportedErrorList = new ZArray<String>(new String[10]);
+		@Var BArray<String> List = this.ReportedErrorList;
+		this.ReportedErrorList = new BArray<String>(new String[10]);
 		return List.CompactArray();
 	}
 
@@ -96,7 +96,7 @@ public final class ZLogger {
 		@Var String[] Messages = this.GetReportedErrors();
 		@Var int i = 0;
 		while(i < Messages.length) {
-			LibZen._PrintLine(Messages[i]);
+			BLib._PrintLine(Messages[i]);
 			i = i + 1;
 		}
 	}

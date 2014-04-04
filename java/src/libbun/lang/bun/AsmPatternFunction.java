@@ -4,9 +4,9 @@ import libbun.parser.ZTokenContext;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.BAsmNode;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
-public class AsmPatternFunction extends ZMatchFunction {
+public class AsmPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var BNode AsmNode = new BAsmNode(ParentNode, null, null, null);
 		AsmNode = TokenContext.MatchToken(AsmNode, "asm", ZTokenContext._Required);

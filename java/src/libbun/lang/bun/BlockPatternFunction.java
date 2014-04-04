@@ -5,9 +5,9 @@ import libbun.parser.ZTokenContext;
 import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.BNode;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
-public class BlockPatternFunction extends ZMatchFunction {
+public class BlockPatternFunction extends BMatchFunction {
 
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var BNode BlockNode = new ZBlockNode(ParentNode, null);

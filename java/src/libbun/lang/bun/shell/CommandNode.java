@@ -11,19 +11,19 @@ import libbun.parser.ZGenerator;
 import libbun.parser.ZToken;
 import libbun.parser.ZTypeChecker;
 import libbun.type.ZType;
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.Var;
-import libbun.util.ZArray;
+import libbun.util.BArray;
 
 public class CommandNode extends ZSugarNode {
-	@Field private final ZArray<BNode> ArgList;
-	@Field private ZType RetType = ZType.VarType;
-	@Field public CommandNode PipedNextNode;
+	@BField private final BArray<BNode> ArgList;
+	@BField private ZType RetType = ZType.VarType;
+	@BField public CommandNode PipedNextNode;
 
 	public CommandNode(BNode ParentNode, ZToken Token, String Command) {
 		super(ParentNode, Token, 0);
 		this.PipedNextNode = null;
-		this.ArgList = new ZArray<BNode>(new BNode[]{});
+		this.ArgList = new BArray<BNode>(new BNode[]{});
 		this.AppendArgNode(new ArgumentNode(ParentNode, Command));
 	}
 
@@ -45,11 +45,11 @@ public class CommandNode extends ZSugarNode {
 	}
 
 	public void SetArgAt(int Index, BNode ArgNode) {
-		ZArray.SetIndex(this.ArgList, Index, ArgNode);
+		BArray.SetIndex(this.ArgList, Index, ArgNode);
 	}
 
 	public BNode GetArgAt(int Index) {
-		return ZArray.GetIndex(this.ArgList, Index);
+		return BArray.GetIndex(this.ArgList, Index);
 	}
 
 	public void SetType(ZType Type) {

@@ -1,12 +1,12 @@
 package libbun.encode.jvm;
 
 import libbun.util.SoftwareFaultException;
-import libbun.util.ZBooleanArray;
-import libbun.util.ZFloatArray;
-import libbun.util.ZIntArray;
+import libbun.util.BBooleanArray;
+import libbun.util.BFloatArray;
+import libbun.util.BIntArray;
 import libbun.util.ZObjectArray;
 import libbun.util.ZObjectMap;
-import libbun.util.ZStringArray;
+import libbun.util.BStringArray;
 
 public class JavaCommonApi {
 
@@ -125,83 +125,83 @@ public class JavaCommonApi {
 		return x.toString();
 	}
 	// BooleanArray
-	public final static long BooleanArraySize(ZBooleanArray x) {
+	public final static long BooleanArraySize(BBooleanArray x) {
 		return x.Size();
 	}
 
-	public final static void BooleanArrayClear(ZBooleanArray x, long y) {
+	public final static void BooleanArrayClear(BBooleanArray x, long y) {
 		x.Clear(y);
 	}
 
-	public final static <T> void BooleanArrayAdd(ZBooleanArray x, boolean y) {
+	public final static <T> void BooleanArrayAdd(BBooleanArray x, boolean y) {
 		x.Add(y);
 	}
 
-	public final static <T> void BooleanArrayInsert(ZBooleanArray x, long y, boolean z) {
+	public final static <T> void BooleanArrayInsert(BBooleanArray x, long y, boolean z) {
 		x.Insert(y, z);
 	}
 
-	public final static String BooleanArrayToString(ZBooleanArray x) {
+	public final static String BooleanArrayToString(BBooleanArray x) {
 		return x.toString();
 	}
 	// IntArray
-	public final static long IntArraySize(ZIntArray x) {
+	public final static long IntArraySize(BIntArray x) {
 		return x.Size();
 	}
 
-	public final static void IntArrayClear(ZIntArray x, long y) {
+	public final static void IntArrayClear(BIntArray x, long y) {
 		x.Clear(y);
 	}
 
-	public final static <T> void IntArrayAdd(ZIntArray x, long y) {
+	public final static <T> void IntArrayAdd(BIntArray x, long y) {
 		x.Add(y);
 	}
 
-	public final static <T> void IntArrayInsert(ZIntArray x, long y, long z) {
+	public final static <T> void IntArrayInsert(BIntArray x, long y, long z) {
 		x.Insert(y, z);
 	}
 
-	public final static String IntArrayToString(ZIntArray x) {
+	public final static String IntArrayToString(BIntArray x) {
 		return x.toString();
 	}
 	// FloatArray
-	public final static long FloatArraySize(ZFloatArray x) {
+	public final static long FloatArraySize(BFloatArray x) {
 		return x.Size();
 	}
 
-	public final static void FloatArrayClear(ZFloatArray x, long y) {
+	public final static void FloatArrayClear(BFloatArray x, long y) {
 		x.Clear(y);
 	}
 
-	public final static <T> void FloatArrayAdd(ZFloatArray x, double y) {
+	public final static <T> void FloatArrayAdd(BFloatArray x, double y) {
 		x.Add(y);
 	}
 
-	public final static <T> void FloatArrayInsert(ZFloatArray x, long y, double z) {
+	public final static <T> void FloatArrayInsert(BFloatArray x, long y, double z) {
 		x.Insert(y, z);
 	}
 
-	public final static String FloatArrayToString(ZFloatArray x) {
+	public final static String FloatArrayToString(BFloatArray x) {
 		return x.toString();
 	}
 	// StringArray
-	public final static long StringArraySize(ZStringArray x) {
+	public final static long StringArraySize(BStringArray x) {
 		return x.Size();
 	}
 
-	public final static void StringArrayClear(ZStringArray x, long y) {
+	public final static void StringArrayClear(BStringArray x, long y) {
 		x.Clear(y);
 	}
 
-	public final static <T> void StringArrayAdd(ZStringArray x, String y) {
+	public final static <T> void StringArrayAdd(BStringArray x, String y) {
 		x.Add(y);
 	}
 
-	public final static <T> void StringArrayInsert(ZStringArray x, long y, String z) {
+	public final static <T> void StringArrayInsert(BStringArray x, long y, String z) {
 		x.Insert(y, z);
 	}
 
-	public final static String StringArrayToString(ZStringArray x) {
+	public final static String StringArrayToString(BStringArray x) {
 		return x.toString();
 	}
 

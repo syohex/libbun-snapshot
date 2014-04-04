@@ -31,13 +31,13 @@ import libbun.parser.ZToken;
 import libbun.parser.ZTokenContext;
 import libbun.parser.ZVisitor;
 import libbun.type.ZFunc;
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.Var;
 
 public class ZBinaryNode extends BNode {
 	public final static int _Left = 0;
 	public final static int _Right = 1;
-	@Field public ZSyntax Pattern;
+	@BField public ZSyntax Pattern;
 
 	public ZBinaryNode(BNode ParentNode, ZToken SourceToken, BNode Left, ZSyntax Pattern) {
 		super(ParentNode, SourceToken, 2);

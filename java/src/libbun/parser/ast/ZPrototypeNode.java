@@ -2,12 +2,12 @@ package libbun.parser.ast;
 
 import libbun.parser.ZNameSpace;
 import libbun.type.ZFuncType;
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.Var;
 
 public class ZPrototypeNode extends ZTopLevelNode {
 	public final static int _FuncInfo = 0;
-	@Field ZFunctionNode FunctionNode;
+	@BField ZFunctionNode FunctionNode;
 	public ZPrototypeNode(ZFunctionNode FunctionNode) {
 		super(FunctionNode.ParentNode, FunctionNode.SourceToken, 1);
 		this.SetNode(ZPrototypeNode._FuncInfo, FunctionNode);

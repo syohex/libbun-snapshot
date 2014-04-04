@@ -4,9 +4,9 @@ import libbun.parser.ZTokenContext;
 import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.BNode;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
-public class FieldPatternFunction extends ZMatchFunction {
+public class FieldPatternFunction extends BMatchFunction {
 
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var boolean Rememberd = TokenContext.SetParseFlag(false);

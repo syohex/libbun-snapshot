@@ -4,12 +4,12 @@ import libbun.parser.ZToken;
 import libbun.parser.ZTypeChecker;
 import libbun.util.Nullable;
 import libbun.util.Var;
-import libbun.util.ZArray;
-import libbun.util.ZMap;
+import libbun.util.BArray;
+import libbun.util.BMap;
 
 public class ZTypePool {
 
-	private final static ZArray<ZType> _TypeList = new ZArray<ZType>(new ZType[128]);
+	private final static BArray<ZType> _TypeList = new BArray<ZType>(new ZType[128]);
 
 	public final static int _NewTypeId(ZType T) {
 		@Var int TypeId = ZTypePool._TypeList.size();
@@ -27,14 +27,14 @@ public class ZTypePool {
 		return ZType.VarType;
 	}
 
-	private final static ZMap<ZType>     _ClassNameMap = new ZMap<ZType>(null);
-	private final static ZMap<ZType[]>   _UniqueTypeSetMap = new ZMap<ZType[]>(null);
+	private final static BMap<ZType>     _ClassNameMap = new BMap<ZType>(null);
+	private final static BMap<ZType[]>   _UniqueTypeSetMap = new BMap<ZType[]>(null);
 
 	private final static String _MangleType2(ZType Type1, ZType Type2) {
 		return ":" + Type1.TypeId + ":" + Type2.TypeId;
 	}
 
-	private final static String _MangleTypes(ZArray<ZType> TypeList) {
+	private final static String _MangleTypes(BArray<ZType> TypeList) {
 		@Var String s = "";
 		@Var int i = 0;
 		while(i < TypeList.size()) {
@@ -45,7 +45,7 @@ public class ZTypePool {
 		return s;
 	}
 
-	private final static ZType[] _UniqueTypes(ZArray<ZType> TypeList) {
+	private final static ZType[] _UniqueTypes(BArray<ZType> TypeList) {
 		@Var String MangleName = "[]" + ZTypePool._MangleTypes(TypeList);
 		@Var ZType[] Types = ZTypePool._UniqueTypeSetMap.GetOrNull(MangleName);
 		if(Types == null) {
@@ -70,7 +70,7 @@ public class ZTypePool {
 		ZTypePool._ClassNameMap.put(MangleName, Type);
 	}
 
-	public final static ZType _GetGenericType(ZType BaseType, ZArray<ZType> TypeList, boolean IsCreation) {
+	public final static ZType _GetGenericType(ZType BaseType, BArray<ZType> TypeList, boolean IsCreation) {
 		assert(BaseType.GetParamSize() > 0);
 		if(TypeList.size() == 1 && !BaseType.IsFuncType()) {
 			return ZTypePool._GetGenericType1(BaseType, TypeList.ArrayValues[0]);
@@ -89,7 +89,7 @@ public class ZTypePool {
 		return GenericType;
 	}
 
-	public final static ZFuncType _LookupFuncType2(ZArray<ZType> TypeList) {
+	public final static ZFuncType _LookupFuncType2(BArray<ZType> TypeList) {
 		@Var ZType FuncType = ZTypePool._GetGenericType(ZFuncType._FuncType, TypeList, true);
 		if(FuncType instanceof ZFuncType) {
 			return (ZFuncType)FuncType;
@@ -98,20 +98,20 @@ public class ZTypePool {
 	}
 
 	public final static ZFuncType _LookupFuncType2(ZType R) {
-		@Var ZArray<ZType> TypeList = new ZArray<ZType>(new ZType[2]);
+		@Var BArray<ZType> TypeList = new BArray<ZType>(new ZType[2]);
 		TypeList.add(R);
 		return ZTypePool._LookupFuncType2(TypeList);
 	}
 
 	public final static ZFuncType _LookupFuncType2(ZType P1, ZType R) {
-		@Var ZArray<ZType> TypeList = new ZArray<ZType>(new ZType[2]);
+		@Var BArray<ZType> TypeList = new BArray<ZType>(new ZType[2]);
 		TypeList.add(P1);
 		TypeList.add(R);
 		return ZTypePool._LookupFuncType2(TypeList);
 	}
 
 	public final static ZFuncType _LookupFuncType2(ZType P1, ZType P2, ZType R) {
-		@Var ZArray<ZType> TypeList = new ZArray<ZType>(new ZType[3]);
+		@Var BArray<ZType> TypeList = new BArray<ZType>(new ZType[3]);
 		TypeList.add(P1);
 		TypeList.add(P2);
 		TypeList.add(R);
@@ -119,7 +119,7 @@ public class ZTypePool {
 	}
 
 	public final static ZFuncType _LookupFuncType2(ZType P1, ZType P2, ZType P3, ZType R) {
-		@Var ZArray<ZType> TypeList = new ZArray<ZType>(new ZType[3]);
+		@Var BArray<ZType> TypeList = new BArray<ZType>(new ZType[3]);
 		TypeList.add(P1);
 		TypeList.add(P2);
 		TypeList.add(P3);

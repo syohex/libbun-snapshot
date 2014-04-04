@@ -4,9 +4,9 @@ import libbun.parser.ZTokenContext;
 import libbun.parser.ast.ZIfNode;
 import libbun.parser.ast.BNode;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
-public class IfPatternFunction extends ZMatchFunction {
+public class IfPatternFunction extends BMatchFunction {
 
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var BNode IfNode = new ZIfNode(ParentNode);

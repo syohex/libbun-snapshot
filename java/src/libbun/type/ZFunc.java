@@ -24,16 +24,16 @@
 
 
 package libbun.type;
-import libbun.util.Field;
+import libbun.util.BField;
 
 public abstract class ZFunc {
 	public final static String _NativeNameConnector = "__";
 	public final static int _ConverterFunc       = 1 << 16;
 	public final static int _CoercionFunc        = (1 << 17) | ZFunc._ConverterFunc;  //@Coercion
 
-	@Field public int			  FuncFlag;
-	@Field public String		  FuncName;  // NativeReferenceNamr
-	@Field public ZFuncType       FuncType;
+	@BField public int			  FuncFlag;
+	@BField public String		  FuncName;  // NativeReferenceNamr
+	@BField public ZFuncType       FuncType;
 
 	public ZFunc(int FuncFlag, String FuncName, ZFuncType FuncType) {
 		this.FuncFlag = FuncFlag;

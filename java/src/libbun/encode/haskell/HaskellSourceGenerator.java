@@ -45,13 +45,13 @@ import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
 import libbun.parser.ast.ZWhileNode;
 import libbun.type.ZType;
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Var;
 
 
 public class HaskellSourceGenerator extends ZSourceGenerator {
-	@Field public ArrayList <String> Variables;
+	@BField public ArrayList <String> Variables;
 	private static int IndentLevel = 0;
 
 	public HaskellSourceGenerator() {
@@ -207,7 +207,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		if(ReturnNode != null && ReturnNode.HasReturnExpr()) {
 			this.Indent(this.CurrentBuilder);
 
-			String Indentation = LibZen._JoinStrings("\t", IndentLevel);
+			String Indentation = BLib._JoinStrings("\t", IndentLevel);
 			this.CurrentBuilder.Append(Indentation);
 			this.CurrentBuilder.Append("return ");
 			this.GenerateCode(null, ReturnNode.ExprNode());

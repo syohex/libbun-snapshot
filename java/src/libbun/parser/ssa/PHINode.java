@@ -5,11 +5,11 @@ import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.ZLocalDefinedNode;
 import libbun.util.Var;
-import libbun.util.ZArray;
+import libbun.util.BArray;
 
 public class PHINode extends ZLocalDefinedNode {
-	public ZArray<BNode>      Args;
-	public ZArray<ZBlockNode> Blocks;
+	public BArray<BNode>      Args;
+	public BArray<ZBlockNode> Blocks;
 	public Variable VarRef;
 	public Variable BackupValue;
 	public String VariableName;
@@ -18,8 +18,8 @@ public class PHINode extends ZLocalDefinedNode {
 		super(null, null, 0);
 		this.BackupValue = BackupValue;
 		this.VariableName = VariableName;
-		this.Args = new ZArray<BNode>(new BNode[0]);
-		this.Blocks = new ZArray<ZBlockNode>(new ZBlockNode[0]);
+		this.Args = new BArray<BNode>(new BNode[0]);
+		this.Blocks = new BArray<ZBlockNode>(new ZBlockNode[0]);
 		this.Type = NodeLib.GetType(BackupValue.Node);
 	}
 
@@ -28,8 +28,8 @@ public class PHINode extends ZLocalDefinedNode {
 			this.Args.add(this.BackupValue.Node);
 			this.Blocks.add(null);
 		}
-		ZArray.SetIndex(this.Args, Index, node);
-		ZArray.SetIndex(this.Blocks, Index, block);
+		BArray.SetIndex(this.Args, Index, node);
+		BArray.SetIndex(this.Blocks, Index, block);
 	}
 
 	public boolean IsSameVariable(Variable Var) {
@@ -41,7 +41,7 @@ public class PHINode extends ZLocalDefinedNode {
 		@Var String Txt = "PHI[";
 		@Var int i = 0;
 		while(i < this.Args.size()) {
-			BNode Node = ZArray.GetIndex(this.Args, i);
+			BNode Node = BArray.GetIndex(this.Args, i);
 			if (i != 0) {
 				Txt += ", ";
 			}
@@ -61,7 +61,7 @@ public class PHINode extends ZLocalDefinedNode {
 	}
 
 	public BNode GetArgument(int Index) {
-		return ZArray.GetIndex(this.Args, Index);
+		return BArray.GetIndex(this.Args, Index);
 	}
 
 	public boolean EqualsName(BGetNameNode gNode) {

@@ -1,12 +1,12 @@
 package zen.obsolete;
 
 import libbun.type.ZType;
-import libbun.util.Field;
-import libbun.util.ZArray;
+import libbun.util.BField;
+import libbun.util.BArray;
 
 public class ZUnionType extends ZType {
 
-	@Field public final ZArray<ZType> UnionList = null;
+	@BField public final BArray<ZType> UnionList = null;
 
 	public ZUnionType() {
 		super(0, "union", ZType.VarType);

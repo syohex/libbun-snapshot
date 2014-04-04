@@ -4,9 +4,9 @@ import libbun.parser.ZTokenContext;
 import libbun.parser.ast.ZGetIndexNode;
 import libbun.parser.ast.BNode;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
-public class GetIndexPatternFunction extends ZMatchFunction {
+public class GetIndexPatternFunction extends BMatchFunction {
 
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var BNode IndexerNode = new ZGetIndexNode(ParentNode, LeftNode);

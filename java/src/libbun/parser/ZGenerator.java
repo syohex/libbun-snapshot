@@ -42,25 +42,25 @@ import libbun.type.ZFunc;
 import libbun.type.ZFuncType;
 import libbun.type.ZPrototype;
 import libbun.type.ZType;
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Nullable;
 import libbun.util.Var;
-import libbun.util.ZMap;
-import libbun.util.ZenIgnored;
+import libbun.util.BMap;
+import libbun.util.BIgnored;
 import libbun.util.ZenMethod;
 
 public abstract class ZGenerator extends ZVisitor {
-	@Field public ZMap<String>        ImportedLibraryMap = new ZMap<String>(null);
-	@Field private final ZMap<ZFunc>  DefinedFuncMap = new ZMap<ZFunc>(null);
+	@BField public BMap<String>        ImportedLibraryMap = new BMap<String>(null);
+	@BField private final BMap<ZFunc>  DefinedFuncMap = new BMap<ZFunc>(null);
 
-	@Field public final ZNameSpace      RootNameSpace;
-	@Field public ZLogger               Logger;
-	@Field public ZTypeChecker          TypeChecker;
-	@Field public ZLangInfo             LangInfo;
-	@Field protected String             TopLevelSymbol = null;
-	@Field private int                  UniqueNumber = 0;
-	@Field private boolean              StoppedVisitor;
+	@BField public final ZNameSpace      RootNameSpace;
+	@BField public ZLogger               Logger;
+	@BField public ZTypeChecker          TypeChecker;
+	@BField public ZLangInfo             LangInfo;
+	@BField protected String             TopLevelSymbol = null;
+	@BField private int                  UniqueNumber = 0;
+	@BField private boolean              StoppedVisitor;
 
 	protected ZGenerator(ZLangInfo LangInfo) {
 		this.RootNameSpace = new ZNameSpace(this, null);
@@ -228,9 +228,9 @@ public abstract class ZGenerator extends ZVisitor {
 
 	public final ZFunc GetDefinedFunc(String GlobalName) {
 		@Var ZFunc Func = this.DefinedFuncMap.GetOrNull(GlobalName);
-		if(Func == null && LibZen._IsLetter(LibZen._GetChar(GlobalName, 0))) {
+		if(Func == null && BLib._IsLetter(BLib._GetChar(GlobalName, 0))) {
 			//			System.out.println("AnotherName = " + GlobalName + ", " + LibZen._AnotherName(GlobalName));
-			Func = this.DefinedFuncMap.GetOrNull(LibZen._AnotherName(GlobalName));
+			Func = this.DefinedFuncMap.GetOrNull(BLib._AnotherName(GlobalName));
 		}
 		//System.out.println("sinature="+GlobalName+", func="+Func);
 		return Func;
@@ -349,7 +349,7 @@ public abstract class ZGenerator extends ZVisitor {
 
 
 	public final boolean LoadFile(String FileName, @Nullable ZToken SourceToken) {
-		@Var String ScriptText = LibZen._LoadTextFile(FileName);
+		@Var String ScriptText = BLib._LoadTextFile(FileName);
 		if(ScriptText == null) {
 			ZLogger._LogErrorExit(SourceToken, "file not found: " + FileName);
 			return false;
@@ -362,7 +362,7 @@ public abstract class ZGenerator extends ZVisitor {
 		@Var String Value = this.ImportedLibraryMap.GetOrNull(Key);
 		if(Value == null) {
 			@Var String Path = this.LangInfo.GetLibPath(LibName);
-			@Var String Script = LibZen._LoadTextFile(Path);
+			@Var String Script = BLib._LoadTextFile(Path);
 			if(Script == null) {
 				ZLogger._LogErrorExit(SourceToken, "library not found: " + LibName + " as " + Path);
 				return false;
@@ -374,7 +374,7 @@ public abstract class ZGenerator extends ZVisitor {
 		return true;
 	}
 
-	@ZenIgnored public void Perform() {
+	@BIgnored public void Perform() {
 		if(this.TopLevelSymbol != null) {
 			System.out.println("TODO: " + this.TopLevelSymbol);
 		}

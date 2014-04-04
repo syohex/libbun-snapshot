@@ -1,11 +1,11 @@
 package libbun.encode.jvm;
 
 import libbun.type.ZType;
-import libbun.util.ZBooleanArray;
-import libbun.util.ZFloatArray;
-import libbun.util.ZIntArray;
+import libbun.util.BBooleanArray;
+import libbun.util.BFloatArray;
+import libbun.util.BIntArray;
 import libbun.util.ZObjectArray;
-import libbun.util.ZStringArray;
+import libbun.util.BStringArray;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -22,16 +22,16 @@ public class LibAsm {
 	static Class<?> AsArrayClass(ZType zType) {
 		ZType zParamType = zType.GetParamType(0);
 		if(zParamType.IsBooleanType()) {
-			return ZBooleanArray.class;
+			return BBooleanArray.class;
 		}
 		if(zParamType.IsIntType()) {
-			return ZIntArray.class;
+			return BIntArray.class;
 		}
 		if(zParamType.IsFloatType()) {
-			return ZFloatArray.class;
+			return BFloatArray.class;
 		}
 		if(zParamType.IsStringType()) {
-			return ZStringArray.class;
+			return BStringArray.class;
 		}
 		return ZObjectArray.class;
 	}

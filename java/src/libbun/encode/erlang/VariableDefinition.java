@@ -2,14 +2,14 @@
 
 package libbun.encode.erlang;
 
-import libbun.util.Field;
+import libbun.util.BField;
 
 //endif VAJA
 
 public class VariableDefinition {
-	@Field public String Name;
-	@Field public int AssignedCount;
-	@Field public VariableReference CurrentRef;
+	@BField public String Name;
+	@BField public int AssignedCount;
+	@BField public VariableReference CurrentRef;
 
 	public VariableDefinition/*constructor*/(String Name) {
 		this.Name = Name;

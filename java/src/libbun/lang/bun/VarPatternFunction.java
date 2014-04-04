@@ -5,9 +5,9 @@ import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZVarBlockNode;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
-public class VarPatternFunction extends ZMatchFunction {
+public class VarPatternFunction extends BMatchFunction {
 
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var BNode VarNode = new BLetVarNode(ParentNode, 0, null, null);

@@ -29,7 +29,7 @@ import java.util.HashMap;
 import libbun.type.ZGenericType;
 import libbun.type.ZType;
 import libbun.type.ZTypePool;
-import libbun.util.LibZen;
+import libbun.util.BLib;
 
 
 public class JavaMethodTable {
@@ -106,14 +106,14 @@ public class JavaMethodTable {
 
 		Import(ZGenericType._ArrayType, "[]", ZType.IntType, libbun.util.ZObjectArray.class, "GetIndex");
 		Import(ZGenericType._ArrayType, "[]=", ZType.IntType, libbun.util.ZObjectArray.class, "SetIndex", Object.class);
-		Import(BooleanArrayType, "[]", ZType.IntType, libbun.util.ZBooleanArray.class, "GetIndex");
-		Import(BooleanArrayType, "[]=", ZType.IntType, libbun.util.ZBooleanArray.class, "SetIndex", boolean.class);
-		Import(IntArrayType, "[]", ZType.IntType, libbun.util.ZIntArray.class, "GetIndex");
-		Import(IntArrayType, "[]=", ZType.IntType, libbun.util.ZIntArray.class, "SetIndex", long.class);
-		Import(FloatArrayType, "[]", ZType.IntType, libbun.util.ZFloatArray.class, "GetIndex");
-		Import(FloatArrayType, "[]=", ZType.IntType, libbun.util.ZFloatArray.class, "SetIndex", double.class);
-		Import(StringArrayType, "[]", ZType.IntType, libbun.util.ZStringArray.class, "GetIndex");
-		Import(StringArrayType, "[]=", ZType.IntType, libbun.util.ZStringArray.class, "SetIndex", String.class);
+		Import(BooleanArrayType, "[]", ZType.IntType, libbun.util.BBooleanArray.class, "GetIndex");
+		Import(BooleanArrayType, "[]=", ZType.IntType, libbun.util.BBooleanArray.class, "SetIndex", boolean.class);
+		Import(IntArrayType, "[]", ZType.IntType, libbun.util.BIntArray.class, "GetIndex");
+		Import(IntArrayType, "[]=", ZType.IntType, libbun.util.BIntArray.class, "SetIndex", long.class);
+		Import(FloatArrayType, "[]", ZType.IntType, libbun.util.BFloatArray.class, "GetIndex");
+		Import(FloatArrayType, "[]=", ZType.IntType, libbun.util.BFloatArray.class, "SetIndex", double.class);
+		Import(StringArrayType, "[]", ZType.IntType, libbun.util.BStringArray.class, "GetIndex");
+		Import(StringArrayType, "[]=", ZType.IntType, libbun.util.BStringArray.class, "SetIndex", String.class);
 
 		Import(ZGenericType._MapType, "[]", ZType.StringType, libbun.util.ZObjectMap.class, "GetIndex");
 		Import(ZGenericType._MapType, "[]=", ZType.StringType, libbun.util.ZObjectMap.class, "SetIndex", Object.class);
@@ -241,7 +241,7 @@ public class JavaMethodTable {
 	public static Method GetBinaryStaticMethod(ZType T1, String Op, ZType T2) {
 		Method sMethod = MethodMap.get(BinaryKey(T1, Op, T2));
 		while(sMethod == null) {
-			LibZen._PrintDebug("unfound binary operator" + T1 + " " + Op + " " + T2);
+			BLib._PrintDebug("unfound binary operator" + T1 + " " + Op + " " + T2);
 			if(T1.IsVarType()) {
 				sMethod = MethodMap.get(BinaryKey(ZType.VarType, Op, ZType.VarType));
 				break;

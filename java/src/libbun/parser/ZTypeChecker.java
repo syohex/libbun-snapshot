@@ -46,23 +46,23 @@ import libbun.type.ZFuncType;
 import libbun.type.ZGreekType;
 import libbun.type.ZType;
 import libbun.type.ZVarScope;
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Var;
 
 public abstract class ZTypeChecker extends ZVisitor {
 	public final static int _DefaultTypeCheckPolicy			= 0;
 	public final static int _NoCheckPolicy                  = 1;
 
-	@Field private ZType      StackedContextType;
-	@Field private BNode      ReturnedNode;
+	@BField private ZType      StackedContextType;
+	@BField private BNode      ReturnedNode;
 
-	@Field public ZGenerator  Generator;
-	@Field public ZLogger     Logger;
-	@Field private boolean    StoppedVisitor;
-	@Field public ZVarScope   VarScope;
-	@Field public boolean     IsSupportNullable = false;
-	@Field public boolean     IsSupportMutable  = false;
+	@BField public ZGenerator  Generator;
+	@BField public ZLogger     Logger;
+	@BField private boolean    StoppedVisitor;
+	@BField public ZVarScope   VarScope;
+	@BField public boolean     IsSupportNullable = false;
+	@BField public boolean     IsSupportMutable  = false;
 
 	public ZTypeChecker(ZGenerator Generator) {
 		this.Generator = Generator;
@@ -91,7 +91,7 @@ public abstract class ZTypeChecker extends ZVisitor {
 
 	public final void ReturnNode(BNode Node) {
 		if(this.ReturnedNode != null) {
-			LibZen._PrintDebug("previous returned node " + Node);
+			BLib._PrintDebug("previous returned node " + Node);
 		}
 		this.ReturnedNode = Node;
 	}
@@ -138,7 +138,7 @@ public abstract class ZTypeChecker extends ZVisitor {
 			}
 			return Node;
 		}
-		if(Node.IsUntyped() || ContextType.IsVarType() || LibZen._IsFlag(TypeCheckPolicy, ZTypeChecker._NoCheckPolicy)) {
+		if(Node.IsUntyped() || ContextType.IsVarType() || BLib._IsFlag(TypeCheckPolicy, ZTypeChecker._NoCheckPolicy)) {
 			return Node;
 		}
 		if(Node.Type == ContextType || ContextType.Accept(Node.Type)) {
@@ -162,14 +162,14 @@ public abstract class ZTypeChecker extends ZVisitor {
 		this.ReturnedNode = null;
 		Node.Accept(this);
 		if(this.ReturnedNode == null) {  /* debug check */
-			LibZen._PrintDebug("!! returns no value: " + Node);
+			BLib._PrintDebug("!! returns no value: " + Node);
 		}
 		else {
 			Node = this.ReturnedNode;
 		}
 		if(ParentNode != Node.ParentNode && ParentNode != null) {
 			if(Node.ParentNode != null) {
-				LibZen._PrintDebug("Preserving parent of typed new node: " + Node);
+				BLib._PrintDebug("Preserving parent of typed new node: " + Node);
 			}
 			ParentNode.SetChild(Node, BNode._PreservedParent);
 		}

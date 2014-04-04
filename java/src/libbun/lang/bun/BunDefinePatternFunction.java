@@ -5,9 +5,9 @@ import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.BDefineNode;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
-public class BunDefinePatternFunction extends ZMatchFunction {
+public class BunDefinePatternFunction extends BMatchFunction {
 
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var BNode LetNode = new BLetVarNode(ParentNode, BLetVarNode._IsReadOnly, null, null);

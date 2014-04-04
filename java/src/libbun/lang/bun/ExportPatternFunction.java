@@ -8,9 +8,9 @@ import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.BNode;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
-public class ExportPatternFunction extends ZMatchFunction {
+public class ExportPatternFunction extends BMatchFunction {
 
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var ZToken NameToken = TokenContext.GetToken(ZTokenContext._MoveNext);

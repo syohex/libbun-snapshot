@@ -3,10 +3,10 @@ package libbun.util;
 import libbun.type.ZType;
 import libbun.type.ZTypePool;
 
-public abstract class ZFunction implements ZTypedObject {
-	@Field final ZType  ZenType;
-	@Field final String FUNCTION;
-	public ZFunction(int TypeId, String f) {
+public abstract class BFunction implements BTypedObject {
+	@BField final ZType  ZenType;
+	@BField final String FUNCTION;
+	public BFunction(int TypeId, String f) {
 		this.ZenType  = ZTypePool.TypeOf(TypeId);
 		if(f == null) {
 			f= this.getClass().getSimpleName();

@@ -2,16 +2,16 @@
 
 package libbun.encode.erlang;
 
-import libbun.util.Field;
+import libbun.util.BField;
 
 //endif VAJA
 
 public class VariableReference {
-	@Field public VariableDefinition SelfDef;
-	@Field public VariableReference ParentRef;
-	@Field public int UniqueID;
-	@Field public int ScopeLevel;
-	@Field public int Flag;
+	@BField public VariableDefinition SelfDef;
+	@BField public VariableReference ParentRef;
+	@BField public int UniqueID;
+	@BField public int ScopeLevel;
+	@BField public int Flag;
 
 	public VariableReference/*constructor*/(VariableDefinition SelfDef, VariableReference ParentRef, int UniqueID, int ScopeLevel) {
 		this.SelfDef = SelfDef;

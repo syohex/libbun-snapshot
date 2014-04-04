@@ -24,8 +24,63 @@
 
 package libbun.util;
 
+import java.util.HashMap;
+
 import libbun.type.ZType;
 
-public interface ZTypedObject {
-	public ZType GetZenType();
+
+public final class BMap <T> extends BObject {
+	final HashMap<String, T>	Map;
+
+	public BMap(ZType ElementType) {
+		super(0);
+		this.Map = new HashMap<String, T>();
+	}
+
+	public BMap(int TypeId, T[] Literal) {
+		super(TypeId);
+		this.Map = new HashMap<String, T>();
+		@Var int i = 0;
+		while(i < Literal.length) {
+			this.Map.put(Literal[i].toString(), Literal[i+1]);
+			i = i + 2;
+		}
+	}
+
+	@Override protected void Stringfy(StringBuilder sb) {
+		@Var int i = 0;
+		sb.append("{");
+		for(String Key : this.Map.keySet()) {
+			if(i > 0) {
+				sb.append(", ");
+			}
+			this.AppendStringBuffer(sb, Key, this.Map.get(Key));
+			i = i + 1;
+		}
+		sb.append("}");
+	}
+
+	public final void put(String Key, T Value) {
+		this.Map.put(Key, Value);
+	}
+
+	public final T GetOrNull(String Key) {
+		return this.Map.get(Key);
+	}
+
+	public final void remove(String Key) {
+		this.Map.remove(Key);
+	}
+
+	public void AddMap(BMap<Object> aMap) {
+		throw new RuntimeException("unimplemented !!");
+	}
+
+	public final static <T> T GetIndex(BMap<T> aMap, String Key) {
+		return aMap.Map.get(Key);
+	}
+
+	public final static <T> void SetIndex(BMap<T> aMap, String Key, T Value) {
+		aMap.Map.put(Key, Value);
+	}
 }

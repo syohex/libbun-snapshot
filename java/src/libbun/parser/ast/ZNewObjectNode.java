@@ -28,13 +28,13 @@ import libbun.parser.ZTypeChecker;
 import libbun.parser.ZVisitor;
 import libbun.type.ZFunc;
 import libbun.type.ZType;
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.Var;
 
 public final class ZNewObjectNode extends ZListNode {
 	public static final int _TypeInfo = 0;
 
-	@Field public ZType GivenType = null;
+	@BField public ZType GivenType = null;
 
 	public ZNewObjectNode(BNode ParentNode) {
 		super(ParentNode, null, 1);

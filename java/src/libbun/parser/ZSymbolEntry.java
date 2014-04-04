@@ -1,12 +1,12 @@
 package libbun.parser;
 
 import libbun.parser.ast.BNode;
-import libbun.util.Field;
+import libbun.util.BField;
 
 public class ZSymbolEntry {
-	@Field public ZSymbolEntry Parent;
-	@Field public BNode Node;
-	@Field public boolean IsDisabled = false;
+	@BField public ZSymbolEntry Parent;
+	@BField public BNode Node;
+	@BField public boolean IsDisabled = false;
 	
 	public ZSymbolEntry(ZSymbolEntry Parent, BNode Node) {
 		this.Parent = Parent;

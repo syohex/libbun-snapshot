@@ -1,13 +1,13 @@
 package libbun.parser;
 
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.ZenMethod;
 
 public class ZLangInfo {
-	@Field public String GrammarInfo = "";
+	@BField public String GrammarInfo = "";
 
-	@Field public String LangVersion = null;
-	@Field public String Extension = null;
+	@BField public String LangVersion = null;
+	@BField public String Extension = null;
 
 	public boolean AllowTopLevelScript = false;
 	public boolean AllowFunctionOverloading = false;

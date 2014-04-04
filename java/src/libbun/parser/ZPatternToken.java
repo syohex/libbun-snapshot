@@ -1,9 +1,9 @@
 package libbun.parser;
 
-import libbun.util.Field;
+import libbun.util.BField;
 
 public class ZPatternToken extends ZToken {
-	@Field public ZSyntax	PresetPattern;
+	@BField public ZSyntax	PresetPattern;
 	public ZPatternToken(ZSource Source, int StartIndex, int EndIndex, ZSyntax	PresetPattern) {
 		super(Source, StartIndex, EndIndex);
 		this.PresetPattern = PresetPattern;

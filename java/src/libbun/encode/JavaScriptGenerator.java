@@ -44,7 +44,7 @@ import libbun.parser.ast.ZTryNode;
 import libbun.type.ZClassType;
 import libbun.type.ZGenericType;
 import libbun.type.ZType;
-import libbun.util.LibZen;
+import libbun.util.BLib;
 import libbun.util.Var;
 
 public class JavaScriptGenerator extends ZSourceGenerator {
@@ -386,7 +386,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 			@Var String Message = ZLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 			this.CurrentBuilder.AppendWhiteSpace();
 			this.CurrentBuilder.Append("LibZen.ThrowError(");
-			this.CurrentBuilder.Append(LibZen._QuoteString(Message));
+			this.CurrentBuilder.Append(BLib._QuoteString(Message));
 			this.CurrentBuilder.Append(")");
 		}
 	}

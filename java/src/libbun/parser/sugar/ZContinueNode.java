@@ -13,7 +13,7 @@ import libbun.parser.ast.ZSugarNode;
 import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
 import libbun.type.ZType;
-import libbun.util.LibZen;
+import libbun.util.BLib;
 import libbun.util.Var;
 
 public class ZContinueNode extends ZSugarNode {
@@ -88,13 +88,13 @@ public class ZContinueNode extends ZSugarNode {
 
 		@Var BNode[] Nodes = null;
 		if(WhileNode.HasNextNode()) {
-			Nodes = LibZen._NewNodeArray(3);
+			Nodes = BLib._NewNodeArray(3);
 			Nodes[0] = new BSetNameNode(VarName, new BBooleanNode(true));
 			Nodes[1] = WhileNode.NextNode();
 			Nodes[2] = new ZBreakNode(null);
 		}
 		else {
-			Nodes = LibZen._NewNodeArray(2);
+			Nodes = BLib._NewNodeArray(2);
 			Nodes[0] = new BSetNameNode(VarName, new BBooleanNode(true));
 			Nodes[1] = new ZBreakNode(null);
 		}

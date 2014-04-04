@@ -26,8 +26,8 @@
 package libbun.type;
 import libbun.parser.ZToken;
 import libbun.parser.ZTypeChecker;
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
@@ -44,16 +44,16 @@ public class ZType  {
 	public final static ZType		StringType = new ZType(ZType.UniqueTypeFlag, "String", ZType.VarType);
 	public final static ZType       TypeType = new ZType(ZType.UniqueTypeFlag, "Type", ZType.VarType);
 
-	@Field public int		  TypeFlag = 0;
-	@Field public int         TypeId = 0;
-	@Field public String      ShortName = null;
-	@Field public ZType		  RefType = null;
+	@BField public int		  TypeFlag = 0;
+	@BField public int         TypeId = 0;
+	@BField public String      ShortName = null;
+	@BField public ZType		  RefType = null;
 
 	public ZType(int TypeFlag, String ShortName, ZType RefType) {
 		this.TypeFlag = TypeFlag;
 		this.ShortName = ShortName;
 		this.RefType = RefType;
-		if(LibZen._IsFlag(TypeFlag, ZType.UniqueTypeFlag)) {
+		if(BLib._IsFlag(TypeFlag, ZType.UniqueTypeFlag)) {
 			this.TypeId = ZTypePool._NewTypeId(this);
 		}
 	}
@@ -169,7 +169,7 @@ public class ZType  {
 	}
 
 	public final boolean IsOpenType() {
-		return LibZen._IsFlag(this.TypeFlag, ZType.OpenTypeFlag);
+		return BLib._IsFlag(this.TypeFlag, ZType.OpenTypeFlag);
 	}
 
 	@ZenMethod public boolean IsMutableType(ZTypeChecker Gamma) {
@@ -193,7 +193,7 @@ public class ZType  {
 	}
 
 	public final String GetUniqueName() {
-		return LibZen._Stringfy(this.TypeId);
+		return BLib._Stringfy(this.TypeId);
 	}
 
 	//	public final boolean AcceptValue(Object Value) {

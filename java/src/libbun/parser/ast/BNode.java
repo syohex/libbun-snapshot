@@ -31,8 +31,8 @@ import libbun.parser.ZTypeChecker;
 import libbun.parser.ZVisitor;
 import libbun.type.ZFuncType;
 import libbun.type.ZType;
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Nullable;
 import libbun.util.Var;
 
@@ -43,18 +43,18 @@ public abstract class BNode {
 	public final static boolean _EnforcedParent = true;
 	public final static boolean _PreservedParent = false;
 
-	@Field public BNode  ParentNode;
-	@Field public ZToken SourceToken;
-	@Field public BNode  AST[];
-	@Field public ZType	Type = ZType.VarType;
-	@Field public boolean HasUntyped = true;
+	@BField public BNode  ParentNode;
+	@BField public ZToken SourceToken;
+	@BField public BNode  AST[];
+	@BField public ZType	Type = ZType.VarType;
+	@BField public boolean HasUntyped = true;
 
 	public BNode(@Nullable BNode ParentNode, @Nullable ZToken SourceToken, int Size) {
 		assert(this != ParentNode);
 		this.ParentNode = ParentNode;
 		this.SourceToken = SourceToken;
 		if(Size > 0) {
-			this.AST = LibZen._NewNodeArray(Size);
+			this.AST = BLib._NewNodeArray(Size);
 		}
 		else {
 			this.AST = null;
@@ -69,7 +69,7 @@ public abstract class BNode {
 	}
 
 	@Override public String toString() {
-		@Var String Self = "#" + LibZen._GetClassName(this);
+		@Var String Self = "#" + BLib._GetClassName(this);
 		if(!this.Type.IsVarType()) {
 			Self = Self + ":" + this.Type;
 		}
@@ -91,7 +91,7 @@ public abstract class BNode {
 						Self = Self + this.AST[i].toString();
 					}
 					else {
-						Self = Self + "*" + LibZen._GetClassName(this.AST[i])+"*";
+						Self = Self + "*" + BLib._GetClassName(this.AST[i])+"*";
 					}
 				}
 				i = i + 1;
@@ -200,7 +200,7 @@ public abstract class BNode {
 			assert(!(Node == Node.ParentNode));
 			//System.out.println("node: " + Node.getClass() + ", " + Node.hashCode() + ", " + SafeCount);
 			Node = Node.ParentNode;
-			if(LibZen.DebugMode) {
+			if(BLib.DebugMode) {
 				SafeCount = SafeCount + 1;
 				assert(SafeCount < 100);
 			}
@@ -214,7 +214,7 @@ public abstract class BNode {
 		while(BlockNode.NullableNameSpace == null) {
 			@Var ZBlockNode ParentBlockNode = BlockNode.ParentNode.GetScopeBlockNode();
 			BlockNode = ParentBlockNode;
-			if(LibZen.DebugMode) {
+			if(BLib.DebugMode) {
 				SafeCount = SafeCount + 1;
 				assert(SafeCount < 100);
 			}

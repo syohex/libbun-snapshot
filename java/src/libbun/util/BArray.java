@@ -2,11 +2,11 @@ package libbun.util;
 
 import java.lang.reflect.Array;
 
-public class ZArray<T> {
-	@Field private int    Size;
-	@Field public T[] ArrayValues;
+public class BArray<T> {
+	@BField private int    Size;
+	@BField public T[] ArrayValues;
 
-	public ZArray(T[] Values) {
+	public BArray(T[] Values) {
 		//super(0);
 		this.ArrayValues = Values;
 		this.Size = 0;
@@ -27,16 +27,16 @@ public class ZArray<T> {
 		return this.Size;
 	}
 
-	public final static<T> T GetIndex(ZArray<T> a, long Index) {
+	public final static<T> T GetIndex(BArray<T> a, long Index) {
 		if(!(0 <= Index && Index < a.Size)) {
-			ZArray.ThrowOutOfArrayIndex(a.Size, Index);
+			BArray.ThrowOutOfArrayIndex(a.Size, Index);
 		}
 		return a.ArrayValues[(int)Index];
 	}
 
-	public final static<T> void SetIndex(ZArray<T> a, long Index, T Value) {
+	public final static<T> void SetIndex(BArray<T> a, long Index, T Value) {
 		if(!(0 <= Index && Index < a.Size)) {
-			ZArray.ThrowOutOfArrayIndex(a.Size, Index);
+			BArray.ThrowOutOfArrayIndex(a.Size, Index);
 		}
 		a.ArrayValues[(int)Index] = Value;
 	}

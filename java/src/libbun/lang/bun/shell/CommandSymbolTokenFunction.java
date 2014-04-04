@@ -1,17 +1,17 @@
 package libbun.lang.bun.shell;
 
-import libbun.util.LibZen;
+import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.ZTokenFunction;
+import libbun.util.BTokenFunction;
 import libbun.parser.ZSourceContext;
 
-public class CommandSymbolTokenFunction extends ZTokenFunction {
+public class CommandSymbolTokenFunction extends BTokenFunction {
 	@Override public boolean Invoke(ZSourceContext SourceContext) {
 		@Var int startIndex = SourceContext.GetPosition();
 		@Var StringBuilder symbolBuilder = new StringBuilder();
 		while(SourceContext.HasChar()) {
 			@Var char ch = SourceContext.GetCurrentChar();
-			if(!LibZen._IsDigitOrLetter(ch) && ch != '-' && ch != '+' && ch != '_') {
+			if(!BLib._IsDigitOrLetter(ch) && ch != '-' && ch != '+' && ch != '_') {
 				break;
 			}
 			symbolBuilder.append(ch);

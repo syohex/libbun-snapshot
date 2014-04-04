@@ -5,25 +5,25 @@ import libbun.parser.ZToken;
 import libbun.parser.ZTypeChecker;
 import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.BNode;
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.Var;
-import libbun.util.ZArray;
+import libbun.util.BArray;
 
 public final class ZVarScope {
-	@Field public ZVarScope Parent;
-	@Field public ZLogger Logger;
-	@Field ZArray<ZVarType> VarList;
-	@Field int TypedNodeCount = 0;
-	@Field int VarNodeCount = 0;
-	@Field int UnresolvedSymbolCount = 0;
+	@BField public ZVarScope Parent;
+	@BField public ZLogger Logger;
+	@BField BArray<ZVarType> VarList;
+	@BField int TypedNodeCount = 0;
+	@BField int VarNodeCount = 0;
+	@BField int UnresolvedSymbolCount = 0;
 
 
-	public ZVarScope(ZVarScope Parent, ZLogger Logger, ZArray<ZVarType> VarList) {
+	public ZVarScope(ZVarScope Parent, ZLogger Logger, BArray<ZVarType> VarList) {
 		this.Parent = Parent;
 		this.Logger = Logger;
 		this.VarList = VarList;
 		if(this.VarList == null) {
-			this.VarList = new ZArray<ZVarType>(new ZVarType[8]);
+			this.VarList = new BArray<ZVarType>(new ZVarType[8]);
 		}
 	}
 

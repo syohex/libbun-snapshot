@@ -50,7 +50,7 @@ import libbun.parser.ast.BNode;
 import libbun.type.ZType;
 
 
-public class LibZen {
+public class BLib {
 
 	public final static void _Print(Object msg) {
 		System.err.print(msg);
@@ -60,7 +60,7 @@ public class LibZen {
 		System.err.println(msg);
 	}
 
-	@ZenIgnored private final static String _GetStackInfo(int depth) {
+	@BIgnored private final static String _GetStackInfo(int depth) {
 		String LineNumber = " ";
 		Exception e =  new Exception();
 		StackTraceElement[] Elements = e.getStackTrace();
@@ -73,26 +73,26 @@ public class LibZen {
 
 	public static boolean DebugMode = false;
 
-	@ZenIgnored public final static void _SetDebugVerbose(boolean Mode) {
+	@BIgnored public final static void _SetDebugVerbose(boolean Mode) {
 		DebugMode = true;
 	}
 
 	public final static void _PrintDebug(String msg) {
 		if(DebugMode) {
-			LibZen._PrintLine("DEBUG " + LibZen._GetStackInfo(3) + ": " + msg);
+			BLib._PrintLine("DEBUG " + BLib._GetStackInfo(3) + ": " + msg);
 		}
 	}
 
 	public final static void DebugP(String msg) {
 		//if(LibZen.DebugMode) {
-		_PrintLine("DEBUG " + LibZen._GetStackInfo(2) + ": " + msg);
+		_PrintLine("DEBUG " + BLib._GetStackInfo(2) + ": " + msg);
 		//}
 	}
 
 
-	@ZenIgnored public final static void _FixMe(Exception e) {
+	@BIgnored public final static void _FixMe(Exception e) {
 		if(DebugMode) {
-			System.err.println("FIXME " + LibZen._GetStackInfo(3) + ": " + e);
+			System.err.println("FIXME " + BLib._GetStackInfo(3) + ": " + e);
 			e.printStackTrace();
 		}
 	}
@@ -106,7 +106,7 @@ public class LibZen {
 	}
 
 	public final static void _Exit(int status, String Message) {
-		System.err.println("EXIT " + LibZen._GetStackInfo(3) + Message);
+		System.err.println("EXIT " + BLib._GetStackInfo(3) + Message);
 		System.exit(status);
 	}
 
@@ -391,7 +391,7 @@ public class LibZen {
 		return List.length;
 	}
 
-	public final static <T> int _Size(ZArray<?> List) {
+	public final static <T> int _Size(BArray<?> List) {
 		if(List == null) {
 			return 0;
 		}
@@ -399,7 +399,7 @@ public class LibZen {
 	}
 
 	public final static boolean HasFile(String Path) {
-		if(LibZen.class.getResource(Path) != null) {
+		if(BLib.class.getResource(Path) != null) {
 			return true;
 		}
 		return new File(Path).exists();
@@ -422,9 +422,9 @@ public class LibZen {
 
 	public final static String _LoadTextFile(String FileName) {
 		//ZLogger.VerboseLog(ZLogger.VerboseFile, "loading " + FileName);
-		InputStream Stream = LibZen.class.getResourceAsStream("/" + FileName);
+		InputStream Stream = BLib.class.getResourceAsStream("/" + FileName);
 		if (Stream == null) {
-			File f = new File(LibZen.FormatFilePath(FileName));
+			File f = new File(BLib.FormatFilePath(FileName));
 			try {
 				Stream = new FileInputStream(f);
 			} catch (FileNotFoundException e) {
@@ -449,7 +449,7 @@ public class LibZen {
 	}
 
 	public static String _SourceBuilderToString(ZSourceBuilder Builder) {
-		return LibZen._SourceBuilderToString(Builder, 0, Builder.SourceList.size());
+		return BLib._SourceBuilderToString(Builder, 0, Builder.SourceList.size());
 	}
 
 	public static String _SourceBuilderToString(ZSourceBuilder Builder, int BeginIndex, int EndIndex) {
@@ -460,7 +460,7 @@ public class LibZen {
 		return builder.toString();
 	}
 
-	public final static void _WriteTo(String FileName, ZArray<ZSourceBuilder> List) {
+	public final static void _WriteTo(String FileName, BArray<ZSourceBuilder> List) {
 		if(FileName == null) {
 			@Var int i = 0;
 			while(i < List.size()) {
@@ -484,7 +484,7 @@ public class LibZen {
 				w.close();
 			}
 			catch(IOException e) {
-				LibZen._Exit(1, "cannot to write: " + e);
+				BLib._Exit(1, "cannot to write: " + e);
 			}
 		}
 	}
@@ -498,20 +498,20 @@ public class LibZen {
 			LoaderMethod.invoke(null, NameSpace);
 			return true;
 		} catch (Exception e) { // naming
-			LibZen._FixMe(e);
+			BLib._FixMe(e);
 		}
 		return false;
 	}
 
-	public final static boolean _ApplyTokenFunc(ZTokenFunction TokenFunc, ZSourceContext SourceContext) {
+	public final static boolean _ApplyTokenFunc(BTokenFunction TokenFunc, ZSourceContext SourceContext) {
 		return TokenFunc.Invoke(SourceContext);
 	}
 
-	public final static BNode _ApplyMatchFunc(ZMatchFunction MatchFunc, BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
+	public final static BNode _ApplyMatchFunc(BMatchFunction MatchFunc, BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		return MatchFunc.Invoke(ParentNode, TokenContext, LeftNode);
 	}
 
-	private final static ZMap<Class<?>> GenMap = new ZMap<Class<?>>(null);
+	private final static BMap<Class<?>> GenMap = new BMap<Class<?>>(null);
 
 	static {
 		// source code by file extension
@@ -548,15 +548,15 @@ public class LibZen {
 				}
 				return (ZGenerator) GeneratorClass.newInstance();
 			} catch (Exception e) {
-				LibZen._FixMe(e);
+				BLib._FixMe(e);
 			}
 		}
 		return new BunGenerator();
 	}
 
 	public final static ZGenerator _InitGenerator(@Nullable String ClassName, String GrammarClass) {
-		@Var ZGenerator Generator = LibZen._LoadGenerator(ClassName, null);
-		LibZen._ImportGrammar(Generator.RootNameSpace, GrammarClass);
+		@Var ZGenerator Generator = BLib._LoadGenerator(ClassName, null);
+		BLib._ImportGrammar(Generator.RootNameSpace, GrammarClass);
 		Generator.SetTypeChecker(new BunTypeSafer(Generator));
 		Generator.RequireLibrary("common", null);
 		return Generator;

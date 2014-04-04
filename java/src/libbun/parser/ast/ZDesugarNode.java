@@ -2,12 +2,12 @@ package libbun.parser.ast;
 
 import libbun.parser.ZGenerator;
 import libbun.parser.ZTypeChecker;
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.Var;
 
 public class ZDesugarNode extends ZSugarNode {
 	//	public final static int _NewNode = 0;
-	@Field BNode OriginalNode;
+	@BField BNode OriginalNode;
 
 	public ZDesugarNode(BNode OriginalNode, BNode DesugaredNode) {
 		super(OriginalNode.ParentNode, null, 1);

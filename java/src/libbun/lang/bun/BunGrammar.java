@@ -30,7 +30,7 @@ import libbun.type.ZFuncType;
 import libbun.type.ZGenericType;
 import libbun.type.ZType;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
 public class BunGrammar {
 	public static void ImportGrammar(ZNameSpace NameSpace) {
@@ -54,9 +54,9 @@ public class BunGrammar {
 		NameSpace.AppendTokenFunc("\"", new StringLiteralTokenFunction());
 		NameSpace.AppendTokenFunc("1",  new NumberLiteralTokenFunction());
 
-		@Var ZMatchFunction MatchUnary     = new UnaryPatternFunction();
-		@Var ZMatchFunction MatchBinary    = new BinaryPatternFunction();
-		@Var ZMatchFunction MatchComparator    = new ComparatorPatternFunction();
+		@Var BMatchFunction MatchUnary     = new UnaryPatternFunction();
+		@Var BMatchFunction MatchBinary    = new BinaryPatternFunction();
+		@Var BMatchFunction MatchComparator    = new ComparatorPatternFunction();
 
 		NameSpace.DefineExpression("null", new NullPatternFunction());
 		NameSpace.DefineExpression("true", new TruePatternFunction());

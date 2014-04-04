@@ -25,13 +25,13 @@
 package libbun.parser.ast;
 
 import libbun.parser.ZVisitor;
-import libbun.util.Field;
+import libbun.util.BField;
 
 public class ZGetterNode extends BNode {
 	public final static int _Recv = 0;
 	public static final int _NameInfo = 1;
 
-	@Field public String  GivenName = null;
+	@BField public String  GivenName = null;
 
 	protected ZGetterNode(BNode ParentNode, BNode RecvNode, int Size) {
 		super(ParentNode, null, Size);

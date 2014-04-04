@@ -27,16 +27,16 @@ package libbun.parser.ast;
 import libbun.parser.ZVisitor;
 import libbun.type.ZClassType;
 import libbun.type.ZType;
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.Var;
 
 public final class ZClassNode extends ZListNode {
 	public static final int _NameInfo = 0;
 	public static final int _TypeInfo = 1;
 
-	@Field public String  GivenName = null;
-	@Field public ZClassType ClassType = null;
-	@Field public boolean IsExport = false;
+	@BField public String  GivenName = null;
+	@BField public ZClassType ClassType = null;
+	@BField public boolean IsExport = false;
 
 	public ZClassNode(BNode ParentNode) {
 		super(ParentNode, null, 2);

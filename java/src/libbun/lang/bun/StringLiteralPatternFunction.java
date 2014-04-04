@@ -4,13 +4,13 @@ import libbun.parser.ZToken;
 import libbun.parser.ZTokenContext;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.BStringNode;
-import libbun.util.LibZen;
+import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
-public class StringLiteralPatternFunction extends ZMatchFunction {
+public class StringLiteralPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var ZToken Token = TokenContext.GetToken(ZTokenContext._MoveNext);
-		return new BStringNode(ParentNode, Token, LibZen._UnquoteString(Token.GetText()));
+		return new BStringNode(ParentNode, Token, BLib._UnquoteString(Token.GetText()));
 	}
 }

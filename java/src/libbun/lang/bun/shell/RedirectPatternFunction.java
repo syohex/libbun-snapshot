@@ -2,11 +2,11 @@ package libbun.lang.bun.shell;
 
 import libbun.parser.ast.BNode;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 import libbun.parser.ZToken;
 import libbun.parser.ZTokenContext;
 
-public class RedirectPatternFunction extends ZMatchFunction {
+public class RedirectPatternFunction extends BMatchFunction {
 	public final static String _PatternName = "$Redirect$";
 
 	// <, >, >>, >&, 1>, 2>, 1>>, 2>>, &>, &>>

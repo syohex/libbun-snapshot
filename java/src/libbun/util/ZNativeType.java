@@ -4,7 +4,7 @@ import libbun.encode.jvm.JavaTypeTable;
 import libbun.type.ZType;
 
 public class ZNativeType extends ZType {
-	@Field public Class<?>          JClass;
+	@BField public Class<?>          JClass;
 
 	public ZNativeType(Class<?> JType) {
 		super(ZType.UniqueTypeFlag, JType.getSimpleName(), null);

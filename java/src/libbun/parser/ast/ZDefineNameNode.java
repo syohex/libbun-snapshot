@@ -1,16 +1,16 @@
 package libbun.parser.ast;
 
 import libbun.type.ZType;
-import libbun.util.Field;
+import libbun.util.BField;
 
 public abstract class ZDefineNameNode extends BNode {
 	public static final int _NameInfo = 0;
 	public static final int _TypeInfo = 1;
 	public final static int _InitValue = 2;
 
-	@Field public boolean IsReadOnly = false;
-	@Field public ZType   GivenType = null;
-	@Field public String  GivenName = null;
+	@BField public boolean IsReadOnly = false;
+	@BField public ZType   GivenType = null;
+	@BField public String  GivenName = null;
 
 	protected ZDefineNameNode(BNode ParentNode, int Size) {
 		super(ParentNode, null, Size);

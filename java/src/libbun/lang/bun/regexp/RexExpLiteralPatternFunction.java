@@ -7,9 +7,9 @@ import libbun.parser.ast.ZNewObjectNode;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.BStringNode;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
-public class RexExpLiteralPatternFunction extends ZMatchFunction {
+public class RexExpLiteralPatternFunction extends BMatchFunction {
 	// ["pattern", "flag"] => (MethodCall "RegExp_Init" (NewObject "pattern", "flag"))
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var ZToken Token = TokenContext.GetToken(ZTokenContext._MoveNext);

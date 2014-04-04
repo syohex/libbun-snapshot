@@ -16,8 +16,8 @@ import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
 import libbun.type.ZType;
 import libbun.util.Var;
-import libbun.util.ZArray;
-import libbun.util.ZMap;
+import libbun.util.BArray;
+import libbun.util.BMap;
 
 /**
  * @see
@@ -32,11 +32,11 @@ public class SSAConverter extends ZASTTransformer {
 	private static final int WhileBodyBranchIndex = IfElseBranchIndex;
 
 	public SSAConverterState State;
-	public ZArray<Variable> LocalVariables;
+	public BArray<Variable> LocalVariables;
 	public ValueReplacer Replacer;
-	public ZMap<Integer> ValueNumber;
-	private final HashMap<BNode, ZArray<Variable>> CurVariableTableBefore;
-	private final HashMap<BNode, ZArray<Variable>> CurVariableTableAfter;
+	public BMap<Integer> ValueNumber;
+	private final HashMap<BNode, BArray<Variable>> CurVariableTableBefore;
+	private final HashMap<BNode, BArray<Variable>> CurVariableTableAfter;
 	private final ZGenerator Generator;
 
 	public SSAConverter(ZGenerator Generator) {
@@ -44,9 +44,9 @@ public class SSAConverter extends ZASTTransformer {
 		this.LocalVariables = null;
 		this.Replacer = new ValueReplacer();
 		this.State = new SSAConverterState(null, -1);
-		this.ValueNumber = new ZMap<Integer>(ZType.IntType);
-		this.CurVariableTableBefore = new HashMap<BNode, ZArray<Variable>>();
-		this.CurVariableTableAfter = new HashMap<BNode, ZArray<Variable>>();
+		this.ValueNumber = new BMap<Integer>(ZType.IntType);
+		this.CurVariableTableBefore = new HashMap<BNode, BArray<Variable>>();
+		this.CurVariableTableAfter = new HashMap<BNode, BArray<Variable>>();
 	}
 
 	private void RecordListOfVariablesBeforeVisit(BNode Node) {
@@ -70,7 +70,7 @@ public class SSAConverter extends ZASTTransformer {
 	 *  GetCurrentVariablesBefore(int y = 0) returns [(x, 0)]
 	 *  GetCurrentVariablesBefore(x = y    ) returns [(x, 0), (y,0)]
 	 */
-	public ZArray<Variable> GetCurrentVariablesBefore(BNode Node) {
+	public BArray<Variable> GetCurrentVariablesBefore(BNode Node) {
 		return this.CurVariableTableBefore.get(Node);
 	}
 
@@ -87,7 +87,7 @@ public class SSAConverter extends ZASTTransformer {
 	 *  GetCurrentVariablesAfter(int y = 0) returns [(x, 0)]
 	 *  GetCurrentVariablesAfter(x = y    ) returns [(x, 0), (y,0)]
 	 */
-	public ZArray<Variable> GetCurrentVariablesAfter(BNode Node) {
+	public BArray<Variable> GetCurrentVariablesAfter(BNode Node) {
 		return this.CurVariableTableAfter.get(Node);
 	}
 
@@ -123,7 +123,7 @@ public class SSAConverter extends ZASTTransformer {
 	private int GetVariableIndex(String Name) {
 		@Var int i = this.LocalVariables.size() - 1;
 		while(i >= 0) {
-			@Var Variable V = ZArray.GetIndex(this.LocalVariables, i);
+			@Var Variable V = BArray.GetIndex(this.LocalVariables, i);
 			if(V != null && V.Name.equals(Name)) {
 				return i;
 			}
@@ -134,16 +134,16 @@ public class SSAConverter extends ZASTTransformer {
 	}
 
 	private Variable FindVariable(String Name) {
-		return ZArray.GetIndex(this.LocalVariables, this.GetVariableIndex(Name));
+		return BArray.GetIndex(this.LocalVariables, this.GetVariableIndex(Name));
 	}
 
 	private void RemoveVariable(String Name) {
-		ZArray.SetIndex(this.LocalVariables, this.GetVariableIndex(Name), null);
+		BArray.SetIndex(this.LocalVariables, this.GetVariableIndex(Name), null);
 	}
 
 	private void UpdateVariable(Variable NewVal) {
 		@Var int Index = this.GetVariableIndex(NewVal.Name);
-		ZArray.SetIndex(this.LocalVariables, Index, NewVal);
+		BArray.SetIndex(this.LocalVariables, Index, NewVal);
 	}
 
 	private void AddVariable(Variable V) {
@@ -170,8 +170,8 @@ public class SSAConverter extends ZASTTransformer {
 		return this.UpdateValueNumber(Val, true);
 	}
 
-	private ZArray<Variable> CloneCurrentValues() {
-		return new ZArray<Variable>(this.LocalVariables.CompactArray());
+	private BArray<Variable> CloneCurrentValues() {
+		return new BArray<Variable>(this.LocalVariables.CompactArray());
 	}
 
 	private void InsertPHI(JoinNode JNode, int BranchIndex, Variable OldVal, Variable NewVal) {
@@ -346,7 +346,7 @@ public class SSAConverter extends ZASTTransformer {
 
 	@Override
 	public void VisitFunctionNode(ZFunctionNode Node) {
-		this.LocalVariables = new ZArray<Variable>(new Variable[0]);
+		this.LocalVariables = new BArray<Variable>(new Variable[0]);
 		@Var int i = 0;
 		while(i < Node.GetListSize()) {
 			BLetVarNode ParamNode = Node.GetParamNode(i);

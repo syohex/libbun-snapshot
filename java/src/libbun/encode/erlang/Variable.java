@@ -2,14 +2,14 @@
 
 package libbun.encode.erlang;
 
-import libbun.util.Field;
+import libbun.util.BField;
 
 //endif VAJA
 
 public class Variable {
-	@Field public int Read;
-	@Field public int Next;
-	@Field public int Flags;
+	@BField public int Read;
+	@BField public int Next;
+	@BField public int Flags;
 
 	public Variable/*constructor*/() {
 		this.Read = -1;

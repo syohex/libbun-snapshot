@@ -4,10 +4,10 @@ import libbun.parser.ZMacroFunc;
 import libbun.parser.ZToken;
 import libbun.parser.ZVisitor;
 import libbun.type.ZFuncType;
-import libbun.util.Field;
+import libbun.util.BField;
 
 public class ZMacroNode extends ZListNode {
-	@Field public final ZMacroFunc MacroFunc;
+	@BField public final ZMacroFunc MacroFunc;
 
 	public ZMacroNode(BNode ParentNode, ZToken SourceToken, ZMacroFunc MacroFunc) {
 		super(ParentNode, SourceToken, 0);

@@ -5,9 +5,9 @@ import libbun.parser.ast.ZErrorNode;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZTryNode;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
-public class TryPatternFunction extends ZMatchFunction {
+public class TryPatternFunction extends BMatchFunction {
 
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var BNode TryNode = new ZTryNode(ParentNode);

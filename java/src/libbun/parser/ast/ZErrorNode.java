@@ -26,11 +26,11 @@ package libbun.parser.ast;
 
 import libbun.parser.ZToken;
 import libbun.parser.ZVisitor;
-import libbun.util.Field;
-import libbun.util.ZenIgnored;
+import libbun.util.BField;
+import libbun.util.BIgnored;
 
 public class ZErrorNode extends BConstNode {
-	@Field public String ErrorMessage;
+	@BField public String ErrorMessage;
 	public ZErrorNode(BNode ParentNode, ZToken SourceToken, String ErrorMessage) {
 		super(ParentNode, SourceToken);
 		this.ErrorMessage = ErrorMessage;
@@ -44,7 +44,7 @@ public class ZErrorNode extends BConstNode {
 		Visitor.VisitErrorNode(this);
 	}
 
-	@ZenIgnored @Override public String toString() {
+	@BIgnored @Override public String toString() {
 		return "ErrorNode '" + this.ErrorMessage + "'";
 	}
 }

@@ -27,10 +27,10 @@ package libbun.parser.ast;
 import libbun.parser.ZToken;
 import libbun.parser.ZVisitor;
 import libbun.type.ZType;
-import libbun.util.Field;
+import libbun.util.BField;
 
 public final class BFloatNode extends BConstNode {
-	@Field public double	FloatValue;
+	@BField public double	FloatValue;
 	public BFloatNode(BNode ParentNode, ZToken Token, double Value) {
 		super(ParentNode, Token);
 		this.Type = ZType.FloatType;

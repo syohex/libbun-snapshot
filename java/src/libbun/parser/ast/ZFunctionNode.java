@@ -29,21 +29,21 @@ import libbun.parser.ZVisitor;
 import libbun.type.ZFuncType;
 import libbun.type.ZType;
 import libbun.type.ZTypePool;
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.Var;
-import libbun.util.ZArray;
+import libbun.util.BArray;
 
 public class ZFunctionNode extends ZListNode {
 	public static final int _NameInfo = 0;
 	public static final int _TypeInfo = 1;
 	public final static int _Block    = 2;
 
-	@Field public ZType  GivenType = null;
-	@Field public String GivenName = null;
+	@BField public ZType  GivenType = null;
+	@BField public String GivenName = null;
 
-	@Field public boolean       IsExport = false;
-	@Field public ZFunctionNode ParentFunctionNode = null;
-	@Field public ZFuncType     ResolvedFuncType = null;
+	@BField public boolean       IsExport = false;
+	@BField public ZFunctionNode ParentFunctionNode = null;
+	@BField public ZFuncType     ResolvedFuncType = null;
 
 	public ZFunctionNode(BNode ParentNode) {
 		super(ParentNode, null, 3);
@@ -103,7 +103,7 @@ public class ZFunctionNode extends ZListNode {
 
 	public final ZFuncType GetFuncType() {
 		if(this.ResolvedFuncType == null) {
-			@Var ZArray<ZType> TypeList = new ZArray<ZType>(new ZType[this.GetListSize()+2]);
+			@Var BArray<ZType> TypeList = new BArray<ZType>(new ZType[this.GetListSize()+2]);
 			@Var int i = 0;
 			while(i < this.GetListSize()) {
 				@Var BLetVarNode Node = this.GetParamNode(i);

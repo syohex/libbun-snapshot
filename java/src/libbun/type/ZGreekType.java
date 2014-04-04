@@ -1,21 +1,21 @@
 package libbun.type;
 
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Var;
 
 public class ZGreekType extends ZType {
 
-	@Field public final int GreekId;
+	@BField public final int GreekId;
 
 	public ZGreekType(int GreekId) {
-		super(ZType.UniqueTypeFlag, LibZen._GreekNames[GreekId], ZType.VarType);
+		super(ZType.UniqueTypeFlag, BLib._GreekNames[GreekId], ZType.VarType);
 		this.GreekId = GreekId;
 	}
 
 	public final static ZType[] _NewGreekTypes(ZType[] GreekTypes) {
 		if(GreekTypes == null) {
-			return LibZen._NewTypeArray(LibZen._GreekNames.length);
+			return BLib._NewTypeArray(BLib._GreekNames.length);
 		}
 		else {
 			@Var int i = 0;

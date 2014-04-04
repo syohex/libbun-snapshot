@@ -8,9 +8,9 @@ import libbun.parser.ast.ZTypeNode;
 import libbun.type.ZType;
 import libbun.type.ZTypePool;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
-public class OpenTypePatternFunction extends ZMatchFunction {
+public class OpenTypePatternFunction extends BMatchFunction {
 
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var ZToken MaybeToken   = null;

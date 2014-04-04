@@ -4,12 +4,12 @@ import libbun.parser.ZToken;
 import libbun.type.ZFunc;
 import libbun.type.ZFuncType;
 import libbun.type.ZType;
-import libbun.util.Field;
+import libbun.util.BField;
 
 public class ZFuncNameNode extends ZLocalDefinedNode {
-	@Field public final String FuncName;
-	@Field public final ZType RecvType;
-	@Field public final int FuncParamSize;
+	@BField public final String FuncName;
+	@BField public final ZType RecvType;
+	@BField public final int FuncParamSize;
 
 	public ZFuncNameNode(BNode ParentNode, ZToken SourceToken, String FuncName, ZFuncType FuncType) {
 		super(ParentNode, SourceToken, 0);

@@ -1,11 +1,11 @@
 package libbun.lang.bun.shell;
 
 import libbun.parser.ast.BNode;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 import libbun.parser.ZToken;
 import libbun.parser.ZTokenContext;
 
-public class ImportPatternFunction extends ZMatchFunction {
+public class ImportPatternFunction extends BMatchFunction {
 	@Override
 	public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		TokenContext.MoveNext();

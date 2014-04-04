@@ -29,9 +29,9 @@ import java.io.IOException;
 import libbun.lang.konoha.KonohaGrammar;
 import libbun.parser.ZGenerator;
 import libbun.parser.ZParserConst;
-import libbun.util.LibZen;
+import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.ZStringArray;
+import libbun.util.BStringArray;
 
 
 public class Main {
@@ -48,7 +48,7 @@ public class Main {
 	// -i
 	private static boolean ShellMode = false;
 
-	private static ZStringArray ARGV = null;
+	private static BStringArray ARGV = null;
 
 	//
 	private static String InputFileName = null;
@@ -89,7 +89,7 @@ public class Main {
 				continue;
 			}
 			if (Argument.equals("--verbose")) {
-				LibZen._SetDebugVerbose(true);
+				BLib._SetDebugVerbose(true);
 				continue;
 			}
 			ShowUsage("unknown option: " + Argument);
@@ -100,7 +100,7 @@ public class Main {
 		if(GivenTarget != null) {
 			Target = GivenTarget;
 		}
-		ARGV = new ZStringArray();
+		ARGV = new BStringArray();
 		while (Index < Args.length) {
 			ARGV.Add(Args[Index]);
 			Index += 1;
@@ -117,12 +117,12 @@ public class Main {
 		System.out.println("libbun usage :");
 		System.out.println("  --out|-o  FILE          Output filename");
 		System.out.println("  --verbose               Printing Debug infomation");
-		LibZen._Exit(0, Message);
+		BLib._Exit(0, Message);
 	}
 
 	public final static void InvokeLibBun(String[] Args) {
 		ParseCommand(Args);
-		@Var ZGenerator Generator = LibZen._InitGenerator(Target, KonohaGrammar.class.getName());
+		@Var ZGenerator Generator = BLib._InitGenerator(Target, KonohaGrammar.class.getName());
 		if(InputFileName != null) {
 			Generator.LoadFile(InputFileName, null);
 		}
@@ -138,10 +138,10 @@ public class Main {
 	}
 
 	public final static void PerformShell(ZGenerator Generator) {
-		LibZen._PrintLine(ZParserConst.ProgName + ZParserConst.Version + " (" + ZParserConst.CodeName + ") on " + LibZen._GetPlatform());
-		LibZen._PrintLine(ZParserConst.Copyright);
-		LibZen._PrintLine("Accept: " + Generator.LangInfo.GetGrammarInfo());
-		LibZen._PrintLine("Produce: " + Generator.LangInfo.LangVersion);
+		BLib._PrintLine(ZParserConst.ProgName + ZParserConst.Version + " (" + ZParserConst.CodeName + ") on " + BLib._GetPlatform());
+		BLib._PrintLine(ZParserConst.Copyright);
+		BLib._PrintLine("Accept: " + Generator.LangInfo.GetGrammarInfo());
+		BLib._PrintLine("Produce: " + Generator.LangInfo.LangVersion);
 		@Var int linenum = 1;
 		@Var String Line = null;
 		while ((Line = Main.ReadLine2(">>> ", "    ")) != null) {
@@ -156,7 +156,7 @@ public class Main {
 				linenum = linenum + 1;
 			}
 		}
-		LibZen._PrintLine("");
+		BLib._PrintLine("");
 	}
 
 	private static jline.ConsoleReader ConsoleReader = null;
@@ -196,7 +196,7 @@ public class Main {
 			}
 			if(level < 0) {
 				Line = "";
-				LibZen._PrintLine(" .. canceled");
+				BLib._PrintLine(" .. canceled");
 			}
 		}
 		ConsoleReader.getHistory().addToHistory(Line);

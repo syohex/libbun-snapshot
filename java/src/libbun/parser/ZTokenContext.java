@@ -28,10 +28,10 @@ import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.ZEmptyNode;
 import libbun.parser.ast.ZErrorNode;
 import libbun.parser.ast.BNode;
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.ZArray;
+import libbun.util.BArray;
 
 public final class ZTokenContext {
 	public final static boolean     _Required          = true;
@@ -41,15 +41,15 @@ public final class ZTokenContext {
 	public final static boolean     _AllowNewLine   = true;
 	public final static boolean     _MoveNext       = true;
 
-	@Field public ZGenerator Generator;
-	@Field public ZNameSpace NameSpace;
-	@Field public ZSourceContext Source;
-	@Field public ZArray<ZToken> TokenList = new ZArray<ZToken>(new ZToken[128]);
+	@BField public ZGenerator Generator;
+	@BField public ZNameSpace NameSpace;
+	@BField public ZSourceContext Source;
+	@BField public BArray<ZToken> TokenList = new BArray<ZToken>(new ZToken[128]);
 
-	@Field private int CurrentPosition = 0;
-	@Field private boolean IsAllowSkipIndent = false;
-	@Field public ZToken LatestToken = null;
-	@Field private ZSyntax ApplyingPattern = null;
+	@BField private int CurrentPosition = 0;
+	@BField private boolean IsAllowSkipIndent = false;
+	@BField public ZToken LatestToken = null;
+	@BField private ZSyntax ApplyingPattern = null;
 
 	public ZTokenContext(ZGenerator Generator, ZNameSpace NameSpace, String FileName, int LineNumber, String SourceText) {
 		this.Generator = Generator;
@@ -149,8 +149,8 @@ public final class ZTokenContext {
 			}
 		}
 		if(StartIndex < EndIndex) {
-			LibZen._PrintDebug("StartIdx="+StartIndex+", EndIndex="+EndIndex);
-			LibZen._PrintDebug("skipped: \t" + ErrorToken.Source.SourceText.substring(StartIndex, EndIndex));
+			BLib._PrintDebug("StartIdx="+StartIndex+", EndIndex="+EndIndex);
+			BLib._PrintDebug("skipped: \t" + ErrorToken.Source.SourceText.substring(StartIndex, EndIndex));
 		}
 	}
 
@@ -248,7 +248,7 @@ public final class ZTokenContext {
 			this.CurrentPosition = RollbackPosition;
 			this.ApplyingPattern  = CurrentPattern;
 			//			System.out.println("B "+Pattern + "," + ParentNode);
-			ParsedNode = LibZen._ApplyMatchFunc(CurrentPattern.MatchFunc, ParentNode, this, LeftNode);
+			ParsedNode = BLib._ApplyMatchFunc(CurrentPattern.MatchFunc, ParentNode, this, LeftNode);
 			assert(ParsedNode != ParentNode);
 			//			System.out.println("E "+ ParsedNode);
 			this.ApplyingPattern  = null;
@@ -392,7 +392,7 @@ public final class ZTokenContext {
 			@Var ZToken Token = this.TokenList.ArrayValues[Position];
 			@Var String DumpedToken = "[";
 			DumpedToken = DumpedToken + Position+"] " + Token.toString();
-			LibZen._PrintDebug(DumpedToken);
+			BLib._PrintDebug(DumpedToken);
 			Position = Position + 1;
 			//			ZenLogger.VerboseLog(ZenLogger.VerboseToken,  DumpedToken);
 		}

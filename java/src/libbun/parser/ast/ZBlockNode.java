@@ -26,12 +26,12 @@ package libbun.parser.ast;
 
 import libbun.parser.ZNameSpace;
 import libbun.parser.ZVisitor;
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.Nullable;
 import libbun.util.Var;
 
 public class ZBlockNode extends ZListNode {
-	@Field public ZNameSpace NullableNameSpace;
+	@BField public ZNameSpace NullableNameSpace;
 
 	public ZBlockNode(BNode ParentNode, @Nullable ZNameSpace NameSpace) {
 		super(ParentNode, null, 0);

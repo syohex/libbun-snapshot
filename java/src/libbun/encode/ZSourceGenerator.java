@@ -80,47 +80,47 @@ import libbun.parser.ast.ZWhileNode;
 import libbun.type.ZClassType;
 import libbun.type.ZFuncType;
 import libbun.type.ZType;
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Nullable;
 import libbun.util.Var;
-import libbun.util.ZArray;
-import libbun.util.ZMap;
+import libbun.util.BArray;
+import libbun.util.BMap;
 import libbun.util.ZenMethod;
 
 public class ZSourceGenerator extends ZGenerator {
 
-	@Field public ZMap<String> NativeTypeMap = new ZMap<String>(null);
-	@Field public ZMap<String> ReservedNameMap = new ZMap<String>(null);
+	@BField public BMap<String> NativeTypeMap = new BMap<String>(null);
+	@BField public BMap<String> ReservedNameMap = new BMap<String>(null);
 
-	@Field private final ZArray<ZSourceBuilder> BuilderList = new ZArray<ZSourceBuilder>(new ZSourceBuilder[4]);
-	@Field protected ZSourceBuilder HeaderBuilder;
-	@Field protected ZSourceBuilder CurrentBuilder;
+	@BField private final BArray<ZSourceBuilder> BuilderList = new BArray<ZSourceBuilder>(new ZSourceBuilder[4]);
+	@BField protected ZSourceBuilder HeaderBuilder;
+	@BField protected ZSourceBuilder CurrentBuilder;
 
-	@Field public boolean IsDynamicLanguage = false;
-	@Field public String Tab = "   ";
-	@Field public String LineFeed = "\n";
-	@Field public String LineComment = "//";
-	@Field public String BeginComment = "/*";
-	@Field public String EndComment = "*/";
-	@Field public String SemiColon = ";";
-	@Field public String Camma = ", ";
+	@BField public boolean IsDynamicLanguage = false;
+	@BField public String Tab = "   ";
+	@BField public String LineFeed = "\n";
+	@BField public String LineComment = "//";
+	@BField public String BeginComment = "/*";
+	@BField public String EndComment = "*/";
+	@BField public String SemiColon = ";";
+	@BField public String Camma = ", ";
 
-	@Field public String StringLiteralPrefix = "";
-	@Field public String IntLiteralSuffix = "";
+	@BField public String StringLiteralPrefix = "";
+	@BField public String IntLiteralSuffix = "";
 
-	@Field public String TrueLiteral = "true";
-	@Field public String FalseLiteral = "false";
-	@Field public String NullLiteral = "null";
+	@BField public String TrueLiteral = "true";
+	@BField public String FalseLiteral = "false";
+	@BField public String NullLiteral = "null";
 
-	@Field public String NotOperator = "!";
-	@Field public String AndOperator = "&&";
-	@Field public String OrOperator = "||";
+	@BField public String NotOperator = "!";
+	@BField public String AndOperator = "&&";
+	@BField public String OrOperator = "||";
 
-	@Field public String TopType = "var";
-	@Field public String ErrorFunc = "perror";
+	@BField public String TopType = "var";
+	@BField public String ErrorFunc = "perror";
 
-	@Field public boolean ReadableCode = true;
+	@BField public boolean ReadableCode = true;
 
 	public ZSourceGenerator(String Extension, String LangVersion) {
 		super(new ZLangInfo(LangVersion, Extension));
@@ -230,7 +230,7 @@ public class ZSourceGenerator extends ZGenerator {
 	@Override public final void WriteTo(@Nullable String FileName) {
 		this.Finish(FileName);
 		this.Logger.OutputErrorsToStdErr();
-		LibZen._WriteTo(this.LangInfo.NameOutputFile(FileName), this.BuilderList);
+		BLib._WriteTo(this.LangInfo.NameOutputFile(FileName), this.BuilderList);
 		this.InitBuilderList();
 	}
 
@@ -247,16 +247,16 @@ public class ZSourceGenerator extends ZGenerator {
 			i = i + 1;
 		}
 		this.InitBuilderList();
-		return LibZen._SourceBuilderToString(sb);
+		return BLib._SourceBuilderToString(sb);
 	}
 
 	@Override public void Perform() {
 		@Var int i = 0;
 		//this.Logger.OutputErrorsToStdErr();
-		LibZen._PrintLine("---");
+		BLib._PrintLine("---");
 		while(i < this.BuilderList.size()) {
 			@Var ZSourceBuilder Builder = this.BuilderList.ArrayValues[i];
-			LibZen._PrintLine(Builder.toString());
+			BLib._PrintLine(Builder.toString());
 			Builder.Clear();
 			i = i + 1;
 		}
@@ -381,7 +381,7 @@ public class ZSourceGenerator extends ZGenerator {
 	}
 
 	@Override public void VisitStringNode(BStringNode Node) {
-		this.CurrentBuilder.Append(this.StringLiteralPrefix, LibZen._QuoteString(Node.StringValue));
+		this.CurrentBuilder.Append(this.StringLiteralPrefix, BLib._QuoteString(Node.StringValue));
 	}
 
 	@Override public void VisitArrayLiteralNode(ZArrayLiteralNode Node) {
@@ -462,7 +462,7 @@ public class ZSourceGenerator extends ZGenerator {
 				break;
 			}
 			this.CurrentBuilder.Append(Macro.substring(fromIndex, BeginNum));
-			@Var int Index = (int)LibZen._ParseInt(Macro.substring(BeginNum+2, EndNum));
+			@Var int Index = (int)BLib._ParseInt(Macro.substring(BeginNum+2, EndNum));
 			if(Node.AST[Index] != null) {
 				this.GenerateCode(FuncType.GetFuncParamType(Index), Node.AST[Index]);
 			}
@@ -693,7 +693,7 @@ public class ZSourceGenerator extends ZGenerator {
 	@Override public void VisitErrorNode(ZErrorNode Node) {
 		@Var String Message = ZLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.CurrentBuilder.Append(this.ErrorFunc, "(");
-		this.CurrentBuilder.Append(LibZen._QuoteString(Message));
+		this.CurrentBuilder.Append(BLib._QuoteString(Message));
 		this.CurrentBuilder.Append(")");
 	}
 
@@ -769,7 +769,7 @@ public class ZSourceGenerator extends ZGenerator {
 			@Var ZClassType ClassType = (ZClassType)RecvType;
 			@Var ZType FieldType = ClassType.GetFieldType(FuncName, null);
 			if(FieldType == null || !FieldType.IsFuncType()) {
-				FuncName = LibZen._AnotherName(FuncName);
+				FuncName = BLib._AnotherName(FuncName);
 				FieldType = ClassType.GetFieldType(FuncName, null);
 				if(FieldType == null || !FieldType.IsFuncType()) {
 					return false;

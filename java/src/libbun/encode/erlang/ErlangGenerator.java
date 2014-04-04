@@ -30,16 +30,16 @@ import libbun.parser.ast.ZSetterNode;
 import libbun.parser.ast.ZWhileNode;
 import libbun.type.ZClassType;
 import libbun.type.ZType;
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
 
 
 public class ErlangGenerator extends ZSourceGenerator {
-	@Field private int LoopNodeNumber;
-	@Field private int BreakMark;
-	@Field private final VariableManager VarMgr;
+	@BField private int LoopNodeNumber;
+	@BField private int BreakMark;
+	@BField private final VariableManager VarMgr;
 
 	public ErlangGenerator() {
 		super("erl", "Erlang-5.10.4");

@@ -9,7 +9,7 @@ import libbun.parser.ZTokenContext;
 import libbun.parser.ast.ZBinaryNode;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.BStringNode;
-import libbun.util.ZArray;
+import libbun.util.BArray;
 
 // you must implement this class if you use shell grammar
 public class ShellUtils {
@@ -38,7 +38,7 @@ public class ShellUtils {
 		return false;
 	}
 
-	public static BNode _ToNode(BNode ParentNode, ZTokenContext TokenContext, ZArray<BNode> NodeList) {
+	public static BNode _ToNode(BNode ParentNode, ZTokenContext TokenContext, BArray<BNode> NodeList) {
 		ZToken Token = TokenContext.GetToken();
 		BNode Node = new BStringNode(ParentNode, null, "");
 		ZSyntax Pattern = TokenContext.NameSpace.GetRightSyntaxPattern("+");

@@ -33,10 +33,10 @@ import libbun.type.ZTypePool;
 
 
 
-public class ZObject implements ZTypedObject {
+public class BObject implements BTypedObject {
 	protected ZType ZenType;
 
-	protected ZObject(int TypeId) {
+	protected BObject(int TypeId) {
 		this.ZenType = ZTypePool.TypeOf(TypeId);
 	}
 	@Override public final ZType GetZenType() {
@@ -45,7 +45,7 @@ public class ZObject implements ZTypedObject {
 
 	private void AppendStringBuffer(StringBuilder sb, String Name) {
 		if(Name != null) {
-			sb.append(LibZen._QuoteString(Name));
+			sb.append(BLib._QuoteString(Name));
 			sb.append(": ");
 		}
 	}
@@ -55,13 +55,13 @@ public class ZObject implements ZTypedObject {
 	}
 
 	public void AppendStringBuffer(StringBuilder sb, String Key, Object Value) {
-		if(Value instanceof ZObject) {
+		if(Value instanceof BObject) {
 			this.AppendStringBuffer(sb, Key);
-			((ZObject)Value).Stringfy(sb);
+			((BObject)Value).Stringfy(sb);
 		}
 		else if(Value instanceof String) {
 			this.AppendStringBuffer(sb, Key);
-			sb.append(LibZen._QuoteString(Value.toString()));
+			sb.append(BLib._QuoteString(Value.toString()));
 		}
 		else if(Value instanceof Number || Value instanceof Boolean || Value == null) {
 			this.AppendStringBuffer(sb, Key);
@@ -79,7 +79,7 @@ public class ZObject implements ZTypedObject {
 				}
 				try {
 					Object Value =  Fields[i].get(this);
-					if(ZFunction.class.isAssignableFrom(Fields[i].getType())) {
+					if(BFunction.class.isAssignableFrom(Fields[i].getType())) {
 						//						sb.append(Fields[i].getName());
 						//						sb.append(": ");
 						//						sb.append(Value);

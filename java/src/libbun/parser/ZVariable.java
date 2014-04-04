@@ -26,16 +26,16 @@ package libbun.parser;
 
 import libbun.parser.ast.ZFunctionNode;
 import libbun.type.ZType;
-import libbun.util.Field;
+import libbun.util.BField;
 
 public final class ZVariable extends ZSymbolEntry {
-	@Field public int     VarFlag;
-	@Field public ZType	  VarType;
-	@Field public String  VarName;
-	@Field public int     VarUniqueIndex;
-	@Field public ZToken  SourceToken;
-	@Field public int     DefCount;
-	@Field public int     UsedCount;
+	@BField public int     VarFlag;
+	@BField public ZType	  VarType;
+	@BField public String  VarName;
+	@BField public int     VarUniqueIndex;
+	@BField public ZToken  SourceToken;
+	@BField public int     DefCount;
+	@BField public int     UsedCount;
 
 	ZVariable(ZSymbolEntry Parent, ZFunctionNode FuncNode, int VarFlag, ZType VarType, String VarName, ZToken SourceToken) {
 		super(Parent, FuncNode);

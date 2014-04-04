@@ -86,14 +86,14 @@ import libbun.type.ZType;
 import libbun.type.ZTypePool;
 import libbun.type.ZVarScope;
 import libbun.type.ZVarType;
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Nullable;
 import libbun.util.Var;
 
 public class BunTypeSafer extends ZTypeChecker {
 
-	@Field protected ZFunctionNode CurrentFunctionNode = null;
+	@BField protected ZFunctionNode CurrentFunctionNode = null;
 
 	public BunTypeSafer(ZGenerator Generator) {
 		super(Generator);
@@ -215,8 +215,9 @@ public class BunTypeSafer extends ZTypeChecker {
 	}
 
 	@Override public void VisitSetNameNode(BSetNameNode Node) {
-		this.VisitGetNameNode(Node.NameNode());
-		if(!Node.NameNode().IsUntyped()) {
+		this.CheckTypeAt(Node, BSetNameNode._NameInfo, ZType.VarType);
+		@Var BGetNameNode NameNode = Node.NameNode();
+		if(!NameNode.IsUntyped()) {
 			this.CheckTypeAt(Node, BSetNameNode._Expr, Node.NameNode().Type);
 			this.ReturnTypeNode(Node, ZType.VoidType);
 			return;
@@ -840,7 +841,7 @@ public class BunTypeSafer extends ZTypeChecker {
 			FieldNode.Type = ZType.VoidType;
 			i = i + 1;
 		}
-		Node.ClassType.TypeFlag = LibZen._UnsetFlag(Node.ClassType.TypeFlag, ZType.OpenTypeFlag);
+		Node.ClassType.TypeFlag = BLib._UnsetFlag(Node.ClassType.TypeFlag, ZType.OpenTypeFlag);
 		//System.out.println(" E NodeClass.ToOpen="+Node.ClassType+", IsOpenType="+Node.ClassType.IsOpenType());
 		this.ReturnTypeNode(Node, ZType.VoidType);
 	}

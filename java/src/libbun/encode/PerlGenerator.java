@@ -38,7 +38,7 @@ import libbun.parser.ast.ZSetterNode;
 import libbun.type.ZClassField;
 import libbun.type.ZClassType;
 import libbun.type.ZType;
-import libbun.util.LibZen;
+import libbun.util.BLib;
 import libbun.util.Var;
 
 
@@ -200,7 +200,7 @@ public class PerlGenerator extends ZSourceGenerator {
 
 
 	private String ClassKey(ZType ClassType) {
-		return LibZen._QuoteString(this.NameClass(ClassType));
+		return BLib._QuoteString(this.NameClass(ClassType));
 	}
 
 	@Override public void VisitClassNode(ZClassNode Node) {
@@ -222,7 +222,7 @@ public class PerlGenerator extends ZSourceGenerator {
 		while (i < Node.GetListSize()) {
 			@Var BLetVarNode FieldNode = Node.GetFieldNode(i);
 			this.CurrentBuilder.AppendNewLine();
-			this.CurrentBuilder.Append("$o{", LibZen._QuoteString(FieldNode.GetGivenName()), "} = ");
+			this.CurrentBuilder.Append("$o{", BLib._QuoteString(FieldNode.GetGivenName()), "} = ");
 			this.GenerateCode(null, FieldNode.InitValueNode());
 			this.CurrentBuilder.Append(this.SemiColon);
 			i = i + 1;
@@ -236,7 +236,7 @@ public class PerlGenerator extends ZSourceGenerator {
 				this.CurrentBuilder.Append("if (defined $", this.NameMethod(Node.ClassType, ClassField.FieldName), ") {");
 				this.CurrentBuilder.Indent();
 				this.CurrentBuilder.AppendNewLine();
-				this.CurrentBuilder.Append("$o{", LibZen._QuoteString(ClassField.FieldName), "} = $");
+				this.CurrentBuilder.Append("$o{", BLib._QuoteString(ClassField.FieldName), "} = $");
 				this.CurrentBuilder.Append(this.NameMethod(Node.ClassType, ClassField.FieldName), this.SemiColon);
 				this.CurrentBuilder.UnIndent();
 				this.CurrentBuilder.AppendNewLine();

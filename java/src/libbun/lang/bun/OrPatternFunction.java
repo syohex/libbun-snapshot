@@ -5,9 +5,9 @@ import libbun.parser.ast.ZBinaryNode;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZOrNode;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
-public class OrPatternFunction extends ZMatchFunction {
+public class OrPatternFunction extends BMatchFunction {
 
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var ZBinaryNode BinaryNode = new ZOrNode(ParentNode, TokenContext.GetToken(ZTokenContext._MoveNext), LeftNode, TokenContext.GetApplyingSyntax());

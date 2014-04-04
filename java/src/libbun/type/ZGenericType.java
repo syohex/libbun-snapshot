@@ -24,7 +24,7 @@
 
 package libbun.type;
 
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.Nullable;
 
 public class ZGenericType extends ZType {
@@ -33,8 +33,8 @@ public class ZGenericType extends ZType {
 	public final static ZGenericType _ArrayType = new ZGenericType("Array");
 	public final static ZGenericType _MapType = new ZGenericType("Map");
 
-	@Field public ZType			BaseType;
-	@Field public ZType         ParamType;
+	@BField public ZType			BaseType;
+	@BField public ZType         ParamType;
 
 	public ZGenericType(String ShortName) {
 		super(ZType.UniqueTypeFlag, ShortName, ZType.VarType);

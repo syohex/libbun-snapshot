@@ -5,9 +5,9 @@ import libbun.parser.ZTokenContext;
 import libbun.parser.ast.ZEmptyNode;
 import libbun.parser.ast.BNode;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
-public class StatementEndPatternFunction extends ZMatchFunction {
+public class StatementEndPatternFunction extends BMatchFunction {
 
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var boolean ContextAllowance = TokenContext.SetParseFlag(false);

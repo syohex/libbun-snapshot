@@ -26,7 +26,7 @@ package libbun.util;
 
 import java.util.HashMap;
 
-public final class ZObjectMap extends ZObject {
+public final class ZObjectMap extends BObject {
 	final HashMap<String, Object>	Map;
 
 	public ZObjectMap(int TypeId, Object[] Literal) {

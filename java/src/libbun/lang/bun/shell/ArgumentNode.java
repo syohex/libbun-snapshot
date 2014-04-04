@@ -8,7 +8,7 @@ import libbun.parser.ast.BStringNode;
 import libbun.parser.ast.ZSugarNode;
 import libbun.parser.ZGenerator;
 import libbun.parser.ZTypeChecker;
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.Var;
 
 public class ArgumentNode extends ZSugarNode {
@@ -18,7 +18,7 @@ public class ArgumentNode extends ZSugarNode {
 	public final static int _Substitution = 1;
 	private final static String[] _funcNames = {"createCommandArg", "createSubstitutedArg"};
 
-	@Field private final int ArgType;
+	@BField private final int ArgType;
 
 	public ArgumentNode(BNode ParentNode, int ArgType) {
 		super(ParentNode, null, 1);

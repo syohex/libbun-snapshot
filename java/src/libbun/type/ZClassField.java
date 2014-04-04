@@ -25,15 +25,15 @@
 package libbun.type;
 
 import libbun.parser.ZToken;
-import libbun.util.Field;
+import libbun.util.BField;
 
 public class ZClassField {
-	@Field public final int        FieldFlag = 0;
-	@Field public final ZClassType ClassType;
-	@Field public final ZType	     FieldType;
-	@Field public final String	 FieldName;
-	@Field public final int        FieldNativeIndex = 0;
-	@Field public final ZToken     SourceToken;
+	@BField public final int        FieldFlag = 0;
+	@BField public final ZClassType ClassType;
+	@BField public final ZType	     FieldType;
+	@BField public final String	 FieldName;
+	@BField public final int        FieldNativeIndex = 0;
+	@BField public final ZToken     SourceToken;
 
 	public ZClassField(ZClassType ClassType, String FieldName, ZType FieldType, ZToken SourceToken) {
 		this.ClassType = ClassType;

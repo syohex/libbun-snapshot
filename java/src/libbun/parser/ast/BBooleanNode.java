@@ -27,10 +27,10 @@ package libbun.parser.ast;
 import libbun.parser.ZToken;
 import libbun.parser.ZVisitor;
 import libbun.type.ZType;
-import libbun.util.Field;
+import libbun.util.BField;
 
 public final class BBooleanNode extends BConstNode {
-	@Field public boolean	BooleanValue;
+	@BField public boolean	BooleanValue;
 	public BBooleanNode(BNode ParentNode, ZToken Token, boolean Value) {
 		super(ParentNode, Token);
 		this.Type = ZType.BooleanType;

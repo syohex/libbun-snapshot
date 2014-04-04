@@ -5,10 +5,10 @@ import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.sugar.ZAssertNode;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
 
-public class AssertPatternFunction extends ZMatchFunction {
+public class AssertPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var BNode AssertNode = new ZAssertNode(ParentNode);
 		AssertNode = TokenContext.MatchToken(AssertNode, "assert", ZTokenContext._Required);

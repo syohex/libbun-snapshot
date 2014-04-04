@@ -1,11 +1,11 @@
 package libbun.lang.bun.regexp;
 
 import libbun.parser.ZSourceContext;
-import libbun.util.LibZen;
+import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.ZTokenFunction;
+import libbun.util.BTokenFunction;
 
-public class RexExpLiteralTokenFunction extends ZTokenFunction {
+public class RexExpLiteralTokenFunction extends BTokenFunction {
 	@Override public boolean Invoke(ZSourceContext SourceContext) {
 		@Var int StartIndex = SourceContext.GetPosition();
 		SourceContext.MoveNext();
@@ -34,7 +34,7 @@ public class RexExpLiteralTokenFunction extends ZTokenFunction {
 		@Var int StartIndex = SourceContext.GetPosition();
 		while(SourceContext.HasChar()) {
 			@Var char ch = SourceContext.GetCurrentChar();
-			if(!LibZen._IsDigitOrLetter(ch)) {
+			if(!BLib._IsDigitOrLetter(ch)) {
 				if(ch == '\\') {
 					// FIXME : we need to support "\u0000"
 					return false;

@@ -28,7 +28,7 @@ import libbun.parser.ZTypeChecker;
 import libbun.parser.ZVisitor;
 import libbun.type.ZFunc;
 import libbun.type.ZFuncType;
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.Nullable;
 import libbun.util.Var;
 
@@ -36,7 +36,7 @@ public final class ZMethodCallNode extends ZListNode {
 	public final static int _Recv = 0;
 	public static final int _NameInfo = 1;
 
-	@Field public String  GivenName = null;
+	@BField public String  GivenName = null;
 
 	public ZMethodCallNode(BNode ParentNode, BNode RecvNode) {
 		super(ParentNode, null, 2);

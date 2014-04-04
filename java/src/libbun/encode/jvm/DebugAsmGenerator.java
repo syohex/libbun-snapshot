@@ -1,9 +1,9 @@
 package libbun.encode.jvm;
 
-import libbun.util.LibZen;
+import libbun.util.BLib;
 
 public class DebugAsmGenerator extends AsmJavaGenerator {
 	public DebugAsmGenerator() {
-		LibZen._SetDebugVerbose(true);
+		BLib._SetDebugVerbose(true);
 	}
 }

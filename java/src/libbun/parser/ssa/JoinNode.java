@@ -3,15 +3,15 @@ package libbun.parser.ssa;
 import libbun.parser.ast.ZLocalDefinedNode;
 import libbun.parser.ast.BNode;
 import libbun.util.Var;
-import libbun.util.ZArray;
+import libbun.util.BArray;
 
 public class JoinNode extends ZLocalDefinedNode {
-	private final ZArray<PHINode> PHIs;
+	private final BArray<PHINode> PHIs;
 
 	public JoinNode(BNode Parent) {
 		super(null, null, 0);
 		Parent.SetChild(this, true);
-		this.PHIs = new ZArray<PHINode>(new PHINode[0]);
+		this.PHIs = new BArray<PHINode>(new PHINode[0]);
 	}
 
 	public final void Append(PHINode Node) {
@@ -23,7 +23,7 @@ public class JoinNode extends ZLocalDefinedNode {
 	}
 
 	public final PHINode ListAt(int Index) {
-		return ZArray.GetIndex(this.PHIs, Index);
+		return BArray.GetIndex(this.PHIs, Index);
 	}
 
 	public PHINode FindPHINode(Variable Var) {

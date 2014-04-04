@@ -1,16 +1,16 @@
 package libbun.parser;
 
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.ZenIgnored;
+import libbun.util.BIgnored;
 
 public class ZToken {
 	public final static ZToken _NullToken = new ZToken();
 
-	@Field public final ZSource Source;
-	@Field public int  StartIndex;
-	@Field public int  EndIndex;
+	@BField public final ZSource Source;
+	@BField public int  StartIndex;
+	@BField public int  EndIndex;
 
 	private ZToken() {
 		this.Source = new ZSource();
@@ -34,7 +34,7 @@ public class ZToken {
 
 	public final char GetChar() {
 		if(this.Source != null) {
-			return LibZen._GetChar(this.Source.SourceText, this.StartIndex);
+			return BLib._GetChar(this.Source.SourceText, this.StartIndex);
 		}
 		return '\0';
 	}
@@ -58,9 +58,9 @@ public class ZToken {
 		return this.GetText();
 	}
 
-	@ZenIgnored public final boolean EqualsText(char ch) {
+	@BIgnored public final boolean EqualsText(char ch) {
 		if(this.EndIndex - this.StartIndex == 1) {
-			if(LibZen._GetChar(this.Source.SourceText, this.StartIndex) == ch) {
+			if(BLib._GetChar(this.Source.SourceText, this.StartIndex) == ch) {
 				return true;
 			}
 		}
@@ -72,7 +72,7 @@ public class ZToken {
 			@Var String s = this.Source.SourceText;
 			@Var int i = 0;
 			while(i < Text.length()) {
-				if(LibZen._GetChar(s, this.StartIndex+i) != LibZen._GetChar(Text, i)) {
+				if(BLib._GetChar(s, this.StartIndex+i) != BLib._GetChar(Text, i)) {
 					return false;
 				}
 				i = i + 1;
@@ -87,7 +87,7 @@ public class ZToken {
 			@Var String s = this.Source.SourceText;
 			@Var int i = 0;
 			while(i < Text.length()) {
-				if(LibZen._GetChar(s, this.StartIndex+i) != LibZen._GetChar(Text, i)) {
+				if(BLib._GetChar(s, this.StartIndex+i) != BLib._GetChar(Text, i)) {
 					return false;
 				}
 				i = i + 1;
@@ -115,7 +115,7 @@ public class ZToken {
 
 	public final boolean IsNameSymbol() {
 		@Var char ch = this.Source.GetCharAt(this.StartIndex);
-		return LibZen._IsSymbol(ch);
+		return BLib._IsSymbol(ch);
 	}
 
 	public final int GetIndentSize() {

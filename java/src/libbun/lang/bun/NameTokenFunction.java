@@ -1,17 +1,17 @@
 package libbun.lang.bun;
 
 import libbun.parser.ZSourceContext;
-import libbun.util.LibZen;
+import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.ZTokenFunction;
+import libbun.util.BTokenFunction;
 
-public class NameTokenFunction extends ZTokenFunction {
+public class NameTokenFunction extends BTokenFunction {
 
 	@Override public boolean Invoke(ZSourceContext SourceContext) {
 		@Var int StartIndex = SourceContext.GetPosition();
 		while(SourceContext.HasChar()) {
 			@Var char ch = SourceContext.GetCurrentChar();
-			if(!LibZen._IsSymbol(ch) && !LibZen._IsDigit(ch)) {
+			if(!BLib._IsSymbol(ch) && !BLib._IsDigit(ch)) {
 				break;
 			}
 			SourceContext.MoveNext();

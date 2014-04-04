@@ -3,8 +3,8 @@ package libbun.parser.ast;
 import libbun.parser.ZGenerator;
 import libbun.parser.ZVisitor;
 import libbun.type.ZType;
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Nullable;
 import libbun.util.Var;
 
@@ -20,10 +20,10 @@ public class BLetVarNode extends ZListNode {
 	public final static int _IsDefined  = 1 << 2;
 	public final static int _IsUsed     = 1 << 3;
 
-	@Field public int NameFlag = 0;
-	@Field public ZType   GivenType = null;
-	@Field public String  GivenName = null;
-	@Field public int NameIndex = 0;
+	@BField public int NameFlag = 0;
+	@BField public ZType   GivenType = null;
+	@BField public String  GivenName = null;
+	@BField public int NameIndex = 0;
 
 	public BLetVarNode(BNode ParentNode, int NameFlag, @Nullable ZType GivenType, @Nullable String GivenName) {
 		super(ParentNode, null, 3);
@@ -33,19 +33,19 @@ public class BLetVarNode extends ZListNode {
 	}
 
 	public final boolean IsExport() {  // export let at top level
-		return LibZen._IsFlag(this.NameFlag, BLetVarNode._IsExport);
+		return BLib._IsFlag(this.NameFlag, BLetVarNode._IsExport);
 	}
 
 	public final boolean IsReadOnly() {   // let readonly var writable
-		return LibZen._IsFlag(this.NameFlag, BLetVarNode._IsReadOnly);
+		return BLib._IsFlag(this.NameFlag, BLetVarNode._IsReadOnly);
 	}
 
 	public final boolean IsDefined() {    // if assigned
-		return LibZen._IsFlag(this.NameFlag, BLetVarNode._IsDefined);
+		return BLib._IsFlag(this.NameFlag, BLetVarNode._IsDefined);
 	}
 
 	public final boolean IsUsed() {
-		return LibZen._IsFlag(this.NameFlag, BLetVarNode._IsUsed);
+		return BLib._IsFlag(this.NameFlag, BLetVarNode._IsUsed);
 	}
 
 	public final void Defined() {

@@ -6,18 +6,18 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Map;
 
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.Var;
 
 
 //endif VAJA
 
 public class VariableManager{
-	@Field private HashMap<String, VariableDefinition> DefMap;
-	@Field private int CurrentScopeIdx;
-	@Field private ArrayList<ArrayList<VariableReference>> ScopeEmulator;
-	@Field private int FilterCount;
-	@Field private int FilterFlag;
+	@BField private HashMap<String, VariableDefinition> DefMap;
+	@BField private int CurrentScopeIdx;
+	@BField private ArrayList<ArrayList<VariableReference>> ScopeEmulator;
+	@BField private int FilterCount;
+	@BField private int FilterFlag;
 
 	public VariableManager/*constructor*/() {
 		this.Init();

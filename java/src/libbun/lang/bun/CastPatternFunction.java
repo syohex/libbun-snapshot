@@ -5,9 +5,9 @@ import libbun.parser.ast.ZCastNode;
 import libbun.parser.ast.BNode;
 import libbun.type.ZType;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
-public class CastPatternFunction extends ZMatchFunction {
+public class CastPatternFunction extends BMatchFunction {
 
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var BNode CastNode = new ZCastNode(ParentNode, ZType.VarType, null);

@@ -22,17 +22,17 @@ import libbun.type.ZClassField;
 import libbun.type.ZClassType;
 import libbun.type.ZFuncType;
 import libbun.type.ZType;
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.ZArray;
-import libbun.util.ZMap;
+import libbun.util.BArray;
+import libbun.util.BMap;
 import libbun.util.ZenMethod;
 
 public class JavaGenerator extends ZSourceGenerator {
 
-	@Field private ZFunctionNode MainFuncNode = null;
-	@Field private final ZArray<ZFunctionNode> ExportFunctionList = new ZArray<ZFunctionNode>(new ZFunctionNode[4]);
+	@BField private ZFunctionNode MainFuncNode = null;
+	@BField private final BArray<ZFunctionNode> ExportFunctionList = new BArray<ZFunctionNode>(new ZFunctionNode[4]);
 
 	public JavaGenerator() {
 		super("java", "1.6");
@@ -233,7 +233,7 @@ public class JavaGenerator extends ZSourceGenerator {
 	}
 
 
-	@Field private final ZMap<String> FuncNameMap = new ZMap<String>(null);
+	@BField private final BMap<String> FuncNameMap = new BMap<String>(null);
 
 	String GetFuncTypeClass(ZFuncType FuncType) {
 		@Var String ClassName = this.FuncNameMap.GetOrNull(FuncType.GetUniqueName());
@@ -351,7 +351,7 @@ public class JavaGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.OpenIndent(" {");
 
 		this.CurrentBuilder.AppendNewLine("super(", ""+FuncType.TypeId, this.Camma);
-		this.CurrentBuilder.Append(LibZen._QuoteString(FuncName), ");");
+		this.CurrentBuilder.Append(BLib._QuoteString(FuncName), ");");
 		this.CurrentBuilder.CloseIndent("}");
 
 		this.CurrentBuilder.AppendNewLine("");
@@ -460,7 +460,7 @@ public class JavaGenerator extends ZSourceGenerator {
 	@Override public void VisitErrorNode(ZErrorNode Node) {
 		ZLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.CurrentBuilder.Append("ThrowError(");
-		this.CurrentBuilder.Append(LibZen._QuoteString(Node.ErrorMessage));
+		this.CurrentBuilder.Append(BLib._QuoteString(Node.ErrorMessage));
 		this.CurrentBuilder.Append(")");
 	}
 

@@ -1,14 +1,17 @@
 package libbun.util;
 
+public class BStringArray extends BObject {
+	@BField private int    Size;
+	@BField public String[] ArrayValues;
 
-public class ZFloatArray extends ZObject {
-	@Field private int    Size;
-	@Field public double[] ArrayValues;  // don't use .length
+	public BStringArray() {
+		this(0, null);
+	}
 
-	public ZFloatArray(int TypeId, double[] Values) {
+	public BStringArray(int TypeId, String[] Values) {
 		super(TypeId);
 		if(Values == null || Values.length == 0) {
-			this.ArrayValues = new double[1];
+			this.ArrayValues = new String[1];
 			this.Size = 0;
 		}
 		else {
@@ -23,7 +26,7 @@ public class ZFloatArray extends ZObject {
 			if(i > 0) {
 				sb.append(", ");
 			}
-			sb.append(this.ArrayValues[i]);
+			sb.append(BLib._QuoteString(this.ArrayValues[i]));
 		}
 		sb.append("]");
 	}
@@ -36,15 +39,15 @@ public class ZFloatArray extends ZObject {
 		this.Size = (int) Index;
 	}
 
-	public final static double GetIndex(ZFloatArray a, long Index) {
+	public final static String GetIndex(BStringArray a, long Index) {
 		if(Index < a.Size) {
 			return a.ArrayValues[(int)Index];
 		}
 		ZObjectArray.ThrowOutOfArrayIndex(a.Size, Index);
-		return 0;
+		return null;
 	}
 
-	public final static void SetIndex(ZFloatArray a, long Index, double Value) {
+	public final static void SetIndex(BStringArray a, long Index, String Value) {
 		if(Index < a.Size) {
 			a.ArrayValues[(int)Index] = Value;
 			return;
@@ -52,9 +55,9 @@ public class ZFloatArray extends ZObject {
 		ZObjectArray.ThrowOutOfArrayIndex(a.Size, Index);
 	}
 
-	public final void Add(double Value) {
+	public final void Add(String Value) {
 		if(this.Size == this.ArrayValues.length) {
-			double[] newValues = new double[this.ArrayValues.length*2];
+			String[] newValues = new String[this.ArrayValues.length*2];
 			System.arraycopy(this.ArrayValues, 0, newValues, 0, this.Size);
 			this.ArrayValues = newValues;
 		}
@@ -62,10 +65,10 @@ public class ZFloatArray extends ZObject {
 		this.Size = this.Size + 1;
 	}
 
-	public final void Insert(long Index, double Value) {
+	public final void Insert(long Index, String Value) {
 		int index = (int) Index;
 		if(this.Size == this.ArrayValues.length) {
-			double[] NewValues = new double[this.Size * 2];
+			String[] NewValues = new String[this.Size * 2];
 			System.arraycopy(this.ArrayValues, 0, NewValues, 0, this.Size);
 			this.ArrayValues = NewValues;
 		}

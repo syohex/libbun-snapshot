@@ -28,14 +28,14 @@ import libbun.parser.ZGenerator;
 import libbun.parser.ZToken;
 import libbun.parser.ZVisitor;
 import libbun.type.ZType;
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.Nullable;
 
 public class BGetNameNode extends BNode {
-	@Field public boolean IsCaptured = false;
-	@Field public String  GivenName;
-	@Field public int     VarIndex = 0;
-	@Field @Nullable public BLetVarNode ResolvedNode = null;
+	@BField public boolean IsCaptured = false;
+	@BField public String  GivenName;
+	@BField public int     VarIndex = 0;
+	@BField @Nullable public BLetVarNode ResolvedNode = null;
 
 	public BGetNameNode(BNode ParentNode, ZToken SourceToken, String GivenName) {
 		super(ParentNode, SourceToken, 0);

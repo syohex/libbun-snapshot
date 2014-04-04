@@ -29,20 +29,20 @@ import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZBlockNode;
 import libbun.type.ZClassType;
 import libbun.type.ZType;
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Nullable;
 import libbun.util.Var;
-import libbun.util.ZMap;
-import libbun.util.ZMatchFunction;
-import libbun.util.ZTokenFunction;
+import libbun.util.BMap;
+import libbun.util.BMatchFunction;
+import libbun.util.BTokenFunction;
 
 public final class ZNameSpace {
-	@Field public final ZGenerator   Generator;
-	@Field public final ZBlockNode   BlockNode;
-	@Field ZTokenFunc[]       TokenMatrix = null;
-	@Field ZMap<ZSyntax>      SyntaxTable = null;
-	@Field ZMap<BLetVarNode>  SymbolTable2 = null;
+	@BField public final ZGenerator   Generator;
+	@BField public final ZBlockNode   BlockNode;
+	@BField ZTokenFunc[]       TokenMatrix = null;
+	@BField BMap<ZSyntax>      SyntaxTable = null;
+	@BField BMap<BLetVarNode>  SymbolTable2 = null;
 
 	public ZNameSpace(ZGenerator Generator, ZBlockNode BlockNode) {
 		this.BlockNode = BlockNode;   // rootname is null
@@ -82,16 +82,16 @@ public final class ZNameSpace {
 		return this.TokenMatrix[ZenChar];
 	}
 
-	private final ZTokenFunc JoinParentFunc(ZTokenFunction Func, ZTokenFunc Parent) {
+	private final ZTokenFunc JoinParentFunc(BTokenFunction Func, ZTokenFunc Parent) {
 		if(Parent != null && Parent.Func == Func) {
 			return Parent;
 		}
 		return new ZTokenFunc(Func, Parent);
 	}
 
-	public final void AppendTokenFunc(String keys, ZTokenFunction TokenFunc) {
+	public final void AppendTokenFunc(String keys, BTokenFunction TokenFunc) {
 		if(this.TokenMatrix == null) {
-			this.TokenMatrix = LibZen._NewTokenMatrix();
+			this.TokenMatrix = BLib._NewTokenMatrix();
 			if(this.GetParentNameSpace() != null) {
 				@Var int i = 0;
 				while(i < this.TokenMatrix.length) {
@@ -102,7 +102,7 @@ public final class ZNameSpace {
 		}
 		@Var int i = 0;
 		while(i < keys.length()) {
-			@Var int kchar = LibZen._GetTokenMatrixIndex(LibZen._GetChar(keys, i));
+			@Var int kchar = BLib._GetTokenMatrixIndex(BLib._GetChar(keys, i));
 			this.TokenMatrix[kchar] = this.JoinParentFunc(TokenFunc, this.TokenMatrix[kchar]);
 			i = i + 1;
 		}
@@ -122,7 +122,7 @@ public final class ZNameSpace {
 
 	public final void SetSyntaxPattern(String PatternName, ZSyntax Syntax) {
 		if(this.SyntaxTable == null) {
-			this.SyntaxTable = new ZMap<ZSyntax>(null);
+			this.SyntaxTable = new BMap<ZSyntax>(null);
 		}
 		this.SyntaxTable.put(PatternName, Syntax);
 	}
@@ -136,13 +136,13 @@ public final class ZNameSpace {
 	}
 
 	private void AppendSyntaxPattern(String PatternName, ZSyntax NewPattern) {
-		LibZen._Assert(NewPattern.ParentPattern == null);
+		BLib._Assert(NewPattern.ParentPattern == null);
 		@Var ZSyntax ParentPattern = this.GetSyntaxPattern(PatternName);
 		NewPattern.ParentPattern = ParentPattern;
 		this.SetSyntaxPattern(PatternName, NewPattern);
 	}
 
-	public final void DefineStatement(String PatternName, ZMatchFunction MatchFunc) {
+	public final void DefineStatement(String PatternName, BMatchFunction MatchFunc) {
 		@Var int Alias = PatternName.indexOf(" ");
 		@Var String Name = PatternName;
 		if(Alias != -1) {
@@ -156,7 +156,7 @@ public final class ZNameSpace {
 		}
 	}
 
-	public final void DefineExpression(String PatternName, ZMatchFunction MatchFunc) {
+	public final void DefineExpression(String PatternName, BMatchFunction MatchFunc) {
 		@Var int Alias = PatternName.indexOf(" ");
 		@Var String Name = PatternName;
 		if(Alias != -1) {
@@ -169,7 +169,7 @@ public final class ZNameSpace {
 		}
 	}
 
-	public final void DefineRightExpression(String PatternName, int SyntaxFlag, ZMatchFunction MatchFunc) {
+	public final void DefineRightExpression(String PatternName, int SyntaxFlag, BMatchFunction MatchFunc) {
 		@Var int Alias = PatternName.indexOf(" ");
 		@Var String Name = PatternName;
 		if(Alias != -1) {
@@ -185,7 +185,7 @@ public final class ZNameSpace {
 
 	public final void SetSymbol(String Symbol, BLetVarNode EntryNode) {
 		if(this.SymbolTable2 == null) {
-			this.SymbolTable2 = new ZMap<BLetVarNode>(null);
+			this.SymbolTable2 = new BMap<BLetVarNode>(null);
 		}
 		this.SymbolTable2.put(Symbol, EntryNode);
 	}
@@ -272,7 +272,7 @@ public final class ZNameSpace {
 		if(Node != null) {
 			return Node.DeclType();
 		}
-		if(IsCreation && LibZen._IsSymbol(LibZen._GetChar(TypeName, 0))) {
+		if(IsCreation && BLib._IsSymbol(BLib._GetChar(TypeName, 0))) {
 			@Var ZType Type = new ZClassType(TypeName, ZType.VarType);
 			this.GetRootNameSpace().SetTypeName(TypeName, Type, SourceToken);
 			return Type;

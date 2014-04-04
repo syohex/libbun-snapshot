@@ -4,11 +4,11 @@ import libbun.parser.ast.ZErrorNode;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.BStringNode;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 import libbun.parser.ZToken;
 import libbun.parser.ZTokenContext;
 
-public class CommandSymbolPatternFunction extends ZMatchFunction {
+public class CommandSymbolPatternFunction extends BMatchFunction {
 	public final static String _PatternName = "$CommandSymbol$";
 
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {

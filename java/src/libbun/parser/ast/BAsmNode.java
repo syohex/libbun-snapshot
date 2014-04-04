@@ -2,16 +2,16 @@ package libbun.parser.ast;
 
 import libbun.parser.ZVisitor;
 import libbun.type.ZType;
-import libbun.util.Field;
+import libbun.util.BField;
 import libbun.util.Var;
 
 public class BAsmNode extends BNode {
 	public final static int _Macro = 0;
 	public static final int _TypeInfo = 1;
-	@Field public String RequiredLibrary = null;
+	@BField public String RequiredLibrary = null;
 	
-	@Field String MacroText = null;
-	@Field ZType  MacroType = null;
+	@BField String MacroText = null;
+	@BField ZType  MacroType = null;
 
 	public BAsmNode(BNode ParentNode, String LibName, String MacroText, ZType MacroType) {
 		super(ParentNode, null, 2);

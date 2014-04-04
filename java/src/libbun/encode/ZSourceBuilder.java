@@ -26,18 +26,18 @@
 package libbun.encode;
 
 import libbun.parser.ast.ZListNode;
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.ZArray;
+import libbun.util.BArray;
 
 public final class ZSourceBuilder {
-	@Field public ZArray<String> SourceList = new ZArray<String>(new String[128]);
-	@Field ZSourceGenerator Template;
-	@Field ZSourceBuilder Parent;
-	@Field int IndentLevel = 0;
-	@Field String CurrentIndentString = "";
-	@Field String BufferedLineComment = "";
+	@BField public BArray<String> SourceList = new BArray<String>(new String[128]);
+	@BField ZSourceGenerator Template;
+	@BField ZSourceBuilder Parent;
+	@BField int IndentLevel = 0;
+	@BField String CurrentIndentString = "";
+	@BField String BufferedLineComment = "";
 
 	public ZSourceBuilder(ZSourceGenerator Template, ZSourceBuilder Parent) {
 		this.Template = Template;
@@ -58,14 +58,14 @@ public final class ZSourceBuilder {
 	}
 
 	public final String CopyString(int BeginIndex, int EndIndex) {
-		return LibZen._SourceBuilderToString(this, BeginIndex, EndIndex);
+		return BLib._SourceBuilderToString(this, BeginIndex, EndIndex);
 	}
 
 	public final void AppendCode(String Source) {
 		@Var int StartIndex = 0;
 		@Var int i = 0;
 		while(i < Source.length()) {
-			@Var char ch = LibZen._GetChar(Source, i);
+			@Var char ch = BLib._GetChar(Source, i);
 			if(ch == '\n') {
 				if(StartIndex < i) {
 					this.SourceList.add(Source.substring(StartIndex, i));
@@ -107,7 +107,7 @@ public final class ZSourceBuilder {
 	}
 
 	public final void AppendQuote(String Text) {
-		this.SourceList.add(LibZen._QuoteString(Text));
+		this.SourceList.add(BLib._QuoteString(Text));
 	}
 
 	public final void AppendLineFeed() {
@@ -205,12 +205,12 @@ public final class ZSourceBuilder {
 	public final void UnIndent() {
 		this.IndentLevel = this.IndentLevel - 1;
 		this.CurrentIndentString = null;
-		LibZen._Assert(this.IndentLevel >= 0);
+		BLib._Assert(this.IndentLevel >= 0);
 	}
 
 	private final String GetIndentString() {
 		if (this.CurrentIndentString == null) {
-			this.CurrentIndentString = LibZen._JoinStrings(this.Template.Tab, this.IndentLevel);
+			this.CurrentIndentString = BLib._JoinStrings(this.Template.Tab, this.IndentLevel);
 		}
 		return this.CurrentIndentString;
 	}
@@ -273,7 +273,7 @@ public final class ZSourceBuilder {
 	}
 
 	@Override public final String toString() {
-		return LibZen._SourceBuilderToString(this);
+		return BLib._SourceBuilderToString(this);
 	}
 
 	@Deprecated public final void AppendLine(String Text) {

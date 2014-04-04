@@ -1,18 +1,18 @@
 package libbun.parser;
 
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Var;
 
 public final class ZSourceContext extends ZSource {
 
-	@Field int SourcePosition = 0;
+	@BField int SourcePosition = 0;
 	public ZSourceContext(String FileName, int LineNumber, String Source, ZTokenContext TokenContext) {
 		super(FileName, LineNumber, Source, TokenContext);
 	}
 
 	public final int GetCharCode() {
-		return LibZen._GetTokenMatrixIndex(LibZen._GetChar(this.SourceText, this.SourcePosition));
+		return BLib._GetTokenMatrixIndex(BLib._GetChar(this.SourceText, this.SourcePosition));
 	}
 
 	public final int GetPosition() {
@@ -24,12 +24,12 @@ public final class ZSourceContext extends ZSource {
 	}
 
 	public final char GetCurrentChar() {
-		return LibZen._GetChar(this.SourceText, this.SourcePosition);
+		return BLib._GetChar(this.SourceText, this.SourcePosition);
 	}
 
 	public final char GetCharAtFromCurrentPosition(int n) {
 		if(this.SourcePosition+n < this.SourceText.length()) {
-			return LibZen._GetChar(this.SourceText, this.SourcePosition+n);
+			return BLib._GetChar(this.SourceText, this.SourcePosition+n);
 		}
 		return '\0';
 	}
@@ -103,7 +103,7 @@ public final class ZSourceContext extends ZSource {
 		@Var int RollbackPosition = this.SourcePosition;
 		while(TokenFunc != null) {
 			this.SourcePosition = RollbackPosition;
-			if(LibZen._ApplyTokenFunc(TokenFunc.Func, this)) {
+			if(BLib._ApplyTokenFunc(TokenFunc.Func, this)) {
 				return;
 			}
 			TokenFunc = TokenFunc.ParentFunc;

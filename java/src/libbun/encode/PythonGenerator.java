@@ -45,8 +45,8 @@ import libbun.type.ZClassField;
 import libbun.type.ZClassType;
 import libbun.type.ZFuncType;
 import libbun.type.ZType;
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
@@ -54,7 +54,7 @@ import libbun.util.ZenMethod;
 
 public class PythonGenerator extends ZSourceGenerator {
 
-	@Field boolean HasMainFunction = false;
+	@BField boolean HasMainFunction = false;
 
 	public PythonGenerator() {
 		super("py", "Python-2.7.1");
@@ -313,7 +313,7 @@ public class PythonGenerator extends ZSourceGenerator {
 			@Var String Message = ZLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 			this.CurrentBuilder.AppendWhiteSpace();
 			this.CurrentBuilder.Append("LibZen.ThrowError(");
-			this.CurrentBuilder.Append(LibZen._QuoteString(Message));
+			this.CurrentBuilder.Append(BLib._QuoteString(Message));
 			this.CurrentBuilder.Append(")");
 		}
 	}

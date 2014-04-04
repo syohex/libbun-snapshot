@@ -112,15 +112,15 @@ import libbun.type.ZClassType;
 import libbun.type.ZFuncType;
 import libbun.type.ZType;
 import libbun.type.ZTypePool;
-import libbun.util.LibZen;
+import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.ZArray;
-import libbun.util.ZFunction;
-import libbun.util.ZMap;
-import libbun.util.ZMatchFunction;
-import libbun.util.ZObject;
+import libbun.util.BArray;
+import libbun.util.BFunction;
+import libbun.util.BMap;
+import libbun.util.BMatchFunction;
+import libbun.util.BObject;
 import libbun.util.ZObjectMap;
-import libbun.util.ZTokenFunction;
+import libbun.util.BTokenFunction;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -129,7 +129,7 @@ import org.objectweb.asm.Type;
 
 
 public class AsmJavaGenerator extends ZGenerator {
-	private final ZMap<Class<?>> GeneratedClassMap = new ZMap<Class<?>>(null);
+	private final BMap<Class<?>> GeneratedClassMap = new BMap<Class<?>>(null);
 	public JavaStaticFieldNode MainFuncNode = null;
 	AsmClassLoader AsmLoader = null;
 	Stack<AsmTryCatchLabel> TryCatchLabel;
@@ -150,9 +150,9 @@ public class AsmJavaGenerator extends ZGenerator {
 
 	private void InitFuncClass() {
 		ZFuncType FuncType = JavaTypeTable.FuncType(boolean.class, ZSourceContext.class);
-		this.SetGeneratedClass(this.NameType(FuncType), ZTokenFunction.class);
+		this.SetGeneratedClass(this.NameType(FuncType), BTokenFunction.class);
 		FuncType = JavaTypeTable.FuncType(BNode.class, BNode.class, ZTokenContext.class, BNode.class);
-		this.SetGeneratedClass(this.NameType(FuncType), ZMatchFunction.class);
+		this.SetGeneratedClass(this.NameType(FuncType), BMatchFunction.class);
 	}
 
 	private final void SetGeneratedClass(String Key, Class<?> C) {
@@ -175,7 +175,7 @@ public class AsmJavaGenerator extends ZGenerator {
 		return this.GeneratedClassMap.GetOrNull(this.NameFunctionClass(FuncName, RecvType, FuncParamSize));
 	}
 
-	private final ZMap<BNode> LazyNodeMap = new ZMap<BNode>(null);
+	private final BMap<BNode> LazyNodeMap = new BMap<BNode>(null);
 	protected void LazyBuild(ZFunctionNode Node) {
 		this.LazyNodeMap.put(Node.GetSignature(), Node);
 	}
@@ -183,7 +183,7 @@ public class AsmJavaGenerator extends ZGenerator {
 	protected void LazyBuild(String Signature) {
 		BNode Node = this.LazyNodeMap.GetOrNull(Signature);
 		if(Node != null) {
-			LibZen._PrintDebug("LazyBuilding: " + Signature);
+			BLib._PrintDebug("LazyBuilding: " + Signature);
 			this.LazyNodeMap.remove(Signature);
 			Node.Accept(this);
 		}
@@ -343,10 +343,10 @@ public class AsmJavaGenerator extends ZGenerator {
 			Constructor<?> jMethod = this.GetConstructor(RecvType, ParamList);
 			if(jMethod != null) {
 				@Var Class<?>[] ParamTypes = jMethod.getParameterTypes();
-				@Var ZArray<ZType> TypeList = new ZArray<ZType>(new ZType[ParamTypes.length + 2]);
+				@Var BArray<ZType> TypeList = new BArray<ZType>(new ZType[ParamTypes.length + 2]);
 				if (ParamTypes != null) {
 					@Var int j = 0;
-					while(j < LibZen._Size(ParamTypes)) {
+					while(j < BLib._Size(ParamTypes)) {
 						TypeList.add(JavaTypeTable.GetZenType(ParamTypes[j]));
 						j = j + 1;
 					}
@@ -523,7 +523,7 @@ public class AsmJavaGenerator extends ZGenerator {
 		try {
 			return RecvClass.getField(Name);
 		} catch (Exception e) {
-			LibZen._FixMe(e);
+			BLib._FixMe(e);
 		}
 		return null;  // type checker guarantees field exists
 	}
@@ -866,8 +866,8 @@ public class AsmJavaGenerator extends ZGenerator {
 		String ClassName = this.NameType(FuncType);
 		Class<?> FuncClass = this.GetGeneratedClass(ClassName, null);
 		if(FuncClass == null) {
-			@Var String SuperClassName = Type.getInternalName(ZFunction.class);
-			@Var AsmClassBuilder ClassBuilder = this.AsmLoader.NewClass(ACC_PUBLIC| ACC_ABSTRACT, null, ClassName, ZFunction.class);
+			@Var String SuperClassName = Type.getInternalName(BFunction.class);
+			@Var AsmClassBuilder ClassBuilder = this.AsmLoader.NewClass(ACC_PUBLIC| ACC_ABSTRACT, null, ClassName, BFunction.class);
 			AsmMethodBuilder InvokeMethod = ClassBuilder.NewMethod(ACC_PUBLIC | ACC_ABSTRACT, "Invoke", FuncType);
 			InvokeMethod.Finish();
 
@@ -955,7 +955,7 @@ public class AsmJavaGenerator extends ZGenerator {
 		return new JavaStaticFieldNode(null, FuncClass, FuncType, "function");
 	}
 
-	private ZFunction LoadFunction(Class<?> WrapperClass, Class<?> StaticMethodClass) {
+	private BFunction LoadFunction(Class<?> WrapperClass, Class<?> StaticMethodClass) {
 		try {
 			Field f = StaticMethodClass.getField("function");
 			Object func = f.get(null);
@@ -963,11 +963,11 @@ public class AsmJavaGenerator extends ZGenerator {
 				Constructor<?> c = WrapperClass.getConstructor(func.getClass().getSuperclass());
 				func = c.newInstance(func);
 			}
-			return (ZFunction)func;
+			return (BFunction)func;
 		}
 		catch(Exception e) {
 			e.printStackTrace();
-			LibZen._Exit(1, "failed: " + e);
+			BLib._Exit(1, "failed: " + e);
 		}
 		return null;
 	}
@@ -978,7 +978,7 @@ public class AsmJavaGenerator extends ZGenerator {
 			ZClassType ClassType = (ZClassType)RecvType;
 			ZType FieldType = ClassType.GetFieldType(FuncName, null);
 			if(FieldType == null || !FieldType.IsFuncType()) {
-				FuncName = LibZen._AnotherName(FuncName);
+				FuncName = BLib._AnotherName(FuncName);
 				FieldType = ClassType.GetFieldType(FuncName, null);
 				if(FieldType == null || !FieldType.IsFuncType()) {
 					return;
@@ -1058,7 +1058,7 @@ public class AsmJavaGenerator extends ZGenerator {
 			SuperClass = this.GetJavaClass(SuperType);
 		}
 		else {
-			SuperClass = ZObject.class;
+			SuperClass = BObject.class;
 		}
 		return SuperClass;
 	}
@@ -1067,7 +1067,7 @@ public class AsmJavaGenerator extends ZGenerator {
 		return FieldName + ClassType.TypeId;
 	}
 
-	private void SetMethod(ZClassType ClassType, String FuncName, ZFunction FuncObject) {
+	private void SetMethod(ZClassType ClassType, String FuncName, BFunction FuncObject) {
 		try {
 			Class<?> StaticClass = this.GetJavaClass(ClassType);
 			Field f = StaticClass.getField(NameClassMethod(ClassType, FuncName));
@@ -1075,7 +1075,7 @@ public class AsmJavaGenerator extends ZGenerator {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			LibZen._Exit(1, "failed " + e);
+			BLib._Exit(1, "failed " + e);
 		}
 	}
 
@@ -1219,7 +1219,7 @@ public class AsmJavaGenerator extends ZGenerator {
 	}
 
 	public final void Debug(String Message) {
-		LibZen._PrintDebug(Message);
+		BLib._PrintDebug(Message);
 	}
 
 }

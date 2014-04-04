@@ -1,8 +1,8 @@
 package libbun.util;
 
-public class ZObjectArray extends ZObject {
-	@Field private int    Size;
-	@Field private Object[] ArrayValues;
+public class ZObjectArray extends BObject {
+	@BField private int    Size;
+	@BField private Object[] ArrayValues;
 
 	public ZObjectArray(int TypeId, Object[] Values) {
 		super(TypeId);

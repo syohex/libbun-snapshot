@@ -27,10 +27,10 @@ package libbun.parser.ast;
 import libbun.parser.ZToken;
 import libbun.parser.ZVisitor;
 import libbun.type.ZType;
-import libbun.util.Field;
+import libbun.util.BField;
 
 public final class BIntNode extends BConstNode {
-	@Field public long	IntValue;
+	@BField public long	IntValue;
 	public BIntNode(BNode ParentNode, ZToken Token, long Value) {
 		super(ParentNode, Token);
 		this.Type = ZType.IntType;

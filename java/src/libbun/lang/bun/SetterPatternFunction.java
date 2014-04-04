@@ -4,9 +4,9 @@ import libbun.parser.ZTokenContext;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZSetterNode;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
-public class SetterPatternFunction extends ZMatchFunction {
+public class SetterPatternFunction extends BMatchFunction {
 
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
 		@Var BNode SetterNode = new ZSetterNode(ParentNode, LeftNode);

@@ -8,11 +8,11 @@ import libbun.parser.ZToken;
 import libbun.parser.ZTokenContext;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZEmptyNode;
-import libbun.util.LibZen;
+import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
-public class ImportCommandPatternFunction extends ZMatchFunction {
+public class ImportCommandPatternFunction extends BMatchFunction {
 	public final static String _PatternName = "$ImportCommand$";
 
 	public String ResolveHome(String Path) {
@@ -64,7 +64,7 @@ public class ImportCommandPatternFunction extends ZMatchFunction {
 		}
 		@Var ZSyntax Syntax = NameSpace.GetSyntaxPattern(Command);
 		if(Syntax != null && !(Syntax.MatchFunc instanceof CommandSymbolPatternFunction)) {
-			if(LibZen.DebugMode) {
+			if(BLib.DebugMode) {
 				System.err.println("found duplicated syntax pattern: " + Syntax);
 			}
 			return;

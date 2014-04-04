@@ -1,17 +1,17 @@
 package libbun.lang.bun;
 
 import libbun.parser.ZSourceContext;
-import libbun.util.LibZen;
+import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.ZTokenFunction;
+import libbun.util.BTokenFunction;
 
-public class NumberLiteralTokenFunction extends ZTokenFunction {
+public class NumberLiteralTokenFunction extends BTokenFunction {
 
 	public final static char _ParseDigit(ZSourceContext SourceContext) {
 		@Var char ch = '\0';
 		while(SourceContext.HasChar()) {
 			ch = SourceContext.GetCurrentChar();
-			if(!LibZen._IsDigit(ch)) {
+			if(!BLib._IsDigit(ch)) {
 				break;
 			}
 			SourceContext.MoveNext();
@@ -33,7 +33,7 @@ public class NumberLiteralTokenFunction extends ZTokenFunction {
 						SourceContext.MoveNext();
 					}
 				}
-				if(SourceContext.HasChar() && !LibZen._IsDigit(SourceContext.GetCurrentChar())) {
+				if(SourceContext.HasChar() && !BLib._IsDigit(SourceContext.GetCurrentChar())) {
 					SourceContext.LogWarning(StartIndex, "exponent has no digits");
 				}
 				NumberLiteralTokenFunction._ParseDigit(SourceContext);

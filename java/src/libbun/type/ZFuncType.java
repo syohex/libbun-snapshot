@@ -1,20 +1,20 @@
 package libbun.type;
 
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.ZArray;
+import libbun.util.BArray;
 
 public final class ZFuncType extends ZType {
 	public final static ZFuncType _FuncType  = new ZFuncType();
 
-	@Field public ZType[]  TypeParams;
-	@Field private boolean HasUnknownType = false;
-	@Field private boolean HasGreekType = false;
+	@BField public ZType[]  TypeParams;
+	@BField private boolean HasUnknownType = false;
+	@BField private boolean HasGreekType = false;
 
 	private ZFuncType() {
 		super(ZType.UniqueTypeFlag, "Func", ZType.VarType);
-		this.TypeParams = LibZen._NewTypeArray(1);
+		this.TypeParams = BLib._NewTypeArray(1);
 		this.TypeParams[0] = ZType.VarType;
 		this.HasUnknownType = true;
 	}
@@ -64,7 +64,7 @@ public final class ZFuncType extends ZType {
 
 	@Override public final ZType GetGreekRealType(ZType[] Greek) {
 		if(this.HasGreekType) {
-			@Var ZArray<ZType> TypeList = new ZArray<ZType>(new ZType[this.TypeParams.length]);
+			@Var BArray<ZType> TypeList = new BArray<ZType>(new ZType[this.TypeParams.length]);
 			@Var int i = 0;
 			while(i < this.TypeParams.length) {
 				TypeList.add(this.TypeParams[i].GetGreekRealType(Greek));

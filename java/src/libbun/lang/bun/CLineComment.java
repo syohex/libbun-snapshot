@@ -1,9 +1,9 @@
 package libbun.lang.bun;
 
 import libbun.parser.ZSourceContext;
-import libbun.util.ZTokenFunction;
+import libbun.util.BTokenFunction;
 
-public class CLineComment extends ZTokenFunction {
+public class CLineComment extends BTokenFunction {
 
 	@Override
 	public boolean Invoke(ZSourceContext SourceContext) {

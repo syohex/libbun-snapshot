@@ -1,13 +1,13 @@
 package libbun.parser;
 
-import libbun.util.Field;
-import libbun.util.ZTokenFunction;
+import libbun.util.BField;
+import libbun.util.BTokenFunction;
 
 public final class ZTokenFunc {
-	@Field public ZTokenFunction      Func;
-	@Field public ZTokenFunc	ParentFunc;
+	@BField public BTokenFunction      Func;
+	@BField public ZTokenFunc	ParentFunc;
 
-	ZTokenFunc(ZTokenFunction Func, ZTokenFunc Parent) {
+	ZTokenFunc(BTokenFunction Func, ZTokenFunc Parent) {
 		this.Func = Func;
 		this.ParentFunc = Parent;
 	}

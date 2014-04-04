@@ -55,7 +55,7 @@ import libbun.type.ZFunc;
 import libbun.type.ZFuncType;
 import libbun.type.ZType;
 import libbun.util.Var;
-import libbun.util.ZArray;
+import libbun.util.BArray;
 
 public class SSACGenerator extends ZSourceGenerator {
 
@@ -498,7 +498,7 @@ public class SSACGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append("phi(");
 		@Var int i = 0;
 		while(i < phi.Args.size()) {
-			BNode Arg = ZArray.GetIndex(phi.Args, i);
+			BNode Arg = BArray.GetIndex(phi.Args, i);
 			// Arg is instanceof ZLetVarNode or ZVarBlockNode or ZSetNameNode or PHINode
 			if(i != 0) {
 				this.CurrentBuilder.Append(", ");

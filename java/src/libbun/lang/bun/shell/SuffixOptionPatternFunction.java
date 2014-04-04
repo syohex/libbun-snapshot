@@ -3,11 +3,11 @@ package libbun.lang.bun.shell;
 import libbun.parser.ast.ZErrorNode;
 import libbun.parser.ast.BNode;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 import libbun.parser.ZToken;
 import libbun.parser.ZTokenContext;
 
-public class SuffixOptionPatternFunction extends ZMatchFunction {
+public class SuffixOptionPatternFunction extends BMatchFunction {
 	public final static String _PatternName = "$SuffixOption$";
 
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {

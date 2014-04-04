@@ -1,11 +1,11 @@
 package libbun.parser.ast;
 
-import libbun.util.Field;
+import libbun.util.BField;
 
 public class ZMapEntryNode extends ZLocalDefinedNode {
 	public final static int _Key = 0;
 	public final static int _Value = 1;
-	@Field public String  Name = null;
+	@BField public String  Name = null;
 
 	public ZMapEntryNode(BNode ParentNode) {
 		super(ParentNode, null, 2);

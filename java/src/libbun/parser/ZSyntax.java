@@ -25,24 +25,24 @@
 
 package libbun.parser;
 
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.ZMatchFunction;
+import libbun.util.BMatchFunction;
 
 public final class ZSyntax {
 	public final static int _BinaryOperator					= 1;
 	public final static int _LeftJoin						= 1 << 1;
 
-	@Field public ZNameSpace	              PackageNameSpace;
-	@Field public String		              PatternName;
-	@Field public ZMatchFunction              MatchFunc;
-	@Field public int				          SyntaxFlag = 0;
-	@Field public ZSyntax              ParentPattern = null;
-	@Field public boolean IsDisabled          = false;
-	@Field public boolean IsStatement         = false;
+	@BField public ZNameSpace	              PackageNameSpace;
+	@BField public String		              PatternName;
+	@BField public BMatchFunction              MatchFunc;
+	@BField public int				          SyntaxFlag = 0;
+	@BField public ZSyntax              ParentPattern = null;
+	@BField public boolean IsDisabled          = false;
+	@BField public boolean IsStatement         = false;
 
-	public ZSyntax(ZNameSpace NameSpace, String PatternName, ZMatchFunction MatchFunc) {
+	public ZSyntax(ZNameSpace NameSpace, String PatternName, BMatchFunction MatchFunc) {
 		this.PackageNameSpace = NameSpace;
 		this.PatternName = PatternName;
 		this.MatchFunc = MatchFunc;
@@ -53,13 +53,13 @@ public final class ZSyntax {
 	}
 
 	public final boolean IsBinaryOperator() {
-		return LibZen._IsFlag(this.SyntaxFlag, ZSyntax._BinaryOperator);
+		return BLib._IsFlag(this.SyntaxFlag, ZSyntax._BinaryOperator);
 	}
 
 	public final boolean IsRightJoin(ZSyntax Right) {
 		@Var int left = this.SyntaxFlag;
 		@Var int right = Right.SyntaxFlag;
-		return (left < right || (left == right && !LibZen._IsFlag(left, ZSyntax._LeftJoin) && !LibZen._IsFlag(right, ZSyntax._LeftJoin)));
+		return (left < right || (left == right && !BLib._IsFlag(left, ZSyntax._LeftJoin) && !BLib._IsFlag(right, ZSyntax._LeftJoin)));
 	}
 
 	//	public final boolean EqualsName(String Name) {

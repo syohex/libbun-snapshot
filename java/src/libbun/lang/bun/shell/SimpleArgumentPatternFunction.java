@@ -2,15 +2,15 @@ package libbun.lang.bun.shell;
 
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.BStringNode;
-import libbun.util.LibZen;
+import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.ZArray;
-import libbun.util.ZMatchFunction;
+import libbun.util.BArray;
+import libbun.util.BMatchFunction;
 import libbun.parser.ZPatternToken;
 import libbun.parser.ZToken;
 import libbun.parser.ZTokenContext;
 
-public class SimpleArgumentPatternFunction extends ZMatchFunction {	// subset of CommandArgPatternFunc
+public class SimpleArgumentPatternFunction extends BMatchFunction {	// subset of CommandArgPatternFunc
 	public final static String _PatternName = "$CommandArg$";
 
 	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
@@ -19,13 +19,13 @@ public class SimpleArgumentPatternFunction extends ZMatchFunction {	// subset of
 		}
 		@Var boolean FoundSubstitution = false;
 		@Var boolean FoundEscape = false;
-		@Var ZArray<ZToken> TokenList = new ZArray<ZToken>(new ZToken[]{});
-		@Var ZArray<BNode> NodeList = new ZArray<BNode>(new BNode[]{});
+		@Var BArray<ZToken> TokenList = new BArray<ZToken>(new ZToken[]{});
+		@Var BArray<BNode> NodeList = new BArray<BNode>(new BNode[]{});
 		while(!ShellUtils._MatchStopToken(TokenContext)) {
 			@Var ZToken Token = TokenContext.GetToken(ZTokenContext._MoveNext);
 			if(Token instanceof ZPatternToken && ((ZPatternToken)Token).PresetPattern.equals("$StringLiteral$")) {
 				this.Flush(TokenContext, NodeList, TokenList);
-				NodeList.add(new BStringNode(ParentNode, null, LibZen._UnquoteString(Token.GetText())));
+				NodeList.add(new BStringNode(ParentNode, null, BLib._UnquoteString(Token.GetText())));
 			}
 			else {
 				TokenList.add(Token);
@@ -48,7 +48,7 @@ public class SimpleArgumentPatternFunction extends ZMatchFunction {	// subset of
 		return false;
 	}
 
-	private void Flush(ZTokenContext TokenContext, ZArray<BNode> NodeList, ZArray<ZToken> TokenList) {
+	private void Flush(ZTokenContext TokenContext, BArray<BNode> NodeList, BArray<ZToken> TokenList) {
 		@Var int size = TokenList.size();
 		if(size == 0) {
 			return;
@@ -57,14 +57,14 @@ public class SimpleArgumentPatternFunction extends ZMatchFunction {	// subset of
 		@Var int EndIndex = 0;
 		for(int i = 0; i < size; i++) {
 			if(i == 0) {
-				StartIndex = ZArray.GetIndex(TokenList, i).StartIndex;
+				StartIndex = BArray.GetIndex(TokenList, i).StartIndex;
 			}
 			if(i == size - 1) {
-				EndIndex = ZArray.GetIndex(TokenList, i).EndIndex;
+				EndIndex = BArray.GetIndex(TokenList, i).EndIndex;
 			}
 		}
 		@Var ZToken Token = new ZToken(TokenContext.Source, StartIndex, EndIndex);
-		NodeList.add(new BStringNode(null, Token, LibZen._UnquoteString(this.ResolveHome(Token.GetText()))));
+		NodeList.add(new BStringNode(null, Token, BLib._UnquoteString(this.ResolveHome(Token.GetText()))));
 		TokenList.clear(0);
 	}
 

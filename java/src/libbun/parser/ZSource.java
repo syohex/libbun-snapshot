@@ -1,16 +1,16 @@
 package libbun.parser;
 
-import libbun.util.Field;
-import libbun.util.LibZen;
+import libbun.util.BField;
+import libbun.util.BLib;
 import libbun.util.Var;
 
 public class ZSource {
 
-	@Field public final ZTokenContext TokenContext;
-	@Field public final ZLogger Logger;
-	@Field String FileName;
-	@Field int    LineNumber;
-	@Field String  SourceText;
+	@BField public final ZTokenContext TokenContext;
+	@BField public final ZLogger Logger;
+	@BField String FileName;
+	@BField int    LineNumber;
+	@BField String  SourceText;
 
 	ZSource() {
 		this.FileName = null;
@@ -32,7 +32,7 @@ public class ZSource {
 		@Var int LineNumber = this.LineNumber;
 		@Var int i = 0;
 		while(i < Position) {
-			@Var char ch = LibZen._GetChar(this.SourceText, i);
+			@Var char ch = BLib._GetChar(this.SourceText, i);
 			if(ch == '\n') {
 				LineNumber = LineNumber + 1;
 			}
@@ -49,7 +49,7 @@ public class ZSource {
 			i = s.length() - 1;
 		}
 		while(i >= 0) {
-			@Var char ch = LibZen._GetChar(s, i);
+			@Var char ch = BLib._GetChar(s, i);
 			if(ch == '\n') {
 				StartIndex = i + 1;
 				break;
@@ -64,7 +64,7 @@ public class ZSource {
 		@Var int length = 0;
 		@Var int i = Position;
 		while(i < s.length()) {
-			@Var char ch = LibZen._GetChar(s, i);
+			@Var char ch = BLib._GetChar(s, i);
 			if(ch == '\t') {
 				length = length + 8;
 			}
@@ -88,7 +88,7 @@ public class ZSource {
 			i = s.length() - 1;
 		}
 		while(i >= 0) {
-			@Var char ch = LibZen._GetChar(s, i);
+			@Var char ch = BLib._GetChar(s, i);
 			if(ch == '\n') {
 				StartIndex = i + 1;
 				break;
@@ -97,7 +97,7 @@ public class ZSource {
 		}
 		i = Position;
 		while(i < s.length()) {
-			@Var char ch = LibZen._GetChar(s, i);
+			@Var char ch = BLib._GetChar(s, i);
 			if(ch == '\n') {
 				EndIndex = i;
 				break;
@@ -115,7 +115,7 @@ public class ZSource {
 			i = s.length() - 1;
 		}
 		while(i >= 0) {
-			@Var char ch = LibZen._GetChar(s, i);
+			@Var char ch = BLib._GetChar(s, i);
 			if(ch == '\n') {
 				StartIndex = i + 1;
 				break;
@@ -125,7 +125,7 @@ public class ZSource {
 		@Var String Line = "";
 		i = StartIndex;
 		while(i < Position) {
-			@Var char ch = LibZen._GetChar(s, i);
+			@Var char ch = BLib._GetChar(s, i);
 			if(ch == '\n') {
 				break;
 			}
@@ -158,7 +158,7 @@ public class ZSource {
 
 	public final char GetCharAt(int n) {
 		if(0 <= n && n < this.SourceText.length()) {
-			return LibZen._GetChar(this.SourceText, n);
+			return BLib._GetChar(this.SourceText, n);
 		}
 		return '\0';
 	}
