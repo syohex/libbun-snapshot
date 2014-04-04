@@ -69,6 +69,7 @@ import libbun.parser.ast.BIntNode;
 import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.BNullNode;
+import libbun.parser.ast.BSetNameNode;
 import libbun.parser.ast.BStringNode;
 import libbun.parser.ast.ZAndNode;
 import libbun.parser.ast.ZArrayLiteralNode;
@@ -98,7 +99,6 @@ import libbun.parser.ast.ZNotNode;
 import libbun.parser.ast.ZOrNode;
 import libbun.parser.ast.ZReturnNode;
 import libbun.parser.ast.ZSetIndexNode;
-import libbun.parser.ast.BSetNameNode;
 import libbun.parser.ast.ZSetterNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTopLevelNode;
@@ -510,8 +510,9 @@ public class AsmJavaGenerator extends ZGenerator {
 	}
 
 	@Override public void VisitSetNameNode(BSetNameNode Node) {
-		this.AsmBuilder.PushNode(this.AsmBuilder.GetLocalType(Node.GetName()), Node.ExprNode());
-		this.AsmBuilder.StoreLocal(Node.GetName());
+		@Var String Name = Node.NameNode().GetUniqueName(this);
+		this.AsmBuilder.PushNode(this.AsmBuilder.GetLocalType(Name), Node.ExprNode());
+		this.AsmBuilder.StoreLocal(Name);
 	}
 
 	@Override public void VisitGroupNode(ZGroupNode Node) {

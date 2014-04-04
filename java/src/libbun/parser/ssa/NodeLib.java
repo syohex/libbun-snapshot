@@ -1,5 +1,6 @@
 package libbun.parser.ssa;
 
+import libbun.parser.ZGenerator;
 import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.BSetNameNode;
@@ -43,7 +44,7 @@ public class NodeLib {
 		return ZType.VarType;
 	}
 
-	static public String GetVarName(BNode Node) {
+	static public String GetVarName(BNode Node, ZGenerator Generator) {
 		if(Node instanceof BLetVarNode) {
 			BLetVarNode LNode = (BLetVarNode) Node;
 			return LNode.GetGivenName();
@@ -54,7 +55,7 @@ public class NodeLib {
 		}
 		else if(Node instanceof BSetNameNode) {
 			BSetNameNode SNode = (BSetNameNode) Node;
-			return SNode.GetName();
+			return SNode.NameNode().GetUniqueName(Generator);
 		}
 		else if(Node instanceof PHINode) {
 			PHINode PNode = (PHINode) Node;
@@ -72,7 +73,7 @@ public class NodeLib {
 		}
 		else if(Node instanceof BSetNameNode) {
 			BSetNameNode SNode = (BSetNameNode) Node;
-			return SNode.VarIndex;
+			return SNode.NameNode().VarIndex;
 		}
 		else if(Node instanceof PHINode) {
 			PHINode PNode = (PHINode) Node;
