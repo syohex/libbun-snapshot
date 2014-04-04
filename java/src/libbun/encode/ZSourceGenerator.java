@@ -35,7 +35,7 @@ import libbun.ast.binary.BBinaryNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BOrNode;
 import libbun.ast.binary.BAndNode;
-import libbun.ast.binary.ZComparatorNode;
+import libbun.ast.binary.BComparatorNode;
 import libbun.ast.decl.BClassNode;
 import libbun.ast.decl.BFunctionNode;
 import libbun.ast.decl.BLetVarNode;
@@ -555,7 +555,7 @@ public class ZSourceGenerator extends BGenerator {
 		}
 	}
 
-	@Override public void VisitComparatorNode(ZComparatorNode Node) {
+	@Override public void VisitComparatorNode(BComparatorNode Node) {
 		this.GenerateCode(null, Node.LeftNode());
 		this.CurrentBuilder.AppendToken(this.GetBinaryOperator(Node.Type, Node.SourceToken));
 		this.GenerateCode(null, Node.RightNode());

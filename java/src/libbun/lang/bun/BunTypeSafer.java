@@ -33,7 +33,7 @@ import libbun.ast.binary.BBinaryNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BOrNode;
 import libbun.ast.binary.BAndNode;
-import libbun.ast.binary.ZComparatorNode;
+import libbun.ast.binary.BComparatorNode;
 import libbun.ast.decl.BClassNode;
 import libbun.ast.decl.BFunctionNode;
 import libbun.ast.decl.BLetVarNode;
@@ -564,7 +564,7 @@ public class BunTypeSafer extends BTypeChecker {
 		this.ReturnTypeNode(Node.TryMacroNode(this.Generator), Node.GetAstType(BBinaryNode._Left));
 	}
 
-	@Override public void VisitComparatorNode(ZComparatorNode Node) {
+	@Override public void VisitComparatorNode(BComparatorNode Node) {
 		this.CheckTypeAt(Node, BBinaryNode._Left, BType.VarType);
 		this.TryTypeAt(Node, BBinaryNode._Right, Node.GetAstType(BBinaryNode._Left));
 		this.UnifyBinaryNodeType(Node, BType.FloatType);

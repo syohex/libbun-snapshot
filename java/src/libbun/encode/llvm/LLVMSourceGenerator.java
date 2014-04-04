@@ -37,7 +37,7 @@ import libbun.ast.binary.BBinaryNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BOrNode;
 import libbun.ast.binary.BAndNode;
-import libbun.ast.binary.ZComparatorNode;
+import libbun.ast.binary.BComparatorNode;
 import libbun.ast.decl.BClassNode;
 import libbun.ast.decl.BFunctionNode;
 import libbun.ast.decl.BLetVarNode;
@@ -387,7 +387,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		BLogger._LogError(Node.SourceToken, "Unknown binary \"" + Binary + "\" for this type");
 		return null;
 	}
-	private String GetCompareOpCodeAndCondition(ZComparatorNode Node) {
+	private String GetCompareOpCodeAndCondition(BComparatorNode Node) {
 		if(Node.IsUntyped()) {
 			BLogger._LogError(Node.SourceToken, "Comparator is untyped");
 			return null;
@@ -698,7 +698,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitComparatorNode(ZComparatorNode Node) {
+	public void VisitComparatorNode(BComparatorNode Node) {
 		this.GenerateCode(null, Node.LeftNode());
 		@Var String Left = this.CurrentScope.PopValue();
 		this.GenerateCode(null, Node.RightNode());

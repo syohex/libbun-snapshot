@@ -15,7 +15,7 @@ import libbun.util.BArray;
 public class ShellUtils {
 	// suffix option symbol
 	public final static String _background = "&";
-	// prefix option symbol 
+	// prefix option symbol
 	public final static String _timeout = "timeout";
 	public final static String _trace = "trace";
 
@@ -31,7 +31,7 @@ public class ShellUtils {
 		if(Token.IsIndent() || Token.EqualsText(";")) {
 			return true;
 		}
-		if(Token.EqualsText(",") || Token.EqualsText(")") || Token.EqualsText("]") || 
+		if(Token.EqualsText(",") || Token.EqualsText(")") || Token.EqualsText("]") ||
 				Token.EqualsText("}") || Token.EqualsText("&&") || Token.EqualsText("||") || Token.EqualsText("`")) {
 			return true;
 		}
@@ -44,7 +44,7 @@ public class ShellUtils {
 		BSyntax Pattern = TokenContext.NameSpace.GetRightSyntaxPattern("+");
 		BToken PlusToken = new BToken(new BSource(Token.GetFileName(), Token.GetLineNumber(), "+", TokenContext), 0, "+".length());
 		for(BNode CurrentNode : NodeList.ArrayValues) {
-			BBinaryNode BinaryNode = new BBinaryNode(ParentNode, PlusToken, Node, Pattern);
+			BBinaryNode BinaryNode = new BBinaryNode(ParentNode, PlusToken, Node, Pattern.SyntaxFlag);
 			BinaryNode.SetNode(BBinaryNode._Right, CurrentNode);
 			Node = BinaryNode;
 		}

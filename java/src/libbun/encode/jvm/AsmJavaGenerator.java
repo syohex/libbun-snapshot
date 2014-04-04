@@ -64,7 +64,7 @@ import libbun.ast.binary.BBinaryNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BOrNode;
 import libbun.ast.binary.BAndNode;
-import libbun.ast.binary.ZComparatorNode;
+import libbun.ast.binary.BComparatorNode;
 import libbun.ast.decl.BClassNode;
 import libbun.ast.decl.BFunctionNode;
 import libbun.ast.decl.BLetVarNode;
@@ -688,7 +688,7 @@ public class AsmJavaGenerator extends BGenerator {
 		this.AsmBuilder.ApplyStaticMethod(Node, sMethod, new BNode[] {Node.LeftNode(), Node.RightNode()});
 	}
 
-	@Override public void VisitComparatorNode(ZComparatorNode Node) {
+	@Override public void VisitComparatorNode(BComparatorNode Node) {
 		Method sMethod = JavaMethodTable.GetBinaryStaticMethod(Node.LeftNode().Type, Node.SourceToken.GetText(), Node.RightNode().Type);
 		this.AsmBuilder.ApplyStaticMethod(Node, sMethod, new BNode[] {Node.LeftNode(), Node.RightNode()});
 	}

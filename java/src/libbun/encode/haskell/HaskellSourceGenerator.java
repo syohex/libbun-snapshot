@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import libbun.ast.BBlockNode;
 import libbun.ast.BNode;
 import libbun.ast.binary.BBinaryNode;
-import libbun.ast.binary.ZComparatorNode;
+import libbun.ast.binary.BComparatorNode;
 import libbun.ast.decl.BFunctionNode;
 import libbun.ast.decl.BLetVarNode;
 import libbun.ast.expression.BFuncCallNode;
@@ -267,7 +267,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitComparatorNode(ZComparatorNode Node) {
+	@Override public void VisitComparatorNode(BComparatorNode Node) {
 		String Op = this.ZenOpToHaskellOp(Node.SourceToken.GetText());
 
 		this.CurrentBuilder.Append("(");

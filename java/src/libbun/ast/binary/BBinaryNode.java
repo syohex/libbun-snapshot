@@ -43,11 +43,10 @@ public class BBinaryNode extends BNode {
 	//	@BField public BSyntax Pattern;
 	@BField public int Precedence = 0;
 
-	public BBinaryNode(BNode ParentNode, BToken SourceToken, BNode Left, BSyntax Pattern) {
+	public BBinaryNode(BNode ParentNode, BToken SourceToken, BNode Left, int Precedence) {
 		super(ParentNode, SourceToken, 2);
 		this.SetNode(BBinaryNode._Left, Left);
-		assert(Pattern != null);
-		this.Precedence = Pattern.SyntaxFlag;
+		this.Precedence = Precedence;
 	}
 
 	public final BNode LeftNode() {

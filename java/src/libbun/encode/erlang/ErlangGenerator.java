@@ -7,7 +7,7 @@ import libbun.ast.BNode;
 import libbun.ast.binary.BBinaryNode;
 import libbun.ast.binary.BOrNode;
 import libbun.ast.binary.BAndNode;
-import libbun.ast.binary.ZComparatorNode;
+import libbun.ast.binary.BComparatorNode;
 import libbun.ast.decl.BClassNode;
 import libbun.ast.decl.BFunctionNode;
 import libbun.ast.decl.BLetVarNode;
@@ -326,7 +326,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitComparatorNode(ZComparatorNode Node) {
+	@Override public void VisitComparatorNode(BComparatorNode Node) {
 		this.GenerateCode(null, Node.LeftNode());
 		@Var String Operator = this.GetBinaryOperator(Node.Type, Node.SourceToken);
 		this.CurrentBuilder.AppendToken(Operator);

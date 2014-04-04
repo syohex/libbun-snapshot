@@ -26,13 +26,12 @@ package libbun.ast.binary;
 
 
 import libbun.ast.BNode;
-import libbun.parser.BSyntax;
 import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 
 public final class BAndNode extends BBinaryNode {
-	public BAndNode(BNode ParentNode, BToken Token, BNode Left, BSyntax Pattern) {
-		super(ParentNode, Token, Left, Pattern);
+	public BAndNode(BNode ParentNode, BToken Token, BNode Left, int Precedence) {
+		super(ParentNode, Token, Left, Precedence);
 	}
 	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitAndNode(this);

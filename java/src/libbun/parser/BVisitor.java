@@ -32,7 +32,7 @@ import libbun.ast.binary.BBinaryNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BOrNode;
 import libbun.ast.binary.BAndNode;
-import libbun.ast.binary.ZComparatorNode;
+import libbun.ast.binary.BComparatorNode;
 import libbun.ast.decl.BClassNode;
 import libbun.ast.decl.BFunctionNode;
 import libbun.ast.decl.BLetVarNode;
@@ -94,7 +94,7 @@ public abstract class BVisitor {
 	public abstract void VisitCastNode(BCastNode Node);
 	public abstract void VisitInstanceOfNode(BInstanceOfNode Node);
 	public abstract void VisitBinaryNode(BBinaryNode Node);
-	public abstract void VisitComparatorNode(ZComparatorNode Node);
+	public abstract void VisitComparatorNode(BComparatorNode Node);
 	public abstract void VisitAndNode(BAndNode Node);
 	public abstract void VisitOrNode(BOrNode Node);
 	public abstract void VisitBlockNode(BBlockNode Node);
