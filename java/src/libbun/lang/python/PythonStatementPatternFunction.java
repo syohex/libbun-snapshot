@@ -1,8 +1,8 @@
 package libbun.lang.python;
 
+import libbun.ast.BNode;
 import libbun.lang.bun.ExpressionPatternFunction;
 import libbun.parser.BTokenContext;
-import libbun.parser.ast.BNode;
 import libbun.util.BMatchFunction;
 import libbun.util.Var;
 
