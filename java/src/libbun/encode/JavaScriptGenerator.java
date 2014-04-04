@@ -118,15 +118,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		}
 	}
 
-	//	@Override public void VisitCatchNode(ZCatchNode Node) {
-	//		this.CurrentBuilder.Append("catch");
-	//		this.CurrentBuilder.AppendWhiteSpace();
-	//		this.CurrentBuilder.Append(Node.GivenName);
-	//		this.GenerateCode(null, Node.AST[ZCatchNode._Block]);
-	//	}
-
-	@Override
-	protected void VisitVarDeclNode(BLetVarNode Node) {
+	@Override protected void VisitVarDeclNode(BLetVarNode Node) {
 		this.CurrentBuilder.AppendToken("var");
 		this.CurrentBuilder.AppendWhiteSpace();
 		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
@@ -168,7 +160,6 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 			this.CurrentBuilder.Append("function ");
 			if(Node.IsExport) {
 				this.CurrentBuilder.Append(Node.FuncName());
-				this.CurrentBuilder.AppendLineFeed();
 				if(Node.FuncName().equals("main")) {
 					this.HasMainFunction = true;
 				}
@@ -218,8 +209,8 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 					this.CurrentBuilder.Append("}");
 				}
 			}
-			this.CurrentBuilder.AppendLineFeed();
-			this.CurrentBuilder.AppendLineFeed();
+			//			this.CurrentBuilder.AppendLineFeed();
+			//			this.CurrentBuilder.AppendLineFeed();
 		}
 	}
 
@@ -291,7 +282,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 	@Override public void VisitLetNode(BLetVarNode Node) {
 		this.CurrentBuilder.AppendNewLine("var ", Node.GetUniqueName(this), " = ");
 		this.GenerateCode(null, Node.InitValueNode());
-		this.CurrentBuilder.Append(this.SemiColon);
+		//this.CurrentBuilder.Append(this.SemiColon);
 	}
 
 	private void GenerateExtendCode(ZClassNode Node) {
