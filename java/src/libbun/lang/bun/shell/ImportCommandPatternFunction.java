@@ -4,10 +4,13 @@ import java.util.ArrayList;
 
 import libbun.ast.BNode;
 import libbun.ast.ZEmptyNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.literal.BStringNode;
 import libbun.parser.BNameSpace;
 import libbun.parser.BSyntax;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
+import libbun.type.BType;
 import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
@@ -69,9 +72,9 @@ public class ImportCommandPatternFunction extends BMatchFunction {
 			}
 			return;
 		}
-		// FIXME:: SetSymbol was changed to accept only BLetVarBode
-		throw new RuntimeException("// FIXME:: SetSymbol was changed to accept only BLetVarBode ");
-		//NameSpace.SetSymbol(ShellUtils._ToCommandSymbol(Command), new BStringNode(ParentNode, null, CommandPath));
+		BLetVarNode Node = new BLetVarNode(ParentNode, BLetVarNode._IsReadOnly, BType.StringType, Command);
+		Node.SetNode(BLetVarNode._InitValue, new BStringNode(ParentNode, null, CommandPath));
+		NameSpace.SetSymbol(ShellUtils._ToCommandSymbol(Command), Node);
 	}
 
 	@Override
