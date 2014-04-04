@@ -24,32 +24,32 @@
 
 package libbun.encode;
 
+import libbun.ast.BArrayLiteralNode;
+import libbun.ast.BBlockNode;
+import libbun.ast.BBreakNode;
+import libbun.ast.BErrorNode;
+import libbun.ast.BFunctionNode;
+import libbun.ast.BGetIndexNode;
+import libbun.ast.BGroupNode;
+import libbun.ast.BIfNode;
+import libbun.ast.BLetVarNode;
+import libbun.ast.BNode;
+import libbun.ast.BReturnNode;
+import libbun.ast.BSetIndexNode;
+import libbun.ast.BSetNameNode;
+import libbun.ast.BThrowNode;
+import libbun.ast.BTryNode;
+import libbun.ast.BWhileNode;
+import libbun.ast.ZFuncCallNode;
+import libbun.ast.ZFuncNameNode;
+import libbun.ast.ZVarBlockNode;
+import libbun.ast.binary.BBinaryNode;
+import libbun.ast.binary.BNotNode;
+import libbun.ast.binary.BOrNode;
+import libbun.ast.binary.BUnaryNode;
+import libbun.ast.binary.BAndNode;
+import libbun.ast.binary.ZComparatorNode;
 import libbun.parser.BToken;
-import libbun.parser.ast.BLetVarNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.BSetNameNode;
-import libbun.parser.ast.ZAndNode;
-import libbun.parser.ast.ZArrayLiteralNode;
-import libbun.parser.ast.ZBinaryNode;
-import libbun.parser.ast.ZBlockNode;
-import libbun.parser.ast.ZBreakNode;
-import libbun.parser.ast.ZComparatorNode;
-import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.ZFuncCallNode;
-import libbun.parser.ast.ZFuncNameNode;
-import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZGetIndexNode;
-import libbun.parser.ast.ZGroupNode;
-import libbun.parser.ast.ZIfNode;
-import libbun.parser.ast.ZNotNode;
-import libbun.parser.ast.ZOrNode;
-import libbun.parser.ast.ZReturnNode;
-import libbun.parser.ast.ZSetIndexNode;
-import libbun.parser.ast.ZThrowNode;
-import libbun.parser.ast.ZTryNode;
-import libbun.parser.ast.ZUnaryNode;
-import libbun.parser.ast.ZVarBlockNode;
-import libbun.parser.ast.ZWhileNode;
 import libbun.type.BFuncType;
 import libbun.type.BType;
 import libbun.util.Var;
@@ -89,7 +89,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitUnaryNode(ZUnaryNode Node) {
+	@Override public void VisitUnaryNode(BUnaryNode Node) {
 		this.CurrentBuilder.Append("(");
 		this.CurrentBuilder.Append(Node.SourceToken.GetText());
 		this.CurrentBuilder.Append(" ");
@@ -114,7 +114,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		return Token.GetText();
 	}
 
-	@Override public void VisitBinaryNode(ZBinaryNode Node) {
+	@Override public void VisitBinaryNode(BBinaryNode Node) {
 		this.CurrentBuilder.Append("(");
 		this.CurrentBuilder.Append(Node.SourceToken.GetText());
 		this.CurrentBuilder.Append(" ");
@@ -134,7 +134,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitAndNode(ZAndNode Node) {
+	@Override public void VisitAndNode(BAndNode Node) {
 		this.CurrentBuilder.Append("(and ");
 		this.GenerateCode(null, Node.LeftNode());
 		this.CurrentBuilder.Append(" ");
@@ -142,7 +142,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitOrNode(ZOrNode Node) {
+	@Override public void VisitOrNode(BOrNode Node) {
 		this.CurrentBuilder.Append("(or ");
 		this.GenerateCode(null, Node.LeftNode());
 		this.CurrentBuilder.Append(" ");
@@ -153,7 +153,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 	//
 	// Visitor API
 	//
-	@Override public void VisitWhileNode(ZWhileNode Node) {
+	@Override public void VisitWhileNode(BWhileNode Node) {
 		this.CurrentBuilder.Append("(loop while ");
 		this.GenerateCode(null, Node.CondNode());
 		this.CurrentBuilder.AppendNewLine();
@@ -175,7 +175,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	protected void VisitStmtList(ZBlockNode BlockNode) {
+	protected void VisitStmtList(BBlockNode BlockNode) {
 		@Var int Size = BlockNode.GetListSize();
 		if(Size == 0) {
 			this.CurrentBuilder.Append("()");
@@ -195,7 +195,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitBlockNode(ZBlockNode Node) {
+	@Override public void VisitBlockNode(BBlockNode Node) {
 		this.VisitStmtList(Node);
 	}
 
@@ -218,7 +218,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 	//		this.CurrentBuilder.Append(")");
 	//	}
 
-	@Override public void VisitIfNode(ZIfNode Node) {
+	@Override public void VisitIfNode(BIfNode Node) {
 		this.CurrentBuilder.Append("(if  ");
 		this.GenerateCode(null, Node.CondNode());
 		this.CurrentBuilder.Append(" ");
@@ -247,18 +247,18 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
-	private ZFunctionNode LookupFunctionNode(BNode Node) {
+	private BFunctionNode LookupFunctionNode(BNode Node) {
 		while(Node != null) {
-			if(Node instanceof ZFunctionNode) {
-				return (ZFunctionNode)Node;
+			if(Node instanceof BFunctionNode) {
+				return (BFunctionNode)Node;
 			}
 			Node = Node.ParentNode;
 		}
 		return null;
 	}
 
-	@Override public void VisitReturnNode(ZReturnNode Node) {
-		@Var ZFunctionNode FuncNode = this.LookupFunctionNode(Node);
+	@Override public void VisitReturnNode(BReturnNode Node) {
+		@Var BFunctionNode FuncNode = this.LookupFunctionNode(Node);
 		if(FuncNode != null) {
 			this.CurrentBuilder.Append("(return-from ", FuncNode.GetSignature(), " ");
 		}
@@ -278,7 +278,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 	}
 
-	@Override public void VisitFunctionNode(ZFunctionNode Node) {
+	@Override public void VisitFunctionNode(BFunctionNode Node) {
 		if(!Node.IsTopLevelDefineFunction()) {
 			this.CurrentBuilder.Append("#'(lambda ");
 			this.VisitFuncParamNode("(", Node, ")");
@@ -306,13 +306,13 @@ public class CommonLispGenerator extends ZSourceGenerator {
 	}
 
 
-	@Override public void VisitErrorNode(ZErrorNode Node) {
+	@Override public void VisitErrorNode(BErrorNode Node) {
 		this.CurrentBuilder.Append("(error ");
 		this.CurrentBuilder.Append(Node.ErrorMessage);
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitTryNode(ZTryNode Node) {
+	@Override public void VisitTryNode(BTryNode Node) {
 		this.CurrentBuilder.Append("(unwind-protect ");
 		this.CurrentBuilder.Append("(handler-case ");
 		this.GenerateCode(null, Node.TryBlockNode());
@@ -337,11 +337,11 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitGroupNode(ZGroupNode Node) {
+	@Override public void VisitGroupNode(BGroupNode Node) {
 		this.GenerateCode2("", null, Node.ExprNode(), "");
 	}
 
-	@Override public void VisitNotNode(ZNotNode Node) {
+	@Override public void VisitNotNode(BNotNode Node) {
 		this.CurrentBuilder.Append("(");
 		this.CurrentBuilder.AppendToken(this.NotOperator);
 		this.GenerateSurroundCode(Node.RecvNode());
@@ -356,21 +356,21 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitThrowNode(ZThrowNode Node) {
+	@Override public void VisitThrowNode(BThrowNode Node) {
 		this.CurrentBuilder.Append("(throw nil ");
 		this.GenerateCode(null, Node.ExprNode());
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitBreakNode(ZBreakNode Node) {
+	@Override public void VisitBreakNode(BBreakNode Node) {
 		this.CurrentBuilder.Append("(return)");
 	}
 
-	@Override public void VisitArrayLiteralNode(ZArrayLiteralNode Node) {
+	@Override public void VisitArrayLiteralNode(BArrayLiteralNode Node) {
 		this.VisitListNode("#(", Node, ")");
 	}
 
-	@Override public void VisitGetIndexNode(ZGetIndexNode Node) {
+	@Override public void VisitGetIndexNode(BGetIndexNode Node) {
 		this.CurrentBuilder.Append("(aref ");
 		this.GenerateCode(null, Node.RecvNode());
 		this.CurrentBuilder.Append(" ");
@@ -378,7 +378,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitSetIndexNode(ZSetIndexNode Node) {
+	@Override public void VisitSetIndexNode(BSetIndexNode Node) {
 		this.CurrentBuilder.Append("(setf (aref ");
 		this.GenerateCode(null, Node.RecvNode());
 		this.CurrentBuilder.Append(" ");

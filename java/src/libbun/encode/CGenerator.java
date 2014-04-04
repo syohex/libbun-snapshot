@@ -25,24 +25,24 @@
 
 package libbun.encode;
 
+import libbun.ast.BArrayLiteralNode;
+import libbun.ast.BFunctionNode;
+import libbun.ast.BGetIndexNode;
+import libbun.ast.BGetterNode;
+import libbun.ast.BLetVarNode;
+import libbun.ast.BNewObjectNode;
+import libbun.ast.BNode;
+import libbun.ast.BSetIndexNode;
+import libbun.ast.BSetterNode;
+import libbun.ast.BThrowNode;
+import libbun.ast.BTryNode;
+import libbun.ast.ZClassNode;
+import libbun.ast.ZFuncCallNode;
+import libbun.ast.ZFuncNameNode;
+import libbun.ast.ZInstanceOfNode;
+import libbun.ast.ZMapLiteralNode;
+import libbun.ast.ZMethodCallNode;
 import libbun.parser.BLogger;
-import libbun.parser.ast.BLetVarNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.ZArrayLiteralNode;
-import libbun.parser.ast.ZClassNode;
-import libbun.parser.ast.ZFuncCallNode;
-import libbun.parser.ast.ZFuncNameNode;
-import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZGetIndexNode;
-import libbun.parser.ast.ZGetterNode;
-import libbun.parser.ast.ZInstanceOfNode;
-import libbun.parser.ast.ZMapLiteralNode;
-import libbun.parser.ast.ZMethodCallNode;
-import libbun.parser.ast.ZNewObjectNode;
-import libbun.parser.ast.ZSetIndexNode;
-import libbun.parser.ast.ZSetterNode;
-import libbun.parser.ast.ZThrowNode;
-import libbun.parser.ast.ZTryNode;
 import libbun.type.BClassField;
 import libbun.type.BClassType;
 import libbun.type.BFunc;
@@ -87,7 +87,7 @@ public class CGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitArrayLiteralNode(ZArrayLiteralNode Node) {
+	@Override public void VisitArrayLiteralNode(BArrayLiteralNode Node) {
 		@Var BType ParamType = Node.Type.GetParamType(0);
 		if(ParamType.IsIntType() || ParamType.IsBooleanType()) {
 			this.CurrentBuilder.Append("LibZen_NewIntArray(");
@@ -129,20 +129,20 @@ public class CGenerator extends ZSourceGenerator {
 		this.VisitListNode("", Node, ")");
 	}
 
-	@Override public void VisitNewObjectNode(ZNewObjectNode Node) {
+	@Override public void VisitNewObjectNode(BNewObjectNode Node) {
 		this.CurrentBuilder.Append("_New"+this.NameClass(Node.Type));
 		this.VisitListNode("(", Node, ")");
 	}
 
-	@Override public void VisitGetIndexNode(ZGetIndexNode Node) {
-		this.CurrentBuilder.Append(this.NameType(Node.GetAstType(ZGetIndexNode._Recv)) + "GetIndex");
+	@Override public void VisitGetIndexNode(BGetIndexNode Node) {
+		this.CurrentBuilder.Append(this.NameType(Node.GetAstType(BGetIndexNode._Recv)) + "GetIndex");
 		this.CurrentBuilder.Append("(");
 		this.GenerateCode(null, Node.IndexNode());
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitSetIndexNode(ZSetIndexNode Node) {
-		this.CurrentBuilder.Append(this.NameType(Node.GetAstType(ZGetIndexNode._Recv)) + "SetIndex");
+	@Override public void VisitSetIndexNode(BSetIndexNode Node) {
+		this.CurrentBuilder.Append(this.NameType(Node.GetAstType(BGetIndexNode._Recv)) + "SetIndex");
 		this.CurrentBuilder.Append("(");
 		this.GenerateCode(null, Node.IndexNode());
 		this.CurrentBuilder.Append(this.Camma);
@@ -150,13 +150,13 @@ public class CGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitGetterNode(ZGetterNode Node) {
+	@Override public void VisitGetterNode(BGetterNode Node) {
 		this.GenerateSurroundCode(Node.RecvNode());
 		this.CurrentBuilder.Append("->");
 		this.CurrentBuilder.Append(Node.GetName());
 	}
 
-	@Override public void VisitSetterNode(ZSetterNode Node) {
+	@Override public void VisitSetterNode(BSetterNode Node) {
 		this.GenerateSurroundCode(Node.RecvNode());
 		this.CurrentBuilder.Append("->");
 		this.CurrentBuilder.Append(Node.GetName());
@@ -189,13 +189,13 @@ public class CGenerator extends ZSourceGenerator {
 	//		this.GenerateSurroundCode(Node.ExprNode());
 	//	}
 
-	@Override public void VisitThrowNode(ZThrowNode Node) {
+	@Override public void VisitThrowNode(BThrowNode Node) {
 		this.GenerateCode(null, Node.ExprNode());
 		this.CurrentBuilder.Append("longjump(1)"); // FIXME
 		this.CurrentBuilder.AppendWhiteSpace();
 	}
 
-	@Override public void VisitTryNode(ZTryNode Node) {
+	@Override public void VisitTryNode(BTryNode Node) {
 		//		this.CurrentBuilder.Append("try");
 		//		this.GenerateCode(Node.TryNode());
 		//		if(Node.CatchNode() != null) {
@@ -305,7 +305,7 @@ public class CGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitFunctionNode(ZFunctionNode Node) {
+	@Override public void VisitFunctionNode(BFunctionNode Node) {
 		if(!Node.IsTopLevelDefineFunction()) {
 			@Var String FuncName = Node.GetUniqueName(this);
 			this.CurrentBuilder = this.InsertNewSourceBuilder();
@@ -340,7 +340,7 @@ public class CGenerator extends ZSourceGenerator {
 		}
 	}
 
-	private void GenerateExportFunction(ZFunctionNode Node) {
+	private void GenerateExportFunction(BFunctionNode Node) {
 		this.CurrentBuilder.AppendNewLine();
 		if(Node.FuncName().equals("main")) {
 			this.CurrentBuilder.Append("int");

@@ -1,9 +1,9 @@
 package libbun.lang.bun;
 
+import libbun.ast.BNode;
+import libbun.ast.ZEmptyNode;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
-import libbun.parser.ast.ZEmptyNode;
-import libbun.parser.ast.BNode;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
 

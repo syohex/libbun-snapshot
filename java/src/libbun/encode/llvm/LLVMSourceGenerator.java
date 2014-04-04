@@ -28,52 +28,52 @@ package libbun.encode.llvm;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import libbun.ast.BArrayLiteralNode;
+import libbun.ast.BBlockNode;
+import libbun.ast.BBooleanNode;
+import libbun.ast.BBreakNode;
+import libbun.ast.BCastNode;
+import libbun.ast.BConstNode;
+import libbun.ast.BErrorNode;
+import libbun.ast.BFloatNode;
+import libbun.ast.BFunctionNode;
+import libbun.ast.BGetIndexNode;
+import libbun.ast.BGetNameNode;
+import libbun.ast.BGetterNode;
+import libbun.ast.BGroupNode;
+import libbun.ast.BIfNode;
+import libbun.ast.BIntNode;
+import libbun.ast.BLetVarNode;
+import libbun.ast.BListNode;
+import libbun.ast.BNewObjectNode;
+import libbun.ast.BNode;
+import libbun.ast.BNullNode;
+import libbun.ast.BReturnNode;
+import libbun.ast.BSetIndexNode;
+import libbun.ast.BSetNameNode;
+import libbun.ast.BSetterNode;
+import libbun.ast.BStringNode;
+import libbun.ast.BThrowNode;
+import libbun.ast.BTryNode;
+import libbun.ast.BWhileNode;
+import libbun.ast.ZClassNode;
+import libbun.ast.ZFuncCallNode;
+import libbun.ast.ZFuncNameNode;
+import libbun.ast.ZInstanceOfNode;
+import libbun.ast.ZLocalDefinedNode;
+import libbun.ast.ZMacroNode;
+import libbun.ast.ZMapLiteralNode;
+import libbun.ast.ZMethodCallNode;
+import libbun.ast.ZVarBlockNode;
+import libbun.ast.binary.BBinaryNode;
+import libbun.ast.binary.BNotNode;
+import libbun.ast.binary.BOrNode;
+import libbun.ast.binary.BUnaryNode;
+import libbun.ast.binary.BAndNode;
+import libbun.ast.binary.ZComparatorNode;
 import libbun.encode.ZSourceBuilder;
 import libbun.encode.ZSourceGenerator;
 import libbun.parser.BLogger;
-import libbun.parser.ast.BBooleanNode;
-import libbun.parser.ast.BConstNode;
-import libbun.parser.ast.BFloatNode;
-import libbun.parser.ast.BGetNameNode;
-import libbun.parser.ast.BIntNode;
-import libbun.parser.ast.BLetVarNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.BNullNode;
-import libbun.parser.ast.BSetNameNode;
-import libbun.parser.ast.BStringNode;
-import libbun.parser.ast.ZAndNode;
-import libbun.parser.ast.ZArrayLiteralNode;
-import libbun.parser.ast.ZBinaryNode;
-import libbun.parser.ast.ZBlockNode;
-import libbun.parser.ast.ZBreakNode;
-import libbun.parser.ast.ZCastNode;
-import libbun.parser.ast.ZClassNode;
-import libbun.parser.ast.ZComparatorNode;
-import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.ZFuncCallNode;
-import libbun.parser.ast.ZFuncNameNode;
-import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZGetIndexNode;
-import libbun.parser.ast.ZGetterNode;
-import libbun.parser.ast.ZGroupNode;
-import libbun.parser.ast.ZIfNode;
-import libbun.parser.ast.ZInstanceOfNode;
-import libbun.parser.ast.ZListNode;
-import libbun.parser.ast.ZLocalDefinedNode;
-import libbun.parser.ast.ZMacroNode;
-import libbun.parser.ast.ZMapLiteralNode;
-import libbun.parser.ast.ZMethodCallNode;
-import libbun.parser.ast.ZNewObjectNode;
-import libbun.parser.ast.ZNotNode;
-import libbun.parser.ast.ZOrNode;
-import libbun.parser.ast.ZReturnNode;
-import libbun.parser.ast.ZSetIndexNode;
-import libbun.parser.ast.ZSetterNode;
-import libbun.parser.ast.ZThrowNode;
-import libbun.parser.ast.ZTryNode;
-import libbun.parser.ast.ZUnaryNode;
-import libbun.parser.ast.ZVarBlockNode;
-import libbun.parser.ast.ZWhileNode;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
 import libbun.type.BGenericType;
@@ -312,7 +312,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		return sb.toString();
 	}
 
-	private String GetBinaryOpcode(ZBinaryNode Node) {
+	private String GetBinaryOpcode(BBinaryNode Node) {
 		if(Node.IsUntyped()) {
 			BLogger._LogError(Node.SourceToken, "Binary is untyped");
 			return null;
@@ -514,7 +514,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitAndNode(ZAndNode Node) {
+	public void VisitAndNode(BAndNode Node) {
 		@Var int LabelNum = this.CurrentScope.GetTempLabelNumber();
 		@Var String RightLabel = "And__" + LabelNum + ".Right";
 		@Var String EndLabel = "And__" + LabelNum + ".End";
@@ -550,7 +550,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitArrayLiteralNode(ZArrayLiteralNode Node) {
+	public void VisitArrayLiteralNode(BArrayLiteralNode Node) {
 		@Var StringBuilder sb = new StringBuilder();
 		@Var String GlobalConst = this.CreateTempGlobalSymbol();
 		sb.append(GlobalConst);
@@ -580,7 +580,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitBinaryNode(ZBinaryNode Node) {
+	public void VisitBinaryNode(BBinaryNode Node) {
 		this.GenerateCode(null, Node.LeftNode());
 		@Var String Left = this.CurrentScope.PopValue();
 		this.GenerateCode(null, Node.RightNode());
@@ -612,13 +612,13 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitBreakNode(ZBreakNode Node) {
+	public void VisitBreakNode(BBreakNode Node) {
 		this.CurrentBuilder.AppendNewLine("br label %" + this.CurrentScope.PeekBreakLabel());
 		this.CurrentScope.TerminateBlock();
 	}
 
 	@Override
-	public void VisitBlockNode(ZBlockNode Node) {
+	public void VisitBlockNode(BBlockNode Node) {
 		this.VisitStmtList(Node);
 	}
 
@@ -631,7 +631,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitCastNode(ZCastNode Node) {
+	@Override public void VisitCastNode(BCastNode Node) {
 		/*FIXME*/
 		@Var BType BeforeType = Node.ExprNode().Type;
 		@Var BType AfterType = Node.Type;
@@ -747,7 +747,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitErrorNode(ZErrorNode Node) {
+	public void VisitErrorNode(BErrorNode Node) {
 	}
 
 	@Override
@@ -794,7 +794,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitFunctionNode(ZFunctionNode Node) {
+	@Override public void VisitFunctionNode(BFunctionNode Node) {
 		@Var LLVMScope PushedScope = this.CurrentScope;
 		this.CurrentScope = new LLVMScope();
 
@@ -863,7 +863,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitGetIndexNode(ZGetIndexNode Node) {
+	public void VisitGetIndexNode(BGetIndexNode Node) {
 		this.GetArrayElementPointer(Node.RecvNode(), Node.IndexNode());
 		@Var String Element = this.CurrentScope.PopValue();
 
@@ -898,7 +898,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitGetterNode(ZGetterNode Node) {
+	public void VisitGetterNode(BGetterNode Node) {
 		this.GetObjectElementPointer(Node.RecvNode(), Node.GetName());
 		@Var String Element = this.CurrentScope.PopValue();
 
@@ -937,12 +937,12 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	//	}
 
 	@Override
-	public void VisitGroupNode(ZGroupNode Node) {
+	public void VisitGroupNode(BGroupNode Node) {
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
 	@Override
-	public void VisitIfNode(ZIfNode Node) {
+	public void VisitIfNode(BIfNode Node) {
 		@Var int LabelNum = this.CurrentScope.GetTempLabelNumber();
 		@Var String ThenLabel = "If__" + LabelNum + ".Then";
 		@Var String ElseLabel = "If__" + LabelNum + ".Else";
@@ -1099,7 +1099,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitNewObjectNode(ZNewObjectNode Node) {
+	public void VisitNewObjectNode(BNewObjectNode Node) {
 		if(Node.Type instanceof BClassType) {
 			this.DeclareExtrnalFunction("GC_malloc", "i8*", "(i64)");
 			//this.DeclareExtrnalFunction("free", "void", "(i8*)");
@@ -1142,8 +1142,8 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitNotNode(ZNotNode Node) {
-		this.GenerateSurroundCode(Node.AST[ZNotNode._Recv]);
+	public void VisitNotNode(BNotNode Node) {
+		this.GenerateSurroundCode(Node.AST[BNotNode._Recv]);
 		@Var String Recv = this.CurrentScope.PopValue();
 
 		@Var String TempVar = this.CurrentScope.CreateTempLocalSymbol();
@@ -1151,7 +1151,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(" = ");
 		this.CurrentBuilder.Append("xor");
 		this.CurrentBuilder.Append(" ");
-		this.CurrentBuilder.Append(this.GetTypeExpr(Node.AST[ZNotNode._Recv].Type));
+		this.CurrentBuilder.Append(this.GetTypeExpr(Node.AST[BNotNode._Recv].Type));
 		this.CurrentBuilder.Append(" 1, ");
 		this.CurrentBuilder.Append(Recv);
 
@@ -1164,7 +1164,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitOrNode(ZOrNode Node) {
+	public void VisitOrNode(BOrNode Node) {
 		@Var int LabelNum = this.CurrentScope.GetTempLabelNumber();
 		@Var String RightLabel = "Or__" + LabelNum + ".Right";
 		@Var String EndLabel = "Or__" + LabelNum + ".End";
@@ -1205,7 +1205,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		this.CurrentScope.PushValue(this.ToLocalSymbol(SymbolName));
 	}
 
-	@Override public void VisitReturnNode(ZReturnNode Node) {
+	@Override public void VisitReturnNode(BReturnNode Node) {
 		if (Node.HasReturnExpr()) {
 			this.GenerateCode(null, Node.ExprNode());
 			@Var String Expr = this.CurrentScope.PopValue();
@@ -1222,7 +1222,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitSetIndexNode(ZSetIndexNode Node) {
+	public void VisitSetIndexNode(BSetIndexNode Node) {
 		this.GenerateCode(null, Node.ExprNode());
 		@Var String Expr = this.CurrentScope.PopValue();
 		this.GetArrayElementPointer(Node.RecvNode(), Node.IndexNode());
@@ -1273,7 +1273,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitSetterNode(ZSetterNode Node) {
+	public void VisitSetterNode(BSetterNode Node) {
 		this.GenerateCode(null, Node.ExprNode());
 		@Var String Expr = this.CurrentScope.PopValue();
 		this.GetObjectElementPointer(Node.RecvNode(), Node.GetName());
@@ -1291,17 +1291,17 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitThrowNode(ZThrowNode Node) {
+	public void VisitThrowNode(BThrowNode Node) {
 		// TODO
 	}
 
 	@Override
-	public void VisitTryNode(ZTryNode Node) {
+	public void VisitTryNode(BTryNode Node) {
 		// TODO
 	}
 
 	@Override
-	public void VisitUnaryNode(ZUnaryNode Node) {
+	public void VisitUnaryNode(BUnaryNode Node) {
 		this.GenerateCode(null, Node.RecvNode());
 		@Var String Recv = this.CurrentScope.PopValue();
 
@@ -1395,7 +1395,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitWhileNode(ZWhileNode Node) {
+	public void VisitWhileNode(BWhileNode Node) {
 		@Var int LabelNum = this.CurrentScope.GetTempLabelNumber();
 		@Var String CondLabel = "While__" + LabelNum + ".Cond";
 		@Var String BodyLabel = "While__" + LabelNum + ".Body";
@@ -1485,7 +1485,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitStmtList(ZBlockNode BlockNode) {
+	public void VisitStmtList(BBlockNode BlockNode) {
 		@Var int i = 0;
 		while (i < BlockNode.GetListSize()) {
 			@Var BNode SubNode = BlockNode.GetListAt(i);
@@ -1514,7 +1514,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	protected void VisitListNode(String OpenToken, ZListNode VargNode, String DelimToken, String CloseToken) {
+	protected void VisitListNode(String OpenToken, BListNode VargNode, String DelimToken, String CloseToken) {
 		@Var StringBuilder sb = new StringBuilder();
 		sb.append(OpenToken);
 		@Var int i = 0;

@@ -1,11 +1,11 @@
 package libbun.lang.bun.shell;
 
-import libbun.parser.ast.ZDesugarNode;
-import libbun.parser.ast.ZFuncCallNode;
-import libbun.parser.ast.BGetNameNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.BStringNode;
-import libbun.parser.ast.ZSugarNode;
+import libbun.ast.BGetNameNode;
+import libbun.ast.BNode;
+import libbun.ast.BStringNode;
+import libbun.ast.ZDesugarNode;
+import libbun.ast.ZFuncCallNode;
+import libbun.ast.ZSugarNode;
 import libbun.parser.BGenerator;
 import libbun.parser.BTypeChecker;
 import libbun.util.BField;

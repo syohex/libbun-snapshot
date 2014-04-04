@@ -1,7 +1,7 @@
 package libbun.lang.bun.shell;
 
-import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.BNode;
+import libbun.ast.BErrorNode;
+import libbun.ast.BNode;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
 import libbun.parser.BToken;
@@ -27,7 +27,7 @@ public class SuffixOptionPatternFunction extends BMatchFunction {
 			Node.AppendPipedNextNode((CommandNode)PipedNode);
 		}
 		if(!ShellUtils._MatchStopToken(TokenContext)) {
-			return new ZErrorNode(ParentNode, TokenContext.GetToken(), "not match stop token");
+			return new BErrorNode(ParentNode, TokenContext.GetToken(), "not match stop token");
 		}
 		return Node;
 	}

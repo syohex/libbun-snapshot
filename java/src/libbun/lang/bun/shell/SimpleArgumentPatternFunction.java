@@ -1,7 +1,7 @@
 package libbun.lang.bun.shell;
 
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.BStringNode;
+import libbun.ast.BNode;
+import libbun.ast.BStringNode;
 import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.BArray;

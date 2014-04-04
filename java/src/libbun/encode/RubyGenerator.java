@@ -3,13 +3,13 @@ package libbun.encode;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
-import libbun.parser.ast.ZBlockNode;
-import libbun.parser.ast.ZCastNode;
-import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZInstanceOfNode;
-import libbun.parser.ast.BLetVarNode;
-import libbun.parser.ast.ZThrowNode;
-import libbun.parser.ast.ZTryNode;
+import libbun.ast.BBlockNode;
+import libbun.ast.BCastNode;
+import libbun.ast.BFunctionNode;
+import libbun.ast.BLetVarNode;
+import libbun.ast.BThrowNode;
+import libbun.ast.BTryNode;
+import libbun.ast.ZInstanceOfNode;
 import libbun.type.BType;
 
 
@@ -56,7 +56,7 @@ public class RubyGenerator extends ZSourceGenerator {
 	//	}
 
 	@Override
-	public void VisitBlockNode(ZBlockNode Node) {
+	public void VisitBlockNode(BBlockNode Node) {
 		this.CurrentBuilder.Append("do");
 		this.CurrentBuilder.Indent();
 		throw new RuntimeException("FIXME: don't use for statement");
@@ -72,7 +72,7 @@ public class RubyGenerator extends ZSourceGenerator {
 		//		this.CurrentBuilder.Append("end");
 	}
 
-	@Override public void VisitCastNode(ZCastNode Node) {
+	@Override public void VisitCastNode(BCastNode Node) {
 		// Use method (like 1.to_s) in Ruby.
 	}
 
@@ -81,13 +81,13 @@ public class RubyGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitThrowNode(ZThrowNode Node) {
+	public void VisitThrowNode(BThrowNode Node) {
 		this.CurrentBuilder.Append("raise ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
 	@Override
-	public void VisitTryNode(ZTryNode Node) {
+	public void VisitTryNode(BTryNode Node) {
 		this.CurrentBuilder.Append("begin");
 		this.GenerateCode(null, Node.TryBlockNode());
 		if (Node.CatchBlockNode() != null) {
@@ -119,7 +119,7 @@ public class RubyGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(Node.GetGivenName());
 	}
 
-	@Override public void VisitFunctionNode(ZFunctionNode Node) {
+	@Override public void VisitFunctionNode(BFunctionNode Node) {
 		this.CurrentBuilder.Append("->");
 		this.VisitFuncParamNode("(", Node, ")");
 		this.GenerateCode(null, Node.BlockNode());

@@ -24,9 +24,9 @@
 
 
 package libbun.parser;
-import libbun.parser.ast.BLetVarNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.ZBlockNode;
+import libbun.ast.BBlockNode;
+import libbun.ast.BLetVarNode;
+import libbun.ast.BNode;
 import libbun.type.BClassType;
 import libbun.type.BType;
 import libbun.util.BField;
@@ -39,12 +39,12 @@ import libbun.util.BTokenFunction;
 
 public final class BNameSpace {
 	@BField public final BGenerator   Generator;
-	@BField public final ZBlockNode   BlockNode;
+	@BField public final BBlockNode   BlockNode;
 	@BField BTokenFuncChain[]       TokenMatrix = null;
 	@BField BMap<BSyntax>      SyntaxTable = null;
 	@BField BMap<BLetVarNode>  SymbolTable2 = null;
 
-	public BNameSpace(BGenerator Generator, ZBlockNode BlockNode) {
+	public BNameSpace(BGenerator Generator, BBlockNode BlockNode) {
 		this.BlockNode = BlockNode;   // rootname is null
 		this.Generator = Generator;
 		assert(this.Generator != null);
@@ -54,8 +54,8 @@ public final class BNameSpace {
 		if(this.BlockNode != null) {
 			@Var BNode Node = this.BlockNode.ParentNode;
 			while(Node != null) {
-				if(Node instanceof ZBlockNode) {
-					@Var ZBlockNode blockNode = (ZBlockNode)Node;
+				if(Node instanceof BBlockNode) {
+					@Var BBlockNode blockNode = (BBlockNode)Node;
 					if(blockNode.NullableNameSpace != null) {
 						return blockNode.NullableNameSpace;
 					}

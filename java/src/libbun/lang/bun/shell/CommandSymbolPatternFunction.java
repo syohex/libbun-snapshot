@@ -1,8 +1,8 @@
 package libbun.lang.bun.shell;
 
-import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.BStringNode;
+import libbun.ast.BErrorNode;
+import libbun.ast.BNode;
+import libbun.ast.BStringNode;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
 import libbun.parser.BToken;
@@ -15,7 +15,7 @@ public class CommandSymbolPatternFunction extends BMatchFunction {
 		@Var BToken CommandToken = TokenContext.GetToken(BTokenContext._MoveNext);
 		@Var BNode SymbolNode = ParentNode.GetNameSpace().GetSymbol(ShellUtils._ToCommandSymbol(CommandToken.GetText()));
 		if(SymbolNode == null || !(SymbolNode instanceof BStringNode)) {
-			return new ZErrorNode(ParentNode, CommandToken, "undefined command symbol");
+			return new BErrorNode(ParentNode, CommandToken, "undefined command symbol");
 		}
 		@Var String Command = ((BStringNode)SymbolNode).StringValue;
 		@Var CommandNode CommandNode = new CommandNode(ParentNode, CommandToken, Command);

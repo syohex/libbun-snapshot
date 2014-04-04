@@ -1,8 +1,8 @@
 package libbun.lang.konoha;
 
+import libbun.ast.BNode;
+import libbun.ast.sugar.ZContinueNode;
 import libbun.parser.BTokenContext;
-import libbun.parser.ast.BNode;
-import libbun.parser.sugar.ZContinueNode;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
 

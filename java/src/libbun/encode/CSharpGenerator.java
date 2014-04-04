@@ -1,24 +1,24 @@
 package libbun.encode;
 
+import libbun.ast.BArrayLiteralNode;
+import libbun.ast.BErrorNode;
+import libbun.ast.BFunctionNode;
+import libbun.ast.BGetIndexNode;
+import libbun.ast.BLetVarNode;
+import libbun.ast.BNewObjectNode;
+import libbun.ast.BNode;
+import libbun.ast.BNullNode;
+import libbun.ast.BReturnNode;
+import libbun.ast.BSetIndexNode;
+import libbun.ast.BThrowNode;
+import libbun.ast.BTryNode;
+import libbun.ast.ZClassNode;
+import libbun.ast.ZFuncNameNode;
+import libbun.ast.ZInstanceOfNode;
+import libbun.ast.ZMapEntryNode;
+import libbun.ast.ZMapLiteralNode;
+import libbun.ast.ZMethodCallNode;
 import libbun.parser.BLogger;
-import libbun.parser.ast.BLetVarNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.BNullNode;
-import libbun.parser.ast.ZArrayLiteralNode;
-import libbun.parser.ast.ZClassNode;
-import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.ZFuncNameNode;
-import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZGetIndexNode;
-import libbun.parser.ast.ZInstanceOfNode;
-import libbun.parser.ast.ZMapEntryNode;
-import libbun.parser.ast.ZMapLiteralNode;
-import libbun.parser.ast.ZMethodCallNode;
-import libbun.parser.ast.ZNewObjectNode;
-import libbun.parser.ast.ZReturnNode;
-import libbun.parser.ast.ZSetIndexNode;
-import libbun.parser.ast.ZThrowNode;
-import libbun.parser.ast.ZTryNode;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
 import libbun.type.BType;
@@ -31,8 +31,8 @@ import libbun.util.ZenMethod;
 
 public class CSharpGenerator extends ZSourceGenerator {
 
-	@BField private ZFunctionNode MainFuncNode = null;
-	@BField private final BArray<ZFunctionNode> ExportFunctionList = new BArray<ZFunctionNode>(new ZFunctionNode[4]);
+	@BField private BFunctionNode MainFuncNode = null;
+	@BField private final BArray<BFunctionNode> ExportFunctionList = new BArray<BFunctionNode>(new BFunctionNode[4]);
 
 	public CSharpGenerator() {
 		super("cs", "5.0");
@@ -96,7 +96,7 @@ public class CSharpGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitArrayLiteralNode(ZArrayLiteralNode Node) {
+	@Override public void VisitArrayLiteralNode(BArrayLiteralNode Node) {
 		if(Node.GetListSize() == 0) {
 			this.CurrentBuilder.Append("new ", this.GetCSharpTypeName(Node.Type, false), "()");
 		}
@@ -124,12 +124,12 @@ public class CSharpGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitNewObjectNode(ZNewObjectNode Node) {
+	@Override public void VisitNewObjectNode(BNewObjectNode Node) {
 		this.CurrentBuilder.Append("new " + this.NameClass(Node.Type));
 		this.VisitListNode("(", Node, ")");
 	}
 
-	@Override public void VisitGetIndexNode(ZGetIndexNode Node) {
+	@Override public void VisitGetIndexNode(BGetIndexNode Node) {
 		this.GenerateCode(null, Node.RecvNode());
 		if(Node.RecvNode().Type == BType.StringType){
 			this.GenerateCode2(".Substring(", null, Node.IndexNode(), ", 1)");
@@ -138,7 +138,7 @@ public class CSharpGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitSetIndexNode(ZSetIndexNode Node) {
+	@Override public void VisitSetIndexNode(BSetIndexNode Node) {
 		this.GenerateCode(null, Node.RecvNode());
 		this.GenerateCode2("[", null, Node.IndexNode(), "] = ");
 		this.GenerateCode(null, Node.ExprNode());
@@ -170,12 +170,12 @@ public class CSharpGenerator extends ZSourceGenerator {
 	//		this.GenerateSurroundCode(Node.ExprNode());
 	//	}
 
-	@Override public void VisitThrowNode(ZThrowNode Node) {
+	@Override public void VisitThrowNode(BThrowNode Node) {
 		this.CurrentBuilder.Append("throw ");
 		this.GenerateCode2("new Exception((", null, Node.ExprNode(),").ToString())");
 	}
 
-	@Override public void VisitTryNode(ZTryNode Node) {
+	@Override public void VisitTryNode(BTryNode Node) {
 		this.CurrentBuilder.Append("try ");
 		this.GenerateCode(null, Node.TryBlockNode());
 		if(Node.HasCatchBlockNode()) {
@@ -277,7 +277,7 @@ public class CSharpGenerator extends ZSourceGenerator {
 		if(Node.InitValueNode() instanceof BNullNode){
 			this.GenerateTypeName(Node.DeclType());
 			this.CurrentBuilder.Append(" ");
-		}else if(Node.InitValueNode() instanceof ZFunctionNode){
+		}else if(Node.InitValueNode() instanceof BFunctionNode){
 			this.GenerateTypeName(Node.DeclType());
 			this.CurrentBuilder.Append(" ");
 		}else{
@@ -304,7 +304,7 @@ public class CSharpGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 	}
 
-	@Override public void VisitFunctionNode(ZFunctionNode Node) {
+	@Override public void VisitFunctionNode(BFunctionNode Node) {
 		@Var boolean IsLambda = (Node.FuncName() == null);
 		if(IsLambda){
 			this.GenerateLambdaFunction(Node);
@@ -331,19 +331,19 @@ public class CSharpGenerator extends ZSourceGenerator {
 		}
 	}
 
-	private void GenerateLambdaFunction(ZFunctionNode Node){
+	private void GenerateLambdaFunction(BFunctionNode Node){
 		this.VisitListNode("(", Node, ") => ");
 		if(Node.BlockNode().GetListSize() == 1){
 			@Var BNode FirstNode = Node.BlockNode().GetListAt(0);
-			if(FirstNode instanceof ZReturnNode){
-				this.GenerateCode(null, ((ZReturnNode)FirstNode).ExprNode());
+			if(FirstNode instanceof BReturnNode){
+				this.GenerateCode(null, ((BReturnNode)FirstNode).ExprNode());
 				return;
 			}
 		}
 		this.GenerateCode(null, Node.BlockNode());
 	}
 
-	private void VisitInstanceMethodParameters(ZFunctionNode VargNode){
+	private void VisitInstanceMethodParameters(BFunctionNode VargNode){
 		this.CurrentBuilder.Append("(");
 		@Var int i = 1;
 		while(i < VargNode.GetListSize()) {
@@ -357,7 +357,7 @@ public class CSharpGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
-	private String GenerateFunctionAsClass(String FuncName, ZFunctionNode Node) {
+	private String GenerateFunctionAsClass(String FuncName, BFunctionNode Node) {
 		@Var BLetVarNode FirstParam = Node.GetListSize() == 0 ? null : (BLetVarNode)Node.GetListAt(0);
 		@Var boolean IsInstanceMethod = FirstParam != null && FirstParam.GetGivenName().equals("this");
 
@@ -468,7 +468,7 @@ public class CSharpGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.AppendLineFeed();
 	}
 
-	@Override public void VisitErrorNode(ZErrorNode Node) {
+	@Override public void VisitErrorNode(BErrorNode Node) {
 		BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.CurrentBuilder.Append("ThrowError(");
 		this.CurrentBuilder.Append(BLib._QuoteString(Node.ErrorMessage));

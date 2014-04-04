@@ -1,10 +1,10 @@
 package libbun.lang.bun;
 
+import libbun.ast.BGetNameNode;
+import libbun.ast.BNode;
+import libbun.ast.BSetNameNode;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
-import libbun.parser.ast.BGetNameNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.BSetNameNode;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
 

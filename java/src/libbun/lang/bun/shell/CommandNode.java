@@ -1,12 +1,12 @@
 package libbun.lang.bun.shell;
 
-import libbun.parser.ast.ZArrayLiteralNode;
-import libbun.parser.ast.ZBlockNode;
-import libbun.parser.ast.ZDesugarNode;
-import libbun.parser.ast.ZFuncCallNode;
-import libbun.parser.ast.BGetNameNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.ZSugarNode;
+import libbun.ast.BArrayLiteralNode;
+import libbun.ast.BBlockNode;
+import libbun.ast.BGetNameNode;
+import libbun.ast.BNode;
+import libbun.ast.ZDesugarNode;
+import libbun.ast.ZFuncCallNode;
+import libbun.ast.ZSugarNode;
 import libbun.parser.BGenerator;
 import libbun.parser.BToken;
 import libbun.parser.BTypeChecker;
@@ -67,7 +67,7 @@ public class CommandNode extends ZSugarNode {
 			if(ContextType.IsBooleanType() || ContextType.IsIntType() || ContextType.IsStringType()) {
 				this.SetType(ContextType);
 			}
-			else if(ContextType.IsVarType() && !(this.ParentNode instanceof ZBlockNode)) {
+			else if(ContextType.IsVarType() && !(this.ParentNode instanceof BBlockNode)) {
 				this.SetType(BType.StringType);
 			}
 			else {
@@ -80,10 +80,10 @@ public class CommandNode extends ZSugarNode {
 		else if(this.RetType().IsStringType()) {
 			FuncName = "ExecCommandString";
 		}
-		@Var ZArrayLiteralNode ArrayNode = new ZArrayLiteralNode(this.ParentNode);
+		@Var BArrayLiteralNode ArrayNode = new BArrayLiteralNode(this.ParentNode);
 		@Var CommandNode CurrentNode = this;
 		while(CurrentNode != null) {
-			@Var ZArrayLiteralNode SubArrayNode = new ZArrayLiteralNode(ArrayNode);
+			@Var BArrayLiteralNode SubArrayNode = new BArrayLiteralNode(ArrayNode);
 			@Var int size = CurrentNode.GetArgSize();
 			@Var int i = 0;
 			while(i < size) {

@@ -1,12 +1,12 @@
 package libbun.lang.bun;
 
+import libbun.ast.BErrorNode;
+import libbun.ast.BNode;
 import libbun.parser.BNameSpace;
 import libbun.parser.BPatternToken;
 import libbun.parser.BSyntax;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
-import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.BNode;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
 
@@ -38,7 +38,7 @@ public class ExpressionPatternFunction extends BMatchFunction {
 		//System.out.println("Pattern=" + Pattern + " by '" + Token.GetText() + "'");
 		if(Pattern != null) {
 			if(Pattern.IsStatement && !AllowStatement) {
-				return new ZErrorNode(ParentNode, Token, Token.GetText() + " statement is not here");
+				return new BErrorNode(ParentNode, Token, Token.GetText() + " statement is not here");
 			}
 			LeftNode = TokenContext.ApplyMatchPattern(ParentNode, LeftNode, Pattern, BTokenContext._Required);
 		}

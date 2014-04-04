@@ -1,12 +1,12 @@
 package libbun.lang.bun;
 
+import libbun.ast.BErrorNode;
+import libbun.ast.BFunctionNode;
+import libbun.ast.BLetVarNode;
+import libbun.ast.BNode;
+import libbun.ast.ZClassNode;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
-import libbun.parser.ast.ZClassNode;
-import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.BLetVarNode;
-import libbun.parser.ast.BNode;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
 
@@ -15,8 +15,8 @@ public class ExportPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		@Var BToken NameToken = TokenContext.GetToken(BTokenContext._MoveNext);
 		@Var BNode Node = TokenContext.ParsePattern(ParentNode, "function", BTokenContext._Optional);
-		if(Node instanceof ZFunctionNode) {
-			((ZFunctionNode)Node).IsExport = true;
+		if(Node instanceof BFunctionNode) {
+			((BFunctionNode)Node).IsExport = true;
 			return Node;
 		}
 		Node = TokenContext.ParsePattern(ParentNode, "let", BTokenContext._Optional);
@@ -30,7 +30,7 @@ public class ExportPatternFunction extends BMatchFunction {
 			return Node;
 		}
 
-		return new ZErrorNode(ParentNode, NameToken, "export function, class, or let");
+		return new BErrorNode(ParentNode, NameToken, "export function, class, or let");
 	}
 
 

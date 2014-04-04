@@ -1,7 +1,7 @@
 package libbun.parser.ssa;
 
-import libbun.parser.ast.BGetNameNode;
-import libbun.parser.ast.BNode;
+import libbun.ast.BGetNameNode;
+import libbun.ast.BNode;
 
 public class ValueReplacer extends ZASTTransformer {
 	private BNode OldNode;

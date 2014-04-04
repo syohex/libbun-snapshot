@@ -1,8 +1,8 @@
 package libbun.lang.bun;
 
+import libbun.ast.BBooleanNode;
+import libbun.ast.BNode;
 import libbun.parser.BTokenContext;
-import libbun.parser.ast.BBooleanNode;
-import libbun.parser.ast.BNode;
 import libbun.util.BMatchFunction;
 
 public class TruePatternFunction extends BMatchFunction {
