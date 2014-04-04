@@ -5,29 +5,29 @@ import libbun.parser.BTypeChecker;
 import libbun.util.BField;
 import libbun.util.Var;
 
-public class ZDesugarNode extends ZSugarNode {
+public class BDesugarNode extends BSugarNode {
 	//	public final static int _NewNode = 0;
 	@BField BNode OriginalNode;
 
-	public ZDesugarNode(BNode OriginalNode, BNode DesugaredNode) {
+	public BDesugarNode(BNode OriginalNode, BNode DesugardNode) {
 		super(OriginalNode.ParentNode, null, 1);
 		this.OriginalNode = OriginalNode;
 		this.SetChild(OriginalNode, BNode._EnforcedParent);
-		this.SetNode(0, DesugaredNode);
+		this.SetNode(0, DesugardNode);
 	}
 
-	public ZDesugarNode(BNode OriginalNode, BNode[] Nodes) {
-		super(OriginalNode.ParentNode, null, Nodes.length);
+	public BDesugarNode(BNode OriginalNode, BNode[] DesugarNodes) {
+		super(OriginalNode.ParentNode, null, DesugarNodes.length);
 		this.OriginalNode = OriginalNode;
 		this.SetChild(OriginalNode, BNode._EnforcedParent);
 		@Var int i = 0;
-		while(i < Nodes.length) {
-			this.SetNode(i, Nodes[i]);
+		while(i < DesugarNodes.length) {
+			this.SetNode(i, DesugarNodes[i]);
 			i = i + 1;
 		}
 	}
 
-	@Override public ZDesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChekcer) {
+	@Override public BDesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChekcer) {
 		return this;
 	}
 

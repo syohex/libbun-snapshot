@@ -2,8 +2,8 @@ package libbun.ast.sugar;
 
 import libbun.ast.BBlockNode;
 import libbun.ast.BNode;
-import libbun.ast.ZDesugarNode;
-import libbun.ast.ZSugarNode;
+import libbun.ast.BDesugarNode;
+import libbun.ast.BSugarNode;
 import libbun.ast.decl.ZVarBlockNode;
 import libbun.ast.error.BErrorNode;
 import libbun.ast.expression.BSetNameNode;
@@ -16,7 +16,7 @@ import libbun.type.BType;
 import libbun.util.BLib;
 import libbun.util.Var;
 
-public class ZContinueNode extends ZSugarNode {
+public class ZContinueNode extends BSugarNode {
 
 	public ZContinueNode(BNode ParentNode) {
 		super(ParentNode, null, 0);
@@ -50,12 +50,12 @@ public class ZContinueNode extends ZSugarNode {
 		return null;
 	}
 
-	private ZDesugarNode ReplaceContinue(BNode Node, ZContinueNode FirstNode, BNode[] NodeList, ZDesugarNode FirstDesugarNode) {
+	private BDesugarNode ReplaceContinue(BNode Node, ZContinueNode FirstNode, BNode[] NodeList, BDesugarNode FirstDesugarNode) {
 		@Var int i = 0;
 		while(i < Node.GetAstSize()) {
 			@Var BNode SubNode = Node.AST[i];
 			if(SubNode instanceof ZContinueNode) {
-				@Var ZDesugarNode DesugarNode = new ZDesugarNode(SubNode, NodeList);
+				@Var BDesugarNode DesugarNode = new BDesugarNode(SubNode, NodeList);
 				if(SubNode == FirstNode) {
 					FirstDesugarNode = DesugarNode;
 				}
@@ -72,10 +72,10 @@ public class ZContinueNode extends ZSugarNode {
 		return FirstDesugarNode;
 	}
 
-	@Override public ZDesugarNode DeSugar(BGenerator Generator, BTypeChecker Typer) {
+	@Override public BDesugarNode DeSugar(BGenerator Generator, BTypeChecker Typer) {
 		@Var BWhileNode WhileNode = this.LookupWhileNode();
 		if(WhileNode == null) {
-			return new ZDesugarNode(this, new BErrorNode(this.ParentNode, this.SourceToken, "continue must be inside the while statement"));
+			return new BDesugarNode(this, new BErrorNode(this.ParentNode, this.SourceToken, "continue must be inside the while statement"));
 		}
 		@Var BBlockNode ParentBlockNode = WhileNode.GetScopeBlockNode();
 		@Var String VarName = Generator.NameUniqueSymbol("continue");

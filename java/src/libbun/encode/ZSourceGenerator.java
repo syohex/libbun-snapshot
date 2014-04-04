@@ -28,9 +28,9 @@ import libbun.ast.BBlockNode;
 import libbun.ast.BGroupNode;
 import libbun.ast.BListNode;
 import libbun.ast.BNode;
-import libbun.ast.ZDesugarNode;
+import libbun.ast.BDesugarNode;
 import libbun.ast.ZLocalDefinedNode;
-import libbun.ast.ZSugarNode;
+import libbun.ast.BSugarNode;
 import libbun.ast.binary.BBinaryNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BOrNode;
@@ -710,8 +710,8 @@ public class ZSourceGenerator extends BGenerator {
 		this.VisitUndefinedNode(Node);
 	}
 
-	@Override public void VisitSugarNode(ZSugarNode Node) {
-		@Var ZDesugarNode DesugarNode = Node.DeSugar(this, this.TypeChecker);
+	@Override public void VisitSugarNode(BSugarNode Node) {
+		@Var BDesugarNode DesugarNode = Node.DeSugar(this, this.TypeChecker);
 		this.GenerateCode(null, DesugarNode.AST[0]);
 		@Var int i = 1;
 		while(i < DesugarNode.GetAstSize()) {

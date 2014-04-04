@@ -27,7 +27,7 @@ package libbun.parser;
 import libbun.ast.BBlockNode;
 import libbun.ast.BGroupNode;
 import libbun.ast.ZLocalDefinedNode;
-import libbun.ast.ZSugarNode;
+import libbun.ast.BSugarNode;
 import libbun.ast.binary.BBinaryNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BOrNode;
@@ -113,7 +113,7 @@ public abstract class BVisitor {
 	public abstract void VisitErrorNode(BErrorNode Node);
 
 	public abstract void VisitTopLevelNode(ZTopLevelNode Node);
-	public abstract void VisitSugarNode(ZSugarNode Node);
+	public abstract void VisitSugarNode(BSugarNode Node);
 	public abstract void VisitLocalDefinedNode(ZLocalDefinedNode Node);
 
 	public abstract void EnableVisitor();

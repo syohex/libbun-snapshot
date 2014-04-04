@@ -5,7 +5,7 @@ import libbun.ast.BGroupNode;
 import libbun.ast.BListNode;
 import libbun.ast.BNode;
 import libbun.ast.ZLocalDefinedNode;
-import libbun.ast.ZSugarNode;
+import libbun.ast.BSugarNode;
 import libbun.ast.binary.BBinaryNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BOrNode;
@@ -325,7 +325,7 @@ public class ZASTTransformer extends BVisitor {
 	}
 
 	@Override
-	public void VisitSugarNode(ZSugarNode Node) {
+	public void VisitSugarNode(BSugarNode Node) {
 		// TODO Auto-generated method stub
 
 	}

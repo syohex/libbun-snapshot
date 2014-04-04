@@ -27,8 +27,8 @@ package libbun.parser;
 import libbun.ast.BBlockNode;
 import libbun.ast.BListNode;
 import libbun.ast.BNode;
-import libbun.ast.ZDesugarNode;
-import libbun.ast.ZSugarNode;
+import libbun.ast.BDesugarNode;
+import libbun.ast.BSugarNode;
 import libbun.ast.decl.BFunctionNode;
 import libbun.ast.decl.BLetVarNode;
 import libbun.ast.decl.ZVarBlockNode;
@@ -260,9 +260,9 @@ public abstract class BTypeChecker extends BVisitor {
 		}
 	}
 
-	@Override public void VisitSugarNode(ZSugarNode Node) {
+	@Override public void VisitSugarNode(BSugarNode Node) {
 		@Var BType ContextType = this.GetContextType();
-		@Var ZDesugarNode DesugarNode = Node.DeSugar(this.Generator, this.Generator.TypeChecker);
+		@Var BDesugarNode DesugarNode = Node.DeSugar(this.Generator, this.Generator.TypeChecker);
 		@Var int i = 0;
 		while(i < DesugarNode.GetAstSize()) {
 			this.CheckTypeAt(DesugarNode, i, ContextType);

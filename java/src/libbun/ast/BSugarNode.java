@@ -6,9 +6,9 @@ import libbun.parser.BTypeChecker;
 import libbun.parser.BVisitor;
 
 
-public abstract class ZSugarNode extends BNode {
+public abstract class BSugarNode extends BNode {
 
-	public ZSugarNode(BNode ParentNode, BToken SourceToken, int Size) {
+	public BSugarNode(BNode ParentNode, BToken SourceToken, int Size) {
 		super(ParentNode, SourceToken, Size);
 	}
 
@@ -16,7 +16,7 @@ public abstract class ZSugarNode extends BNode {
 		Visitor.VisitSugarNode(this);
 	}
 
-	public abstract ZDesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChekcer);
+	public abstract BDesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChekcer);
 
 
 

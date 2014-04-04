@@ -28,8 +28,8 @@ package libbun.parser;
 import libbun.ast.BBlockNode;
 import libbun.ast.BListNode;
 import libbun.ast.BNode;
-import libbun.ast.ZDesugarNode;
-import libbun.ast.ZSugarNode;
+import libbun.ast.BDesugarNode;
+import libbun.ast.BSugarNode;
 import libbun.ast.decl.BClassNode;
 import libbun.ast.decl.BFunctionNode;
 import libbun.ast.decl.BLetVarNode;
@@ -277,8 +277,8 @@ public abstract class BGenerator extends BVisitor {
 		this.VisitNullNode(new BNullNode(Node.ParentNode, null));
 	}
 
-	@Override public void VisitSugarNode(ZSugarNode Node) {
-		@Var ZDesugarNode DeNode = Node.DeSugar(this, this.TypeChecker);
+	@Override public void VisitSugarNode(BSugarNode Node) {
+		@Var BDesugarNode DeNode = Node.DeSugar(this, this.TypeChecker);
 		@Var int i = 0;
 		while(i < DeNode.GetAstSize()) {
 			DeNode.AST[i].Accept(this);  // FIXME

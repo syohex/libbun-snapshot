@@ -2,8 +2,8 @@ package libbun.lang.bun.shell;
 
 import libbun.ast.BBlockNode;
 import libbun.ast.BNode;
-import libbun.ast.ZDesugarNode;
-import libbun.ast.ZSugarNode;
+import libbun.ast.BDesugarNode;
+import libbun.ast.BSugarNode;
 import libbun.ast.expression.BFuncCallNode;
 import libbun.ast.expression.BGetNameNode;
 import libbun.ast.literal.BArrayLiteralNode;
@@ -15,7 +15,7 @@ import libbun.util.BField;
 import libbun.util.Var;
 import libbun.util.BArray;
 
-public class CommandNode extends ZSugarNode {
+public class CommandNode extends BSugarNode {
 	@BField private final BArray<BNode> ArgList;
 	@BField private BType RetType = BType.VarType;
 	@BField public CommandNode PipedNextNode;
@@ -60,7 +60,7 @@ public class CommandNode extends ZSugarNode {
 		return this.RetType;
 	}
 
-	@Override public ZDesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChecker) {
+	@Override public BDesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChecker) {
 		@Var BType ContextType = TypeChecker.GetContextType();
 		@Var String FuncName = "ExecCommandInt";
 		if(this.RetType().IsVarType()) {
@@ -95,6 +95,6 @@ public class CommandNode extends ZSugarNode {
 		}
 		@Var BFuncCallNode Node = new BFuncCallNode(this.ParentNode, new BGetNameNode(this.ParentNode, null, FuncName));
 		Node.Append(ArrayNode);
-		return new ZDesugarNode(this, Node);
+		return new BDesugarNode(this, Node);
 	}
 }
