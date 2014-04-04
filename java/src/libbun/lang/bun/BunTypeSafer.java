@@ -708,6 +708,9 @@ public class BunTypeSafer extends BTypeChecker {
 			this.CheckTypeAt(Node, BLetVarNode._InitValue, DeclType);
 			@Var BType ConstType = Node.InitValueNode().Type;
 			Node.SetAstType(BLetVarNode._NameInfo, ConstType);
+			if(DeclType.IsVarType()) {
+				Node.SetDeclType(ConstType);
+			}
 			Node.NameIndex = this.Generator.GetUniqueNumber();
 			Node.GetNameSpace().SetSymbol(Node.GetGivenName(), Node);
 			this.ReturnTypeNode(Node, BType.VoidType);
