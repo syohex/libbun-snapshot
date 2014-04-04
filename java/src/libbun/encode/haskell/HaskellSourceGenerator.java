@@ -33,6 +33,7 @@ import libbun.parser.ZNodeUtils;
 import libbun.parser.ast.BGetNameNode;
 import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.BNode;
+import libbun.parser.ast.BSetNameNode;
 import libbun.parser.ast.ZBinaryNode;
 import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.ZCastNode;
@@ -40,7 +41,6 @@ import libbun.parser.ast.ZComparatorNode;
 import libbun.parser.ast.ZFuncCallNode;
 import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZReturnNode;
-import libbun.parser.ast.BSetNameNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
 import libbun.parser.ast.ZWhileNode;
@@ -225,14 +225,14 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 	@Override
 	public void VisitSetNameNode(BSetNameNode Node) {
 		this.CurrentBuilder.Append("writeIORef ");
-		this.CurrentBuilder.Append(Node.GetName() + "_ref ");
+		this.CurrentBuilder.Append(Node.NameNode().GetUniqueName(this) + "_ref ");
 		this.GenerateCode(null, Node.ExprNode());
 		this.CurrentBuilder.AppendLineFeed();
 
 		this.CurrentBuilder.AppendIndent();
-		this.CurrentBuilder.Append(Node.GetName());
+		this.CurrentBuilder.Append(Node.NameNode().GetUniqueName(this));
 		this.CurrentBuilder.Append(" <- readIORef ");
-		this.CurrentBuilder.Append(Node.GetName() + "_ref");
+		this.CurrentBuilder.Append(Node.NameNode().GetUniqueName(this) + "_ref");
 		this.CurrentBuilder.AppendLineFeed();
 	}
 

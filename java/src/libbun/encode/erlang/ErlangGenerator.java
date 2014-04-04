@@ -7,6 +7,7 @@ import libbun.parser.ZToken;
 import libbun.parser.ast.BGetNameNode;
 import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.BNode;
+import libbun.parser.ast.BSetNameNode;
 import libbun.parser.ast.ZAndNode;
 import libbun.parser.ast.ZBinaryNode;
 import libbun.parser.ast.ZBlockNode;
@@ -25,7 +26,6 @@ import libbun.parser.ast.ZNewObjectNode;
 import libbun.parser.ast.ZNotNode;
 import libbun.parser.ast.ZOrNode;
 import libbun.parser.ast.ZReturnNode;
-import libbun.parser.ast.BSetNameNode;
 import libbun.parser.ast.ZSetterNode;
 import libbun.parser.ast.ZWhileNode;
 import libbun.type.ZClassType;
@@ -188,7 +188,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 
 		this.GenerateCode(null, Node.ExprNode());
 
-		String VarName = this.ToErlangVarName(Node.GetName());
+		String VarName = this.ToErlangVarName(Node.NameNode().GetUniqueName(this));
 		this.VarMgr.AssignVariable(VarName);
 		this.AppendLazy(mark, this.VarMgr.GenVariableName(VarName) + " = ");
 	}

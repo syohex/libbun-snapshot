@@ -2,15 +2,16 @@ package libbun.parser.ssa;
 
 import java.util.HashMap;
 
+import libbun.parser.ZGenerator;
 import libbun.parser.ast.BGetNameNode;
 import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.BNode;
+import libbun.parser.ast.BSetNameNode;
 import libbun.parser.ast.ZAndNode;
 import libbun.parser.ast.ZBinaryNode;
 import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZIfNode;
-import libbun.parser.ast.BSetNameNode;
 import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
 import libbun.type.ZType;
@@ -36,8 +37,10 @@ public class SSAConverter extends ZASTTransformer {
 	public ZMap<Integer> ValueNumber;
 	private final HashMap<BNode, ZArray<Variable>> CurVariableTableBefore;
 	private final HashMap<BNode, ZArray<Variable>> CurVariableTableAfter;
+	private final ZGenerator Generator;
 
-	public SSAConverter() {
+	public SSAConverter(ZGenerator Generator) {
+		this.Generator = Generator;
 		this.LocalVariables = null;
 		this.Replacer = new ValueReplacer();
 		this.State = new SSAConverterState(null, -1);
@@ -212,7 +215,7 @@ public class SSAConverter extends ZASTTransformer {
 			} else {
 				node = phi.GetArgument(this.GetCurrentBranchIndex());
 			}
-			Variable val = this.FindVariable(NodeLib.GetVarName(node));
+			Variable val = this.FindVariable(NodeLib.GetVarName(node, this.Generator));
 			this.MakeCurrentVariableTo(val);
 			this.InsertPHI(this.GetParentJoinNode(), this.GetParentBranchIndex(), phi.BackupValue, val);
 			i = i - 1;
@@ -286,10 +289,10 @@ public class SSAConverter extends ZASTTransformer {
 
 	@Override
 	public void VisitSetNameNode(BSetNameNode Node) {
-		@Var Variable OldVal = this.FindVariable(Node.GetName());
+		@Var Variable OldVal = this.FindVariable(Node.NameNode().GetUniqueName(this.Generator));
 		@Var Variable NewVal = new Variable(OldVal.Name, this.GetRefreshNumber(OldVal), Node);
 		this.UpdateVariable(NewVal);
-		Node.VarIndex = NewVal.Index;
+		Node.NameNode().VarIndex = NewVal.Index;
 		this.InsertPHI(this.GetCurrentJoinNode(), this.GetCurrentBranchIndex(), OldVal, NewVal);
 	}
 
