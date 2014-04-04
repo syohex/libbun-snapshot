@@ -1,12 +1,12 @@
 package libbun.lang.bun;
 
-import libbun.parser.ZSourceContext;
+import libbun.parser.BSourceContext;
 import libbun.util.Var;
 import libbun.util.BTokenFunction;
 
 public class BlockCommentFunction extends BTokenFunction {
 
-	@Override public boolean Invoke(ZSourceContext SourceContext) {
+	@Override public boolean Invoke(BSourceContext SourceContext) {
 		@Var int StartIndex = SourceContext.GetPosition();
 		@Var char NextChar = SourceContext.GetCharAtFromCurrentPosition(+1);
 		if(NextChar != '/' && NextChar != '*') {

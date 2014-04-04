@@ -24,10 +24,10 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZTypeChecker;
-import libbun.parser.ZVisitor;
-import libbun.type.ZFunc;
-import libbun.type.ZType;
+import libbun.parser.BTypeChecker;
+import libbun.parser.BVisitor;
+import libbun.type.BFunc;
+import libbun.type.BType;
 import libbun.util.Var;
 
 //E.g., (T) $Expr
@@ -35,7 +35,7 @@ public class ZCastNode extends BNode {
 	public final static int _Expr = 0;
 	public final static int _TypeInfo = 1;
 
-	public ZCastNode(BNode ParentNode, ZType CastType, BNode Node) {
+	public ZCastNode(BNode ParentNode, BType CastType, BNode Node) {
 		super(ParentNode, null, 2);
 		this.Type = CastType;
 		if(Node != null) {
@@ -47,18 +47,18 @@ public class ZCastNode extends BNode {
 		return this.AST[ZCastNode._Expr ];
 	}
 
-	public final ZType CastType() {
+	public final BType CastType() {
 		if(this.AST[ZCastNode._TypeInfo ] != null) {
 			this.Type = this.AST[ZCastNode._TypeInfo ].Type;
 		}
 		return this.Type;
 	}
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitCastNode(this);
 	}
 
-	public final ZListNode ToFuncCallNode(ZTypeChecker TypeChecker, ZFunc ConverterFunc) {
+	public final ZListNode ToFuncCallNode(BTypeChecker TypeChecker, BFunc ConverterFunc) {
 		@Var ZListNode FuncNode = TypeChecker.CreateDefinedFuncCallNode(this.ParentNode, this.SourceToken, ConverterFunc);
 		FuncNode.Append(this.ExprNode());
 		return FuncNode;

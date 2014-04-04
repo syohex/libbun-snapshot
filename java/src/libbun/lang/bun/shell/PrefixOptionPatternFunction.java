@@ -4,18 +4,18 @@ import libbun.parser.ast.BNode;
 import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
-import libbun.parser.ZPatternToken;
-import libbun.parser.ZToken;
-import libbun.parser.ZTokenContext;
+import libbun.parser.BPatternToken;
+import libbun.parser.BToken;
+import libbun.parser.BTokenContext;
 
 public class PrefixOptionPatternFunction extends BMatchFunction {
 	public final static String _PatternName = "$PrefixOption$";
 
-	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
-		@Var ZToken Token = TokenContext.GetToken(ZTokenContext._MoveNext);
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		@Var BToken Token = TokenContext.GetToken(BTokenContext._MoveNext);
 		@Var String Symbol = Token.GetText();
 		if(Symbol.equals(ShellUtils._trace)) {
-			@Var BNode CommandNode = TokenContext.ParsePattern(ParentNode, CommandSymbolPatternFunction._PatternName, ZTokenContext._Required);
+			@Var BNode CommandNode = TokenContext.ParsePattern(ParentNode, CommandSymbolPatternFunction._PatternName, BTokenContext._Required);
 			if(CommandNode.IsErrorNode()) {
 				return CommandNode;
 			}
@@ -27,7 +27,7 @@ public class PrefixOptionPatternFunction extends BMatchFunction {
 			if(TimeNode.IsErrorNode()) {
 				return TimeNode;
 			}
-			@Var BNode CommandNode = TokenContext.ParsePattern(ParentNode, CommandSymbolPatternFunction._PatternName, ZTokenContext._Required);
+			@Var BNode CommandNode = TokenContext.ParsePattern(ParentNode, CommandSymbolPatternFunction._PatternName, BTokenContext._Required);
 			if(CommandNode.IsErrorNode()) {
 				return CommandNode;
 			}
@@ -38,16 +38,16 @@ public class PrefixOptionPatternFunction extends BMatchFunction {
 		return null;
 	}
 
-	public BNode ParseTimeout(BNode ParentNode, ZTokenContext TokenContext) {
-		@Var ZToken NumToken = TokenContext.GetToken(ZTokenContext._MoveNext);
-		if((NumToken instanceof ZPatternToken)) {
-			if(((ZPatternToken)NumToken).PresetPattern.PatternName.equals(("$IntegerLiteral$"))) {
+	public BNode ParseTimeout(BNode ParentNode, BTokenContext TokenContext) {
+		@Var BToken NumToken = TokenContext.GetToken(BTokenContext._MoveNext);
+		if((NumToken instanceof BPatternToken)) {
+			if(((BPatternToken)NumToken).PresetPattern.PatternName.equals(("$IntegerLiteral$"))) {
 				@Var long Num = BLib._ParseInt(NumToken.GetText());
 				if(Num > 0) {
 					if(NumToken.IsNextWhiteSpace()) {
 						return new ArgumentNode(ParentNode, Long.toString(Num));
 					}
-					@Var ZToken UnitToken = TokenContext.GetToken(ZTokenContext._MoveNext);
+					@Var BToken UnitToken = TokenContext.GetToken(BTokenContext._MoveNext);
 					@Var String UnitSymbol = UnitToken.GetText();
 					if(UnitSymbol.equals("ms")) {
 						return new ArgumentNode(ParentNode, Long.toString(Num));

@@ -1,17 +1,17 @@
 package libbun.parser.ast;
 
-import libbun.parser.ZToken;
-import libbun.type.ZFunc;
-import libbun.type.ZFuncType;
-import libbun.type.ZType;
+import libbun.parser.BToken;
+import libbun.type.BFunc;
+import libbun.type.BFuncType;
+import libbun.type.BType;
 import libbun.util.BField;
 
 public class ZFuncNameNode extends ZLocalDefinedNode {
 	@BField public final String FuncName;
-	@BField public final ZType RecvType;
+	@BField public final BType RecvType;
 	@BField public final int FuncParamSize;
 
-	public ZFuncNameNode(BNode ParentNode, ZToken SourceToken, String FuncName, ZFuncType FuncType) {
+	public ZFuncNameNode(BNode ParentNode, BToken SourceToken, String FuncName, BFuncType FuncType) {
 		super(ParentNode, SourceToken, 0);
 		this.FuncName = FuncName;
 		this.RecvType = FuncType.GetRecvType();
@@ -19,7 +19,7 @@ public class ZFuncNameNode extends ZLocalDefinedNode {
 		this.Type = FuncType;
 	}
 
-	public ZFuncNameNode(BNode ParentNode, ZToken SourceToken, String FuncName, ZType RecvType, int FuncParamSize) {
+	public ZFuncNameNode(BNode ParentNode, BToken SourceToken, String FuncName, BType RecvType, int FuncParamSize) {
 		super(ParentNode, SourceToken, 0);
 		this.FuncName = FuncName;
 		this.RecvType = RecvType;
@@ -27,6 +27,6 @@ public class ZFuncNameNode extends ZLocalDefinedNode {
 	}
 
 	public final String GetSignature() {
-		return ZFunc._StringfySignature(this.FuncName, this.FuncParamSize, this.RecvType);
+		return BFunc._StringfySignature(this.FuncName, this.FuncParamSize, this.RecvType);
 	}
 }

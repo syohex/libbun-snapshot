@@ -24,19 +24,19 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZToken;
-import libbun.parser.ZVisitor;
-import libbun.type.ZType;
+import libbun.parser.BToken;
+import libbun.parser.BVisitor;
+import libbun.type.BType;
 import libbun.util.BField;
 
 public final class BIntNode extends BConstNode {
 	@BField public long	IntValue;
-	public BIntNode(BNode ParentNode, ZToken Token, long Value) {
+	public BIntNode(BNode ParentNode, BToken Token, long Value) {
 		super(ParentNode, Token);
-		this.Type = ZType.IntType;
+		this.Type = BType.IntType;
 		this.IntValue = Value;
 	}
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitIntNode(this);
 	}
 }

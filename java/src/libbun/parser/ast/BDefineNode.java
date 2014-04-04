@@ -1,9 +1,9 @@
 package libbun.parser.ast;
 
-import libbun.parser.ZMacroFunc;
-import libbun.parser.ZNameSpace;
-import libbun.type.ZFuncType;
-import libbun.type.ZType;
+import libbun.parser.BNameSpace;
+import libbun.type.BFuncType;
+import libbun.type.BMacroFunc;
+import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.Var;
 
@@ -23,10 +23,10 @@ public class BDefineNode extends ZTopLevelNode {
 		return "";
 	}
 
-	@Override public final void Perform(ZNameSpace NameSpace) {
+	@Override public final void Perform(BNameSpace NameSpace) {
 		@Var String Symbol = this.DefineNode.GetGivenName();
 		@Var String MacroText = this.GetMacroText();
-		@Var ZType  MacroType = this.DefineNode.DeclType();
+		@Var BType  MacroType = this.DefineNode.DeclType();
 		@Var String LibName = null;
 		@Var int loc = MacroText.indexOf("~");
 		if(loc > 0) {
@@ -35,9 +35,9 @@ public class BDefineNode extends ZTopLevelNode {
 		if(loc >= 0) {
 			MacroText = MacroText.substring(loc+1);
 		}
-		if(MacroType instanceof ZFuncType) {
-			@Var ZFuncType MacroFuncType = (ZFuncType)MacroType;
-			@Var ZMacroFunc MacroFunc = new ZMacroFunc(Symbol, MacroFuncType, LibName, MacroText);
+		if(MacroType instanceof BFuncType) {
+			@Var BFuncType MacroFuncType = (BFuncType)MacroType;
+			@Var BMacroFunc MacroFunc = new BMacroFunc(Symbol, MacroFuncType, LibName, MacroText);
 			if(Symbol.equals("_")) {
 				NameSpace.Generator.SetConverterFunc(MacroFuncType.GetRecvType(), MacroFuncType.GetReturnType(), MacroFunc);
 			}

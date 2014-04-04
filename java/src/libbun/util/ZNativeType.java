@@ -1,17 +1,17 @@
 package libbun.util;
 
 import libbun.encode.jvm.JavaTypeTable;
-import libbun.type.ZType;
+import libbun.type.BType;
 
-public class ZNativeType extends ZType {
+public class ZNativeType extends BType {
 	@BField public Class<?>          JClass;
 
 	public ZNativeType(Class<?> JType) {
-		super(ZType.UniqueTypeFlag, JType.getSimpleName(), null);
+		super(BType.UniqueTypeFlag, JType.getSimpleName(), null);
 		this.JClass = JType;
 	}
 
-	@Override public ZType GetSuperType() {
+	@Override public BType GetSuperType() {
 		return JavaTypeTable.GetZenType(this.JClass.getSuperclass());
 	}
 

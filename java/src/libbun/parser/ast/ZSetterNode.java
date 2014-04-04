@@ -24,7 +24,7 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZVisitor;
+import libbun.parser.BVisitor;
 
 public final class ZSetterNode extends ZGetterNode {
 	public final static int _Recv = 0;
@@ -39,7 +39,7 @@ public final class ZSetterNode extends ZGetterNode {
 		return this.AST[ZSetterNode._Expr ];
 	}
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitSetterNode(this);
 	}
 

@@ -24,37 +24,36 @@
 
 
 package libbun.type;
-import libbun.parser.ZToken;
-import libbun.parser.ZTypeChecker;
+import libbun.parser.BToken;
+import libbun.parser.BTypeChecker;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
-public class ZType  {
+public class BType  {
 	public final static int     UniqueTypeFlag         = 1 << 16;
-	@Deprecated public final static int     UnboxTypeFlag          = 1 << 10;
 	public final static int     OpenTypeFlag           = 1 << 9;  // @Open for the future
 
-	public final static ZType		VarType = new ZType(ZType.UniqueTypeFlag, "var", null);
-	public final static ZType		VoidType = new ZType(ZType.UniqueTypeFlag, "void", null);
-	public final static ZType		BooleanType = new ZType(ZType.UniqueTypeFlag, "boolean", ZType.VarType);
-	public final static ZType		IntType = new ZType(ZType.UniqueTypeFlag, "int", ZType.VarType);
-	public final static ZType       FloatType = new ZType(ZType.UniqueTypeFlag, "float", ZType.VarType);
-	public final static ZType		StringType = new ZType(ZType.UniqueTypeFlag, "String", ZType.VarType);
-	public final static ZType       TypeType = new ZType(ZType.UniqueTypeFlag, "Type", ZType.VarType);
+	public final static BType		VarType = new BType(BType.UniqueTypeFlag, "var", null);
+	public final static BType		VoidType = new BType(BType.UniqueTypeFlag, "void", null);
+	public final static BType		BooleanType = new BType(BType.UniqueTypeFlag, "boolean", BType.VarType);
+	public final static BType		IntType = new BType(BType.UniqueTypeFlag, "int", BType.VarType);
+	public final static BType       FloatType = new BType(BType.UniqueTypeFlag, "float", BType.VarType);
+	public final static BType		StringType = new BType(BType.UniqueTypeFlag, "String", BType.VarType);
+	public final static BType       TypeType = new BType(BType.UniqueTypeFlag, "Type", BType.VarType);
 
-	@BField public int		  TypeFlag = 0;
+	@BField public int		   TypeFlag = 0;
 	@BField public int         TypeId = 0;
 	@BField public String      ShortName = null;
-	@BField public ZType		  RefType = null;
+	@BField public BType	   RefType = null;
 
-	public ZType(int TypeFlag, String ShortName, ZType RefType) {
+	public BType(int TypeFlag, String ShortName, BType RefType) {
 		this.TypeFlag = TypeFlag;
 		this.ShortName = ShortName;
 		this.RefType = RefType;
-		if(BLib._IsFlag(TypeFlag, ZType.UniqueTypeFlag)) {
-			this.TypeId = ZTypePool._NewTypeId(this);
+		if(BLib._IsFlag(TypeFlag, BType.UniqueTypeFlag)) {
+			this.TypeId = BTypePool._NewTypeId(this);
 		}
 	}
 
@@ -66,15 +65,15 @@ public class ZType  {
 		return this.ShortName;
 	}
 
-	@ZenMethod public ZType GetRealType() {
+	@ZenMethod public BType GetRealType() {
 		return this;
 	}
 
-	@ZenMethod public ZType GetSuperType() {
+	@ZenMethod public BType GetSuperType() {
 		return this.RefType;
 	}
 
-	@ZenMethod public ZType GetBaseType() {
+	@ZenMethod public BType GetBaseType() {
 		return this;
 	}
 
@@ -82,21 +81,21 @@ public class ZType  {
 		return 0;
 	}
 
-	@ZenMethod public ZType GetParamType(int Index) {
-		return ZType.VarType;  // for safety, it is used in Array
+	@ZenMethod public BType GetParamType(int Index) {
+		return BType.VarType;  // for safety, it is used in Array
 	}
 
-	public final boolean Equals(ZType Type) {
+	public final boolean Equals(BType Type) {
 		return (this.GetRealType() == Type.GetRealType());
 	}
 
-	public final boolean Accept(ZType Type) {
-		@Var ZType ThisType = this.GetRealType();
+	public final boolean Accept(BType Type) {
+		@Var BType ThisType = this.GetRealType();
 		if(ThisType == Type.GetRealType()) {
 			return true;
 		}
 		if(Type.GetParamSize() == 0) {
-			@Var ZType SuperClass = Type.GetSuperType();
+			@Var BType SuperClass = Type.GetSuperType();
 			while(SuperClass != null) {
 				if(SuperClass == ThisType) {
 					return true;
@@ -111,11 +110,11 @@ public class ZType  {
 		return false;
 	}
 
-	@ZenMethod public ZType GetGreekRealType(ZType[] Greek) {
+	@ZenMethod public BType GetGreekRealType(BType[] Greek) {
 		return this.GetRealType();
 	}
 
-	@ZenMethod public boolean AcceptValueType(ZType ValueType, boolean ExactMatch, ZType[] Greek) {
+	@ZenMethod public boolean AcceptValueType(BType ValueType, boolean ExactMatch, BType[] Greek) {
 		if(this.GetRealType() != ValueType && !ValueType.IsVarType()) {
 			if(ExactMatch && !this.Accept(ValueType)) {
 				return false;
@@ -125,11 +124,11 @@ public class ZType  {
 	}
 
 	public final boolean IsVoidType() {
-		return (this.GetRealType() == ZType.VoidType);
+		return (this.GetRealType() == BType.VoidType);
 	}
 
 	@ZenMethod public boolean IsVarType() {
-		return (this.GetRealType() == ZType.VarType);
+		return (this.GetRealType() == BType.VarType);
 	}
 
 	public final boolean IsInferrableType() {
@@ -137,19 +136,19 @@ public class ZType  {
 	}
 
 	public final boolean IsTypeType() {
-		return (this.GetRealType() == ZType.TypeType);
+		return (this.GetRealType() == BType.TypeType);
 	}
 
 	public final boolean IsBooleanType() {
-		return (this.GetRealType() == ZType.BooleanType);
+		return (this.GetRealType() == BType.BooleanType);
 	}
 
 	public final boolean IsIntType() {
-		return (this.GetRealType() == ZType.IntType);
+		return (this.GetRealType() == BType.IntType);
 	}
 
 	public final boolean IsFloatType() {
-		return (this.GetRealType() == ZType.FloatType);
+		return (this.GetRealType() == BType.FloatType);
 	}
 
 	public final boolean IsNumberType() {
@@ -157,22 +156,22 @@ public class ZType  {
 	}
 
 	public final boolean IsStringType() {
-		return (this.GetRealType() == ZType.StringType);
+		return (this.GetRealType() == BType.StringType);
 	}
 
 	public final boolean IsArrayType() {
-		return (this.GetBaseType() == ZGenericType._ArrayType);
+		return (this.GetBaseType() == BGenericType._ArrayType);
 	}
 
 	public final boolean IsMapType() {
-		return (this.GetBaseType() == ZGenericType._MapType);
+		return (this.GetBaseType() == BGenericType._MapType);
 	}
 
 	public final boolean IsOpenType() {
-		return BLib._IsFlag(this.TypeFlag, ZType.OpenTypeFlag);
+		return BLib._IsFlag(this.TypeFlag, BType.OpenTypeFlag);
 	}
 
-	@ZenMethod public boolean IsMutableType(ZTypeChecker Gamma) {
+	@ZenMethod public boolean IsMutableType(BTypeChecker Gamma) {
 		//		if(Gamma.IsSupportMutable) {
 		//			return false;
 		//		}
@@ -180,7 +179,7 @@ public class ZType  {
 		return !Gamma.IsSupportMutable;
 	}
 
-	@ZenMethod public boolean IsNullableType(ZTypeChecker Gamma) {
+	@ZenMethod public boolean IsNullableType(BTypeChecker Gamma) {
 		//		if(Gamma.IsSupportMutable) {
 		//			return false;
 		//		}
@@ -201,14 +200,14 @@ public class ZType  {
 	//	}
 
 	public boolean IsFuncType() {
-		return (this.GetRealType() instanceof ZFuncType);
+		return (this.GetRealType() instanceof BFuncType);
 	}
 
 	public String StringfySignature(String FuncName) {
 		return FuncName;
 	}
 
-	public void Maybe(ZType T, ZToken SourceToken) {
+	public void Maybe(BType T, BToken SourceToken) {
 	}
 
 

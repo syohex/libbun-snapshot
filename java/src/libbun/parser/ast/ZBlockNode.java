@@ -24,40 +24,40 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZNameSpace;
-import libbun.parser.ZVisitor;
+import libbun.parser.BNameSpace;
+import libbun.parser.BVisitor;
 import libbun.util.BField;
 import libbun.util.Nullable;
 import libbun.util.Var;
 
 public class ZBlockNode extends ZListNode {
-	@BField public ZNameSpace NullableNameSpace;
+	@BField public BNameSpace NullableNameSpace;
 
-	public ZBlockNode(BNode ParentNode, @Nullable ZNameSpace NameSpace) {
+	public ZBlockNode(BNode ParentNode, @Nullable BNameSpace NameSpace) {
 		super(ParentNode, null, 0);
 		this.NullableNameSpace = NameSpace;
 	}
 
-	protected ZBlockNode(BNode ParentNode, @Nullable ZNameSpace NameSpace, int Init) {  // call by ZVarNode
+	protected ZBlockNode(BNode ParentNode, @Nullable BNameSpace NameSpace, int Init) {  // call by ZVarNode
 		super(ParentNode, null, Init);
 		this.NullableNameSpace = NameSpace;
 	}
 
-	public ZBlockNode(BNode ParentNode, @Nullable ZNameSpace NameSpace, BLetVarNode VarNode) {
+	public ZBlockNode(BNode ParentNode, @Nullable BNameSpace NameSpace, BLetVarNode VarNode) {
 		super(ParentNode, null, 1);
 		this.NullableNameSpace = NameSpace;
 		this.SetNode(0, VarNode);
 	}
 
-	public final ZNameSpace GetBlockNameSpace() {
+	public final BNameSpace GetBlockNameSpace() {
 		if(this.NullableNameSpace == null) {
-			@Var ZNameSpace NameSpace = this.GetNameSpace();
-			this.NullableNameSpace = new ZNameSpace(NameSpace.Generator, this);
+			@Var BNameSpace NameSpace = this.GetNameSpace();
+			this.NullableNameSpace = new BNameSpace(NameSpace.Generator, this);
 		}
 		return this.NullableNameSpace;
 	}
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitBlockNode(this);
 	}
 

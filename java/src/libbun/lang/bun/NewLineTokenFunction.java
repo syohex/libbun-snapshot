@@ -1,12 +1,12 @@
 package libbun.lang.bun;
 
-import libbun.parser.ZSourceContext;
+import libbun.parser.BSourceContext;
 import libbun.util.Var;
 import libbun.util.BTokenFunction;
 
 public class NewLineTokenFunction extends BTokenFunction {
 
-	@Override public boolean Invoke(ZSourceContext SourceContext) {
+	@Override public boolean Invoke(BSourceContext SourceContext) {
 		@Var int StartIndex = SourceContext.GetPosition() + 1;
 		SourceContext.MoveNext();
 		SourceContext.SkipWhiteSpace();

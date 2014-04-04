@@ -1,6 +1,6 @@
 package libbun.util;
 
-import libbun.parser.ZSourceContext;
+import libbun.parser.BSourceContext;
 
 public abstract class BTokenFunction extends BFunction {
 	public BTokenFunction(int TypeId, String Name) {
@@ -9,5 +9,5 @@ public abstract class BTokenFunction extends BFunction {
 	protected BTokenFunction() {
 		super(0,null);
 	}
-	public abstract boolean Invoke(ZSourceContext SourceContext);
+	public abstract boolean Invoke(BSourceContext SourceContext);
 }

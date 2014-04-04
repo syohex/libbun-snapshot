@@ -26,9 +26,9 @@ package libbun.encode.jvm;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
-import libbun.type.ZGenericType;
-import libbun.type.ZType;
-import libbun.type.ZTypePool;
+import libbun.type.BGenericType;
+import libbun.type.BType;
+import libbun.type.BTypePool;
 import libbun.util.BLib;
 
 
@@ -38,85 +38,85 @@ public class JavaMethodTable {
 
 	static {
 
-		Import("!", ZType.VarType, JavaOperatorApi.class, "Not");
-		Import("+", ZType.VarType, JavaOperatorApi.class, "Plus");
-		Import("-", ZType.VarType, JavaOperatorApi.class, "Minus");
-		Import("~", ZType.VarType, JavaOperatorApi.class, "BitwiseNot");
-		Import(ZType.VarType, "+", ZType.VarType, JavaOperatorApi.class, "Add");
-		Import(ZType.VarType, "-", ZType.VarType, JavaOperatorApi.class, "Sub");
-		Import(ZType.VarType, "*", ZType.VarType, JavaOperatorApi.class, "Mul");
-		Import(ZType.VarType, "/", ZType.VarType, JavaOperatorApi.class, "Div");
-		Import(ZType.VarType, "%", ZType.VarType, JavaOperatorApi.class, "Mod");
-		Import(ZType.VarType, "==", ZType.VarType, JavaOperatorApi.class, "Equals");
-		Import(ZType.VarType, "!=", ZType.VarType, JavaOperatorApi.class, "NotEquals");
-		Import(ZType.VarType, "<", ZType.VarType, JavaOperatorApi.class, "LessThan");
-		Import(ZType.VarType, "<=", ZType.VarType, JavaOperatorApi.class, "LessThanEquals");
-		Import(ZType.VarType, ">", ZType.VarType, JavaOperatorApi.class, "GreaterThan");
-		Import(ZType.VarType, ">=", ZType.VarType, JavaOperatorApi.class, "GreaterThanEquals");
-		Import(ZType.VarType, "&", ZType.VarType, JavaOperatorApi.class, "BitwiseAnd");
-		Import(ZType.VarType, "|", ZType.VarType, JavaOperatorApi.class, "BitwiseOr");
-		Import(ZType.VarType, "^", ZType.VarType, JavaOperatorApi.class, "BitwiseXor");
-		Import(ZType.VarType, "<<", ZType.VarType, JavaOperatorApi.class, "LeftShift");
-		Import(ZType.VarType, ">>", ZType.VarType, JavaOperatorApi.class, "RightShift");
+		Import("!", BType.VarType, JavaOperatorApi.class, "Not");
+		Import("+", BType.VarType, JavaOperatorApi.class, "Plus");
+		Import("-", BType.VarType, JavaOperatorApi.class, "Minus");
+		Import("~", BType.VarType, JavaOperatorApi.class, "BitwiseNot");
+		Import(BType.VarType, "+", BType.VarType, JavaOperatorApi.class, "Add");
+		Import(BType.VarType, "-", BType.VarType, JavaOperatorApi.class, "Sub");
+		Import(BType.VarType, "*", BType.VarType, JavaOperatorApi.class, "Mul");
+		Import(BType.VarType, "/", BType.VarType, JavaOperatorApi.class, "Div");
+		Import(BType.VarType, "%", BType.VarType, JavaOperatorApi.class, "Mod");
+		Import(BType.VarType, "==", BType.VarType, JavaOperatorApi.class, "Equals");
+		Import(BType.VarType, "!=", BType.VarType, JavaOperatorApi.class, "NotEquals");
+		Import(BType.VarType, "<", BType.VarType, JavaOperatorApi.class, "LessThan");
+		Import(BType.VarType, "<=", BType.VarType, JavaOperatorApi.class, "LessThanEquals");
+		Import(BType.VarType, ">", BType.VarType, JavaOperatorApi.class, "GreaterThan");
+		Import(BType.VarType, ">=", BType.VarType, JavaOperatorApi.class, "GreaterThanEquals");
+		Import(BType.VarType, "&", BType.VarType, JavaOperatorApi.class, "BitwiseAnd");
+		Import(BType.VarType, "|", BType.VarType, JavaOperatorApi.class, "BitwiseOr");
+		Import(BType.VarType, "^", BType.VarType, JavaOperatorApi.class, "BitwiseXor");
+		Import(BType.VarType, "<<", BType.VarType, JavaOperatorApi.class, "LeftShift");
+		Import(BType.VarType, ">>", BType.VarType, JavaOperatorApi.class, "RightShift");
 
-		Import("!", ZType.BooleanType, JavaOperatorApi.class, "Not");
-		Import("+", ZType.IntType, JavaOperatorApi.class, "Plus");
-		Import("-", ZType.IntType, JavaOperatorApi.class, "Minus");
-		Import("~", ZType.IntType, JavaOperatorApi.class, "BitwiseNot");
-		Import(ZType.IntType, "+", ZType.IntType, JavaOperatorApi.class, "Add");
-		Import(ZType.IntType, "-", ZType.IntType, JavaOperatorApi.class, "Sub");
-		Import(ZType.IntType, "*", ZType.IntType, JavaOperatorApi.class, "Mul");
-		Import(ZType.IntType, "/", ZType.IntType, JavaOperatorApi.class, "Div");
-		Import(ZType.IntType, "%", ZType.IntType, JavaOperatorApi.class, "Mod");
-		Import(ZType.IntType, "==", ZType.IntType, JavaOperatorApi.class, "Equals");
-		Import(ZType.IntType, "!=", ZType.IntType, JavaOperatorApi.class, "NotEquals");
-		Import(ZType.IntType, "<", ZType.IntType, JavaOperatorApi.class, "LessThan");
-		Import(ZType.IntType, "<=", ZType.IntType, JavaOperatorApi.class, "LessThanEquals");
-		Import(ZType.IntType, ">", ZType.IntType, JavaOperatorApi.class, "GreaterThan");
-		Import(ZType.IntType, ">=", ZType.IntType, JavaOperatorApi.class, "GreaterThanEquals");
-		Import(ZType.IntType, "&", ZType.IntType, JavaOperatorApi.class, "BitwiseAnd");
-		Import(ZType.IntType, "|", ZType.IntType, JavaOperatorApi.class, "BitwiseOr");
-		Import(ZType.IntType, "^", ZType.IntType, JavaOperatorApi.class, "BitwiseXor");
-		Import(ZType.IntType, "<<", ZType.IntType, JavaOperatorApi.class, "LeftShift");
-		Import(ZType.IntType, ">>", ZType.IntType, JavaOperatorApi.class, "RightShift");
+		Import("!", BType.BooleanType, JavaOperatorApi.class, "Not");
+		Import("+", BType.IntType, JavaOperatorApi.class, "Plus");
+		Import("-", BType.IntType, JavaOperatorApi.class, "Minus");
+		Import("~", BType.IntType, JavaOperatorApi.class, "BitwiseNot");
+		Import(BType.IntType, "+", BType.IntType, JavaOperatorApi.class, "Add");
+		Import(BType.IntType, "-", BType.IntType, JavaOperatorApi.class, "Sub");
+		Import(BType.IntType, "*", BType.IntType, JavaOperatorApi.class, "Mul");
+		Import(BType.IntType, "/", BType.IntType, JavaOperatorApi.class, "Div");
+		Import(BType.IntType, "%", BType.IntType, JavaOperatorApi.class, "Mod");
+		Import(BType.IntType, "==", BType.IntType, JavaOperatorApi.class, "Equals");
+		Import(BType.IntType, "!=", BType.IntType, JavaOperatorApi.class, "NotEquals");
+		Import(BType.IntType, "<", BType.IntType, JavaOperatorApi.class, "LessThan");
+		Import(BType.IntType, "<=", BType.IntType, JavaOperatorApi.class, "LessThanEquals");
+		Import(BType.IntType, ">", BType.IntType, JavaOperatorApi.class, "GreaterThan");
+		Import(BType.IntType, ">=", BType.IntType, JavaOperatorApi.class, "GreaterThanEquals");
+		Import(BType.IntType, "&", BType.IntType, JavaOperatorApi.class, "BitwiseAnd");
+		Import(BType.IntType, "|", BType.IntType, JavaOperatorApi.class, "BitwiseOr");
+		Import(BType.IntType, "^", BType.IntType, JavaOperatorApi.class, "BitwiseXor");
+		Import(BType.IntType, "<<", BType.IntType, JavaOperatorApi.class, "LeftShift");
+		Import(BType.IntType, ">>", BType.IntType, JavaOperatorApi.class, "RightShift");
 
-		Import("+", ZType.FloatType, JavaOperatorApi.class, "Plus");
-		Import("-", ZType.FloatType, JavaOperatorApi.class, "Minus");
-		Import(ZType.FloatType, "+", ZType.FloatType, JavaOperatorApi.class, "Add");
-		Import(ZType.FloatType, "-", ZType.FloatType, JavaOperatorApi.class, "Sub");
-		Import(ZType.FloatType, "*", ZType.FloatType, JavaOperatorApi.class, "Mul");
-		Import(ZType.FloatType, "/", ZType.FloatType, JavaOperatorApi.class, "Div");
-		Import(ZType.FloatType, "%", ZType.FloatType, JavaOperatorApi.class, "Mod");
-		Import(ZType.FloatType, "==", ZType.FloatType, JavaOperatorApi.class, "Equals");
-		Import(ZType.FloatType, "!=", ZType.FloatType, JavaOperatorApi.class, "NotEquals");
-		Import(ZType.FloatType, "<", ZType.FloatType, JavaOperatorApi.class, "LessThan");
-		Import(ZType.FloatType, "<=", ZType.FloatType, JavaOperatorApi.class, "LessThanEquals");
-		Import(ZType.FloatType, ">", ZType.FloatType, JavaOperatorApi.class, "GreaterThan");
-		Import(ZType.FloatType, ">=", ZType.FloatType, JavaOperatorApi.class, "GreaterThanEquals");
+		Import("+", BType.FloatType, JavaOperatorApi.class, "Plus");
+		Import("-", BType.FloatType, JavaOperatorApi.class, "Minus");
+		Import(BType.FloatType, "+", BType.FloatType, JavaOperatorApi.class, "Add");
+		Import(BType.FloatType, "-", BType.FloatType, JavaOperatorApi.class, "Sub");
+		Import(BType.FloatType, "*", BType.FloatType, JavaOperatorApi.class, "Mul");
+		Import(BType.FloatType, "/", BType.FloatType, JavaOperatorApi.class, "Div");
+		Import(BType.FloatType, "%", BType.FloatType, JavaOperatorApi.class, "Mod");
+		Import(BType.FloatType, "==", BType.FloatType, JavaOperatorApi.class, "Equals");
+		Import(BType.FloatType, "!=", BType.FloatType, JavaOperatorApi.class, "NotEquals");
+		Import(BType.FloatType, "<", BType.FloatType, JavaOperatorApi.class, "LessThan");
+		Import(BType.FloatType, "<=", BType.FloatType, JavaOperatorApi.class, "LessThanEquals");
+		Import(BType.FloatType, ">", BType.FloatType, JavaOperatorApi.class, "GreaterThan");
+		Import(BType.FloatType, ">=", BType.FloatType, JavaOperatorApi.class, "GreaterThanEquals");
 
-		Import(ZType.StringType, "+", ZType.StringType, JavaOperatorApi.class, "Add");
-		Import(ZType.StringType, "==", ZType.StringType, JavaOperatorApi.class, "Equals");
-		Import(ZType.StringType, "!=", ZType.StringType, JavaOperatorApi.class, "NotEquals");
-		Import(ZType.StringType, "[]", ZType.IntType, JavaOperatorApi.class, "GetIndex");
+		Import(BType.StringType, "+", BType.StringType, JavaOperatorApi.class, "Add");
+		Import(BType.StringType, "==", BType.StringType, JavaOperatorApi.class, "Equals");
+		Import(BType.StringType, "!=", BType.StringType, JavaOperatorApi.class, "NotEquals");
+		Import(BType.StringType, "[]", BType.IntType, JavaOperatorApi.class, "GetIndex");
 
-		ZType BooleanArrayType = ZTypePool._GetGenericType1(ZGenericType._ArrayType, ZType.BooleanType);
-		ZType IntArrayType = ZTypePool._GetGenericType1(ZGenericType._ArrayType, ZType.IntType);
-		ZType FloatArrayType = ZTypePool._GetGenericType1(ZGenericType._ArrayType, ZType.FloatType);
-		ZType StringArrayType = ZTypePool._GetGenericType1(ZGenericType._ArrayType, ZType.StringType);
+		BType BooleanArrayType = BTypePool._GetGenericType1(BGenericType._ArrayType, BType.BooleanType);
+		BType IntArrayType = BTypePool._GetGenericType1(BGenericType._ArrayType, BType.IntType);
+		BType FloatArrayType = BTypePool._GetGenericType1(BGenericType._ArrayType, BType.FloatType);
+		BType StringArrayType = BTypePool._GetGenericType1(BGenericType._ArrayType, BType.StringType);
 
-		Import(ZGenericType._ArrayType, "[]", ZType.IntType, libbun.util.ZObjectArray.class, "GetIndex");
-		Import(ZGenericType._ArrayType, "[]=", ZType.IntType, libbun.util.ZObjectArray.class, "SetIndex", Object.class);
-		Import(BooleanArrayType, "[]", ZType.IntType, libbun.util.BBooleanArray.class, "GetIndex");
-		Import(BooleanArrayType, "[]=", ZType.IntType, libbun.util.BBooleanArray.class, "SetIndex", boolean.class);
-		Import(IntArrayType, "[]", ZType.IntType, libbun.util.BIntArray.class, "GetIndex");
-		Import(IntArrayType, "[]=", ZType.IntType, libbun.util.BIntArray.class, "SetIndex", long.class);
-		Import(FloatArrayType, "[]", ZType.IntType, libbun.util.BFloatArray.class, "GetIndex");
-		Import(FloatArrayType, "[]=", ZType.IntType, libbun.util.BFloatArray.class, "SetIndex", double.class);
-		Import(StringArrayType, "[]", ZType.IntType, libbun.util.BStringArray.class, "GetIndex");
-		Import(StringArrayType, "[]=", ZType.IntType, libbun.util.BStringArray.class, "SetIndex", String.class);
+		Import(BGenericType._ArrayType, "[]", BType.IntType, libbun.util.ZObjectArray.class, "GetIndex");
+		Import(BGenericType._ArrayType, "[]=", BType.IntType, libbun.util.ZObjectArray.class, "SetIndex", Object.class);
+		Import(BooleanArrayType, "[]", BType.IntType, libbun.util.BBooleanArray.class, "GetIndex");
+		Import(BooleanArrayType, "[]=", BType.IntType, libbun.util.BBooleanArray.class, "SetIndex", boolean.class);
+		Import(IntArrayType, "[]", BType.IntType, libbun.util.BIntArray.class, "GetIndex");
+		Import(IntArrayType, "[]=", BType.IntType, libbun.util.BIntArray.class, "SetIndex", long.class);
+		Import(FloatArrayType, "[]", BType.IntType, libbun.util.BFloatArray.class, "GetIndex");
+		Import(FloatArrayType, "[]=", BType.IntType, libbun.util.BFloatArray.class, "SetIndex", double.class);
+		Import(StringArrayType, "[]", BType.IntType, libbun.util.BStringArray.class, "GetIndex");
+		Import(StringArrayType, "[]=", BType.IntType, libbun.util.BStringArray.class, "SetIndex", String.class);
 
-		Import(ZGenericType._MapType, "[]", ZType.StringType, libbun.util.ZObjectMap.class, "GetIndex");
-		Import(ZGenericType._MapType, "[]=", ZType.StringType, libbun.util.ZObjectMap.class, "SetIndex", Object.class);
+		Import(BGenericType._MapType, "[]", BType.StringType, libbun.util.ZObjectMap.class, "GetIndex");
+		Import(BGenericType._MapType, "[]=", BType.StringType, libbun.util.ZObjectMap.class, "SetIndex", Object.class);
 
 
 		Import(boolean.class, JavaCastApi.class, "toObject");
@@ -192,16 +192,16 @@ public class JavaMethodTable {
 		}
 	}
 
-	static String BinaryKey(ZType T1, String Op, ZType T2) {
+	static String BinaryKey(BType T1, String Op, BType T2) {
 		return T1.GetUniqueName()+Op+T2.GetUniqueName();
 	}
-	static String UnaryKey(String Op, ZType T2) {
+	static String UnaryKey(String Op, BType T2) {
 		return Op+T2.GetUniqueName();
 	}
 	static String CastKey(Class<?> T1, Class<?> T2) {
 		return T1.getCanonicalName() + ":" + T2.getCanonicalName();
 	}
-	static void Import(ZType T1, String Op, ZType T2, Class<?> BaseClass, String Name) {
+	static void Import(BType T1, String Op, BType T2, Class<?> BaseClass, String Name) {
 		try {
 			Method sMethod = BaseClass.getMethod(Name, JavaTypeTable.GetJavaClass(T1, null), JavaTypeTable.GetJavaClass(T2, null));
 			MethodMap.put(BinaryKey(T1, Op, T2), sMethod);
@@ -209,7 +209,7 @@ public class JavaMethodTable {
 			System.err.println("FIXME:" + e);
 		}
 	}
-	static void Import(ZType T1, String Op, ZType T2, Class<?> BaseClass, String Name, Class<?> T3) {
+	static void Import(BType T1, String Op, BType T2, Class<?> BaseClass, String Name, Class<?> T3) {
 		try {
 			Method sMethod = BaseClass.getMethod(Name, JavaTypeTable.GetJavaClass(T1, null), JavaTypeTable.GetJavaClass(T2, null), T3);
 			MethodMap.put(BinaryKey(T1, Op, T2), sMethod);
@@ -217,7 +217,7 @@ public class JavaMethodTable {
 			System.err.println("FIXME:" + e);
 		}
 	}
-	static void Import(String Op, ZType T1, Class<?> BaseClass, String Name) {
+	static void Import(String Op, BType T1, Class<?> BaseClass, String Name) {
 		try {
 			Method sMethod = BaseClass.getMethod(Name, JavaTypeTable.GetJavaClass(T1, null));
 			MethodMap.put(UnaryKey(Op, T1), sMethod);
@@ -238,12 +238,12 @@ public class JavaMethodTable {
 		return MethodMap.get(Name);
 	}
 
-	public static Method GetBinaryStaticMethod(ZType T1, String Op, ZType T2) {
+	public static Method GetBinaryStaticMethod(BType T1, String Op, BType T2) {
 		Method sMethod = MethodMap.get(BinaryKey(T1, Op, T2));
 		while(sMethod == null) {
 			BLib._PrintDebug("unfound binary operator" + T1 + " " + Op + " " + T2);
 			if(T1.IsVarType()) {
-				sMethod = MethodMap.get(BinaryKey(ZType.VarType, Op, ZType.VarType));
+				sMethod = MethodMap.get(BinaryKey(BType.VarType, Op, BType.VarType));
 				break;
 			}
 			T1 = T1.GetSuperType();
@@ -252,11 +252,11 @@ public class JavaMethodTable {
 		return sMethod;
 	}
 
-	public static Method GetUnaryStaticMethod(String Op, ZType T2) {
+	public static Method GetUnaryStaticMethod(String Op, BType T2) {
 		Method sMethod = MethodMap.get(UnaryKey(Op, T2));
 		if(sMethod == null) {
 			// if undefined Object "op" Object must be default
-			sMethod = MethodMap.get(UnaryKey(Op, ZType.VarType));
+			sMethod = MethodMap.get(UnaryKey(Op, BType.VarType));
 		}
 		return sMethod;
 	}

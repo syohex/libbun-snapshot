@@ -24,7 +24,7 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZVisitor;
+import libbun.parser.BVisitor;
 import libbun.util.Var;
 
 public final class ZMapLiteralNode extends ZListNode {
@@ -38,7 +38,7 @@ public final class ZMapLiteralNode extends ZListNode {
 		}
 		return null;
 	}
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitMapLiteralNode(this);
 	}
 }

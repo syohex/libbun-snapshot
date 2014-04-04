@@ -24,11 +24,11 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZGenerator;
-import libbun.parser.ZVisitor;
-import libbun.type.ZFuncType;
-import libbun.type.ZType;
-import libbun.type.ZTypePool;
+import libbun.parser.BGenerator;
+import libbun.parser.BVisitor;
+import libbun.type.BFuncType;
+import libbun.type.BType;
+import libbun.type.BTypePool;
 import libbun.util.BField;
 import libbun.util.Var;
 import libbun.util.BArray;
@@ -38,30 +38,30 @@ public class ZFunctionNode extends ZListNode {
 	public static final int _TypeInfo = 1;
 	public final static int _Block    = 2;
 
-	@BField public ZType  GivenType = null;
+	@BField public BType  GivenType = null;
 	@BField public String GivenName = null;
 
 	@BField public boolean       IsExport = false;
 	@BField public ZFunctionNode ParentFunctionNode = null;
-	@BField public ZFuncType     ResolvedFuncType = null;
+	@BField public BFuncType     ResolvedFuncType = null;
 
 	public ZFunctionNode(BNode ParentNode) {
 		super(ParentNode, null, 3);
 	}
 
-	public final ZType ReturnType() {
+	public final BType ReturnType() {
 		if(this.GivenType == null) {
 			if(this.AST[ZFunctionNode._TypeInfo] != null) {
 				this.GivenType = this.AST[ZFunctionNode._TypeInfo].Type;
 			}
 			else {
-				this.GivenType = ZType.VarType;
+				this.GivenType = BType.VarType;
 			}
 		}
 		return this.GivenType;
 	}
 
-	public final void SetReturnType(ZType Type) {
+	public final void SetReturnType(BType Type) {
 		this.GivenType = Type;
 	}
 
@@ -72,7 +72,7 @@ public class ZFunctionNode extends ZListNode {
 		return this.GivenName;
 	}
 
-	public final String GetUniqueName(ZGenerator Generator) {
+	public final String GetUniqueName(BGenerator Generator) {
 		@Var String FuncName = this.FuncName();
 		if(FuncName == null) {
 			FuncName = "f";
@@ -89,7 +89,7 @@ public class ZFunctionNode extends ZListNode {
 		return null;
 	}
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitFunctionNode(this);
 	}
 
@@ -101,18 +101,18 @@ public class ZFunctionNode extends ZListNode {
 		return null;
 	}
 
-	public final ZFuncType GetFuncType() {
+	public final BFuncType GetFuncType() {
 		if(this.ResolvedFuncType == null) {
-			@Var BArray<ZType> TypeList = new BArray<ZType>(new ZType[this.GetListSize()+2]);
+			@Var BArray<BType> TypeList = new BArray<BType>(new BType[this.GetListSize()+2]);
 			@Var int i = 0;
 			while(i < this.GetListSize()) {
 				@Var BLetVarNode Node = this.GetParamNode(i);
-				@Var ZType ParamType = Node.DeclType().GetRealType();
+				@Var BType ParamType = Node.DeclType().GetRealType();
 				TypeList.add(ParamType);
 				i = i + 1;
 			}
 			TypeList.add(this.ReturnType().GetRealType());
-			@Var ZFuncType FuncType = ZTypePool._LookupFuncType2(TypeList);
+			@Var BFuncType FuncType = BTypePool._LookupFuncType2(TypeList);
 			if(!FuncType.IsVarType()) {
 				this.ResolvedFuncType = FuncType;
 			}
@@ -122,7 +122,7 @@ public class ZFunctionNode extends ZListNode {
 	}
 
 	public final String GetSignature() {
-		@Var ZFuncType FuncType = this.GetFuncType();
+		@Var BFuncType FuncType = this.GetFuncType();
 		return FuncType.StringfySignature(this.FuncName());
 	}
 

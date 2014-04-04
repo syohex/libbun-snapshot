@@ -1,13 +1,11 @@
-package libbun.parser;
+package libbun.type;
 
-import libbun.type.ZFunc;
-import libbun.type.ZFuncType;
 import libbun.util.BField;
 
-public class ZMacroFunc extends ZFunc {
+public class BMacroFunc extends BFunc {
 	@BField public final String RequiredLibrary;
 	@BField public final String MacroText;
-	public ZMacroFunc(String FuncName, ZFuncType FuncType, String LibName, String MacroText) {
+	public BMacroFunc(String FuncName, BFuncType FuncType, String LibName, String MacroText) {
 		super(0, FuncName, FuncType);
 		this.MacroText = MacroText;
 		this.RequiredLibrary = LibName;

@@ -1,7 +1,7 @@
 package libbun.lang.bun;
 
-import libbun.parser.ZToken;
-import libbun.parser.ZTokenContext;
+import libbun.parser.BToken;
+import libbun.parser.BTokenContext;
 import libbun.parser.ast.ZClassNode;
 import libbun.parser.ast.ZErrorNode;
 import libbun.parser.ast.ZFunctionNode;
@@ -12,19 +12,19 @@ import libbun.util.BMatchFunction;
 
 public class ExportPatternFunction extends BMatchFunction {
 
-	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
-		@Var ZToken NameToken = TokenContext.GetToken(ZTokenContext._MoveNext);
-		@Var BNode Node = TokenContext.ParsePattern(ParentNode, "function", ZTokenContext._Optional);
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		@Var BToken NameToken = TokenContext.GetToken(BTokenContext._MoveNext);
+		@Var BNode Node = TokenContext.ParsePattern(ParentNode, "function", BTokenContext._Optional);
 		if(Node instanceof ZFunctionNode) {
 			((ZFunctionNode)Node).IsExport = true;
 			return Node;
 		}
-		Node = TokenContext.ParsePattern(ParentNode, "let", ZTokenContext._Optional);
+		Node = TokenContext.ParsePattern(ParentNode, "let", BTokenContext._Optional);
 		if(Node instanceof BLetVarNode) {
 			((BLetVarNode)Node).NameFlag = ((BLetVarNode)Node).NameFlag | BLetVarNode._IsExport;
 			return Node;
 		}
-		Node = TokenContext.ParsePattern(ParentNode, "class", ZTokenContext._Optional);
+		Node = TokenContext.ParsePattern(ParentNode, "class", BTokenContext._Optional);
 		if(Node instanceof ZClassNode) {
 			((ZClassNode)Node).IsExport = true;
 			return Node;

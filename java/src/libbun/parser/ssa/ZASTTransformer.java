@@ -1,6 +1,6 @@
 package libbun.parser.ssa;
 
-import libbun.parser.ZVisitor;
+import libbun.parser.BVisitor;
 import libbun.parser.ast.ZAndNode;
 import libbun.parser.ast.ZArrayLiteralNode;
 import libbun.parser.ast.BAsmNode;
@@ -48,7 +48,7 @@ import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
 import libbun.util.Var;
 
-public class ZASTTransformer extends ZVisitor {
+public class ZASTTransformer extends BVisitor {
 	private BNode TransformedValue;
 	public ZASTTransformer() {
 		this.TransformedValue = null;

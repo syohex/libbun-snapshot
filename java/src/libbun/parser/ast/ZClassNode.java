@@ -24,9 +24,9 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZVisitor;
-import libbun.type.ZClassType;
-import libbun.type.ZType;
+import libbun.parser.BVisitor;
+import libbun.type.BClassType;
+import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.Var;
 
@@ -35,7 +35,7 @@ public final class ZClassNode extends ZListNode {
 	public static final int _TypeInfo = 1;
 
 	@BField public String  GivenName = null;
-	@BField public ZClassType ClassType = null;
+	@BField public BClassType ClassType = null;
 	@BField public boolean IsExport = false;
 
 	public ZClassNode(BNode ParentNode) {
@@ -49,12 +49,12 @@ public final class ZClassNode extends ZListNode {
 		return this.GivenName;
 	}
 
-	public final ZType SuperType() {
+	public final BType SuperType() {
 		if(this.AST[BLetVarNode._TypeInfo] != null) {
 			return this.AST[BLetVarNode._TypeInfo].Type;
 		}
 		else {
-			return ZClassType._ObjectType;
+			return BClassType._ObjectType;
 		}
 	}
 
@@ -66,7 +66,7 @@ public final class ZClassNode extends ZListNode {
 		return null;
 	}
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitClassNode(this);
 	}
 }

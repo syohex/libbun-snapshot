@@ -24,22 +24,22 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZGenerator;
-import libbun.parser.ZMacroFunc;
-import libbun.parser.ZSyntax;
-import libbun.parser.ZToken;
-import libbun.parser.ZTokenContext;
-import libbun.parser.ZVisitor;
-import libbun.type.ZFunc;
+import libbun.parser.BGenerator;
+import libbun.parser.BSyntax;
+import libbun.parser.BToken;
+import libbun.parser.BTokenContext;
+import libbun.parser.BVisitor;
+import libbun.type.BFunc;
+import libbun.type.BMacroFunc;
 import libbun.util.BField;
 import libbun.util.Var;
 
 public class ZBinaryNode extends BNode {
 	public final static int _Left = 0;
 	public final static int _Right = 1;
-	@BField public ZSyntax Pattern;
+	@BField public BSyntax Pattern;
 
-	public ZBinaryNode(BNode ParentNode, ZToken SourceToken, BNode Left, ZSyntax Pattern) {
+	public ZBinaryNode(BNode ParentNode, BToken SourceToken, BNode Left, BSyntax Pattern) {
 		super(ParentNode, SourceToken, 2);
 		this.SetNode(ZBinaryNode._Left, Left);
 		assert(Pattern != null);
@@ -74,8 +74,8 @@ public class ZBinaryNode extends BNode {
 		return RightNode;
 	}
 
-	public final BNode AppendParsedRightNode(BNode ParentNode, ZTokenContext TokenContext) {
-		@Var BNode RightNode = TokenContext.ParsePattern(ParentNode, "$Expression$", ZTokenContext._Required);
+	public final BNode AppendParsedRightNode(BNode ParentNode, BTokenContext TokenContext) {
+		@Var BNode RightNode = TokenContext.ParsePattern(ParentNode, "$Expression$", BTokenContext._Required);
 		if(RightNode.IsErrorNode()) {
 			return RightNode;
 		}
@@ -86,12 +86,12 @@ public class ZBinaryNode extends BNode {
 		return this;
 	}
 
-	public final BNode TryMacroNode(ZGenerator Generator) {
+	public final BNode TryMacroNode(BGenerator Generator) {
 		if(!this.GetAstType(ZBinaryNode._Left).IsVarType() && !this.GetAstType(ZBinaryNode._Right).IsVarType()) {
 			@Var String Op = this.SourceToken.GetText();
-			@Var ZFunc Func = Generator.GetDefinedFunc(Op, this.GetAstType(ZBinaryNode._Left), 2);
-			if(Func instanceof ZMacroFunc) {
-				@Var ZMacroNode MacroNode = new ZMacroNode(this.ParentNode, this.SourceToken, (ZMacroFunc)Func);
+			@Var BFunc Func = Generator.GetDefinedFunc(Op, this.GetAstType(ZBinaryNode._Left), 2);
+			if(Func instanceof BMacroFunc) {
+				@Var ZMacroNode MacroNode = new ZMacroNode(this.ParentNode, this.SourceToken, (BMacroFunc)Func);
 				MacroNode.Append(this.LeftNode());
 				MacroNode.Append(this.RightNode());
 				return MacroNode;
@@ -100,7 +100,7 @@ public class ZBinaryNode extends BNode {
 		return this;
 	}
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitBinaryNode(this);
 	}
 

@@ -24,10 +24,10 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZToken;
+import libbun.parser.BToken;
 
 public final class ZEmptyNode extends ZLocalDefinedNode {
-	public ZEmptyNode(BNode ParentNode, ZToken Token) {
+	public ZEmptyNode(BNode ParentNode, BToken Token) {
 		super(ParentNode, Token, 0);
 	}
 }

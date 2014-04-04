@@ -27,8 +27,8 @@ package libbun.main;
 import java.io.IOException;
 
 import libbun.lang.konoha.KonohaGrammar;
-import libbun.parser.ZGenerator;
-import libbun.parser.ZParserConst;
+import libbun.parser.BGenerator;
+import libbun.parser.BConst;
 import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.BStringArray;
@@ -122,7 +122,7 @@ public class Main {
 
 	public final static void InvokeLibBun(String[] Args) {
 		ParseCommand(Args);
-		@Var ZGenerator Generator = BLib._InitGenerator(Target, KonohaGrammar.class.getName());
+		@Var BGenerator Generator = BLib._InitGenerator(Target, KonohaGrammar.class.getName());
 		if(InputFileName != null) {
 			Generator.LoadFile(InputFileName, null);
 		}
@@ -137,9 +137,9 @@ public class Main {
 		Main.InvokeLibBun(Args);
 	}
 
-	public final static void PerformShell(ZGenerator Generator) {
-		BLib._PrintLine(ZParserConst.ProgName + ZParserConst.Version + " (" + ZParserConst.CodeName + ") on " + BLib._GetPlatform());
-		BLib._PrintLine(ZParserConst.Copyright);
+	public final static void PerformShell(BGenerator Generator) {
+		BLib._PrintLine(BConst.ProgName + BConst.Version + " (" + BConst.CodeName + ") on " + BLib._GetPlatform());
+		BLib._PrintLine(BConst.Copyright);
 		BLib._PrintLine("Accept: " + Generator.LangInfo.GetGrammarInfo());
 		BLib._PrintLine("Produce: " + Generator.LangInfo.LangVersion);
 		@Var int linenum = 1;

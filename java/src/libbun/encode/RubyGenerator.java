@@ -10,7 +10,7 @@ import libbun.parser.ast.ZInstanceOfNode;
 import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
-import libbun.type.ZType;
+import libbun.type.BType;
 
 
 public class RubyGenerator extends ZSourceGenerator {
@@ -32,10 +32,10 @@ public class RubyGenerator extends ZSourceGenerator {
 		this.FalseLiteral = "false";
 		this.NullLiteral = "nil";
 		this.TopType = "Object";
-		this.SetNativeType(ZType.BooleanType, "Object"); // No boolean type in Ruby.
-		this.SetNativeType(ZType.IntType, "Fixnum");
-		this.SetNativeType(ZType.FloatType, "Float");
-		this.SetNativeType(ZType.StringType, "String");
+		this.SetNativeType(BType.BooleanType, "Object"); // No boolean type in Ruby.
+		this.SetNativeType(BType.IntType, "Fixnum");
+		this.SetNativeType(BType.FloatType, "Float");
+		this.SetNativeType(BType.StringType, "String");
 
 		this.EngineManager = new ScriptEngineManager();
 		this.Engine = this.EngineManager.getEngineByName("jruby");

@@ -1,6 +1,6 @@
 package libbun.parser.ast;
 
-import libbun.parser.ZVisitor;
+import libbun.parser.BVisitor;
 
 
 public class ZDefaultValueNode extends BNode {
@@ -9,7 +9,7 @@ public class ZDefaultValueNode extends BNode {
 		super(null, null, 0);
 	}
 
-	@Override public final void Accept(ZVisitor Visitor) {
+	@Override public final void Accept(BVisitor Visitor) {
 		Visitor.VisitDefaultValueNode(this);
 	}
 

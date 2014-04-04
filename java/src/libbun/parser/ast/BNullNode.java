@@ -24,14 +24,14 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZToken;
-import libbun.parser.ZVisitor;
+import libbun.parser.BToken;
+import libbun.parser.BVisitor;
 
 public final class BNullNode extends BConstNode {
-	public BNullNode(BNode ParentNode, ZToken SourceToken) {
+	public BNullNode(BNode ParentNode, BToken SourceToken) {
 		super(ParentNode, SourceToken);
 	}
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitNullNode(this);
 	}
 }

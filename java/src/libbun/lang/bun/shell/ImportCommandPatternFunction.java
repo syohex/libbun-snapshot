@@ -2,10 +2,10 @@ package libbun.lang.bun.shell;
 
 import java.util.ArrayList;
 
-import libbun.parser.ZNameSpace;
-import libbun.parser.ZSyntax;
-import libbun.parser.ZToken;
-import libbun.parser.ZTokenContext;
+import libbun.parser.BNameSpace;
+import libbun.parser.BSyntax;
+import libbun.parser.BToken;
+import libbun.parser.BTokenContext;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZEmptyNode;
 import libbun.util.BLib;
@@ -27,24 +27,24 @@ public class ImportCommandPatternFunction extends BMatchFunction {
 		return ShellUtils._GetUnixCommand(cmd);
 	}
 
-	private ZToken ToCommandToken(ArrayList<ZToken> TokenList) {
+	private BToken ToCommandToken(ArrayList<BToken> TokenList) {
 		if(TokenList.isEmpty()) {
 			return null;
 		}
 		@Var int StartIndex = TokenList.get(0).StartIndex;
 		@Var int EndIndex = TokenList.get(TokenList.size() - 1).EndIndex;
-		@Var ZToken CommandToken = new ZToken(TokenList.get(0).Source, StartIndex, EndIndex);
+		@Var BToken CommandToken = new BToken(TokenList.get(0).Source, StartIndex, EndIndex);
 		TokenList.clear();
 		return CommandToken;
 	}
 
-	private void SetCommandSymbol(BNode ParentNode, ArrayList<ZToken> TokenList) {
-		@Var ZToken CommandToken = this.ToCommandToken(TokenList);
+	private void SetCommandSymbol(BNode ParentNode, ArrayList<BToken> TokenList) {
+		@Var BToken CommandToken = this.ToCommandToken(TokenList);
 		if(CommandToken == null) {
 			return;
 		}
 		@Var String CommandPath = this.ResolveHome(CommandToken.GetText());
-		@Var ZNameSpace NameSpace = ParentNode.GetNameSpace();
+		@Var BNameSpace NameSpace = ParentNode.GetNameSpace();
 		@Var int loc = CommandPath.lastIndexOf('/');
 		@Var String Command = CommandPath;
 		if(loc != -1) {
@@ -62,7 +62,7 @@ public class ImportCommandPatternFunction extends BMatchFunction {
 			}
 			CommandPath = FullPath;
 		}
-		@Var ZSyntax Syntax = NameSpace.GetSyntaxPattern(Command);
+		@Var BSyntax Syntax = NameSpace.GetSyntaxPattern(Command);
 		if(Syntax != null && !(Syntax.MatchFunc instanceof CommandSymbolPatternFunction)) {
 			if(BLib.DebugMode) {
 				System.err.println("found duplicated syntax pattern: " + Syntax);
@@ -75,11 +75,11 @@ public class ImportCommandPatternFunction extends BMatchFunction {
 	}
 
 	@Override
-	public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
-		@Var ArrayList<ZToken> TokenList = new ArrayList<ZToken>();
+	public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		@Var ArrayList<BToken> TokenList = new ArrayList<BToken>();
 		TokenContext.MoveNext();
 		while(TokenContext.HasNext()) {
-			@Var ZToken Token = TokenContext.GetToken();
+			@Var BToken Token = TokenContext.GetToken();
 			if(Token.EqualsText(";") || Token.IsIndent()) {
 				break;
 			}

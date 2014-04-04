@@ -24,10 +24,10 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZMacroFunc;
-import libbun.parser.ZVisitor;
-import libbun.type.ZFuncType;
-import libbun.type.ZType;
+import libbun.parser.BVisitor;
+import libbun.type.BFuncType;
+import libbun.type.BMacroFunc;
+import libbun.type.BType;
 import libbun.util.Nullable;
 import libbun.util.Var;
 
@@ -56,26 +56,26 @@ public final class ZFuncCallNode extends ZListNode {
 		return null;
 	}
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitFuncCallNode(this);
 	}
 
-	public final ZType GetRecvType() {
+	public final BType GetRecvType() {
 		if(this.GetListSize() > 0) {
 			return this.GetListAt(0).Type.GetRealType();
 		}
-		return ZType.VoidType;
+		return BType.VoidType;
 	}
 
-	public final ZFuncType GetFuncType() {
-		@Var ZType FType = this.FunctorNode().Type;
-		if(FType instanceof ZFuncType) {
-			return (ZFuncType)FType;
+	public final BFuncType GetFuncType() {
+		@Var BType FType = this.FunctorNode().Type;
+		if(FType instanceof BFuncType) {
+			return (BFuncType)FType;
 		}
 		return null;
 	}
 
-	public ZMacroNode ToMacroNode(ZMacroFunc MacroFunc) {
+	public ZMacroNode ToMacroNode(BMacroFunc MacroFunc) {
 		@Var ZMacroNode MacroNode = new ZMacroNode(this.ParentNode, this.FunctorNode().SourceToken, MacroFunc);
 		@Var int i = 0;
 		while(i < this.GetListSize()) {

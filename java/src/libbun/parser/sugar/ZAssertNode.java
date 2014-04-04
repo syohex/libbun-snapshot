@@ -1,16 +1,16 @@
 package libbun.parser.sugar;
 
-import libbun.parser.ZGenerator;
-import libbun.parser.ZMacroFunc;
-import libbun.parser.ZTypeChecker;
+import libbun.parser.BGenerator;
+import libbun.parser.BTypeChecker;
 import libbun.parser.ast.ZDesugarNode;
 import libbun.parser.ast.ZFuncCallNode;
 import libbun.parser.ast.ZListNode;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.BStringNode;
 import libbun.parser.ast.ZSugarNode;
-import libbun.type.ZFuncType;
-import libbun.type.ZType;
+import libbun.type.BFuncType;
+import libbun.type.BMacroFunc;
+import libbun.type.BType;
 import libbun.util.Var;
 
 public class ZAssertNode extends ZSugarNode {
@@ -20,8 +20,8 @@ public class ZAssertNode extends ZSugarNode {
 		super(ParentNode, null, 1);
 	}
 
-	@Override public ZDesugarNode DeSugar(ZGenerator Generator, ZTypeChecker TypeChecker) {
-		@Var ZMacroFunc Func = Generator.GetMacroFunc("assert", ZType.BooleanType, 2);
+	@Override public ZDesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChecker) {
+		@Var BMacroFunc Func = Generator.GetMacroFunc("assert", BType.BooleanType, 2);
 		if(Func != null) {
 			@Var ZListNode FuncNode = TypeChecker.CreateDefinedFuncCallNode(this.ParentNode, this.SourceToken, Func);
 			FuncNode.Append(this.AST[ZAssertNode._Expr]);
@@ -29,7 +29,7 @@ public class ZAssertNode extends ZSugarNode {
 			return new ZDesugarNode(this, FuncNode);
 		}
 		else {
-			@Var ZFuncCallNode MacroNode = TypeChecker.CreateFuncCallNode(this.ParentNode, this.SourceToken, "assert", ZFuncType._FuncType);
+			@Var ZFuncCallNode MacroNode = TypeChecker.CreateFuncCallNode(this.ParentNode, this.SourceToken, "assert", BFuncType._FuncType);
 			MacroNode.Append(this.AST[ZAssertNode._Expr]);
 			return new ZDesugarNode(this, MacroNode);
 		}

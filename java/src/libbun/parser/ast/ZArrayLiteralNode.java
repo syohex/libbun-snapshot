@@ -24,13 +24,13 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZVisitor;
+import libbun.parser.BVisitor;
 
 public final class ZArrayLiteralNode extends ZListNode {
 	public ZArrayLiteralNode(BNode ParentNode) {
 		super(ParentNode, null, 0);
 	}
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitArrayLiteralNode(this);
 	}
 }

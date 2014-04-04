@@ -1,13 +1,13 @@
 package libbun.lang.bun;
 
-import libbun.parser.ZSourceContext;
+import libbun.parser.BSourceContext;
 import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.BTokenFunction;
 
 public class NumberLiteralTokenFunction extends BTokenFunction {
 
-	public final static char _ParseDigit(ZSourceContext SourceContext) {
+	public final static char _ParseDigit(BSourceContext SourceContext) {
 		@Var char ch = '\0';
 		while(SourceContext.HasChar()) {
 			ch = SourceContext.GetCurrentChar();
@@ -19,7 +19,7 @@ public class NumberLiteralTokenFunction extends BTokenFunction {
 		return ch;
 	}
 
-	@Override public boolean Invoke(ZSourceContext SourceContext) {
+	@Override public boolean Invoke(BSourceContext SourceContext) {
 		@Var int StartIndex = SourceContext.GetPosition();
 		@Var char ch = NumberLiteralTokenFunction._ParseDigit(SourceContext);
 		if(ch == '.') {

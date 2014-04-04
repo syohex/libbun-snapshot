@@ -24,16 +24,16 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZToken;
-import libbun.parser.ZVisitor;
-import libbun.type.ZType;
+import libbun.parser.BToken;
+import libbun.parser.BVisitor;
+import libbun.type.BType;
 import libbun.util.BField;
 
 public final class BBooleanNode extends BConstNode {
 	@BField public boolean	BooleanValue;
-	public BBooleanNode(BNode ParentNode, ZToken Token, boolean Value) {
+	public BBooleanNode(BNode ParentNode, BToken Token, boolean Value) {
 		super(ParentNode, Token);
-		this.Type = ZType.BooleanType;
+		this.Type = BType.BooleanType;
 		this.BooleanValue = Value;
 	}
 
@@ -41,7 +41,7 @@ public final class BBooleanNode extends BConstNode {
 		this(null, null, Value);
 	}
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitBooleanNode(this);
 	}
 }

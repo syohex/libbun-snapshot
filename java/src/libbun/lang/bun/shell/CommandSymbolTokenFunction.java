@@ -3,10 +3,10 @@ package libbun.lang.bun.shell;
 import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.BTokenFunction;
-import libbun.parser.ZSourceContext;
+import libbun.parser.BSourceContext;
 
 public class CommandSymbolTokenFunction extends BTokenFunction {
-	@Override public boolean Invoke(ZSourceContext SourceContext) {
+	@Override public boolean Invoke(BSourceContext SourceContext) {
 		@Var int startIndex = SourceContext.GetPosition();
 		@Var StringBuilder symbolBuilder = new StringBuilder();
 		while(SourceContext.HasChar()) {

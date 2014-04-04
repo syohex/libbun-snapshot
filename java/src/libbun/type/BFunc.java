@@ -22,20 +22,38 @@
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // **************************************************************************
 
-package libbun.parser;
 
+package libbun.type;
+import libbun.util.BField;
 
-/*ZenConst Begin*/
+public abstract class BFunc {
+	public final static String _NativeNameConnector = "__";
+	public final static int _ConverterFunc       = 1 << 16;
+	public final static int _CoercionFunc        = (1 << 17) | BFunc._ConverterFunc;  //@Coercion
 
-public abstract class ZParserConst {
-	// Version
-	public final static String  ProgName  = "LibZen";
-	public final static String  CodeName  = "Reference Implementation of D-Script";
-	public final static int     MajorVersion = 0;
-	public final static int     MinerVersion = 1;
-	public final static int     PatchLevel   = 0;
-	public final static String  Version = "0.1";
-	public final static String  Copyright = "Copyright (c) 2013-2014, Libbun project authors";
-	public final static String  License = "BSD-Style Open Source";
+	@BField public int			  FuncFlag;
+	@BField public String		  FuncName;  // NativeReferenceNamr
+	@BField public BFuncType       FuncType;
 
+	public BFunc(int FuncFlag, String FuncName, BFuncType FuncType) {
+		this.FuncFlag = FuncFlag;
+		this.FuncName = FuncName;
+		this.FuncType = FuncType;
+	}
+
+	public final BFuncType GetFuncType() {
+		return this.FuncType;
+	}
+
+	@Override public final String toString() {
+		return this.FuncName + ": " + this.FuncType;
+	}
+
+	public static String _StringfySignature(String FuncName, int FuncParamSize, BType RecvType) {
+		return FuncName + "__" + FuncParamSize + RecvType.GetUniqueName();
+	}
+
+	public final String GetSignature() {
+		return this.FuncType.StringfySignature(this.FuncName);
+	}
 }

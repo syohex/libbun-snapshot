@@ -24,7 +24,7 @@
 
 package libbun.encode;
 
-import libbun.parser.ZToken;
+import libbun.parser.BToken;
 import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.BSetNameNode;
@@ -50,8 +50,8 @@ import libbun.parser.ast.ZTryNode;
 import libbun.parser.ast.ZUnaryNode;
 import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
-import libbun.type.ZFuncType;
-import libbun.type.ZType;
+import libbun.type.BFuncType;
+import libbun.type.BType;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
@@ -75,10 +75,10 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		this.NotOperator = "not ";
 
 		this.TopType = "object";
-		this.SetNativeType(ZType.BooleanType, "bool");
-		this.SetNativeType(ZType.IntType, "int");
-		this.SetNativeType(ZType.FloatType, "float");
-		this.SetNativeType(ZType.StringType, "str");
+		this.SetNativeType(BType.BooleanType, "bool");
+		this.SetNativeType(BType.IntType, "int");
+		this.SetNativeType(BType.FloatType, "float");
+		this.SetNativeType(BType.StringType, "str");
 	}
 
 	@Override public void VisitSetNameNode(BSetNameNode Node) {
@@ -101,7 +101,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		this.GenerateCode(null, Node);
 	}
 
-	private String GetBinaryOperator(ZToken Token) {
+	private String GetBinaryOperator(BToken Token) {
 		if(Token.EqualsText("!=")) {
 			return "!=";
 		} else if(Token.EqualsText("==")) {
@@ -286,7 +286,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 			this.CurrentBuilder.Append(")");
 		}
 		else {
-			@Var ZFuncType FuncType = Node.GetFuncType();
+			@Var BFuncType FuncType = Node.GetFuncType();
 			this.CurrentBuilder.Append("(defun ");
 			this.CurrentBuilder.Append(Node.GetSignature());
 			this.VisitFuncParamNode(" (", Node, ")");

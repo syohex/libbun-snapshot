@@ -1,10 +1,10 @@
 package libbun.encode.jvm;
 
-import libbun.parser.ZLogger;
-import libbun.parser.ZNameSpace;
+import libbun.parser.BLogger;
+import libbun.parser.BNameSpace;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZTopLevelNode;
-import libbun.type.ZType;
+import libbun.type.BType;
 import libbun.util.Var;
 
 public class JavaImportNode extends ZTopLevelNode {
@@ -30,16 +30,16 @@ public class JavaImportNode extends ZTopLevelNode {
 		return Path;
 	}
 
-	@Override public void Perform(ZNameSpace NameSpace) {
+	@Override public void Perform(BNameSpace NameSpace) {
 		@Var String ResourcePath = this.AST[JavaImportNode._Path].SourceToken.GetTextAsName();
 		try {
 			Class<?> jClass = Class.forName(ResourcePath);
-			ZType Type = JavaTypeTable.GetZenType(jClass);
+			BType Type = JavaTypeTable.GetZenType(jClass);
 			String Alias = this.ParseSymbol(ResourcePath);
 
 			NameSpace.SetTypeName(Alias, Type, this.SourceToken);
 		} catch (ClassNotFoundException e) {
-			ZLogger._LogError(this.GetAstToken(JavaImportNode._Path), "unfound resource: "+ ResourcePath);
+			BLogger._LogError(this.GetAstToken(JavaImportNode._Path), "unfound resource: "+ ResourcePath);
 		}
 	}
 }

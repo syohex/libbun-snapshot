@@ -1,12 +1,12 @@
 package libbun.lang.bun.regexp;
 
-import libbun.parser.ZSourceContext;
+import libbun.parser.BSourceContext;
 import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.BTokenFunction;
 
 public class RexExpLiteralTokenFunction extends BTokenFunction {
-	@Override public boolean Invoke(ZSourceContext SourceContext) {
+	@Override public boolean Invoke(BSourceContext SourceContext) {
 		@Var int StartIndex = SourceContext.GetPosition();
 		SourceContext.MoveNext();
 		while(SourceContext.HasChar()) {
@@ -30,7 +30,7 @@ public class RexExpLiteralTokenFunction extends BTokenFunction {
 		return false;
 	}
 
-	private boolean ParseRegExpFlags(ZSourceContext SourceContext) {
+	private boolean ParseRegExpFlags(BSourceContext SourceContext) {
 		@Var int StartIndex = SourceContext.GetPosition();
 		while(SourceContext.HasChar()) {
 			@Var char ch = SourceContext.GetCurrentChar();

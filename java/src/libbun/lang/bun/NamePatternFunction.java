@@ -1,7 +1,7 @@
 package libbun.lang.bun;
 
-import libbun.parser.ZToken;
-import libbun.parser.ZTokenContext;
+import libbun.parser.BToken;
+import libbun.parser.BTokenContext;
 import libbun.parser.ast.ZErrorNode;
 import libbun.parser.ast.BGetNameNode;
 import libbun.parser.ast.BNode;
@@ -11,8 +11,8 @@ import libbun.util.BMatchFunction;
 
 public class NamePatternFunction extends BMatchFunction {
 
-	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
-		@Var ZToken Token = TokenContext.GetToken(ZTokenContext._MoveNext);
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		@Var BToken Token = TokenContext.GetToken(BTokenContext._MoveNext);
 		if(BLib._IsSymbol(Token.GetChar())) {
 			return new BGetNameNode(ParentNode, Token, Token.GetText());
 		}

@@ -41,13 +41,13 @@ import libbun.encode.BunGenerator;
 import libbun.encode.ZSourceBuilder;
 import libbun.encode.jvm.JavaTypeTable;
 import libbun.lang.bun.BunTypeSafer;
-import libbun.parser.ZGenerator;
-import libbun.parser.ZNameSpace;
-import libbun.parser.ZSourceContext;
-import libbun.parser.ZTokenContext;
-import libbun.parser.ZTokenFunc;
+import libbun.parser.BGenerator;
+import libbun.parser.BNameSpace;
+import libbun.parser.BSourceContext;
+import libbun.parser.BTokenContext;
+import libbun.parser.BTokenFuncChain;
 import libbun.parser.ast.BNode;
-import libbun.type.ZType;
+import libbun.type.BType;
 
 
 public class BLib {
@@ -214,8 +214,8 @@ public class BLib {
 		return UnicodeChar;
 	}
 
-	public final static ZTokenFunc[] _NewTokenMatrix() {
-		return new ZTokenFunc[MaxSizeOfChars];
+	public final static BTokenFuncChain[] _NewTokenMatrix() {
+		return new BTokenFuncChain[MaxSizeOfChars];
 	}
 
 
@@ -491,10 +491,10 @@ public class BLib {
 
 	// HighLevel Library
 
-	public final static boolean _ImportGrammar(ZNameSpace NameSpace, String ClassName) {
+	public final static boolean _ImportGrammar(BNameSpace NameSpace, String ClassName) {
 		try {
 			@Var Class<?> NativeClass =  Class.forName(ClassName);
-			@Var Method LoaderMethod = NativeClass.getMethod("ImportGrammar", ZNameSpace.class);
+			@Var Method LoaderMethod = NativeClass.getMethod("ImportGrammar", BNameSpace.class);
 			LoaderMethod.invoke(null, NameSpace);
 			return true;
 		} catch (Exception e) { // naming
@@ -503,11 +503,11 @@ public class BLib {
 		return false;
 	}
 
-	public final static boolean _ApplyTokenFunc(BTokenFunction TokenFunc, ZSourceContext SourceContext) {
+	public final static boolean _ApplyTokenFunc(BTokenFunction TokenFunc, BSourceContext SourceContext) {
 		return TokenFunc.Invoke(SourceContext);
 	}
 
-	public final static BNode _ApplyMatchFunc(BMatchFunction MatchFunc, BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
+	public final static BNode _ApplyMatchFunc(BMatchFunction MatchFunc, BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		return MatchFunc.Invoke(ParentNode, TokenContext, LeftNode);
 	}
 
@@ -539,14 +539,14 @@ public class BLib {
 		GenMap.put("ll", libbun.encode.llvm.LLVMSourceGenerator.class);
 	}
 
-	public final static ZGenerator _LoadGenerator(@Nullable String ClassName, String OutputFile) {
+	public final static BGenerator _LoadGenerator(@Nullable String ClassName, String OutputFile) {
 		if (ClassName != null) {
 			try {
 				Class<?> GeneratorClass = GenMap.GetOrNull(ClassName.toLowerCase());
 				if(GeneratorClass == null) {
 					GeneratorClass = Class.forName(ClassName);
 				}
-				return (ZGenerator) GeneratorClass.newInstance();
+				return (BGenerator) GeneratorClass.newInstance();
 			} catch (Exception e) {
 				BLib._FixMe(e);
 			}
@@ -554,8 +554,8 @@ public class BLib {
 		return new BunGenerator();
 	}
 
-	public final static ZGenerator _InitGenerator(@Nullable String ClassName, String GrammarClass) {
-		@Var ZGenerator Generator = BLib._LoadGenerator(ClassName, null);
+	public final static BGenerator _InitGenerator(@Nullable String ClassName, String GrammarClass) {
+		@Var BGenerator Generator = BLib._LoadGenerator(ClassName, null);
 		BLib._ImportGrammar(Generator.RootNameSpace, GrammarClass);
 		Generator.SetTypeChecker(new BunTypeSafer(Generator));
 		Generator.RequireLibrary("common", null);
@@ -563,7 +563,7 @@ public class BLib {
 	}
 
 	//
-	public final static ZType GetNativeType(Class<?> NativeClass) {
+	public final static BType GetNativeType(Class<?> NativeClass) {
 		return JavaTypeTable.GetZenType(NativeClass);
 	}
 
@@ -580,8 +580,8 @@ public class BLib {
 		/*"Alpha"*/ "\u03B1", "\u03B2", "\u03B3"
 	};
 
-	public final static ZType[] _NewTypeArray(int Size) {
-		return new ZType[Size];
+	public final static BType[] _NewTypeArray(int Size) {
+		return new BType[Size];
 	}
 
 	public final static BNode[] _NewNodeArray(int Size) {

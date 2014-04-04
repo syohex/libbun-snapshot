@@ -30,19 +30,19 @@ import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
 
-public final class ZSyntax {
+public final class BSyntax {
 	public final static int _BinaryOperator					= 1;
 	public final static int _LeftJoin						= 1 << 1;
 
-	@BField public ZNameSpace	              PackageNameSpace;
+	@BField public BNameSpace	              PackageNameSpace;
 	@BField public String		              PatternName;
 	@BField public BMatchFunction              MatchFunc;
 	@BField public int				          SyntaxFlag = 0;
-	@BField public ZSyntax              ParentPattern = null;
+	@BField public BSyntax              ParentPattern = null;
 	@BField public boolean IsDisabled          = false;
 	@BField public boolean IsStatement         = false;
 
-	public ZSyntax(ZNameSpace NameSpace, String PatternName, BMatchFunction MatchFunc) {
+	public BSyntax(BNameSpace NameSpace, String PatternName, BMatchFunction MatchFunc) {
 		this.PackageNameSpace = NameSpace;
 		this.PatternName = PatternName;
 		this.MatchFunc = MatchFunc;
@@ -53,24 +53,24 @@ public final class ZSyntax {
 	}
 
 	public final boolean IsBinaryOperator() {
-		return BLib._IsFlag(this.SyntaxFlag, ZSyntax._BinaryOperator);
+		return BLib._IsFlag(this.SyntaxFlag, BSyntax._BinaryOperator);
 	}
 
-	public final boolean IsRightJoin(ZSyntax Right) {
+	public final boolean IsRightJoin(BSyntax Right) {
 		@Var int left = this.SyntaxFlag;
 		@Var int right = Right.SyntaxFlag;
-		return (left < right || (left == right && !BLib._IsFlag(left, ZSyntax._LeftJoin) && !BLib._IsFlag(right, ZSyntax._LeftJoin)));
+		return (left < right || (left == right && !BLib._IsFlag(left, BSyntax._LeftJoin) && !BLib._IsFlag(right, BSyntax._LeftJoin)));
 	}
 
 	//	public final boolean EqualsName(String Name) {
 	//		return this.PatternName.equals(Name);
 	//	}
 
-	public final static ZSyntax MergeSyntaxPattern(ZSyntax Pattern, ZSyntax Parent) {
+	public final static BSyntax MergeSyntaxPattern(BSyntax Pattern, BSyntax Parent) {
 		if(Parent == null) {
 			return Pattern;
 		}
-		@Var ZSyntax MergedPattern = new ZSyntax(Pattern.PackageNameSpace, Pattern.PatternName, Pattern.MatchFunc);
+		@Var BSyntax MergedPattern = new BSyntax(Pattern.PackageNameSpace, Pattern.PatternName, Pattern.MatchFunc);
 		MergedPattern.ParentPattern = Parent;
 		return MergedPattern;
 	}

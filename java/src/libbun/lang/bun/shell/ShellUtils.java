@@ -2,10 +2,10 @@ package libbun.lang.bun.shell;
 
 import java.io.File;
 
-import libbun.parser.ZSource;
-import libbun.parser.ZSyntax;
-import libbun.parser.ZToken;
-import libbun.parser.ZTokenContext;
+import libbun.parser.BSource;
+import libbun.parser.BSyntax;
+import libbun.parser.BToken;
+import libbun.parser.BTokenContext;
 import libbun.parser.ast.ZBinaryNode;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.BStringNode;
@@ -23,8 +23,8 @@ public class ShellUtils {
 		return "__$" + Symbol;
 	}
 
-	public static boolean _MatchStopToken(ZTokenContext TokenContext) { // ;,)]}&&||
-		ZToken Token = TokenContext.GetToken();
+	public static boolean _MatchStopToken(BTokenContext TokenContext) { // ;,)]}&&||
+		BToken Token = TokenContext.GetToken();
 		if(!TokenContext.HasNext()) {
 			return true;
 		}
@@ -38,11 +38,11 @@ public class ShellUtils {
 		return false;
 	}
 
-	public static BNode _ToNode(BNode ParentNode, ZTokenContext TokenContext, BArray<BNode> NodeList) {
-		ZToken Token = TokenContext.GetToken();
+	public static BNode _ToNode(BNode ParentNode, BTokenContext TokenContext, BArray<BNode> NodeList) {
+		BToken Token = TokenContext.GetToken();
 		BNode Node = new BStringNode(ParentNode, null, "");
-		ZSyntax Pattern = TokenContext.NameSpace.GetRightSyntaxPattern("+");
-		ZToken PlusToken = new ZToken(new ZSource(Token.GetFileName(), Token.GetLineNumber(), "+", TokenContext), 0, "+".length());
+		BSyntax Pattern = TokenContext.NameSpace.GetRightSyntaxPattern("+");
+		BToken PlusToken = new BToken(new BSource(Token.GetFileName(), Token.GetLineNumber(), "+", TokenContext), 0, "+".length());
 		for(BNode CurrentNode : NodeList.ArrayValues) {
 			ZBinaryNode BinaryNode = new ZBinaryNode(ParentNode, PlusToken, Node, Pattern);
 			BinaryNode.SetNode(ZBinaryNode._Right, CurrentNode);

@@ -1,7 +1,7 @@
 package libbun.parser.ast;
 
-import libbun.parser.ZNameSpace;
-import libbun.type.ZFuncType;
+import libbun.parser.BNameSpace;
+import libbun.type.BFuncType;
 import libbun.util.BField;
 import libbun.util.Var;
 
@@ -18,8 +18,8 @@ public class ZPrototypeNode extends ZTopLevelNode {
 	//		return this.FunctionNode.GetParamNode(Index);
 	//	}
 
-	@Override public final void Perform(ZNameSpace NameSpace) {
-		@Var ZFuncType FuncType = this.FunctionNode.GetFuncType();
+	@Override public final void Perform(BNameSpace NameSpace) {
+		@Var BFuncType FuncType = this.FunctionNode.GetFuncType();
 		NameSpace.Generator.SetPrototype(this.FunctionNode, this.FunctionNode.FuncName(), FuncType);
 
 	}

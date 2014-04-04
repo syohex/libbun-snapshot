@@ -24,14 +24,14 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZToken;
-import libbun.parser.ZVisitor;
+import libbun.parser.BToken;
+import libbun.parser.BVisitor;
 
 public class ZNotNode extends ZUnaryNode {
-	public ZNotNode(BNode ParentNode, ZToken Token) {
+	public ZNotNode(BNode ParentNode, BToken Token) {
 		super(ParentNode, Token);
 	}
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitNotNode(this);
 	}
 }

@@ -29,7 +29,7 @@ import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.BArray;
 
-public final class ZLogger {
+public final class BLogger {
 
 	@BField public BArray<String>  ReportedErrorList = new BArray<String>(new String[10]);
 	//	@Field public ZenMap<ZCounter> StatMap;
@@ -47,7 +47,7 @@ public final class ZLogger {
 		this.ReportedErrorList.add(Message);
 	}
 
-	public final static void _LogErrorExit(ZToken Token, String Message) {
+	public final static void _LogErrorExit(BToken Token, String Message) {
 		if(Token != null && Token.Source != null) {
 			Message = Token.Source.FormatErrorMarker("error", Token.StartIndex, Message);
 			Token.Source.Logger.Report(Message);
@@ -57,7 +57,7 @@ public final class ZLogger {
 		}
 	}
 
-	public final static String _LogError(ZToken Token, String Message) {
+	public final static String _LogError(BToken Token, String Message) {
 		if(Token != null && Token.Source != null) {
 			Message = Token.Source.FormatErrorMarker("error", Token.StartIndex, Message);
 			Token.Source.Logger.Report(Message);
@@ -65,21 +65,21 @@ public final class ZLogger {
 		return Message;
 	}
 
-	public final static void _LogWarning(ZToken Token, String Message) {
+	public final static void _LogWarning(BToken Token, String Message) {
 		if(Token != null) {
 			Message = Token.Source.FormatErrorMarker("warning", Token.StartIndex, Message);
 			Token.Source.Logger.Report(Message);
 		}
 	}
 
-	public final static void _LogInfo(ZToken Token, String Message) {
+	public final static void _LogInfo(BToken Token, String Message) {
 		if(Token != null && Token.Source != null) {
 			Message = Token.Source.FormatErrorMarker("info", Token.StartIndex, Message);
 			Token.Source.Logger.Report(Message);
 		}
 	}
 
-	public final static void _LogDebug(ZToken Token, String Message) {
+	public final static void _LogDebug(BToken Token, String Message) {
 		if(Token != null && Token.Source != null) {
 			Message = Token.Source.FormatErrorMarker("debug", Token.StartIndex, Message);
 			Token.Source.Logger.Report(Message);

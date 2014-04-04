@@ -1,34 +1,34 @@
 package libbun.type;
 
-import libbun.parser.ZLogger;
-import libbun.parser.ZToken;
-import libbun.parser.ZTypeChecker;
+import libbun.parser.BLogger;
+import libbun.parser.BToken;
+import libbun.parser.BTypeChecker;
 import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.BNode;
 import libbun.util.BField;
 import libbun.util.Var;
 import libbun.util.BArray;
 
-public final class ZVarScope {
-	@BField public ZVarScope Parent;
-	@BField public ZLogger Logger;
-	@BField BArray<ZVarType> VarList;
+public final class BVarScope {
+	@BField public BVarScope Parent;
+	@BField public BLogger Logger;
+	@BField BArray<BVarType> VarList;
 	@BField int TypedNodeCount = 0;
 	@BField int VarNodeCount = 0;
 	@BField int UnresolvedSymbolCount = 0;
 
 
-	public ZVarScope(ZVarScope Parent, ZLogger Logger, BArray<ZVarType> VarList) {
+	public BVarScope(BVarScope Parent, BLogger Logger, BArray<BVarType> VarList) {
 		this.Parent = Parent;
 		this.Logger = Logger;
 		this.VarList = VarList;
 		if(this.VarList == null) {
-			this.VarList = new BArray<ZVarType>(new ZVarType[8]);
+			this.VarList = new BArray<BVarType>(new BVarType[8]);
 		}
 	}
 
-	public void TypeNode(BNode Node, ZType Type) {
-		if(Type instanceof ZVarType) {
+	public void TypeNode(BNode Node, BType Type) {
+		if(Type instanceof BVarType) {
 			if(!Type.IsVarType()) {
 				Type = Type.GetRealType();
 			}
@@ -39,10 +39,10 @@ public final class ZVarScope {
 		}
 	}
 
-	public final ZType NewVarType(ZType VarType, String Name, ZToken SourceToken) {
-		if(!(VarType instanceof ZVarType) && VarType.IsVarType()) {
+	public final BType NewVarType(BType VarType, String Name, BToken SourceToken) {
+		if(!(VarType instanceof BVarType) && VarType.IsVarType()) {
 			//System.out.println("@@ new var = " + Name);
-			VarType = new ZVarType(this.VarList, Name, SourceToken);
+			VarType = new BVarType(this.VarList, Name, SourceToken);
 		}
 		return VarType;
 	}
@@ -52,17 +52,17 @@ public final class ZVarScope {
 		this.UnresolvedSymbolCount = this.UnresolvedSymbolCount + 1;
 	}
 
-	public final void InferType(ZType ContextType, BNode Node) {
+	public final void InferType(BType ContextType, BNode Node) {
 		//System.out.println("@@ infering .. ContextType=" + ContextType + " Node.Type = " + Node.Type + ", at " + Node);
 		if(Node.IsUntyped()) {
 			this.VarNodeCount = this.VarNodeCount + 1;
 		}
-		if(ContextType.IsInferrableType() && Node.Type instanceof ZVarType) {
-			((ZVarType)Node.Type).Infer(ContextType, Node.SourceToken);
+		if(ContextType.IsInferrableType() && Node.Type instanceof BVarType) {
+			((BVarType)Node.Type).Infer(ContextType, Node.SourceToken);
 			Node.Type = ContextType;
 		}
-		if(ContextType instanceof ZVarType && !Node.IsUntyped()) {
-			((ZVarType)ContextType).Infer(Node.Type, Node.SourceToken);
+		if(ContextType instanceof BVarType && !Node.IsUntyped()) {
+			((BVarType)ContextType).Infer(Node.Type, Node.SourceToken);
 		}
 	}
 
@@ -87,14 +87,14 @@ public final class ZVarScope {
 	//		return false;
 	//	}
 
-	public final void TypeCheckFuncBlock(ZTypeChecker TypeSafer, ZFunctionNode FunctionNode) {
+	public final void TypeCheckFuncBlock(BTypeChecker TypeSafer, ZFunctionNode FunctionNode) {
 		@Var int PrevCount = -1;
 		while(true) {
 			this.VarNodeCount = 0;
 			this.UnresolvedSymbolCount = 0;
 			this.TypedNodeCount = 0;
 			TypeSafer.DefineFunction(FunctionNode, false/*Enforced*/);
-			TypeSafer.CheckTypeAt(FunctionNode, ZFunctionNode._Block, ZType.VoidType);
+			TypeSafer.CheckTypeAt(FunctionNode, ZFunctionNode._Block, BType.VoidType);
 			if(!FunctionNode.BlockNode().IsUntyped() || this.TypedNodeCount == 0) {
 				break;
 			}

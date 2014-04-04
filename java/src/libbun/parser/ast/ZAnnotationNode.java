@@ -23,8 +23,8 @@
 // **************************************************************************
 
 package libbun.parser.ast;
-import libbun.parser.ZToken;
-import libbun.parser.ZVisitor;
+import libbun.parser.BToken;
+import libbun.parser.BVisitor;
 import libbun.util.BField;
 import libbun.util.BMap;
 
@@ -32,7 +32,7 @@ public final class ZAnnotationNode extends BNode {
 	//@Field public ZenMap<Object> Annotation;
 	@BField public BNode AnnotatedNode = null;
 
-	public ZAnnotationNode(BNode ParentNode, ZToken Token, BMap<Object> Anno) {
+	public ZAnnotationNode(BNode ParentNode, BToken Token, BMap<Object> Anno) {
 		super(ParentNode, Token, 0);
 		//this.Annotation = Anno;
 	}
@@ -46,7 +46,7 @@ public final class ZAnnotationNode extends BNode {
 	//		this.AnnotatedNode = this.SetChild(Node);
 	//	}
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		this.AnnotatedNode.Accept(Visitor);
 	}
 }

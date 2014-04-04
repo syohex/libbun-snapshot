@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import libbun.type.ZFuncType;
-import libbun.type.ZType;
+import libbun.type.BFuncType;
+import libbun.type.BType;
 import libbun.util.BLib;
 import libbun.util.Var;
 
@@ -36,7 +36,7 @@ class AsmClassBuilder {
 		this.SuperClassName = SuperClass;
 	}
 
-	void AddField(int acc, String Name, ZType zType, Object Value) {
+	void AddField(int acc, String Name, BType zType, Object Value) {
 		@Var FieldNode fn = new FieldNode(acc, Name, Type.getDescriptor(this.Generator.GetJavaClass(zType)), null, Value);
 		this.FieldList.add(fn);
 	}
@@ -52,7 +52,7 @@ class AsmClassBuilder {
 		return MethodBuilder;
 	}
 
-	AsmMethodBuilder NewMethod(int acc, String Name, ZFuncType FuncType) {
+	AsmMethodBuilder NewMethod(int acc, String Name, BFuncType FuncType) {
 		return this.NewMethod(acc, Name, this.Generator.GetMethodDescriptor(FuncType));
 	}
 

@@ -1,6 +1,6 @@
 package libbun.parser.ast;
 
-import libbun.type.ZType;
+import libbun.type.BType;
 import libbun.util.BField;
 
 public abstract class ZDefineNameNode extends BNode {
@@ -9,26 +9,26 @@ public abstract class ZDefineNameNode extends BNode {
 	public final static int _InitValue = 2;
 
 	@BField public boolean IsReadOnly = false;
-	@BField public ZType   GivenType = null;
+	@BField public BType   GivenType = null;
 	@BField public String  GivenName = null;
 
 	protected ZDefineNameNode(BNode ParentNode, int Size) {
 		super(ParentNode, null, Size);
 	}
 
-	public final ZType DeclType() {
+	public final BType DeclType() {
 		if(this.GivenType == null) {
 			if(this.AST[BLetVarNode._TypeInfo] != null) {
 				this.GivenType = this.AST[BLetVarNode._TypeInfo].Type;
 			}
 			else {
-				this.GivenType = ZType.VarType;
+				this.GivenType = BType.VarType;
 			}
 		}
 		return this.GivenType;
 	}
 
-	public final void SetDeclType(ZType Type) {
+	public final void SetDeclType(BType Type) {
 		this.GivenType = Type;
 	}
 

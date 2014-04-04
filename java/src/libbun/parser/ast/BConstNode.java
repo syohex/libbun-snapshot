@@ -24,10 +24,10 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZToken;
+import libbun.parser.BToken;
 
 public abstract class BConstNode extends BNode {
-	protected BConstNode(BNode ParentNode, ZToken SourceToken) {
+	protected BConstNode(BNode ParentNode, BToken SourceToken) {
 		super(ParentNode, SourceToken, 0);
 	}
 }

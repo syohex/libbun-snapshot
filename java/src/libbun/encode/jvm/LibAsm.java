@@ -1,6 +1,6 @@
 package libbun.encode.jvm;
 
-import libbun.type.ZType;
+import libbun.type.BType;
 import libbun.util.BBooleanArray;
 import libbun.util.BFloatArray;
 import libbun.util.BIntArray;
@@ -19,8 +19,8 @@ public class LibAsm {
 		return Type.getType(jClass);
 	}
 
-	static Class<?> AsArrayClass(ZType zType) {
-		ZType zParamType = zType.GetParamType(0);
+	static Class<?> AsArrayClass(BType zType) {
+		BType zParamType = zType.GetParamType(0);
 		if(zParamType.IsBooleanType()) {
 			return BBooleanArray.class;
 		}
@@ -36,8 +36,8 @@ public class LibAsm {
 		return ZObjectArray.class;
 	}
 
-	static Class<?> AsElementClass(ZType zType) {
-		ZType zParamType = zType.GetParamType(0);
+	static Class<?> AsElementClass(BType zType) {
+		BType zParamType = zType.GetParamType(0);
 		if(zParamType.IsBooleanType()) {
 			return boolean.class;
 		}
@@ -53,8 +53,8 @@ public class LibAsm {
 		return Object.class;
 	}
 
-	static String NewArrayDescriptor(ZType ArrayType) {
-		ZType zParamType = ArrayType.GetParamType(0);
+	static String NewArrayDescriptor(BType ArrayType) {
+		BType zParamType = ArrayType.GetParamType(0);
 		if(zParamType.IsBooleanType()) {
 			return Type.getMethodDescriptor(AsmType(void.class), new Type[] {AsmType(int.class), AsmType(boolean[].class)});
 		}

@@ -1,13 +1,13 @@
 package libbun.parser.ast;
 
-import libbun.parser.ZToken;
+import libbun.parser.BToken;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
 
 public abstract class ZListNode extends BNode {
 	@BField public int ListStartIndex;
-	public ZListNode(BNode ParentNode, ZToken SourceToken, int Size) {
+	public ZListNode(BNode ParentNode, BToken SourceToken, int Size) {
 		super(ParentNode, SourceToken, Size);
 		this.ListStartIndex = Size;
 	}

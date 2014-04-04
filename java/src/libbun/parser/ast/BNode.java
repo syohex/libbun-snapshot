@@ -25,12 +25,12 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZNameSpace;
-import libbun.parser.ZToken;
-import libbun.parser.ZTypeChecker;
-import libbun.parser.ZVisitor;
-import libbun.type.ZFuncType;
-import libbun.type.ZType;
+import libbun.parser.BNameSpace;
+import libbun.parser.BToken;
+import libbun.parser.BTypeChecker;
+import libbun.parser.BVisitor;
+import libbun.type.BFuncType;
+import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Nullable;
@@ -44,12 +44,12 @@ public abstract class BNode {
 	public final static boolean _PreservedParent = false;
 
 	@BField public BNode  ParentNode;
-	@BField public ZToken SourceToken;
+	@BField public BToken SourceToken;
 	@BField public BNode  AST[];
-	@BField public ZType	Type = ZType.VarType;
+	@BField public BType	Type = BType.VarType;
 	@BField public boolean HasUntyped = true;
 
-	public BNode(@Nullable BNode ParentNode, @Nullable ZToken SourceToken, int Size) {
+	public BNode(@Nullable BNode ParentNode, @Nullable BToken SourceToken, int Size) {
 		assert(this != ParentNode);
 		this.ParentNode = ParentNode;
 		this.SourceToken = SourceToken;
@@ -146,20 +146,20 @@ public abstract class BNode {
 		return this.SetNode(Index, Node, BNode._EnforcedParent);
 	}
 
-	public final ZType GetAstType(int Index) {
+	public final BType GetAstType(int Index) {
 		if(Index < this.AST.length) {
 			return this.AST[Index].Type.GetRealType();
 		}
-		return ZType.VoidType;  // to retrieve RecvType
+		return BType.VoidType;  // to retrieve RecvType
 	}
 
-	public final void SetAstType(int Index, ZType Type) {
+	public final void SetAstType(int Index, BType Type) {
 		if(this.AST[Index] != null) {
 			this.AST[Index].Type = Type;
 		}
 	}
 
-	public final ZToken GetAstToken(int TokenIndex) {
+	public final BToken GetAstToken(int TokenIndex) {
 		if(TokenIndex >= 0 && this.AST[TokenIndex] != null) {
 			return this.AST[TokenIndex].SourceToken;
 		}
@@ -208,7 +208,7 @@ public abstract class BNode {
 		return null;
 	}
 
-	public final ZNameSpace GetNameSpace() {
+	public final BNameSpace GetNameSpace() {
 		@Var int SafeCount = 0;
 		@Var ZBlockNode BlockNode = this.GetScopeBlockNode();
 		while(BlockNode.NullableNameSpace == null) {
@@ -226,10 +226,10 @@ public abstract class BNode {
 		return (this instanceof ZErrorNode);
 	}
 
-	public abstract void Accept(ZVisitor Visitor);
+	public abstract void Accept(BVisitor Visitor);
 
 	public final boolean IsUntyped() {
-		return !(this.Type instanceof ZFuncType) && this.Type.IsVarType();
+		return !(this.Type instanceof BFuncType) && this.Type.IsVarType();
 	}
 
 	public final boolean HasUntypedNode() {
@@ -250,19 +250,19 @@ public abstract class BNode {
 	}
 
 	// Convenient short cut interface
-	public final BGetNameNode SetNewGetNameNode(int Index, ZTypeChecker Typer, String Name, ZType Type) {
+	public final BGetNameNode SetNewGetNameNode(int Index, BTypeChecker Typer, String Name, BType Type) {
 		@Var BGetNameNode Node = Typer.CreateGetNameNode(null, Name, Type);
 		this.SetNode(Index, Node);
 		return Node;
 	}
 
-	public final ZBlockNode SetNewBlockNode(int Index, ZTypeChecker Typer) {
+	public final ZBlockNode SetNewBlockNode(int Index, BTypeChecker Typer) {
 		@Var ZBlockNode Node = Typer.CreateBlockNode(null);
 		this.SetNode(Index, Node);
 		return Node;
 	}
 
-	public final ZWhileNode SetNewWhileNode(int Index, ZTypeChecker Typer) {
+	public final ZWhileNode SetNewWhileNode(int Index, BTypeChecker Typer) {
 		@Var ZWhileNode Node = new ZWhileNode(null);
 		this.SetNode(Index, Node);
 		return Node;

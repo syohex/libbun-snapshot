@@ -24,16 +24,16 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZToken;
-import libbun.parser.ZVisitor;
-import libbun.type.ZType;
+import libbun.parser.BToken;
+import libbun.parser.BVisitor;
+import libbun.type.BType;
 
 //E.g., $ExprNode instanceof TypeInfo
 public final class ZInstanceOfNode extends BNode {
 	public final static int _Left = 0;
 	public final static int _TypeInfo = 1;
 
-	public ZInstanceOfNode(BNode ParentNode, ZToken Token, BNode LeftNode) {
+	public ZInstanceOfNode(BNode ParentNode, BToken Token, BNode LeftNode) {
 		super(ParentNode, Token, 2);
 		this.SetNode(ZInstanceOfNode._Left, LeftNode);
 	}
@@ -42,11 +42,11 @@ public final class ZInstanceOfNode extends BNode {
 		return this.AST[ZInstanceOfNode._Left ];
 	}
 
-	public final ZType TargetType() {
+	public final BType TargetType() {
 		return this.AST[ZInstanceOfNode._TypeInfo].Type;
 	}
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitInstanceOfNode(this);
 	}
 }

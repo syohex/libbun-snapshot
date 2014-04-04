@@ -25,15 +25,15 @@
 package libbun.parser.ast;
 
 
-import libbun.parser.ZSyntax;
-import libbun.parser.ZToken;
-import libbun.parser.ZVisitor;
+import libbun.parser.BSyntax;
+import libbun.parser.BToken;
+import libbun.parser.BVisitor;
 
 public final class ZAndNode extends ZBinaryNode {
-	public ZAndNode(BNode ParentNode, ZToken Token, BNode Left, ZSyntax Pattern) {
+	public ZAndNode(BNode ParentNode, BToken Token, BNode Left, BSyntax Pattern) {
 		super(ParentNode, Token, Left, Pattern);
 	}
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitAndNode(this);
 	}
 }

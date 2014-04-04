@@ -10,32 +10,7 @@ import libbun.parser.ast.ZReturnNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.util.Var;
 
-public class ZNodeUtils {
-
-	//	private boolean HasReturnStatement(ZNode Node) {
-	//		if(Node instanceof ZBlockNode) {
-	//			@Var ZBlockNode BlockNode = (ZBlockNode)Node;
-	//			@Var int i = 0;
-	//			@Var ZNode StmtNode = null;
-	//			while(i < BlockNode.GetListSize()) {
-	//				StmtNode = BlockNode.GetListAt(i);
-	//				//System.out.println("i="+i +", "+ StmtNode.getClass().getSimpleName());
-	//				if(ZNodeUtils._IsBreakBlock(StmtNode)) {
-	//					return true;
-	//				}
-	//				i = i + 1;
-	//			}
-	//			Node = StmtNode;
-	//		}
-	//		if(Node instanceof ZIfNode) {
-	//			@Var ZIfNode IfNode = (ZIfNode)Node;
-	//			if(IfNode.HasElseNode()) {
-	//				return this.HasReturnStatement(IfNode.ThenNode()) && this.HasReturnStatement(IfNode.ElseNode());
-	//			}
-	//			return false;
-	//		}
-	//		return ZNodeUtils._IsBreakBlock(Node);
-	//	}
+public class BNodeUtils {
 
 	public final static boolean _IsBlockBreak(BNode Node) {
 		if(Node instanceof ZReturnNode || Node instanceof ZThrowNode || Node instanceof ZBreakNode) {
@@ -52,7 +27,7 @@ public class ZNodeUtils {
 		if(Node instanceof ZIfNode) {
 			@Var ZIfNode IfNode = (ZIfNode)Node;
 			if(IfNode.HasElseNode()) {
-				return ZNodeUtils._HasFunctionBreak(IfNode.ThenNode()) && ZNodeUtils._HasFunctionBreak(IfNode.ElseNode());
+				return BNodeUtils._HasFunctionBreak(IfNode.ThenNode()) && BNodeUtils._HasFunctionBreak(IfNode.ElseNode());
 			}
 			return false;
 		}
@@ -62,7 +37,7 @@ public class ZNodeUtils {
 			while(i < BlockNode.GetListSize()) {
 				@Var BNode StmtNode = BlockNode.GetListAt(i);
 				//System.out.println("i="+i +", "+ StmtNode.getClass().getSimpleName());
-				if(ZNodeUtils._HasFunctionBreak(StmtNode)) {
+				if(BNodeUtils._HasFunctionBreak(StmtNode)) {
 					return true;
 				}
 				i = i + 1;
@@ -106,7 +81,7 @@ public class ZNodeUtils {
 	}
 
 	public final static void _MoveAstList(ZListNode SourceListNode, int FromIndex, ZListNode DestListNode) {
-		ZNodeUtils._CopyAstList(SourceListNode, FromIndex, DestListNode);
+		BNodeUtils._CopyAstList(SourceListNode, FromIndex, DestListNode);
 		SourceListNode.ClearListToSize(FromIndex);
 	}
 

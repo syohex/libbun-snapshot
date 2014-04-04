@@ -1,19 +1,19 @@
 package libbun.parser.ast;
 
-import libbun.parser.ZNameSpace;
-import libbun.parser.ZToken;
-import libbun.parser.ZVisitor;
+import libbun.parser.BNameSpace;
+import libbun.parser.BToken;
+import libbun.parser.BVisitor;
 
 public abstract class ZTopLevelNode extends BNode {
 
-	public ZTopLevelNode(BNode ParentNode, ZToken SourceToken, int Size) {
+	public ZTopLevelNode(BNode ParentNode, BToken SourceToken, int Size) {
 		super(ParentNode, SourceToken, Size);
 	}
 
-	@Override public final void Accept(ZVisitor Visitor) {
+	@Override public final void Accept(BVisitor Visitor) {
 		Visitor.VisitTopLevelNode(this);
 	}
 
-	public abstract void Perform(ZNameSpace NameSpace);
+	public abstract void Perform(BNameSpace NameSpace);
 
 }

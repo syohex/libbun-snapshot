@@ -5,22 +5,22 @@ import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.BArray;
 
-public final class ZFuncType extends ZType {
-	public final static ZFuncType _FuncType  = new ZFuncType();
+public final class BFuncType extends BType {
+	public final static BFuncType _FuncType  = new BFuncType();
 
-	@BField public ZType[]  TypeParams;
+	@BField public BType[]  TypeParams;
 	@BField private boolean HasUnknownType = false;
 	@BField private boolean HasGreekType = false;
 
-	private ZFuncType() {
-		super(ZType.UniqueTypeFlag, "Func", ZType.VarType);
+	private BFuncType() {
+		super(BType.UniqueTypeFlag, "Func", BType.VarType);
 		this.TypeParams = BLib._NewTypeArray(1);
-		this.TypeParams[0] = ZType.VarType;
+		this.TypeParams[0] = BType.VarType;
 		this.HasUnknownType = true;
 	}
 
-	public ZFuncType(ZType[] UniqueTypeParams) {
-		super(ZType.UniqueTypeFlag, null, ZType.VarType);
+	public BFuncType(BType[] UniqueTypeParams) {
+		super(BType.UniqueTypeFlag, null, BType.VarType);
 		this.TypeParams = UniqueTypeParams;
 		@Var int i = 0;
 		while(i < this.TypeParams.length) {
@@ -62,20 +62,20 @@ public final class ZFuncType extends ZType {
 		return this.HasGreekType;
 	}
 
-	@Override public final ZType GetGreekRealType(ZType[] Greek) {
+	@Override public final BType GetGreekRealType(BType[] Greek) {
 		if(this.HasGreekType) {
-			@Var BArray<ZType> TypeList = new BArray<ZType>(new ZType[this.TypeParams.length]);
+			@Var BArray<BType> TypeList = new BArray<BType>(new BType[this.TypeParams.length]);
 			@Var int i = 0;
 			while(i < this.TypeParams.length) {
 				TypeList.add(this.TypeParams[i].GetGreekRealType(Greek));
 				i = i + 1;
 			}
-			return ZTypePool._LookupFuncType2(TypeList);
+			return BTypePool._LookupFuncType2(TypeList);
 		}
 		return this;
 	}
 
-	@Override public final boolean AcceptValueType(ZType ValueType, boolean ExactMatch, ZType[] Greek) {
+	@Override public final boolean AcceptValueType(BType ValueType, boolean ExactMatch, BType[] Greek) {
 		if(ValueType.IsFuncType() && ValueType.GetParamSize() == this.GetParamSize()) {
 			@Var int i = 0;
 			while(i < this.TypeParams.length) {
@@ -90,28 +90,28 @@ public final class ZFuncType extends ZType {
 	}
 
 	@Override public final String StringfySignature(String FuncName) {
-		return ZFunc._StringfySignature(FuncName, this.GetFuncParamSize(), this.GetRecvType());
+		return BFunc._StringfySignature(FuncName, this.GetFuncParamSize(), this.GetRecvType());
 	}
 
-	@Override public final ZType GetBaseType() {
-		return ZFuncType._FuncType;
+	@Override public final BType GetBaseType() {
+		return BFuncType._FuncType;
 	}
 
 	@Override public final int GetParamSize() {
 		return this.TypeParams.length;
 	}
 
-	@Override public final ZType GetParamType(int Index) {
+	@Override public final BType GetParamType(int Index) {
 		return this.TypeParams[Index];
 	}
 
-	public final ZType GetReturnType() {
+	public final BType GetReturnType() {
 		return this.TypeParams[this.TypeParams.length - 1];
 	}
 
-	public final ZType GetRecvType() {
+	public final BType GetRecvType() {
 		if(this.TypeParams.length == 1) {
-			return ZType.VoidType;
+			return BType.VoidType;
 		}
 		return this.TypeParams[0];
 	}
@@ -121,11 +121,11 @@ public final class ZFuncType extends ZType {
 	}
 
 
-	public final ZType GetFuncParamType(int Index) {
+	public final BType GetFuncParamType(int Index) {
 		return this.TypeParams[Index];
 	}
 
-	public final boolean AcceptAsFieldFunc(ZFuncType FuncType) {
+	public final boolean AcceptAsFieldFunc(BFuncType FuncType) {
 		if(FuncType.GetFuncParamSize() == this.GetFuncParamSize() && FuncType.GetReturnType().Equals(this.GetReturnType())) {
 			@Var int i = 1;
 			while(i < FuncType.GetFuncParamSize()) {

@@ -24,36 +24,36 @@
 
 package libbun.type;
 
-import libbun.parser.ZToken;
+import libbun.parser.BToken;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.BArray;
 
-public class ZClassType extends ZType {
-	public final static ZClassType _ObjectType = new ZClassType("Object");
+public class BClassType extends BType {
+	public final static BClassType _ObjectType = new BClassType("Object");
 
-	@BField BArray<ZClassField> FieldList = null;
+	@BField BArray<BClassField> FieldList = null;
 
-	private ZClassType(String ShortName) {
-		super(ZType.OpenTypeFlag|ZType.UniqueTypeFlag, ShortName, ZType.VarType);
-		this.TypeFlag = BLib._UnsetFlag(this.TypeFlag, ZType.OpenTypeFlag);
+	private BClassType(String ShortName) {
+		super(BType.OpenTypeFlag|BType.UniqueTypeFlag, ShortName, BType.VarType);
+		this.TypeFlag = BLib._UnsetFlag(this.TypeFlag, BType.OpenTypeFlag);
 	}
 
-	public ZClassType(String ShortName, ZType RefType) {
-		super(ZType.OpenTypeFlag|ZType.UniqueTypeFlag, ShortName, RefType);
-		if(RefType instanceof ZClassType) {
-			this.EnforceSuperClass((ZClassType)RefType);
+	public BClassType(String ShortName, BType RefType) {
+		super(BType.OpenTypeFlag|BType.UniqueTypeFlag, ShortName, RefType);
+		if(RefType instanceof BClassType) {
+			this.EnforceSuperClass((BClassType)RefType);
 		}
 	}
 
-	public final void EnforceSuperClass(ZClassType SuperClass) {
+	public final void EnforceSuperClass(BClassType SuperClass) {
 		this.RefType = SuperClass;
 		if(SuperClass.FieldList != null) {
-			this.FieldList = new BArray<ZClassField>(new ZClassField[10]);
+			this.FieldList = new BArray<BClassField>(new BClassField[10]);
 			@Var int i = 0;
 			while(i < SuperClass.FieldList.size()) {
-				@Var ZClassField Field = SuperClass.FieldList.ArrayValues[i];
+				@Var BClassField Field = SuperClass.FieldList.ArrayValues[i];
 				this.FieldList.add(Field);
 				i = i + 1;
 			}
@@ -67,7 +67,7 @@ public class ZClassType extends ZType {
 		return 0;
 	}
 
-	public final ZClassField GetFieldAt(int Index) {
+	public final BClassField GetFieldAt(int Index) {
 		return this.FieldList.ArrayValues[Index];
 	}
 
@@ -84,12 +84,12 @@ public class ZClassType extends ZType {
 		return false;
 	}
 
-	public ZType GetFieldType(String FieldName, ZType DefaultType) {
+	public BType GetFieldType(String FieldName, BType DefaultType) {
 		if(this.FieldList != null) {
 			@Var int i = 0;
 			//			System.out.println("FieldSize = " + this.FieldList.size() + " by " + FieldName);
 			while(i < this.FieldList.size()) {
-				@Var ZClassField Field = this.FieldList.ArrayValues[i];
+				@Var BClassField Field = this.FieldList.ArrayValues[i];
 				//				System.out.println("Looking FieldName = " + Field.FieldName + ", " + Field.FieldType);
 				if(FieldName.equals(Field.FieldName)) {
 					return Field.FieldType;
@@ -100,12 +100,12 @@ public class ZClassType extends ZType {
 		return DefaultType;
 	}
 
-	public ZClassField AppendField(ZType FieldType, String FieldName, ZToken SourceToken) {
+	public BClassField AppendField(BType FieldType, String FieldName, BToken SourceToken) {
 		assert(!FieldType.IsVarType());
 		if(this.FieldList == null) {
-			this.FieldList = new BArray<ZClassField>(new ZClassField[4]);
+			this.FieldList = new BArray<BClassField>(new BClassField[4]);
 		}
-		@Var ZClassField ClassField = new ZClassField(this, FieldName, FieldType, SourceToken);
+		@Var BClassField ClassField = new BClassField(this, FieldName, FieldType, SourceToken);
 		//		System.out.println("Append FieldName = " + ClassField.FieldName + ", " + ClassField.FieldType);
 		assert(ClassField.FieldType != null);
 		this.FieldList.add(ClassField);

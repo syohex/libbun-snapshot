@@ -1,7 +1,7 @@
 package libbun.parser.sugar;
 
-import libbun.parser.ZGenerator;
-import libbun.parser.ZTypeChecker;
+import libbun.parser.BGenerator;
+import libbun.parser.BTypeChecker;
 import libbun.parser.ast.ZBlockNode;
 import libbun.parser.ast.BBooleanNode;
 import libbun.parser.ast.ZBreakNode;
@@ -12,7 +12,7 @@ import libbun.parser.ast.BSetNameNode;
 import libbun.parser.ast.ZSugarNode;
 import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
-import libbun.type.ZType;
+import libbun.type.BType;
 import libbun.util.BLib;
 import libbun.util.Var;
 
@@ -72,16 +72,16 @@ public class ZContinueNode extends ZSugarNode {
 		return FirstDesugarNode;
 	}
 
-	@Override public ZDesugarNode DeSugar(ZGenerator Generator, ZTypeChecker Typer) {
+	@Override public ZDesugarNode DeSugar(BGenerator Generator, BTypeChecker Typer) {
 		@Var ZWhileNode WhileNode = this.LookupWhileNode();
 		if(WhileNode == null) {
 			return new ZDesugarNode(this, new ZErrorNode(this.ParentNode, this.SourceToken, "continue must be inside the while statement"));
 		}
 		@Var ZBlockNode ParentBlockNode = WhileNode.GetScopeBlockNode();
 		@Var String VarName = Generator.NameUniqueSymbol("continue");
-		@Var ZVarBlockNode VarNode = Generator.TypeChecker.CreateVarNode(null, VarName, ZType.BooleanType, new BBooleanNode(true));
+		@Var ZVarBlockNode VarNode = Generator.TypeChecker.CreateVarNode(null, VarName, BType.BooleanType, new BBooleanNode(true));
 		@Var ZWhileNode ContinueWhile = VarNode.SetNewWhileNode(BNode._AppendIndex, Typer);
-		ContinueWhile.SetNewGetNameNode(ZWhileNode._Cond, Typer, VarName, ZType.BooleanType);
+		ContinueWhile.SetNewGetNameNode(ZWhileNode._Cond, Typer, VarName, BType.BooleanType);
 		@Var ZBlockNode WhileBlockNode = ContinueWhile.SetNewBlockNode(ZWhileNode._Block, Typer);
 		WhileBlockNode.Append(new BSetNameNode(VarName, new BBooleanNode(false)));
 		WhileBlockNode.Append(WhileNode);

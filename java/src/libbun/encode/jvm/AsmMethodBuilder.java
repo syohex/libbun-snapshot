@@ -20,8 +20,8 @@ import java.util.Stack;
 
 import libbun.parser.ast.ZListNode;
 import libbun.parser.ast.BNode;
-import libbun.type.ZFuncType;
-import libbun.type.ZType;
+import libbun.type.BFuncType;
+import libbun.type.BType;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -140,7 +140,7 @@ class AsmMethodBuilder extends MethodNode {
 		}
 	}
 
-	void Pop(ZType T) {
+	void Pop(BType T) {
 		if(T.IsFloatType() || T.IsIntType()) {
 			this.visitInsn(Opcodes.POP2);
 		}
@@ -258,7 +258,7 @@ class AsmMethodBuilder extends MethodNode {
 		this.ApplyStaticMethod(Node, sMethod);
 	}
 
-	void ApplyFuncName(BNode Node, String FuncName, ZFuncType FuncType, ZListNode ListNode) {
+	void ApplyFuncName(BNode Node, String FuncName, BFuncType FuncType, ZListNode ListNode) {
 		if(ListNode != null) {
 			for(int i = 0; i < ListNode.GetListSize(); i++) {
 				this.PushNode(null, ListNode.GetListAt(i));
@@ -276,7 +276,7 @@ class AsmMethodBuilder extends MethodNode {
 		}
 	}
 
-	void ApplyFuncObject(BNode Node, Class<?> FuncClass, BNode FuncNode, ZFuncType FuncType, ZListNode ListNode) {
+	void ApplyFuncObject(BNode Node, Class<?> FuncClass, BNode FuncNode, BFuncType FuncType, ZListNode ListNode) {
 		this.PushNode(FuncClass, FuncNode);
 		for(int i = 0; i < ListNode.GetListSize(); i++) {
 			this.PushNode(null, ListNode.GetListAt(i));
@@ -312,7 +312,7 @@ class AsmMethodBuilder extends MethodNode {
 		}
 	}
 
-	public void visitReturn(ZType ReturnType) {
+	public void visitReturn(BType ReturnType) {
 		if(ReturnType.IsVoidType()) {
 			this.visitInsn(RETURN);
 		}
@@ -322,11 +322,11 @@ class AsmMethodBuilder extends MethodNode {
 		}
 	}
 
-	public void visitMethodInsn(int acc, String ClassName, String FuncName, ZFuncType FuncType) {
+	public void visitMethodInsn(int acc, String ClassName, String FuncName, BFuncType FuncType) {
 		this.visitMethodInsn(acc, ClassName, FuncName, this.Generator.GetMethodDescriptor(FuncType));
 	}
 
-	public void visitMethodInsn(int acc, Class<?> jClass, String FuncName, ZFuncType FuncType) {
+	public void visitMethodInsn(int acc, Class<?> jClass, String FuncName, BFuncType FuncType) {
 		this.visitMethodInsn(acc, Type.getInternalName(jClass), FuncName, this.Generator.GetMethodDescriptor(FuncType));
 	}
 

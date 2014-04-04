@@ -33,7 +33,7 @@ import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.BArray;
 
-public final class ZTokenContext {
+public final class BTokenContext {
 	public final static boolean     _Required          = true;
 	public final static boolean     _Optional          = false;
 	public final static boolean     _AllowSkipIndent   = true;
@@ -41,20 +41,20 @@ public final class ZTokenContext {
 	public final static boolean     _AllowNewLine   = true;
 	public final static boolean     _MoveNext       = true;
 
-	@BField public ZGenerator Generator;
-	@BField public ZNameSpace NameSpace;
-	@BField public ZSourceContext Source;
-	@BField public BArray<ZToken> TokenList = new BArray<ZToken>(new ZToken[128]);
+	@BField public BGenerator Generator;
+	@BField public BNameSpace NameSpace;
+	@BField public BSourceContext Source;
+	@BField public BArray<BToken> TokenList = new BArray<BToken>(new BToken[128]);
 
 	@BField private int CurrentPosition = 0;
 	@BField private boolean IsAllowSkipIndent = false;
-	@BField public ZToken LatestToken = null;
-	@BField private ZSyntax ApplyingPattern = null;
+	@BField public BToken LatestToken = null;
+	@BField private BSyntax ApplyingPattern = null;
 
-	public ZTokenContext(ZGenerator Generator, ZNameSpace NameSpace, String FileName, int LineNumber, String SourceText) {
+	public BTokenContext(BGenerator Generator, BNameSpace NameSpace, String FileName, int LineNumber, String SourceText) {
 		this.Generator = Generator;
 		this.NameSpace = NameSpace;
-		this.Source = new ZSourceContext(FileName, LineNumber, SourceText, this);
+		this.Source = new BSourceContext(FileName, LineNumber, SourceText, this);
 	}
 
 	public boolean SetParseFlag(boolean AllowSkipIndent) {
@@ -63,10 +63,10 @@ public final class ZTokenContext {
 		return OldFlag;
 	}
 
-	private ZToken GetBeforeToken() {
+	private BToken GetBeforeToken() {
 		@Var int MovingPos = this.CurrentPosition - 1;
 		while(MovingPos >= 0 && MovingPos < this.TokenList.size()) {
-			@Var ZToken Token = this.TokenList.ArrayValues[MovingPos];
+			@Var BToken Token = this.TokenList.ArrayValues[MovingPos];
 			if(!Token.IsIndent()) {
 				return Token;
 			}
@@ -75,10 +75,10 @@ public final class ZTokenContext {
 		return this.LatestToken;
 	}
 
-	public BNode CreateExpectedErrorNode(ZToken SourceToken, String ExpectedTokenText) {
+	public BNode CreateExpectedErrorNode(BToken SourceToken, String ExpectedTokenText) {
 		if(SourceToken == null || SourceToken.IsNull()) {
 			SourceToken = this.GetBeforeToken();
-			SourceToken = new ZToken(SourceToken.Source, SourceToken.EndIndex, SourceToken.EndIndex);
+			SourceToken = new BToken(SourceToken.Source, SourceToken.EndIndex, SourceToken.EndIndex);
 			return new ZErrorNode(null, SourceToken, ExpectedTokenText + " is expected");
 		}
 		return new ZErrorNode(null, SourceToken, ExpectedTokenText + " is expected");
@@ -95,14 +95,14 @@ public final class ZTokenContext {
 		this.CurrentPosition = this.CurrentPosition + 1;
 	}
 
-	public ZToken GetToken(boolean EnforceMoveNext) {
+	public BToken GetToken(boolean EnforceMoveNext) {
 		while(true) {
 			if(!(this.CurrentPosition < this.TokenList.size())) {
 				if(!this.Source.DoTokenize()) {
 					break;
 				}
 			}
-			@Var ZToken Token = this.TokenList.ArrayValues[this.CurrentPosition];
+			@Var BToken Token = this.TokenList.ArrayValues[this.CurrentPosition];
 			if((this.IsAllowSkipIndent) && Token.IsIndent()) {
 				this.CurrentPosition = this.CurrentPosition + 1;
 			}
@@ -114,34 +114,34 @@ public final class ZTokenContext {
 				return Token;
 			}
 		}
-		return ZToken._NullToken;
+		return BToken._NullToken;
 	}
 
-	public ZToken GetToken() {
+	public BToken GetToken() {
 		return this.GetToken(false);
 	}
 
 	public boolean HasNext() {
-		return (this.GetToken() != ZToken._NullToken);
+		return (this.GetToken() != BToken._NullToken);
 	}
 
 	public void SkipIndent() {
-		@Var ZToken Token = this.GetToken();
+		@Var BToken Token = this.GetToken();
 		while(Token.IsIndent()) {
 			this.CurrentPosition = this.CurrentPosition + 1;
 			Token = this.GetToken();
 		}
 	}
 
-	public void SkipError(ZToken ErrorToken) {
+	public void SkipError(BToken ErrorToken) {
 		@Var int StartIndex = ErrorToken.StartIndex;
 		@Var int EndIndex = ErrorToken.EndIndex;
 		@Var int length = ErrorToken.GetIndentSize();
 		while(this.HasNext()) {
-			@Var ZToken Token = this.GetToken();
+			@Var BToken Token = this.GetToken();
 			EndIndex = Token.EndIndex;
 			this.CurrentPosition = this.CurrentPosition + 1;
-			if(Token instanceof ZIndentToken) {
+			if(Token instanceof BIndentToken) {
 				@Var int ilength = Token.GetIndentSize();
 				if(ilength <= length) {
 					break;
@@ -155,7 +155,7 @@ public final class ZTokenContext {
 	}
 
 	public final boolean IsToken(String TokenText) {
-		@Var ZToken Token = this.GetToken();
+		@Var BToken Token = this.GetToken();
 		if(Token.EqualsText(TokenText)) {
 			return true;
 		}
@@ -165,7 +165,7 @@ public final class ZTokenContext {
 	public final boolean IsNewLineToken(String TokenText) {
 		@Var int RollbackPos = this.CurrentPosition;
 		this.SkipIndent();
-		@Var ZToken Token = this.GetToken();
+		@Var BToken Token = this.GetToken();
 		if(Token.EqualsText(TokenText)) {
 			return true;
 		}
@@ -175,7 +175,7 @@ public final class ZTokenContext {
 
 	public final boolean MatchToken(String TokenText) {
 		@Var int RollbackPos = this.CurrentPosition;
-		@Var ZToken Token = this.GetToken(ZTokenContext._MoveNext);
+		@Var BToken Token = this.GetToken(BTokenContext._MoveNext);
 		if(Token.EqualsText(TokenText)) {
 			return true;
 		}
@@ -186,7 +186,7 @@ public final class ZTokenContext {
 	public final boolean MatchNewLineToken(String TokenText) {
 		@Var int RollbackPos = this.CurrentPosition;
 		this.SkipIndent();
-		@Var ZToken Token = this.GetToken(ZTokenContext._MoveNext);
+		@Var BToken Token = this.GetToken(BTokenContext._MoveNext);
 		if(Token.EqualsText(TokenText)) {
 			return true;
 		}
@@ -194,8 +194,8 @@ public final class ZTokenContext {
 		return false;
 	}
 
-	public ZToken ParseLargeToken() {
-		@Var ZToken Token = this.GetToken(ZTokenContext._MoveNext);
+	public BToken ParseLargeToken() {
+		@Var BToken Token = this.GetToken(BTokenContext._MoveNext);
 		if(Token.IsNextWhiteSpace()) {
 			return Token;
 		}
@@ -203,20 +203,20 @@ public final class ZTokenContext {
 		@Var int EndIndex = Token.EndIndex;
 		while(this.HasNext() && !Token.IsNextWhiteSpace()) {
 			@Var int RollbackPosition = this.CurrentPosition;
-			Token = this.GetToken(ZTokenContext._MoveNext);
+			Token = this.GetToken(BTokenContext._MoveNext);
 			if(Token.IsIndent() || Token.EqualsText(';') || Token.EqualsText(',')) {
 				this.CurrentPosition = RollbackPosition;
 				break;
 			}
 			EndIndex = Token.EndIndex;
 		}
-		return new ZToken(Token.Source, StartIndex, EndIndex);
+		return new BToken(Token.Source, StartIndex, EndIndex);
 	}
 
 	public BNode MatchToken(BNode ParentNode, String TokenText, boolean IsRequired) {
 		if(!ParentNode.IsErrorNode()) {
 			@Var int RollbackPosition = this.CurrentPosition;
-			@Var ZToken Token = this.GetToken(ZTokenContext._MoveNext);
+			@Var BToken Token = this.GetToken(BTokenContext._MoveNext);
 			if(Token.EqualsText(TokenText)) {
 				if(ParentNode.SourceToken == null) {
 					ParentNode.SourceToken = Token;
@@ -234,14 +234,14 @@ public final class ZTokenContext {
 		return ParentNode;
 	}
 
-	public final ZSyntax GetApplyingSyntax() {
+	public final BSyntax GetApplyingSyntax() {
 		return this.ApplyingPattern;
 	}
 
-	public final BNode ApplyMatchPattern(BNode ParentNode, BNode LeftNode, ZSyntax Pattern, boolean IsRequired) {
+	public final BNode ApplyMatchPattern(BNode ParentNode, BNode LeftNode, BSyntax Pattern, boolean IsRequired) {
 		@Var int RollbackPosition = this.CurrentPosition;
-		@Var ZSyntax CurrentPattern = Pattern;
-		@Var ZToken TopToken = this.GetToken();
+		@Var BSyntax CurrentPattern = Pattern;
+		@Var BToken TopToken = this.GetToken();
 		@Var BNode ParsedNode = null;
 		while(CurrentPattern != null) {
 			@Var boolean Remembered = this.IsAllowSkipIndent;
@@ -273,7 +273,7 @@ public final class ZTokenContext {
 	}
 
 	public final BNode ParsePatternAfter(BNode ParentNode, BNode LeftNode, String PatternName, boolean IsRequired) {
-		@Var ZSyntax Pattern = this.NameSpace.GetSyntaxPattern(PatternName);
+		@Var BSyntax Pattern = this.NameSpace.GetSyntaxPattern(PatternName);
 		@Var BNode ParsedNode = this.ApplyMatchPattern(ParentNode, LeftNode, Pattern, IsRequired);
 		return ParsedNode;
 	}
@@ -310,13 +310,13 @@ public final class ZTokenContext {
 	}
 
 	public BNode MatchPattern(BNode ParentNode, int Index, String PatternName, boolean IsRequired) {
-		return this.MatchPattern(ParentNode, Index, PatternName, IsRequired, ZTokenContext._NotAllowSkipIndent);
+		return this.MatchPattern(ParentNode, Index, PatternName, IsRequired, BTokenContext._NotAllowSkipIndent);
 	}
 
 	public BNode MatchOptionaPattern(BNode ParentNode, int Index, boolean AllowNewLine, String TokenText, String PatternName) {
 		if(!ParentNode.IsErrorNode()) {
 			if(this.MatchToken(TokenText)) {
-				return this.MatchPattern(ParentNode, Index, PatternName, ZTokenContext._Optional, ZTokenContext._NotAllowSkipIndent);
+				return this.MatchPattern(ParentNode, Index, PatternName, BTokenContext._Optional, BTokenContext._NotAllowSkipIndent);
 			}
 		}
 		return ParentNode;
@@ -324,17 +324,17 @@ public final class ZTokenContext {
 
 	public BNode MatchNtimes(BNode ParentNode, String StartToken, String PatternName, String DelimToken, String StopToken) {
 		@Var boolean Rememberd = this.SetParseFlag(true);
-		@Var boolean IsRequired =   ZTokenContext._Optional;
+		@Var boolean IsRequired =   BTokenContext._Optional;
 		if(StartToken != null) {
-			ParentNode = this.MatchToken(ParentNode, StartToken, ZTokenContext._Required);
+			ParentNode = this.MatchToken(ParentNode, StartToken, BTokenContext._Required);
 		}
 		while(!ParentNode.IsErrorNode()) {
 			if(StopToken != null) {
-				@Var ZToken Token = this.GetToken();
+				@Var BToken Token = this.GetToken();
 				if(Token.EqualsText(StopToken)) {
 					break;
 				}
-				IsRequired = ZTokenContext._Required;
+				IsRequired = BTokenContext._Required;
 			}
 			@Var BNode ParsedNode = this.ParsePattern(ParentNode, PatternName, IsRequired);
 			if(ParsedNode == null) {
@@ -353,20 +353,20 @@ public final class ZTokenContext {
 			}
 		}
 		if(StopToken != null) {
-			ParentNode = this.MatchToken(ParentNode, StopToken, ZTokenContext._Required);
+			ParentNode = this.MatchToken(ParentNode, StopToken, BTokenContext._Required);
 		}
 		this.SetParseFlag(Rememberd);
 		return ParentNode;
 	}
 
 	public final boolean StartsWithToken(String TokenText) {
-		@Var ZToken Token = this.GetToken();
+		@Var BToken Token = this.GetToken();
 		if(Token.EqualsText(TokenText)) {
 			this.CurrentPosition = this.CurrentPosition + 1;
 			return true;
 		}
 		if(Token.StartsWith(TokenText)) {
-			Token = new ZToken(Token.Source, Token.StartIndex + TokenText.length(), Token.EndIndex);
+			Token = new BToken(Token.Source, Token.StartIndex + TokenText.length(), Token.EndIndex);
 			this.CurrentPosition = this.CurrentPosition + 1;
 			this.TokenList.add(this.CurrentPosition, Token);
 			return true;
@@ -376,7 +376,7 @@ public final class ZTokenContext {
 
 	public final void SkipEmptyStatement() {
 		while(this.HasNext()) {
-			@Var ZToken Token = this.GetToken();
+			@Var BToken Token = this.GetToken();
 			if(Token.IsIndent() || Token.EqualsText(';')) {
 				this.CurrentPosition = this.CurrentPosition + 1;
 			}
@@ -389,7 +389,7 @@ public final class ZTokenContext {
 	public final void Dump() {
 		@Var int Position = this.CurrentPosition;
 		while(Position < this.TokenList.size()) {
-			@Var ZToken Token = this.TokenList.ArrayValues[Position];
+			@Var BToken Token = this.TokenList.ArrayValues[Position];
 			@Var String DumpedToken = "[";
 			DumpedToken = DumpedToken + Position+"] " + Token.toString();
 			BLib._PrintDebug(DumpedToken);

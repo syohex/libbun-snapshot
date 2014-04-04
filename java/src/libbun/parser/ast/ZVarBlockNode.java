@@ -23,8 +23,8 @@
 // **************************************************************************
 
 package libbun.parser.ast;
-import libbun.parser.ZNodeUtils;
-import libbun.parser.ZVisitor;
+import libbun.parser.BNodeUtils;
+import libbun.parser.BVisitor;
 import libbun.util.Var;
 
 public class ZVarBlockNode extends ZBlockNode {
@@ -38,8 +38,8 @@ public class ZVarBlockNode extends ZBlockNode {
 	public ZVarBlockNode(BNode ParentNode, BLetVarNode VarNode, ZBlockNode ParentBlockNode) {
 		super(ParentNode, null, 1);
 		this.SetNode(ZVarBlockNode._VarDecl, VarNode);
-		@Var int Index = ZNodeUtils._AstIndexOf(ParentBlockNode, VarNode);
-		ZNodeUtils._MoveAstList(ParentBlockNode, Index+1, this);
+		@Var int Index = BNodeUtils._AstIndexOf(ParentBlockNode, VarNode);
+		BNodeUtils._MoveAstList(ParentBlockNode, Index+1, this);
 	}
 
 
@@ -52,7 +52,7 @@ public class ZVarBlockNode extends ZBlockNode {
 		return null;
 	}
 
-	@Override public final void Accept(ZVisitor Visitor) {
+	@Override public final void Accept(BVisitor Visitor) {
 		Visitor.VisitVarBlockNode(this);
 	}
 

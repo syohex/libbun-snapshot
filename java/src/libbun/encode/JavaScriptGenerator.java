@@ -25,7 +25,7 @@
 
 package libbun.encode;
 
-import libbun.parser.ZLogger;
+import libbun.parser.BLogger;
 import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.BNullNode;
@@ -41,9 +41,9 @@ import libbun.parser.ast.ZMethodCallNode;
 import libbun.parser.ast.ZStupidCastErrorNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
-import libbun.type.ZClassType;
-import libbun.type.ZGenericType;
-import libbun.type.ZType;
+import libbun.type.BClassType;
+import libbun.type.BGenericType;
+import libbun.type.BType;
 import libbun.util.BLib;
 import libbun.util.Var;
 
@@ -53,11 +53,11 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 	public JavaScriptGenerator() {
 		super("js", "JavaScript-1.4");
 		this.TopType = "Object";
-		this.SetNativeType(ZType.BooleanType, "Boolean");
-		this.SetNativeType(ZType.IntType, "Number");
-		this.SetNativeType(ZType.FloatType, "Number");
-		this.SetNativeType(ZType.StringType, "String");
-		this.SetNativeType(ZType.VarType, "Object");
+		this.SetNativeType(BType.BooleanType, "Boolean");
+		this.SetNativeType(BType.IntType, "Number");
+		this.SetNativeType(BType.FloatType, "Number");
+		this.SetNativeType(BType.StringType, "String");
+		this.SetNativeType(BType.VarType, "Object");
 
 		this.SetReservedName("this", "self");
 
@@ -132,22 +132,22 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 	}
 
-	private boolean IsUserDefinedType(ZType SelfType){
-		return SelfType != ZType.BooleanType &&
-				SelfType != ZType.IntType &&
-				SelfType != ZType.FloatType &&
-				SelfType != ZType.StringType &&
-				SelfType != ZType.VoidType &&
-				SelfType != ZType.TypeType &&
+	private boolean IsUserDefinedType(BType SelfType){
+		return SelfType != BType.BooleanType &&
+				SelfType != BType.IntType &&
+				SelfType != BType.FloatType &&
+				SelfType != BType.StringType &&
+				SelfType != BType.VoidType &&
+				SelfType != BType.TypeType &&
 				//SelfType != ZType.VarType &&
-				SelfType.GetBaseType() != ZGenericType._ArrayType &&
-				SelfType.GetBaseType() != ZGenericType._MapType;
+				SelfType.GetBaseType() != BGenericType._ArrayType &&
+				SelfType.GetBaseType() != BGenericType._MapType;
 	}
 
 	@Override public void VisitFunctionNode(ZFunctionNode Node) {
 		@Var boolean IsLambda = (Node.FuncName() == null);
 		@Var boolean IsInstanceMethod = (!IsLambda && Node.AST.length > 1 && Node.AST[1/*first param*/] instanceof BLetVarNode);
-		@Var ZType SelfType = IsInstanceMethod ? Node.AST[1/*first param*/].Type : null;
+		@Var BType SelfType = IsInstanceMethod ? Node.AST[1/*first param*/].Type : null;
 		@Var boolean IsConstructor = IsInstanceMethod && Node.FuncName().equals(SelfType.GetName());
 
 		if(IsConstructor){
@@ -335,13 +335,13 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		 * 	return ClassName;
 		 * })(_super);
 		 */
-		if(!Node.SuperType().Equals(ZClassType._ObjectType) && !JavaScriptGenerator.UseExtend) {
+		if(!Node.SuperType().Equals(BClassType._ObjectType) && !JavaScriptGenerator.UseExtend) {
 			JavaScriptGenerator.UseExtend = true;
 			this.GenerateExtendCode(Node);
 		}
 		this.CurrentBuilder.AppendNewLine("var ", Node.ClassName(), " = ");
 		this.CurrentBuilder.Append("(function(");
-		if(!Node.SuperType().Equals(ZClassType._ObjectType)) {
+		if(!Node.SuperType().Equals(BClassType._ObjectType)) {
 			this.CurrentBuilder.OpenIndent("_super) {");
 			this.CurrentBuilder.AppendNewLine("__extends(", Node.ClassName(), this.Camma);
 			this.CurrentBuilder.Append("_super)", this.SemiColon);
@@ -350,7 +350,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		}
 		this.CurrentBuilder.AppendNewLine("function ", Node.ClassName());
 		this.CurrentBuilder.OpenIndent("() {");
-		if(!Node.SuperType().Equals(ZClassType._ObjectType)) {
+		if(!Node.SuperType().Equals(BClassType._ObjectType)) {
 			this.CurrentBuilder.AppendNewLine("_super.call(this)", this.SemiColon);
 		}
 
@@ -383,7 +383,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 			this.GenerateCode(null, ErrorNode.ErrorNode);
 		}
 		else {
-			@Var String Message = ZLogger._LogError(Node.SourceToken, Node.ErrorMessage);
+			@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 			this.CurrentBuilder.AppendWhiteSpace();
 			this.CurrentBuilder.Append("LibZen.ThrowError(");
 			this.CurrentBuilder.Append(BLib._QuoteString(Message));

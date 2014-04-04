@@ -25,18 +25,18 @@
 package libbun.parser.ast;
 
 
-import libbun.parser.ZToken;
-import libbun.parser.ZVisitor;
+import libbun.parser.BToken;
+import libbun.parser.BVisitor;
 
 public class ZUnaryNode extends BNode {
 	public final static int _Recv = 0;
-	public ZUnaryNode(BNode ParentNode, ZToken Token) {
+	public ZUnaryNode(BNode ParentNode, BToken Token) {
 		super(ParentNode, Token, 1);
 	}
 	public final BNode RecvNode() {
 		return this.AST[ZUnaryNode._Recv ];
 	}
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitUnaryNode(this);
 	}
 }

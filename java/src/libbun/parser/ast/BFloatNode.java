@@ -24,19 +24,19 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZToken;
-import libbun.parser.ZVisitor;
-import libbun.type.ZType;
+import libbun.parser.BToken;
+import libbun.parser.BVisitor;
+import libbun.type.BType;
 import libbun.util.BField;
 
 public final class BFloatNode extends BConstNode {
 	@BField public double	FloatValue;
-	public BFloatNode(BNode ParentNode, ZToken Token, double Value) {
+	public BFloatNode(BNode ParentNode, BToken Token, double Value) {
 		super(ParentNode, Token);
-		this.Type = ZType.FloatType;
+		this.Type = BType.FloatType;
 		this.FloatValue = Value;
 	}
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitFloatNode(this);
 	}
 }

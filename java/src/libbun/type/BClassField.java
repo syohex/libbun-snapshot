@@ -22,50 +22,25 @@
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // **************************************************************************
 
-package libbun.parser;
+package libbun.type;
 
-import libbun.parser.ast.ZFunctionNode;
-import libbun.type.ZType;
+import libbun.parser.BToken;
 import libbun.util.BField;
 
-public final class ZVariable extends ZSymbolEntry {
-	@BField public int     VarFlag;
-	@BField public ZType	  VarType;
-	@BField public String  VarName;
-	@BField public int     VarUniqueIndex;
-	@BField public ZToken  SourceToken;
-	@BField public int     DefCount;
-	@BField public int     UsedCount;
+public class BClassField {
+	@BField public final int        FieldFlag = 0;
+	@BField public final BClassType ClassType;
+	@BField public final BType	     FieldType;
+	@BField public final String	 FieldName;
+	@BField public final int        FieldNativeIndex = 0;
+	@BField public final BToken     SourceToken;
 
-	ZVariable(ZSymbolEntry Parent, ZFunctionNode FuncNode, int VarFlag, ZType VarType, String VarName, ZToken SourceToken) {
-		super(Parent, FuncNode);
-		this.VarFlag = VarFlag;
-		this.VarType = VarType;
-		this.VarName = VarName;
+	public BClassField(BClassType ClassType, String FieldName, BType FieldType, BToken SourceToken) {
+		this.ClassType = ClassType;
+		this.FieldType = FieldType;
+		this.FieldName = FieldName;
 		this.SourceToken = SourceToken;
-		if(Parent instanceof ZVariable) {
-			this.VarUniqueIndex = ((ZVariable)Parent).VarUniqueIndex + 1;
-		}
-		else {
-			this.VarUniqueIndex = 0; /*FuncNode.GetVarIndex();*/
-		}
-		this.UsedCount = 0;
-		this.DefCount  = 1;
 	}
 
-	public final boolean IsCaptured(ZFunctionNode CurrentFunctionNode) {
-		if(CurrentFunctionNode == this.Node) {
-			return false;
-		}
-		return true;
-	}
-
-	public final void Defined() {
-		this.DefCount = this.DefCount + 1;
-	}
-
-	public final void Used() {
-		this.UsedCount = this.UsedCount + 1;
-	}
 
 }

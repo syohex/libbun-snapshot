@@ -1,7 +1,7 @@
 package libbun.lang.bun;
 
-import libbun.parser.ZToken;
-import libbun.parser.ZTokenContext;
+import libbun.parser.BToken;
+import libbun.parser.BTokenContext;
 import libbun.parser.ast.ZEmptyNode;
 import libbun.parser.ast.BNode;
 import libbun.util.Var;
@@ -9,9 +9,9 @@ import libbun.util.BMatchFunction;
 
 public class StatementEndPatternFunction extends BMatchFunction {
 
-	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		@Var boolean ContextAllowance = TokenContext.SetParseFlag(false);
-		@Var ZToken Token = null;
+		@Var BToken Token = null;
 		if(TokenContext.HasNext()) {
 			Token = TokenContext.GetToken();
 			if(!Token.EqualsText(';') && !Token.IsIndent()) {

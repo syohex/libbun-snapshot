@@ -55,12 +55,12 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Stack;
 
-import libbun.parser.ZGenerator;
-import libbun.parser.ZLangInfo;
-import libbun.parser.ZLogger;
-import libbun.parser.ZNameSpace;
-import libbun.parser.ZSourceContext;
-import libbun.parser.ZTokenContext;
+import libbun.parser.BGenerator;
+import libbun.parser.BLangInfo;
+import libbun.parser.BLogger;
+import libbun.parser.BNameSpace;
+import libbun.parser.BSourceContext;
+import libbun.parser.BTokenContext;
 import libbun.parser.ast.BAsmNode;
 import libbun.parser.ast.BBooleanNode;
 import libbun.parser.ast.BFloatNode;
@@ -107,11 +107,11 @@ import libbun.parser.ast.ZTypeNode;
 import libbun.parser.ast.ZUnaryNode;
 import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
-import libbun.type.ZClassField;
-import libbun.type.ZClassType;
-import libbun.type.ZFuncType;
-import libbun.type.ZType;
-import libbun.type.ZTypePool;
+import libbun.type.BClassField;
+import libbun.type.BClassType;
+import libbun.type.BFuncType;
+import libbun.type.BType;
+import libbun.type.BTypePool;
 import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.BArray;
@@ -128,7 +128,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 
-public class AsmJavaGenerator extends ZGenerator {
+public class AsmJavaGenerator extends BGenerator {
 	private final BMap<Class<?>> GeneratedClassMap = new BMap<Class<?>>(null);
 	public JavaStaticFieldNode MainFuncNode = null;
 	AsmClassLoader AsmLoader = null;
@@ -136,22 +136,22 @@ public class AsmJavaGenerator extends ZGenerator {
 	AsmMethodBuilder AsmBuilder;
 
 	public AsmJavaGenerator() {
-		super(new ZLangInfo("Java1.6", "jvm"));
+		super(new BLangInfo("Java1.6", "jvm"));
 		this.InitFuncClass();
 		this.ImportLocalGrammar(this.RootNameSpace);
 		this.TryCatchLabel = new Stack<AsmTryCatchLabel>();
 		this.AsmLoader = new AsmClassLoader(this);
 	}
 
-	private void ImportLocalGrammar(ZNameSpace NameSpace) {
+	private void ImportLocalGrammar(BNameSpace NameSpace) {
 		NameSpace.DefineStatement("import", new JavaImportPattern());
 		NameSpace.DefineExpression("$JavaClassPath$", new JavaClassPathPattern());
 	}
 
 	private void InitFuncClass() {
-		ZFuncType FuncType = JavaTypeTable.FuncType(boolean.class, ZSourceContext.class);
+		BFuncType FuncType = JavaTypeTable.FuncType(boolean.class, BSourceContext.class);
 		this.SetGeneratedClass(this.NameType(FuncType), BTokenFunction.class);
-		FuncType = JavaTypeTable.FuncType(BNode.class, BNode.class, ZTokenContext.class, BNode.class);
+		FuncType = JavaTypeTable.FuncType(BNode.class, BNode.class, BTokenContext.class, BNode.class);
 		this.SetGeneratedClass(this.NameType(FuncType), BMatchFunction.class);
 	}
 
@@ -167,11 +167,11 @@ public class AsmJavaGenerator extends ZGenerator {
 		return DefaultClass;
 	}
 
-	public Class<?> GetDefinedFunctionClass(String FuncName, ZFuncType FuncType) {
+	public Class<?> GetDefinedFunctionClass(String FuncName, BFuncType FuncType) {
 		return this.GeneratedClassMap.GetOrNull(this.NameFunctionClass(FuncName, FuncType));
 	}
 
-	public Class<?> GetDefinedFunctionClass(String FuncName, ZType RecvType, int FuncParamSize) {
+	public Class<?> GetDefinedFunctionClass(String FuncName, BType RecvType, int FuncParamSize) {
 		return this.GeneratedClassMap.GetOrNull(this.NameFunctionClass(FuncName, RecvType, FuncParamSize));
 	}
 
@@ -191,25 +191,25 @@ public class AsmJavaGenerator extends ZGenerator {
 
 
 
-	public final Class<?> GetJavaClass(ZType zType, Class<?> C) {
-		if(zType instanceof ZFuncType) {
-			return this.LoadFuncClass((ZFuncType)zType);
+	public final Class<?> GetJavaClass(BType zType, Class<?> C) {
+		if(zType instanceof BFuncType) {
+			return this.LoadFuncClass((BFuncType)zType);
 		}
 		else {
 			return JavaTypeTable.GetJavaClass(zType, C);
 		}
 	}
 
-	public final Class<?> GetJavaClass(ZType zType) {
+	public final Class<?> GetJavaClass(BType zType) {
 		return this.GetJavaClass(zType, Object.class);
 	}
 
-	final Type AsmType(ZType zType) {
+	final Type AsmType(BType zType) {
 		Class<?> jClass = this.GetJavaClass(zType, Object.class);
 		return Type.getType(jClass);
 	}
 
-	final String GetDescripter(ZType zType) {
+	final String GetDescripter(BType zType) {
 		Class<?> jClass = this.GetJavaClass(zType, null);
 		if(jClass != null) {
 			return Type.getType(jClass).toString();
@@ -219,16 +219,16 @@ public class AsmJavaGenerator extends ZGenerator {
 		}
 	}
 
-	final String GetTypeDesc(ZType zType) {
+	final String GetTypeDesc(BType zType) {
 		Class<?> JClass = this.GetJavaClass(zType);
 		return Type.getDescriptor(JClass);
 	}
 
-	final String GetMethodDescriptor(ZFuncType FuncType) {
+	final String GetMethodDescriptor(BFuncType FuncType) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("(");
 		for(int i = 0; i < FuncType.GetFuncParamSize(); i++) {
-			ZType ParamType = FuncType.GetFuncParamType(i);
+			BType ParamType = FuncType.GetFuncParamType(i);
 			sb.append(this.GetDescripter(ParamType));
 		}
 		sb.append(")");
@@ -239,7 +239,7 @@ public class AsmJavaGenerator extends ZGenerator {
 		return Desc;
 	}
 
-	@Override public ZType GetFieldType(ZType RecvType, String FieldName) {
+	@Override public BType GetFieldType(BType RecvType, String FieldName) {
 		Class<?> NativeClass = this.GetJavaClass(RecvType);
 		if(NativeClass != null) {
 			try {
@@ -250,12 +250,12 @@ public class AsmJavaGenerator extends ZGenerator {
 			} catch (SecurityException e) {
 			} catch (NoSuchFieldException e) {
 			}
-			return ZType.VoidType;     // undefined
+			return BType.VoidType;     // undefined
 		}
-		return ZType.VarType;     // undefined
+		return BType.VarType;     // undefined
 	}
 
-	@Override public ZType GetSetterType(ZType RecvType, String FieldName) {
+	@Override public BType GetSetterType(BType RecvType, String FieldName) {
 		Class<?> NativeClass = this.GetJavaClass(RecvType);
 		if(NativeClass != null) {
 			try {
@@ -266,9 +266,9 @@ public class AsmJavaGenerator extends ZGenerator {
 			} catch (SecurityException e) {
 			} catch (NoSuchFieldException e) {
 			}
-			return ZType.VoidType;     // undefined
+			return BType.VoidType;     // undefined
 		}
-		return ZType.VarType;     // undefined
+		return BType.VarType;     // undefined
 	}
 
 	private boolean MatchParam(Class<?>[] jParams, ZListNode ParamList) {
@@ -279,8 +279,8 @@ public class AsmJavaGenerator extends ZGenerator {
 			if(jParams[j] == Object.class) {
 				continue; // accepting all types
 			}
-			@Var ZType jParamType = JavaTypeTable.GetZenType(jParams[j]);
-			@Var ZType ParamType = ParamList.GetListAt(j).Type;
+			@Var BType jParamType = JavaTypeTable.GetZenType(jParams[j]);
+			@Var BType ParamType = ParamList.GetListAt(j).Type;
 			if(jParamType == ParamType || jParamType.Accept(ParamList.GetListAt(j).Type)) {
 				continue;
 			}
@@ -295,7 +295,7 @@ public class AsmJavaGenerator extends ZGenerator {
 		return true;
 	}
 
-	protected Constructor<?> GetConstructor(ZType RecvType, ZListNode ParamList) {
+	protected Constructor<?> GetConstructor(BType RecvType, ZListNode ParamList) {
 		Class<?> NativeClass = this.GetJavaClass(RecvType);
 		if(NativeClass != null) {
 			try {
@@ -315,7 +315,7 @@ public class AsmJavaGenerator extends ZGenerator {
 		return null;
 	}
 
-	protected Method GetMethod(ZType RecvType, String MethodName, ZListNode ParamList) {
+	protected Method GetMethod(BType RecvType, String MethodName, ZListNode ParamList) {
 		Class<?> NativeClass = this.GetJavaClass(RecvType);
 		if(NativeClass != null) {
 			try {
@@ -338,12 +338,12 @@ public class AsmJavaGenerator extends ZGenerator {
 		return null;
 	}
 
-	@Override public ZFuncType GetMethodFuncType(ZType RecvType, String MethodName, ZListNode ParamList) {
+	@Override public BFuncType GetMethodFuncType(BType RecvType, String MethodName, ZListNode ParamList) {
 		if(MethodName == null) {
 			Constructor<?> jMethod = this.GetConstructor(RecvType, ParamList);
 			if(jMethod != null) {
 				@Var Class<?>[] ParamTypes = jMethod.getParameterTypes();
-				@Var BArray<ZType> TypeList = new BArray<ZType>(new ZType[ParamTypes.length + 2]);
+				@Var BArray<BType> TypeList = new BArray<BType>(new BType[ParamTypes.length + 2]);
 				if (ParamTypes != null) {
 					@Var int j = 0;
 					while(j < BLib._Size(ParamTypes)) {
@@ -352,7 +352,7 @@ public class AsmJavaGenerator extends ZGenerator {
 					}
 				}
 				TypeList.add(RecvType);
-				return ZTypePool._LookupFuncType2(TypeList);
+				return BTypePool._LookupFuncType2(TypeList);
 			}
 		}
 		else {
@@ -634,15 +634,15 @@ public class AsmJavaGenerator extends ZGenerator {
 	}
 
 	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
-		ZType FuncType = Node.FunctorNode().Type;
-		if(FuncType instanceof ZFuncType) {
+		BType FuncType = Node.FunctorNode().Type;
+		if(FuncType instanceof BFuncType) {
 			@Var ZFuncNameNode FuncNameNode = Node.FuncNameNode();
 			if(FuncNameNode != null) {
-				this.AsmBuilder.ApplyFuncName(FuncNameNode, FuncNameNode.FuncName, (ZFuncType)FuncType, Node);
+				this.AsmBuilder.ApplyFuncName(FuncNameNode, FuncNameNode.FuncName, (BFuncType)FuncType, Node);
 			}
 			else {
-				Class<?> FuncClass = this.LoadFuncClass((ZFuncType)FuncType);
-				this.AsmBuilder.ApplyFuncObject(Node, FuncClass, Node.FunctorNode(), (ZFuncType)FuncType, Node);
+				Class<?> FuncClass = this.LoadFuncClass((BFuncType)FuncType);
+				this.AsmBuilder.ApplyFuncObject(Node, FuncClass, Node.FunctorNode(), (BFuncType)FuncType, Node);
 			}
 		}
 		else {
@@ -862,7 +862,7 @@ public class AsmJavaGenerator extends ZGenerator {
 		//		Node.GetNameSpace().SetLocalSymbol(Node.GetName(), new JavaStaticFieldNode(Node, StaticClass, Node.InitValueNode().Type, "_"));
 	}
 
-	Class<?> LoadFuncClass(ZFuncType FuncType) {
+	Class<?> LoadFuncClass(BFuncType FuncType) {
 		String ClassName = this.NameType(FuncType);
 		Class<?> FuncClass = this.GetGeneratedClass(ClassName, null);
 		if(FuncClass == null) {
@@ -895,7 +895,7 @@ public class AsmJavaGenerator extends ZGenerator {
 					this.MainFuncNode = FuncNode;
 				}
 			}
-			this.SetMethod(Node.FuncName(), (ZFuncType)FuncNode.Type, FuncNode.StaticClass);
+			this.SetMethod(Node.FuncName(), (BFuncType)FuncNode.Type, FuncNode.StaticClass);
 		}
 		else {
 			JavaStaticFieldNode FuncNode = this.GenerateFunctionAsSymbolField(Node.GetUniqueName(this), Node);
@@ -906,7 +906,7 @@ public class AsmJavaGenerator extends ZGenerator {
 	}
 
 	private JavaStaticFieldNode GenerateFunctionAsSymbolField(String FuncName, ZFunctionNode Node) {
-		@Var ZFuncType FuncType = Node.GetFuncType();
+		@Var BFuncType FuncType = Node.GetFuncType();
 		String ClassName = this.NameFunctionClass(FuncName, FuncType);
 		Class<?> FuncClass = this.LoadFuncClass(FuncType);
 		@Var AsmClassBuilder ClassBuilder = this.AsmLoader.NewClass(ACC_PUBLIC|ACC_FINAL, Node, ClassName, FuncClass);
@@ -972,11 +972,11 @@ public class AsmJavaGenerator extends ZGenerator {
 		return null;
 	}
 
-	private void SetMethod(String FuncName, ZFuncType FuncType, Class<?> FuncClass) {
-		ZType RecvType = FuncType.GetRecvType();
-		if(RecvType instanceof ZClassType && FuncName != null) {
-			ZClassType ClassType = (ZClassType)RecvType;
-			ZType FieldType = ClassType.GetFieldType(FuncName, null);
+	private void SetMethod(String FuncName, BFuncType FuncType, Class<?> FuncClass) {
+		BType RecvType = FuncType.GetRecvType();
+		if(RecvType instanceof BClassType && FuncName != null) {
+			BClassType ClassType = (BClassType)RecvType;
+			BType FieldType = ClassType.GetFieldType(FuncName, null);
 			if(FieldType == null || !FieldType.IsFuncType()) {
 				FuncName = BLib._AnotherName(FuncName);
 				FieldType = ClassType.GetFieldType(FuncName, null);
@@ -987,14 +987,14 @@ public class AsmJavaGenerator extends ZGenerator {
 			if(FieldType.Equals(FuncType)) {
 				this.SetMethod(ClassType, FuncName, this.LoadFunction(null, FuncClass));
 			}
-			else if(this.IsMethodFuncType((ZFuncType)FieldType, FuncType)) {
-				Class<?> WrapperClass = this.MethodWrapperClass((ZFuncType)FieldType, FuncType);
+			else if(this.IsMethodFuncType((BFuncType)FieldType, FuncType)) {
+				Class<?> WrapperClass = this.MethodWrapperClass((BFuncType)FieldType, FuncType);
 				this.SetMethod(ClassType, FuncName, this.LoadFunction(WrapperClass, FuncClass));
 			}
 		}
 	}
 
-	private boolean IsMethodFuncType(ZFuncType FieldType, ZFuncType FuncType) {
+	private boolean IsMethodFuncType(BFuncType FieldType, BFuncType FuncType) {
 		if(FuncType.GetFuncParamSize() == FieldType.GetFuncParamSize() && FuncType.GetReturnType().Equals(FieldType.GetReturnType())) {
 			for(int i = 1; i < FuncType.GetFuncParamSize(); i++) {
 				if(!FuncType.GetFuncParamType(i).Equals(FieldType.GetFuncParamType(i))) {
@@ -1005,7 +1005,7 @@ public class AsmJavaGenerator extends ZGenerator {
 		return true;
 	}
 
-	private Class<?> MethodWrapperClass(ZFuncType FuncType, ZFuncType SourceFuncType) {
+	private Class<?> MethodWrapperClass(BFuncType FuncType, BFuncType SourceFuncType) {
 		String ClassName = "W" + this.NameType(FuncType) + "W" + this.NameType(SourceFuncType);
 		Class<?> WrapperClass = this.GetGeneratedClass(ClassName, null);
 		if(WrapperClass == null) {
@@ -1052,7 +1052,7 @@ public class AsmJavaGenerator extends ZGenerator {
 
 	// -----------------------------------------------------------------------
 
-	private Class<?> GetSuperClass(ZType SuperType) {
+	private Class<?> GetSuperClass(BType SuperType) {
 		@Var Class<?> SuperClass = null;
 		if(SuperType != null) {
 			SuperClass = this.GetJavaClass(SuperType);
@@ -1063,11 +1063,11 @@ public class AsmJavaGenerator extends ZGenerator {
 		return SuperClass;
 	}
 
-	private final static String NameClassMethod(ZType ClassType, String FieldName) {
+	private final static String NameClassMethod(BType ClassType, String FieldName) {
 		return FieldName + ClassType.TypeId;
 	}
 
-	private void SetMethod(ZClassType ClassType, String FuncName, BFunction FuncObject) {
+	private void SetMethod(BClassType ClassType, String FuncName, BFunction FuncObject) {
 		try {
 			Class<?> StaticClass = this.GetJavaClass(ClassType);
 			Field f = StaticClass.getField(NameClassMethod(ClassType, FuncName));
@@ -1111,7 +1111,7 @@ public class AsmJavaGenerator extends ZGenerator {
 		}
 		// add class field (function)
 		for(int i = 0; i < Node.ClassType.GetFieldSize(); i++) {
-			@Var ZClassField Field = Node.ClassType.GetFieldAt(i);
+			@Var BClassField Field = Node.ClassType.GetFieldAt(i);
 			if(Field.FieldType.IsFuncType()) {
 				ClassBuilder.AddField(ACC_PUBLIC|ACC_STATIC, NameClassMethod(Node.ClassType, Field.FieldName), Field.FieldType, null);
 			}
@@ -1139,7 +1139,7 @@ public class AsmJavaGenerator extends ZGenerator {
 		}
 		// set function
 		for(int i = 0; i < Node.ClassType.GetFieldSize(); i++) {
-			@Var ZClassField Field = Node.ClassType.GetFieldAt(i);
+			@Var BClassField Field = Node.ClassType.GetFieldAt(i);
 			if(Field.FieldType.IsFuncType()) {
 				String FieldDesc = Type.getDescriptor(this.GetJavaClass(Field.FieldType));
 				Label JumpLabel = new Label();
@@ -1159,7 +1159,7 @@ public class AsmJavaGenerator extends ZGenerator {
 	}
 
 	@Override public void VisitErrorNode(ZErrorNode Node) {
-		@Var String Message = ZLogger._LogError(Node.SourceToken, Node.ErrorMessage);
+		@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.AsmBuilder.PushConst(Message);
 		@Var Method sMethod = JavaMethodTable.GetStaticMethod("ThrowError");
 		this.AsmBuilder.ApplyStaticMethod(Node, sMethod);
@@ -1184,7 +1184,7 @@ public class AsmJavaGenerator extends ZGenerator {
 
 	@Override public void Perform() {
 		if(this.TopLevelSymbol != null) {
-			Class<?> FuncClass = this.GetDefinedFunctionClass(this.TopLevelSymbol, ZType.VoidType, 0);
+			Class<?> FuncClass = this.GetDefinedFunctionClass(this.TopLevelSymbol, BType.VoidType, 0);
 			try {
 				Method Method = FuncClass.getMethod("f");
 				Object Value = Method.invoke(null);

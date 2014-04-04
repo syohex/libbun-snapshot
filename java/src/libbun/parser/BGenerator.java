@@ -37,11 +37,12 @@ import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZListNode;
 import libbun.parser.ast.ZSugarNode;
 import libbun.parser.ast.ZTopLevelNode;
-import libbun.type.ZClassType;
-import libbun.type.ZFunc;
-import libbun.type.ZFuncType;
-import libbun.type.ZPrototype;
-import libbun.type.ZType;
+import libbun.type.BClassType;
+import libbun.type.BFunc;
+import libbun.type.BFuncType;
+import libbun.type.BMacroFunc;
+import libbun.type.BPrototype;
+import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Nullable;
@@ -50,27 +51,27 @@ import libbun.util.BMap;
 import libbun.util.BIgnored;
 import libbun.util.ZenMethod;
 
-public abstract class ZGenerator extends ZVisitor {
+public abstract class BGenerator extends BVisitor {
 	@BField public BMap<String>        ImportedLibraryMap = new BMap<String>(null);
-	@BField private final BMap<ZFunc>  DefinedFuncMap = new BMap<ZFunc>(null);
+	@BField private final BMap<BFunc>  DefinedFuncMap = new BMap<BFunc>(null);
 
-	@BField public final ZNameSpace      RootNameSpace;
-	@BField public ZLogger               Logger;
-	@BField public ZTypeChecker          TypeChecker;
-	@BField public ZLangInfo             LangInfo;
+	@BField public final BNameSpace      RootNameSpace;
+	@BField public BLogger               Logger;
+	@BField public BTypeChecker          TypeChecker;
+	@BField public BLangInfo             LangInfo;
 	@BField protected String             TopLevelSymbol = null;
 	@BField private int                  UniqueNumber = 0;
 	@BField private boolean              StoppedVisitor;
 
-	protected ZGenerator(ZLangInfo LangInfo) {
-		this.RootNameSpace = new ZNameSpace(this, null);
-		this.Logger        = new ZLogger();
+	protected BGenerator(BLangInfo LangInfo) {
+		this.RootNameSpace = new BNameSpace(this, null);
+		this.Logger        = new BLogger();
 		this.LangInfo      = LangInfo;
 		this.TypeChecker   = null;
 		this.StoppedVisitor = false;
 	}
 
-	public final void SetTypeChecker(ZTypeChecker TypeChecker) {
+	public final void SetTypeChecker(BTypeChecker TypeChecker) {
 		this.TypeChecker = TypeChecker;
 	}
 
@@ -100,23 +101,23 @@ public abstract class ZGenerator extends ZVisitor {
 		}
 	}
 
-	public final void SetDefinedFunc(ZFunc Func) {
+	public final void SetDefinedFunc(BFunc Func) {
 
 		this.DefinedFuncMap.put(Func.GetSignature(), Func);
 	}
 
-	private String NameConverterFunc(ZType FromType, ZType ToType) {
+	private String NameConverterFunc(BType FromType, BType ToType) {
 		return FromType.GetUniqueName() + "T" + ToType.GetUniqueName();
 	}
 
-	public final void SetConverterFunc(ZType FromType, ZType ToType, ZFunc Func) {
+	public final void SetConverterFunc(BType FromType, BType ToType, BFunc Func) {
 		//System.out.println("set " + this.NameConverterFunc(FromType, ToType));
 		this.DefinedFuncMap.put(this.NameConverterFunc(FromType, ToType), Func);
 	}
 
-	public final ZFunc LookupConverterFunc(ZType FromType, ZType ToType) {
+	public final BFunc LookupConverterFunc(BType FromType, BType ToType) {
 		while(FromType != null) {
-			@Var ZFunc Func = this.DefinedFuncMap.GetOrNull(this.NameConverterFunc(FromType, ToType));
+			@Var BFunc Func = this.DefinedFuncMap.GetOrNull(this.NameConverterFunc(FromType, ToType));
 			//System.out.println("get " + this.NameConverterFunc(FromType, ToType) + ", func="+ Func);
 			if(Func != null) {
 				return Func;
@@ -134,22 +135,22 @@ public abstract class ZGenerator extends ZVisitor {
 		return null;
 	}
 
-	@ZenMethod public ZType GetFieldType(ZType BaseType, String Name) {
-		return ZType.VarType;     // undefined
+	@ZenMethod public BType GetFieldType(BType BaseType, String Name) {
+		return BType.VarType;     // undefined
 	}
 
-	@ZenMethod public ZType GetSetterType(ZType BaseType, String Name) {
-		return ZType.VarType;     // undefined
+	@ZenMethod public BType GetSetterType(BType BaseType, String Name) {
+		return BType.VarType;     // undefined
 	}
 
-	@ZenMethod public ZFuncType GetConstructorFuncType(ZType ClassType, ZListNode List) {
+	@ZenMethod public BFuncType GetConstructorFuncType(BType ClassType, ZListNode List) {
 		//return null;              // undefined and undefined error
-		return ZFuncType._FuncType;    // undefined and no error
+		return BFuncType._FuncType;    // undefined and no error
 	}
 
-	@ZenMethod public ZFuncType GetMethodFuncType(ZType RecvType, String MethodName, ZListNode List) {
+	@ZenMethod public BFuncType GetMethodFuncType(BType RecvType, String MethodName, ZListNode List) {
 		//return null;              // undefined and undefined error
-		return ZFuncType._FuncType;     // undefined and no error
+		return BFuncType._FuncType;     // undefined and no error
 	}
 
 	// Naming
@@ -172,26 +173,26 @@ public abstract class ZGenerator extends ZVisitor {
 		return "G__" + Name;
 	}
 
-	public final String NameClass(ZType ClassType) {
+	public final String NameClass(BType ClassType) {
 		return ClassType.ShortName + "" + ClassType.TypeId;
 	}
 
-	public final String NameFunctionClass(String FuncName, ZFuncType FuncType) {
+	public final String NameFunctionClass(String FuncName, BFuncType FuncType) {
 		return "F__" + FuncType.StringfySignature(FuncName);
 	}
 
-	public final String NameFunctionClass(String FuncName, ZType RecvType, int FuncParamSize) {
-		return "F__" + ZFunc._StringfySignature(FuncName, FuncParamSize, RecvType);
+	public final String NameFunctionClass(String FuncName, BType RecvType, int FuncParamSize) {
+		return "F__" + BFunc._StringfySignature(FuncName, FuncParamSize, RecvType);
 	}
 
-	public final String NameType(ZType Type) {
+	public final String NameType(BType Type) {
 		if(Type.IsArrayType()) {
 			return "ArrayOf" + this.NameType(Type.GetParamType(0)) + "_";
 		}
 		if(Type.IsMapType()) {
 			return "MapOf" + this.NameType(Type.GetParamType(0)) + "_";
 		}
-		if(Type instanceof ZFuncType) {
+		if(Type instanceof BFuncType) {
 			@Var String s = "FuncOf";
 			@Var int i = 0;
 			while(i < Type.GetParamSize()) {
@@ -200,7 +201,7 @@ public abstract class ZGenerator extends ZVisitor {
 			}
 			return s + "_";
 		}
-		if(Type instanceof ZClassType) {
+		if(Type instanceof BClassType) {
 			return this.NameClass(Type);
 		}
 		return Type.GetName();
@@ -208,26 +209,26 @@ public abstract class ZGenerator extends ZVisitor {
 
 	//
 
-	public final ZPrototype SetPrototype(BNode Node, String FuncName, ZFuncType FuncType) {
-		@Var ZFunc Func = this.GetDefinedFunc(FuncName, FuncType);
+	public final BPrototype SetPrototype(BNode Node, String FuncName, BFuncType FuncType) {
+		@Var BFunc Func = this.GetDefinedFunc(FuncName, FuncType);
 		if(Func != null) {
 			if(!FuncType.Equals(Func.GetFuncType())) {
-				ZLogger._LogError(Node.SourceToken, "function has been defined diffrently: " + Func.GetFuncType());
+				BLogger._LogError(Node.SourceToken, "function has been defined diffrently: " + Func.GetFuncType());
 				return null;
 			}
-			if(Func instanceof ZPrototype) {
-				return (ZPrototype)Func;
+			if(Func instanceof BPrototype) {
+				return (BPrototype)Func;
 			}
-			ZLogger._LogError(Node.SourceToken, "function has been defined as macro" + Func);
+			BLogger._LogError(Node.SourceToken, "function has been defined as macro" + Func);
 			return null;
 		}
-		@Var ZPrototype	Proto= new ZPrototype(0, FuncName, FuncType, Node.SourceToken);
+		@Var BPrototype	Proto= new BPrototype(0, FuncName, FuncType, Node.SourceToken);
 		this.DefinedFuncMap.put(Proto.GetSignature(), Proto);
 		return Proto;
 	}
 
-	public final ZFunc GetDefinedFunc(String GlobalName) {
-		@Var ZFunc Func = this.DefinedFuncMap.GetOrNull(GlobalName);
+	public final BFunc GetDefinedFunc(String GlobalName) {
+		@Var BFunc Func = this.DefinedFuncMap.GetOrNull(GlobalName);
 		if(Func == null && BLib._IsLetter(BLib._GetChar(GlobalName, 0))) {
 			//			System.out.println("AnotherName = " + GlobalName + ", " + LibZen._AnotherName(GlobalName));
 			Func = this.DefinedFuncMap.GetOrNull(BLib._AnotherName(GlobalName));
@@ -236,22 +237,22 @@ public abstract class ZGenerator extends ZVisitor {
 		return Func;
 	}
 
-	public final ZFunc GetDefinedFunc(String FuncName, ZFuncType FuncType) {
+	public final BFunc GetDefinedFunc(String FuncName, BFuncType FuncType) {
 		return this.GetDefinedFunc(FuncType.StringfySignature(FuncName));
 	}
 
-	public final ZFunc GetDefinedFunc(String FuncName, ZType RecvType, int FuncParamSize) {
-		return this.GetDefinedFunc(ZFunc._StringfySignature(FuncName, FuncParamSize, RecvType));
+	public final BFunc GetDefinedFunc(String FuncName, BType RecvType, int FuncParamSize) {
+		return this.GetDefinedFunc(BFunc._StringfySignature(FuncName, FuncParamSize, RecvType));
 	}
 
-	public final ZFunc LookupFunc(String FuncName, ZType RecvType, int FuncParamSize) {
-		@Var ZFunc Func = this.GetDefinedFunc(ZFunc._StringfySignature(FuncName, FuncParamSize, RecvType));
+	public final BFunc LookupFunc(String FuncName, BType RecvType, int FuncParamSize) {
+		@Var BFunc Func = this.GetDefinedFunc(BFunc._StringfySignature(FuncName, FuncParamSize, RecvType));
 		while(Func == null) {
 			RecvType = RecvType.GetSuperType();
 			if(RecvType == null) {
 				break;
 			}
-			Func = this.GetDefinedFunc(ZFunc._StringfySignature(FuncName, FuncParamSize, RecvType));
+			Func = this.GetDefinedFunc(BFunc._StringfySignature(FuncName, FuncParamSize, RecvType));
 			//			if(RecvType.IsVarType()) {
 			//				break;
 			//			}
@@ -259,10 +260,10 @@ public abstract class ZGenerator extends ZVisitor {
 		return Func;
 	}
 
-	public final ZMacroFunc GetMacroFunc(String FuncName, ZType RecvType, int FuncParamSize) {
-		@Var ZFunc Func = this.GetDefinedFunc(ZFunc._StringfySignature(FuncName, FuncParamSize, RecvType));
-		if(Func instanceof ZMacroFunc) {
-			return ((ZMacroFunc)Func);
+	public final BMacroFunc GetMacroFunc(String FuncName, BType RecvType, int FuncParamSize) {
+		@Var BFunc Func = this.GetDefinedFunc(BFunc._StringfySignature(FuncName, FuncParamSize, RecvType));
+		if(Func instanceof BMacroFunc) {
+			return ((BMacroFunc)Func);
 		}
 		return null;
 	}
@@ -285,7 +286,7 @@ public abstract class ZGenerator extends ZVisitor {
 		}
 	}
 
-	@ZenMethod protected void GenerateCode(ZType ContextType, BNode Node) {
+	@ZenMethod protected void GenerateCode(BType ContextType, BNode Node) {
 		Node.Accept(this);
 	}
 
@@ -302,11 +303,11 @@ public abstract class ZGenerator extends ZVisitor {
 		}
 		else {
 			if(this.TypeChecker != null) {
-				Node = this.TypeChecker.CheckType(Node, ZType.VarType);
+				Node = this.TypeChecker.CheckType(Node, BType.VarType);
 			}
 			if(this.IsVisitable()) {
 				if(Node instanceof ZFunctionNode || Node instanceof ZClassNode || Node instanceof BLetVarNode) {
-					Node.Type = ZType.VoidType;
+					Node.Type = BType.VoidType;
 					this.GenerateStatement(Node);
 				}
 				else {
@@ -325,14 +326,14 @@ public abstract class ZGenerator extends ZVisitor {
 	public final boolean LoadScript(String ScriptText, String FileName, int LineNumber, boolean IsInteractive) {
 		@Var boolean Result = true;
 		@Var ZBlockNode TopBlockNode = new ZBlockNode(null, this.RootNameSpace);
-		@Var ZTokenContext TokenContext = new ZTokenContext(this, this.RootNameSpace, FileName, LineNumber, ScriptText);
+		@Var BTokenContext TokenContext = new BTokenContext(this, this.RootNameSpace, FileName, LineNumber, ScriptText);
 		TokenContext.SkipEmptyStatement();
-		@Var ZToken SkipToken = TokenContext.GetToken();
+		@Var BToken SkipToken = TokenContext.GetToken();
 		while(TokenContext.HasNext()) {
-			TokenContext.SetParseFlag(ZTokenContext._NotAllowSkipIndent);
+			TokenContext.SetParseFlag(BTokenContext._NotAllowSkipIndent);
 			TopBlockNode.ClearListToSize(0);
 			SkipToken = TokenContext.GetToken();
-			@Var BNode StmtNode = TokenContext.ParsePattern(TopBlockNode, "$Statement$", ZTokenContext._Required);
+			@Var BNode StmtNode = TokenContext.ParsePattern(TopBlockNode, "$Statement$", BTokenContext._Required);
 			if(StmtNode.IsErrorNode()) {
 				TokenContext.SkipError(SkipToken);
 			}
@@ -348,23 +349,23 @@ public abstract class ZGenerator extends ZVisitor {
 	}
 
 
-	public final boolean LoadFile(String FileName, @Nullable ZToken SourceToken) {
+	public final boolean LoadFile(String FileName, @Nullable BToken SourceToken) {
 		@Var String ScriptText = BLib._LoadTextFile(FileName);
 		if(ScriptText == null) {
-			ZLogger._LogErrorExit(SourceToken, "file not found: " + FileName);
+			BLogger._LogErrorExit(SourceToken, "file not found: " + FileName);
 			return false;
 		}
 		return this.LoadScript(ScriptText, FileName, 1, false);
 	}
 
-	public final boolean RequireLibrary(String LibName, @Nullable ZToken SourceToken) {
+	public final boolean RequireLibrary(String LibName, @Nullable BToken SourceToken) {
 		@Var String Key = "_Z" + LibName.toLowerCase();
 		@Var String Value = this.ImportedLibraryMap.GetOrNull(Key);
 		if(Value == null) {
 			@Var String Path = this.LangInfo.GetLibPath(LibName);
 			@Var String Script = BLib._LoadTextFile(Path);
 			if(Script == null) {
-				ZLogger._LogErrorExit(SourceToken, "library not found: " + LibName + " as " + Path);
+				BLogger._LogErrorExit(SourceToken, "library not found: " + LibName + " as " + Path);
 				return false;
 			}
 			@Var boolean Result = this.LoadScript(Script, Path, 1, false);

@@ -24,15 +24,15 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZSyntax;
-import libbun.parser.ZToken;
-import libbun.parser.ZVisitor;
+import libbun.parser.BSyntax;
+import libbun.parser.BToken;
+import libbun.parser.BVisitor;
 
 public class ZComparatorNode extends ZBinaryNode {
-	public ZComparatorNode(BNode ParentNode, ZToken SourceToken, BNode Left, ZSyntax Pattern) {
+	public ZComparatorNode(BNode ParentNode, BToken SourceToken, BNode Left, BSyntax Pattern) {
 		super(ParentNode, SourceToken, Left, Pattern);
 	}
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitComparatorNode(this);
 	}
 }

@@ -7,20 +7,20 @@ import libbun.parser.ast.ZFuncCallNode;
 import libbun.parser.ast.BGetNameNode;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZSugarNode;
-import libbun.parser.ZGenerator;
-import libbun.parser.ZToken;
-import libbun.parser.ZTypeChecker;
-import libbun.type.ZType;
+import libbun.parser.BGenerator;
+import libbun.parser.BToken;
+import libbun.parser.BTypeChecker;
+import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.Var;
 import libbun.util.BArray;
 
 public class CommandNode extends ZSugarNode {
 	@BField private final BArray<BNode> ArgList;
-	@BField private ZType RetType = ZType.VarType;
+	@BField private BType RetType = BType.VarType;
 	@BField public CommandNode PipedNextNode;
 
-	public CommandNode(BNode ParentNode, ZToken Token, String Command) {
+	public CommandNode(BNode ParentNode, BToken Token, String Command) {
 		super(ParentNode, Token, 0);
 		this.PipedNextNode = null;
 		this.ArgList = new BArray<BNode>(new BNode[]{});
@@ -52,26 +52,26 @@ public class CommandNode extends ZSugarNode {
 		return BArray.GetIndex(this.ArgList, Index);
 	}
 
-	public void SetType(ZType Type) {
+	public void SetType(BType Type) {
 		this.RetType = Type;
 	}
 
-	public ZType RetType() {
+	public BType RetType() {
 		return this.RetType;
 	}
 
-	@Override public ZDesugarNode DeSugar(ZGenerator Generator, ZTypeChecker TypeChecker) {
-		@Var ZType ContextType = TypeChecker.GetContextType();
+	@Override public ZDesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChecker) {
+		@Var BType ContextType = TypeChecker.GetContextType();
 		@Var String FuncName = "ExecCommandInt";
 		if(this.RetType().IsVarType()) {
 			if(ContextType.IsBooleanType() || ContextType.IsIntType() || ContextType.IsStringType()) {
 				this.SetType(ContextType);
 			}
 			else if(ContextType.IsVarType() && !(this.ParentNode instanceof ZBlockNode)) {
-				this.SetType(ZType.StringType);
+				this.SetType(BType.StringType);
 			}
 			else {
-				this.SetType(ZType.IntType);
+				this.SetType(BType.IntType);
 			}
 		}
 		if(this.RetType().IsBooleanType()) {

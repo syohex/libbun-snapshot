@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 import libbun.encode.ZSourceBuilder;
 import libbun.encode.ZSourceGenerator;
-import libbun.parser.ZNodeUtils;
+import libbun.parser.BNodeUtils;
 import libbun.parser.ast.BGetNameNode;
 import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.BNode;
@@ -44,7 +44,7 @@ import libbun.parser.ast.ZReturnNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
 import libbun.parser.ast.ZWhileNode;
-import libbun.type.ZType;
+import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
@@ -73,10 +73,10 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		this.NotOperator = "not ";
 
 		this.TopType = "object";
-		this.SetNativeType(ZType.BooleanType, "Bool");
-		this.SetNativeType(ZType.IntType, "Int");
-		this.SetNativeType(ZType.FloatType, "Float");
-		this.SetNativeType(ZType.StringType, "String");
+		this.SetNativeType(BType.BooleanType, "Bool");
+		this.SetNativeType(BType.IntType, "Int");
+		this.SetNativeType(BType.FloatType, "Float");
+		this.SetNativeType(BType.StringType, "String");
 
 		this.ImportLibrary("Data.IORef");
 	}
@@ -203,7 +203,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		}
 		this.UnIndent(this.CurrentBuilder);
 
-		ZReturnNode ReturnNode = ZNodeUtils._CheckIfSingleReturnNode(Node);
+		ZReturnNode ReturnNode = BNodeUtils._CheckIfSingleReturnNode(Node);
 		if(ReturnNode != null && ReturnNode.HasReturnExpr()) {
 			this.Indent(this.CurrentBuilder);
 

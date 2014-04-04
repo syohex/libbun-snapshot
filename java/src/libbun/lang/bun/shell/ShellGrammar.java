@@ -1,9 +1,9 @@
 package libbun.lang.bun.shell;
 
-import libbun.parser.ZNameSpace;
+import libbun.parser.BNameSpace;
 
 public class ShellGrammar {
-	public static void ImportGrammar(ZNameSpace NameSpace) {
+	public static void ImportGrammar(BNameSpace NameSpace) {
 		CommandSymbolTokenFunction commandSymbolToken = new CommandSymbolTokenFunction();
 		ImportCommandPatternFunction importCommandPattern = new ImportCommandPatternFunction();
 		PrefixOptionPatternFunction prefixOptionPattern = new PrefixOptionPatternFunction();

@@ -24,7 +24,7 @@
 
 //ifdef  JAVA
 package libbun.encode;
-import libbun.parser.ZToken;
+import libbun.parser.BToken;
 import libbun.parser.ast.BGetNameNode;
 import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.BNode;
@@ -35,9 +35,9 @@ import libbun.parser.ast.ZClassNode;
 import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZGetterNode;
 import libbun.parser.ast.ZSetterNode;
-import libbun.type.ZClassField;
-import libbun.type.ZClassType;
-import libbun.type.ZType;
+import libbun.type.BClassField;
+import libbun.type.BClassType;
+import libbun.type.BType;
 import libbun.util.BLib;
 import libbun.util.Var;
 
@@ -56,7 +56,7 @@ public class PerlGenerator extends ZSourceGenerator {
 
 	}
 
-	@Override protected String GetBinaryOperator(ZType Type, ZToken Token) {
+	@Override protected String GetBinaryOperator(BType Type, BToken Token) {
 		if(Type.IsStringType()) {
 			if(Token.EqualsText('+')) {
 				return ".";
@@ -85,11 +85,11 @@ public class PerlGenerator extends ZSourceGenerator {
 	//		this.VisitingBuilder.Append("");
 	//	}
 
-	private String VariablePrefix(ZType Type) {
+	private String VariablePrefix(BType Type) {
 		if(Type.IsArrayType()) {
 			return "@";
 		}
-		if(Type.IsMapType() || Type instanceof ZClassType) {
+		if(Type.IsMapType() || Type instanceof BClassType) {
 			return "%";
 		}
 		return "$";
@@ -199,7 +199,7 @@ public class PerlGenerator extends ZSourceGenerator {
 	//	}
 
 
-	private String ClassKey(ZType ClassType) {
+	private String ClassKey(BType ClassType) {
 		return BLib._QuoteString(this.NameClass(ClassType));
 	}
 
@@ -209,8 +209,8 @@ public class PerlGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.AppendNewLine();
 		this.CurrentBuilder.Append("%o = shift", this.SemiColon);
 
-		@Var ZType SuperType = Node.ClassType.GetSuperType();
-		if(!SuperType.Equals(ZClassType._ObjectType)) {
+		@Var BType SuperType = Node.ClassType.GetSuperType();
+		if(!SuperType.Equals(BClassType._ObjectType)) {
 			this.CurrentBuilder.AppendNewLine();
 			this.CurrentBuilder.Append("_Init" + this.NameClass(SuperType) + "(%o);");
 		}
@@ -230,7 +230,7 @@ public class PerlGenerator extends ZSourceGenerator {
 
 		i = 0;
 		while (i < Node.ClassType.GetFieldSize()) {
-			@Var ZClassField ClassField = Node.ClassType.GetFieldAt(i);
+			@Var BClassField ClassField = Node.ClassType.GetFieldAt(i);
 			if(ClassField.FieldType.IsFuncType()) {
 				this.CurrentBuilder.AppendNewLine();
 				this.CurrentBuilder.Append("if (defined $", this.NameMethod(Node.ClassType, ClassField.FieldName), ") {");

@@ -5,14 +5,14 @@ import libbun.parser.ast.BNode;
 import libbun.parser.ast.BStringNode;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
-import libbun.parser.ZToken;
-import libbun.parser.ZTokenContext;
+import libbun.parser.BToken;
+import libbun.parser.BTokenContext;
 
 public class CommandSymbolPatternFunction extends BMatchFunction {
 	public final static String _PatternName = "$CommandSymbol$";
 
-	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
-		@Var ZToken CommandToken = TokenContext.GetToken(ZTokenContext._MoveNext);
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		@Var BToken CommandToken = TokenContext.GetToken(BTokenContext._MoveNext);
 		@Var BNode SymbolNode = ParentNode.GetNameSpace().GetSymbol(ShellUtils._ToCommandSymbol(CommandToken.GetText()));
 		if(SymbolNode == null || !(SymbolNode instanceof BStringNode)) {
 			return new ZErrorNode(ParentNode, CommandToken, "undefined command symbol");
@@ -22,25 +22,25 @@ public class CommandSymbolPatternFunction extends BMatchFunction {
 		while(TokenContext.HasNext()) {
 			if(TokenContext.MatchToken("|")) {
 				// Match Prefix Option
-				@Var BNode PrefixOptionNode = TokenContext.ParsePatternAfter(ParentNode, CommandNode, PrefixOptionPatternFunction._PatternName, ZTokenContext._Optional);
+				@Var BNode PrefixOptionNode = TokenContext.ParsePatternAfter(ParentNode, CommandNode, PrefixOptionPatternFunction._PatternName, BTokenContext._Optional);
 				if(PrefixOptionNode != null) {
 					return CommandNode.AppendPipedNextNode((CommandNode)PrefixOptionNode);
 				}
 				// Match Command Symbol
-				@Var BNode PipedNode = TokenContext.ParsePattern(ParentNode, CommandSymbolPatternFunction._PatternName, ZTokenContext._Required);
+				@Var BNode PipedNode = TokenContext.ParsePattern(ParentNode, CommandSymbolPatternFunction._PatternName, BTokenContext._Required);
 				if(PipedNode.IsErrorNode()) {
 					return PipedNode;
 				}
 				return CommandNode.AppendPipedNextNode((CommandNode)PipedNode);
 			}
 			// Match Redirect
-			@Var BNode RedirectNode = TokenContext.ParsePattern(ParentNode, RedirectPatternFunction._PatternName, ZTokenContext._Optional);
+			@Var BNode RedirectNode = TokenContext.ParsePattern(ParentNode, RedirectPatternFunction._PatternName, BTokenContext._Optional);
 			if(RedirectNode != null) {
 				CommandNode.AppendPipedNextNode((CommandNode)RedirectNode);
 				continue;
 			}
 			// Match Suffix Option
-			@Var BNode SuffixOptionNode = TokenContext.ParsePattern(ParentNode, SuffixOptionPatternFunction._PatternName, ZTokenContext._Optional);
+			@Var BNode SuffixOptionNode = TokenContext.ParsePattern(ParentNode, SuffixOptionPatternFunction._PatternName, BTokenContext._Optional);
 			if(SuffixOptionNode != null) {
 				if(SuffixOptionNode.IsErrorNode()) {
 					return SuffixOptionNode;
@@ -48,7 +48,7 @@ public class CommandSymbolPatternFunction extends BMatchFunction {
 				return CommandNode.AppendPipedNextNode((CommandNode)SuffixOptionNode);
 			}
 			// Match Argument
-			@Var BNode ArgNode = TokenContext.ParsePattern(ParentNode, SimpleArgumentPatternFunction._PatternName, ZTokenContext._Optional);
+			@Var BNode ArgNode = TokenContext.ParsePattern(ParentNode, SimpleArgumentPatternFunction._PatternName, BTokenContext._Optional);
 			if(ArgNode == null) {
 				break;
 			}

@@ -24,39 +24,39 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZTypeChecker;
-import libbun.parser.ZVisitor;
-import libbun.type.ZFunc;
-import libbun.type.ZType;
+import libbun.parser.BTypeChecker;
+import libbun.parser.BVisitor;
+import libbun.type.BFunc;
+import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.Var;
 
 public final class ZNewObjectNode extends ZListNode {
 	public static final int _TypeInfo = 0;
 
-	@BField public ZType GivenType = null;
+	@BField public BType GivenType = null;
 
 	public ZNewObjectNode(BNode ParentNode) {
 		super(ParentNode, null, 1);
 	}
 
-	public final ZType ClassType() {
+	public final BType ClassType() {
 		if(this.GivenType == null) {
 			if(this.AST[ZNewObjectNode._TypeInfo] != null) {
 				return this.AST[ZNewObjectNode._TypeInfo].Type;
 			}
 			else {
-				return ZType.VarType;
+				return BType.VarType;
 			}
 		}
 		return this.GivenType;
 	}
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitNewObjectNode(this);
 	}
 
-	public final ZListNode ToFuncCallNode(ZTypeChecker Gamma, ZFunc Func) {
+	public final ZListNode ToFuncCallNode(BTypeChecker Gamma, BFunc Func) {
 		@Var ZListNode FuncNode = Gamma.CreateDefinedFuncCallNode(this.ParentNode, this.SourceToken, Func);
 		FuncNode.Append(this);
 		@Var int i = 0;

@@ -24,7 +24,7 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZVisitor;
+import libbun.parser.BVisitor;
 
 public final class ZIfNode extends BNode {
 	public final static int _Cond = 0;
@@ -53,7 +53,7 @@ public final class ZIfNode extends BNode {
 
 
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitIfNode(this);
 	}
 }

@@ -24,10 +24,10 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZGenerator;
-import libbun.parser.ZToken;
-import libbun.parser.ZVisitor;
-import libbun.type.ZType;
+import libbun.parser.BGenerator;
+import libbun.parser.BToken;
+import libbun.parser.BVisitor;
+import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.Nullable;
 
@@ -37,10 +37,10 @@ public class BGetNameNode extends BNode {
 	@BField public int     VarIndex = 0;
 	@BField @Nullable public BLetVarNode ResolvedNode = null;
 
-	public BGetNameNode(BNode ParentNode, ZToken SourceToken, String GivenName) {
+	public BGetNameNode(BNode ParentNode, BToken SourceToken, String GivenName) {
 		super(ParentNode, SourceToken, 0);
 		this.GivenName = GivenName;
-		this.Type = ZType.VoidType; // FIXME
+		this.Type = BType.VoidType; // FIXME
 	}
 
 	//	public final boolean IsGlobalName() {
@@ -63,7 +63,7 @@ public class BGetNameNode extends BNode {
 	//		return this.GivenName;
 	//	}
 
-	public final String GetUniqueName(ZGenerator Generator) {
+	public final String GetUniqueName(BGenerator Generator) {
 		if(this.ResolvedNode != null) {
 			return this.ResolvedNode.GetUniqueName(Generator);
 		}
@@ -71,7 +71,7 @@ public class BGetNameNode extends BNode {
 	}
 
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitGetNameNode(this);
 	}
 

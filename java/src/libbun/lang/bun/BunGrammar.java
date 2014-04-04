@@ -24,26 +24,26 @@
 
 
 package libbun.lang.bun;
-import libbun.parser.ZNameSpace;
-import libbun.type.ZClassType;
-import libbun.type.ZFuncType;
-import libbun.type.ZGenericType;
-import libbun.type.ZType;
+import libbun.parser.BNameSpace;
+import libbun.type.BClassType;
+import libbun.type.BFuncType;
+import libbun.type.BGenericType;
+import libbun.type.BType;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
 
 public class BunGrammar {
-	public static void ImportGrammar(ZNameSpace NameSpace) {
-		NameSpace.SetTypeName(ZType.VoidType,  null);
-		NameSpace.SetTypeName(ZType.BooleanType, null);
-		NameSpace.SetTypeName(ZType.IntType, null);
-		NameSpace.SetTypeName(ZType.FloatType, null);
-		NameSpace.SetTypeName(ZType.StringType, null);
+	public static void ImportGrammar(BNameSpace NameSpace) {
+		NameSpace.SetTypeName(BType.VoidType,  null);
+		NameSpace.SetTypeName(BType.BooleanType, null);
+		NameSpace.SetTypeName(BType.IntType, null);
+		NameSpace.SetTypeName(BType.FloatType, null);
+		NameSpace.SetTypeName(BType.StringType, null);
 		//NameSpace.SetTypeName(ZType.TypeType, null);
-		NameSpace.SetTypeName(ZGenericType._AlphaType, null);
-		NameSpace.SetTypeName(ZGenericType._ArrayType, null);
-		NameSpace.SetTypeName(ZGenericType._MapType, null);
-		NameSpace.SetTypeName(ZFuncType._FuncType, null);
+		NameSpace.SetTypeName(BGenericType._AlphaType, null);
+		NameSpace.SetTypeName(BGenericType._ArrayType, null);
+		NameSpace.SetTypeName(BGenericType._MapType, null);
+		NameSpace.SetTypeName(BFuncType._FuncType, null);
 
 		NameSpace.AppendTokenFunc(" \t", new WhiteSpaceTokenFunction());
 		NameSpace.AppendTokenFunc("\n",  new NewLineTokenFunction());
@@ -133,7 +133,7 @@ public class BunGrammar {
 		NameSpace.DefineStatement("let", new LetPatternFunction());
 		NameSpace.DefineStatement("export", new ExportPatternFunction());
 
-		NameSpace.SetTypeName(ZClassType._ObjectType, null);
+		NameSpace.SetTypeName(BClassType._ObjectType, null);
 		NameSpace.DefineStatement("class", new ClassPatternFunction());
 		NameSpace.DefineExpression("$FieldDecl$", new FieldPatternFunction());
 		NameSpace.DefineRightExpression("instanceof", BunPrecedence._Instanceof, new InstanceOfPatternFunction());

@@ -28,18 +28,18 @@ package libbun.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import libbun.type.ZType;
-import libbun.type.ZTypePool;
+import libbun.type.BType;
+import libbun.type.BTypePool;
 
 
 
 public class BObject implements BTypedObject {
-	protected ZType ZenType;
+	protected BType ZenType;
 
 	protected BObject(int TypeId) {
-		this.ZenType = ZTypePool.TypeOf(TypeId);
+		this.ZenType = BTypePool.TypeOf(TypeId);
 	}
-	@Override public final ZType GetZenType() {
+	@Override public final BType GetZenType() {
 		return this.ZenType;
 	}
 

@@ -2,7 +2,7 @@ package libbun.parser.ssa;
 
 import java.util.HashMap;
 
-import libbun.parser.ZGenerator;
+import libbun.parser.BGenerator;
 import libbun.parser.ast.BGetNameNode;
 import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.BNode;
@@ -14,7 +14,7 @@ import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZIfNode;
 import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
-import libbun.type.ZType;
+import libbun.type.BType;
 import libbun.util.Var;
 import libbun.util.BArray;
 import libbun.util.BMap;
@@ -37,14 +37,14 @@ public class SSAConverter extends ZASTTransformer {
 	public BMap<Integer> ValueNumber;
 	private final HashMap<BNode, BArray<Variable>> CurVariableTableBefore;
 	private final HashMap<BNode, BArray<Variable>> CurVariableTableAfter;
-	private final ZGenerator Generator;
+	private final BGenerator Generator;
 
-	public SSAConverter(ZGenerator Generator) {
+	public SSAConverter(BGenerator Generator) {
 		this.Generator = Generator;
 		this.LocalVariables = null;
 		this.Replacer = new ValueReplacer();
 		this.State = new SSAConverterState(null, -1);
-		this.ValueNumber = new BMap<Integer>(ZType.IntType);
+		this.ValueNumber = new BMap<Integer>(BType.IntType);
 		this.CurVariableTableBefore = new HashMap<BNode, BArray<Variable>>();
 		this.CurVariableTableAfter = new HashMap<BNode, BArray<Variable>>();
 	}
@@ -271,7 +271,7 @@ public class SSAConverter extends ZASTTransformer {
 				@Var PHINode phi = JNode.ListAt(i);
 				@Var ZAndNode And = new ZAndNode(Parent, null, phi, null);
 				And.SetNode(ZBinaryNode._Right, CondNode);
-				And.Type = ZType.BooleanType;
+				And.Type = BType.BooleanType;
 				CondNode = And;
 				this.ReplaceNodeWith(TargetNode, phi.VarRef, phi);
 				this.UpdateVariable(phi.VarRef);

@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import libbun.type.ZType;
+import libbun.type.BType;
 import libbun.util.SoftwareFaultException;
 import libbun.util.Var;
 import libbun.util.BMap;
@@ -315,8 +315,8 @@ public final class JavaOperatorApi {
 	public static Object GetField(Object x, String name) {
 		//System.out.println("name="+name+", x="+x);
 		try {
-			if(x instanceof ZType) {
-				Field f = JavaTypeTable.GetJavaClass((ZType)x, null).getField(name);
+			if(x instanceof BType) {
+				Field f = JavaTypeTable.GetJavaClass((BType)x, null).getField(name);
 				return f.get(null);	  // static field
 			}
 			else {
@@ -332,8 +332,8 @@ public final class JavaOperatorApi {
 
 	public static void SetField(Object x, String name, Object y) {
 		try {
-			if(x instanceof ZType) {
-				Field f = JavaTypeTable.GetJavaClass((ZType)x, null).getField(name);
+			if(x instanceof BType) {
+				Field f = JavaTypeTable.GetJavaClass((BType)x, null).getField(name);
 				f.set(null,y); // static field
 			}
 			else {

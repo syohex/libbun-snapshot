@@ -30,7 +30,7 @@ import java.util.HashMap;
 
 import libbun.encode.ZSourceBuilder;
 import libbun.encode.ZSourceGenerator;
-import libbun.parser.ZLogger;
+import libbun.parser.BLogger;
 import libbun.parser.ast.BBooleanNode;
 import libbun.parser.ast.BConstNode;
 import libbun.parser.ast.BFloatNode;
@@ -74,10 +74,10 @@ import libbun.parser.ast.ZTryNode;
 import libbun.parser.ast.ZUnaryNode;
 import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
-import libbun.type.ZClassType;
-import libbun.type.ZFuncType;
-import libbun.type.ZGenericType;
-import libbun.type.ZType;
+import libbun.type.BClassType;
+import libbun.type.BFuncType;
+import libbun.type.BGenericType;
+import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
@@ -197,10 +197,10 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		this.NullLiteral = "null";
 		this.TopType = "opaque";
 
-		this.SetNativeType(ZType.VoidType, "void");
-		this.SetNativeType(ZType.BooleanType, "i1");
-		this.SetNativeType(ZType.IntType, "i64");
-		this.SetNativeType(ZType.FloatType, "double");
+		this.SetNativeType(BType.VoidType, "void");
+		this.SetNativeType(BType.BooleanType, "i1");
+		this.SetNativeType(BType.IntType, "i64");
+		this.SetNativeType(BType.FloatType, "double");
 
 		this.TempGlobalSymbolNumber = 0;
 		this.GlobalSymbolList = new ArrayList<String>();
@@ -210,7 +210,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		this.CurrentScope = null;
 	}
 
-	private String CreateTempFuncName(ZFuncType FuncType) {
+	private String CreateTempFuncName(BFuncType FuncType) {
 		@Var int ReturnNumber = this.TempGlobalSymbolNumber;
 		this.TempGlobalSymbolNumber = this.TempGlobalSymbolNumber + 1;
 		return "@" + FuncType.StringfySignature("f" + ReturnNumber);
@@ -260,7 +260,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		return this.ClassFieldMap.containsKey(ClassName);
 	}
 
-	private boolean IsPrimitiveType(ZType Type) {
+	private boolean IsPrimitiveType(BType Type) {
 		if(Type.IsBooleanType()) {
 			return true;
 		}
@@ -272,29 +272,29 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		}
 		return false;
 	}
-	private String GetTypeExpr(ZType Type) {
+	private String GetTypeExpr(BType Type) {
 		if(Type.IsVarType()) {
 			return "opaque";
 		}
-		else if(Type instanceof ZFuncType) {
-			@Var ZFuncType FuncType = (ZFuncType)Type;
+		else if(Type instanceof BFuncType) {
+			@Var BFuncType FuncType = (BFuncType)Type;
 			return this.GetTypeExpr(FuncType.GetReturnType())+ " " + this.GetFuncParamTypeExpr(FuncType) + "*";
 		}
 		else if(Type.IsArrayType()) {
-			return this.GetNativeTypeName(((ZGenericType)Type).ParamType.GetRealType()) + "*";
+			return this.GetNativeTypeName(((BGenericType)Type).ParamType.GetRealType()) + "*";
 		}
 		else if(Type.IsStringType()) {
 			this.DefineExternalStruct("ZString");
 			return "%ZString*";
 		}
-		else if(Type instanceof ZClassType) {
+		else if(Type instanceof BClassType) {
 			return this.ToClassSymbol(Type.ShortName) + "*";
 		}
 		else {
 			return this.GetNativeTypeName(Type.GetRealType());
 		}
 	}
-	private String GetFuncParamTypeExpr(ZFuncType FuncType) {
+	private String GetFuncParamTypeExpr(BFuncType FuncType) {
 		@Var int Size = FuncType.GetFuncParamSize();
 		BLib._Assert(Size >= 0);
 
@@ -314,7 +314,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 
 	private String GetBinaryOpcode(ZBinaryNode Node) {
 		if(Node.IsUntyped()) {
-			ZLogger._LogError(Node.SourceToken, "Binary is untyped");
+			BLogger._LogError(Node.SourceToken, "Binary is untyped");
 			return null;
 		}
 		@Var String Binary = Node.SourceToken.GetText();
@@ -384,12 +384,12 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 				return "xor";
 			}
 		}
-		ZLogger._LogError(Node.SourceToken, "Unknown binary \"" + Binary + "\" for this type");
+		BLogger._LogError(Node.SourceToken, "Unknown binary \"" + Binary + "\" for this type");
 		return null;
 	}
 	private String GetCompareOpCodeAndCondition(ZComparatorNode Node) {
 		if(Node.IsUntyped()) {
-			ZLogger._LogError(Node.SourceToken, "Comparator is untyped");
+			BLogger._LogError(Node.SourceToken, "Comparator is untyped");
 			return null;
 		}
 		@Var String Comparator = Node.SourceToken.GetText();
@@ -441,10 +441,10 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 				return "fcmp oge";
 			}
 		}
-		ZLogger._LogError(Node.SourceToken, "Unknown comparator \"" + Comparator + "\" for this type");
+		BLogger._LogError(Node.SourceToken, "Unknown comparator \"" + Comparator + "\" for this type");
 		return null;
 	}
-	private String GetCastOpCode(ZType BeforeType, ZType AfterType) {
+	private String GetCastOpCode(BType BeforeType, BType AfterType) {
 		if(BeforeType.IsIntType()) {
 			if(AfterType.IsFloatType()) {
 				return "sitofp";
@@ -457,11 +457,11 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		}
 		throw new RuntimeException("Can't use this cast " + BeforeType.ShortName + " to " + AfterType.ShortName);
 	}
-	private String GetSizeOfType(ZType Type) {
+	private String GetSizeOfType(BType Type) {
 		if(this.IsPrimitiveType(Type)) {
 			return "ptrtoint (" + this.GetTypeExpr(Type) + "* getelementptr (" + this.GetTypeExpr(Type) + "* null, i64 1) to i64)";
 		}
-		else if(Type instanceof ZClassType) {
+		else if(Type instanceof BClassType) {
 			return "ptrtoint (" + this.GetTypeExpr(Type) + " getelementptr (" + this.GetTypeExpr(Type) + " null, i64 1) to i64)";
 		}
 		else {
@@ -556,7 +556,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		sb.append(GlobalConst);
 		sb.append(" = private constant ");
 		int ArraySize = Node.GetListSize();
-		@Var String ElementType = this.GetTypeExpr(((ZGenericType)Node.Type).ParamType);
+		@Var String ElementType = this.GetTypeExpr(((BGenericType)Node.Type).ParamType);
 		@Var String ArrayType = "[" + ArraySize + " x " + ElementType + "]";
 		sb.append(ArrayType);
 
@@ -607,7 +607,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 			}
 		}
 		else {
-			ZLogger._LogError(Node.SourceToken, "Unknown binary \"" + Node.SourceToken.GetText() + "\" for this type");
+			BLogger._LogError(Node.SourceToken, "Unknown binary \"" + Node.SourceToken.GetText() + "\" for this type");
 		}
 	}
 
@@ -633,8 +633,8 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 
 	@Override public void VisitCastNode(ZCastNode Node) {
 		/*FIXME*/
-		@Var ZType BeforeType = Node.ExprNode().Type;
-		@Var ZType AfterType = Node.Type;
+		@Var BType BeforeType = Node.ExprNode().Type;
+		@Var BType AfterType = Node.Type;
 		if(BeforeType == AfterType || BeforeType.IsVarType()) {
 			this.GenerateCode(null, Node.ExprNode());
 		}
@@ -682,7 +682,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		this.HeaderBuilder.Append("constant ");
 		this.CurrentBuilder.Append(ClassSymbol);
 		this.CurrentBuilder.OpenIndent(" {");
-		if(!Node.SuperType().Equals(ZClassType._ObjectType)) {
+		if(!Node.SuperType().Equals(BClassType._ObjectType)) {
 			this.CurrentBuilder.AppendNewLine("i8* bitcast (");
 			this.CurrentBuilder.Append(this.GetTypeExpr(Node.SuperType()));
 			this.CurrentBuilder.Append(" @" + Node.SuperType().ShortName + ".Proto");
@@ -737,7 +737,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 			this.CurrentBuilder.Append(" = ");
 			this.CurrentBuilder.Append(this.GetCompareOpCodeAndCondition(Node));
 			this.CurrentBuilder.Append(" ");
-			this.CurrentBuilder.Append(this.GetTypeExpr(ZType.IntType));
+			this.CurrentBuilder.Append(this.GetTypeExpr(BType.IntType));
 			this.CurrentBuilder.Append(" ");
 			this.CurrentBuilder.Append(LeftAddress);
 			this.CurrentBuilder.Append(", ");
@@ -757,12 +757,12 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 
 	@Override
 	public void VisitFuncCallNode(ZFuncCallNode Node) {
-		@Var ZFuncType FuncType = Node.GetFuncType();
+		@Var BFuncType FuncType = Node.GetFuncType();
 		if(FuncType == null) {
-			ZLogger._LogError(Node.SourceToken, "Can't interpret this function call");
+			BLogger._LogError(Node.SourceToken, "Can't interpret this function call");
 			return;
 		}
-		@Var ZType ReturnType = FuncType.GetReturnType();
+		@Var BType ReturnType = FuncType.GetReturnType();
 		@Var ZFuncNameNode FuncNameNode = Node.FuncNameNode();
 		if(FuncNameNode != null) {
 			@Var String FuncName = FuncNameNode.GetSignature();
@@ -1028,7 +1028,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 
 		@Var String TempVar = "";
 		@Var String Macro = Node.GetMacroText();
-		@Var ZFuncType FuncType = Node.GetFuncType();
+		@Var BFuncType FuncType = Node.GetFuncType();
 		if(!FuncType.GetReturnType().IsVoidType()) {
 			TempVar = this.CurrentScope.CreateTempLocalSymbol();
 			sb.append(TempVar);
@@ -1100,7 +1100,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 
 	@Override
 	public void VisitNewObjectNode(ZNewObjectNode Node) {
-		if(Node.Type instanceof ZClassType) {
+		if(Node.Type instanceof BClassType) {
 			this.DeclareExtrnalFunction("GC_malloc", "i8*", "(i64)");
 			//this.DeclareExtrnalFunction("free", "void", "(i8*)");
 			this.DeclareExtrnalFunction("memcpy", "void", "(i8*, i8*, i64)");
@@ -1317,7 +1317,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 				this.CurrentBuilder.AppendNewLine(TempVar);
 				this.CurrentBuilder.Append(" = ");
 				if(Node.RecvNode().IsUntyped()) {
-					ZLogger._LogError(Node.SourceToken, "Unary \"-\" is untyped");
+					BLogger._LogError(Node.SourceToken, "Unary \"-\" is untyped");
 				}
 				else if(Node.RecvNode().Type.IsIntType()) {
 					this.CurrentBuilder.Append("sub");
@@ -1328,7 +1328,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 					this.CurrentBuilder.Append(" double 0.0, ");
 				}
 				else {
-					ZLogger._LogError(Node.SourceToken, "Unknown unary \"-\" for this type");
+					BLogger._LogError(Node.SourceToken, "Unknown unary \"-\" for this type");
 				}
 				this.CurrentBuilder.Append(Recv);
 
@@ -1337,11 +1337,11 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		}
 		else if(Node.SourceToken.EqualsText('~')){
 			if(Node.RecvNode().IsUntyped()) {
-				ZLogger._LogError(Node.SourceToken, "Unary \"~\" is untyped");
+				BLogger._LogError(Node.SourceToken, "Unary \"~\" is untyped");
 				return;
 			}
 			else if(!Node.RecvNode().Type.IsIntType()){
-				ZLogger._LogError(Node.SourceToken, "Unknown unary \"~\" for this type");
+				BLogger._LogError(Node.SourceToken, "Unknown unary \"~\" for this type");
 				return;
 			}
 
@@ -1355,7 +1355,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 			this.CurrentScope.PushValue(TempVar);
 		}
 		else {
-			ZLogger._LogError(Node.SourceToken, "Unknown unary \"" + Node.SourceToken.GetText() + "\" for this type");
+			BLogger._LogError(Node.SourceToken, "Unknown unary \"" + Node.SourceToken.GetText() + "\" for this type");
 		}
 	}
 
@@ -1495,7 +1495,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	private void VisitFieldList(ZClassNode ClassNode, boolean WithInitValue) {
-		if(ClassNode.SuperType() != ZClassType._ObjectType) {
+		if(ClassNode.SuperType() != BClassType._ObjectType) {
 			ZClassNode SuperClassNode = this.ClassFieldMap.get(ClassNode.SuperType().ShortName);
 			this.VisitFieldList(SuperClassNode, WithInitValue);
 		}
@@ -1570,7 +1570,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 
 		this.CurrentScope.PushValue(TempVar);
 	}
-	private void GetObjectElementOffset(ZType Type, String FieldName) {
+	private void GetObjectElementOffset(BType Type, String FieldName) {
 		@Var String ClassName = Type.ShortName;
 		@Var ZClassNode ClassNode = this.ClassFieldMap.get(ClassName);
 		if(ClassNode != null) {
@@ -1591,7 +1591,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		}
 		this.CurrentScope.PushValue("i32 -1");
 	}
-	private int GetClassFieldSize(ZType Type) {
+	private int GetClassFieldSize(BType Type) {
 		if(Type != null) {
 			@Var String ClassName = Type.ShortName;
 			@Var ZClassNode ClassNode = this.ClassFieldMap.get(ClassName);
@@ -1602,7 +1602,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		return 1/*Element size of object header*/;
 	}
 
-	private void AppendDefaultReturn(ZType ReturnType) {
+	private void AppendDefaultReturn(BType ReturnType) {
 		this.CurrentBuilder.AppendNewLine("ret ");
 		if(!ReturnType.IsVoidType()) {
 			this.CurrentBuilder.Append(this.GetTypeExpr(ReturnType));

@@ -24,8 +24,8 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZVisitor;
-import libbun.type.ZType;
+import libbun.parser.BVisitor;
+import libbun.type.BType;
 import libbun.util.Var;
 
 public final class ZWhileNode extends BNode {
@@ -41,10 +41,10 @@ public final class ZWhileNode extends BNode {
 		super(null, null, 3);
 		this.SetNode(ZWhileNode._Cond, CondNode);
 		this.SetNode(ZWhileNode._Block, BlockNode);
-		this.Type = ZType.VoidType;
+		this.Type = BType.VoidType;
 	}
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitWhileNode(this);
 	}
 

@@ -27,24 +27,24 @@ package libbun.type;
 import libbun.util.BField;
 import libbun.util.Nullable;
 
-public class ZGenericType extends ZType {
-	public final static ZType _AlphaType  = new ZGreekType(0);
+public class BGenericType extends BType {
+	public final static BType _AlphaType  = new BGreekType(0);
 
-	public final static ZGenericType _ArrayType = new ZGenericType("Array");
-	public final static ZGenericType _MapType = new ZGenericType("Map");
+	public final static BGenericType _ArrayType = new BGenericType("Array");
+	public final static BGenericType _MapType = new BGenericType("Map");
 
-	@BField public ZType			BaseType;
-	@BField public ZType         ParamType;
+	@BField public BType			BaseType;
+	@BField public BType         ParamType;
 
-	public ZGenericType(String ShortName) {
-		super(ZType.UniqueTypeFlag, ShortName, ZType.VarType);
+	public BGenericType(String ShortName) {
+		super(BType.UniqueTypeFlag, ShortName, BType.VarType);
 		this.BaseType = this;
-		this.ParamType = ZGenericType._AlphaType;
-		ZTypePool._SetBaseGenericType(this);
+		this.ParamType = BGenericType._AlphaType;
+		BTypePool._SetBaseGenericType(this);
 	}
 
-	public ZGenericType(int TypeFlag, @Nullable ZType BaseType, ZType ParamType) {
-		super(TypeFlag, null, ZType.VarType);
+	public BGenericType(int TypeFlag, @Nullable BType BaseType, BType ParamType) {
+		super(TypeFlag, null, BType.VarType);
 		this.BaseType = BaseType;
 		this.ParamType = ParamType;
 	}
@@ -61,14 +61,14 @@ public class ZGenericType extends ZType {
 		return this.ShortName;
 	}
 
-	@Override public final ZType GetSuperType() {
+	@Override public final BType GetSuperType() {
 		if(this.BaseType == this) {
 			return this.RefType;
 		}
 		return this.BaseType;
 	}
 
-	@Override public final ZType GetBaseType() {
+	@Override public final BType GetBaseType() {
 		return this.BaseType;
 	}
 
@@ -76,7 +76,7 @@ public class ZGenericType extends ZType {
 		return 1;
 	}
 
-	@Override public final ZType GetParamType(int Index) {
+	@Override public final BType GetParamType(int Index) {
 		if(Index == 0) {
 			return this.ParamType;
 		}
@@ -87,14 +87,14 @@ public class ZGenericType extends ZType {
 		return (this.ParamType.IsGreekType());
 	}
 
-	@Override public final ZType GetGreekRealType(ZType[] Greek) {
+	@Override public final BType GetGreekRealType(BType[] Greek) {
 		if(this.ParamType.IsGreekType()) {
-			return ZTypePool._GetGenericType1(this.BaseType, this.ParamType.GetGreekRealType(Greek));
+			return BTypePool._GetGenericType1(this.BaseType, this.ParamType.GetGreekRealType(Greek));
 		}
 		return this.GetRealType();
 	}
 
-	@Override public final boolean AcceptValueType(ZType ValueType, boolean ExactMatch, ZType[] Greek) {
+	@Override public final boolean AcceptValueType(BType ValueType, boolean ExactMatch, BType[] Greek) {
 		if(this.BaseType == ValueType.GetBaseType() && ValueType.GetParamSize() == 1) {
 			return this.ParamType.AcceptValueType(ValueType.GetParamType(0), true, Greek);
 		}

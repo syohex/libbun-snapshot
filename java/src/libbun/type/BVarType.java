@@ -24,20 +24,20 @@
 
 package libbun.type;
 
-import libbun.parser.ZToken;
+import libbun.parser.BToken;
 import libbun.util.BField;
 import libbun.util.Var;
 import libbun.util.BArray;
 import libbun.util.BIgnored;
 
-public class ZVarType extends ZType {
+public class BVarType extends BType {
 
-	@BField public final BArray<ZVarType> VarList;
-	@BField public ZToken SourceToken;
+	@BField public final BArray<BVarType> VarList;
+	@BField public BToken SourceToken;
 	@BField public int GreekId;
 
-	public ZVarType(BArray<ZVarType> VarList, String Name, ZToken SourceToken) {
-		super(0, Name, ZType.VarType);
+	public BVarType(BArray<BVarType> VarList, String Name, BToken SourceToken) {
+		super(0, Name, BType.VarType);
 		this.VarList = VarList;
 		this.SourceToken = SourceToken;
 		this.GreekId = VarList.size();
@@ -45,7 +45,7 @@ public class ZVarType extends ZType {
 		VarList.add(this);
 	}
 
-	@Override public final ZType GetRealType() {
+	@Override public final BType GetRealType() {
 		return this.RefType;
 	}
 
@@ -53,7 +53,7 @@ public class ZVarType extends ZType {
 		return this.RefType.GetParamSize();
 	}
 
-	@Override public ZType GetParamType(int Index) {
+	@Override public BType GetParamType(int Index) {
 		return this.RefType.GetParamType(Index);
 	}
 
@@ -69,10 +69,10 @@ public class ZVarType extends ZType {
 		return "typeof(" + this.ShortName + "): " + this.RefType;
 	}
 
-	public void Infer(ZType ContextType, ZToken SourceToken) {
+	public void Infer(BType ContextType, BToken SourceToken) {
 		if(this.RefType.IsVarType()) {
-			if(ContextType instanceof ZVarType && ContextType.IsVarType()) {
-				@Var ZVarType VarType = (ZVarType)ContextType;
+			if(ContextType instanceof BVarType && ContextType.IsVarType()) {
+				@Var BVarType VarType = (BVarType)ContextType;
 				if(this.GreekId < VarType.GreekId) {
 					VarType.GreekId = this.GreekId;
 				}
@@ -89,10 +89,10 @@ public class ZVarType extends ZType {
 		}
 	}
 
-	@Override public void Maybe(ZType T, ZToken SourceToken) {
+	@Override public void Maybe(BType T, BToken SourceToken) {
 		if(this.RefType.IsVarType()) {
-			if(T instanceof ZVarType && T.IsVarType()) {
-				@Var ZVarType VarType = (ZVarType)T;
+			if(T instanceof BVarType && T.IsVarType()) {
+				@Var BVarType VarType = (BVarType)T;
 				if(this.GreekId < VarType.GreekId) {
 					VarType.GreekId = this.GreekId;
 				}

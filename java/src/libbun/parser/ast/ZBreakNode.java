@@ -24,13 +24,13 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZVisitor;
+import libbun.parser.BVisitor;
 
 public final class ZBreakNode extends BNode {
 	public ZBreakNode(BNode ParentNode) {
 		super(ParentNode, null, 0);
 	}
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitBreakNode(this);
 	}
 }

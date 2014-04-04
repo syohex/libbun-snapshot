@@ -24,42 +24,42 @@
 
 package libbun.parser;
 
+import libbun.parser.ast.BAsmNode;
+import libbun.parser.ast.BBooleanNode;
+import libbun.parser.ast.BFloatNode;
+import libbun.parser.ast.BGetNameNode;
+import libbun.parser.ast.BIntNode;
+import libbun.parser.ast.BLetVarNode;
+import libbun.parser.ast.BNullNode;
+import libbun.parser.ast.BSetNameNode;
+import libbun.parser.ast.BStringNode;
 import libbun.parser.ast.ZAndNode;
 import libbun.parser.ast.ZArrayLiteralNode;
-import libbun.parser.ast.BAsmNode;
 import libbun.parser.ast.ZBinaryNode;
 import libbun.parser.ast.ZBlockNode;
-import libbun.parser.ast.BBooleanNode;
 import libbun.parser.ast.ZBreakNode;
 import libbun.parser.ast.ZCastNode;
 import libbun.parser.ast.ZClassNode;
 import libbun.parser.ast.ZComparatorNode;
 import libbun.parser.ast.ZDefaultValueNode;
 import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.BFloatNode;
 import libbun.parser.ast.ZFuncCallNode;
 import libbun.parser.ast.ZFunctionNode;
 import libbun.parser.ast.ZGetIndexNode;
-import libbun.parser.ast.BGetNameNode;
 import libbun.parser.ast.ZGetterNode;
 import libbun.parser.ast.ZGroupNode;
 import libbun.parser.ast.ZIfNode;
 import libbun.parser.ast.ZInstanceOfNode;
-import libbun.parser.ast.BIntNode;
-import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.ZLocalDefinedNode;
 import libbun.parser.ast.ZMacroNode;
 import libbun.parser.ast.ZMapLiteralNode;
 import libbun.parser.ast.ZMethodCallNode;
 import libbun.parser.ast.ZNewObjectNode;
 import libbun.parser.ast.ZNotNode;
-import libbun.parser.ast.BNullNode;
 import libbun.parser.ast.ZOrNode;
 import libbun.parser.ast.ZReturnNode;
 import libbun.parser.ast.ZSetIndexNode;
-import libbun.parser.ast.BSetNameNode;
 import libbun.parser.ast.ZSetterNode;
-import libbun.parser.ast.BStringNode;
 import libbun.parser.ast.ZSugarNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTopLevelNode;
@@ -68,7 +68,7 @@ import libbun.parser.ast.ZUnaryNode;
 import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
 
-public abstract class ZVisitor {
+public abstract class BVisitor {
 	public abstract void VisitDefaultValueNode(ZDefaultValueNode Node);
 	public abstract void VisitNullNode(BNullNode Node);
 	public abstract void VisitBooleanNode(BBooleanNode Node);
@@ -87,7 +87,6 @@ public abstract class ZVisitor {
 	public abstract void VisitGetIndexNode(ZGetIndexNode Node);
 	public abstract void VisitSetIndexNode(ZSetIndexNode Node);
 	public abstract void VisitMethodCallNode(ZMethodCallNode Node);
-	//	public abstract void VisitGlobalNameNode(ZFuncNameNode Node);
 	public abstract void VisitFuncCallNode(ZFuncCallNode Node);
 	public abstract void VisitMacroNode(ZMacroNode FuncNode);
 	public abstract void VisitUnaryNode(ZUnaryNode Node);

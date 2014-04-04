@@ -24,11 +24,11 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZToken;
-import libbun.type.ZType;
+import libbun.parser.BToken;
+import libbun.type.BType;
 
 public final class ZTypeNode extends ZLocalDefinedNode {
-	public ZTypeNode(BNode ParentNode, ZToken SourceToken, ZType Type) {
+	public ZTypeNode(BNode ParentNode, BToken SourceToken, BType Type) {
 		super(ParentNode, SourceToken, 0);
 		this.Type = Type;
 	}

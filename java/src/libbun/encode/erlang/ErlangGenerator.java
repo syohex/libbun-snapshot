@@ -3,7 +3,7 @@ package libbun.encode.erlang;
 
 import libbun.encode.ZSourceBuilder;
 import libbun.encode.ZSourceGenerator;
-import libbun.parser.ZToken;
+import libbun.parser.BToken;
 import libbun.parser.ast.BGetNameNode;
 import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.BNode;
@@ -28,8 +28,8 @@ import libbun.parser.ast.ZOrNode;
 import libbun.parser.ast.ZReturnNode;
 import libbun.parser.ast.ZSetterNode;
 import libbun.parser.ast.ZWhileNode;
-import libbun.type.ZClassType;
-import libbun.type.ZType;
+import libbun.type.BClassType;
+import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
@@ -145,7 +145,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 	// }
 
 	@Override public void VisitGetIndexNode(ZGetIndexNode Node) {
-		if (Node.Type.Equals(ZType.StringType)) {
+		if (Node.Type.Equals(BType.StringType)) {
 			this.CurrentBuilder.Append("string:substr(");
 			this.GenerateCode(null, Node.RecvNode());
 			this.CurrentBuilder.Append(", ");
@@ -286,7 +286,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 	// 	this.GenerateTypeName(Node.RightNode().Type);
 	// }
 
-	@Override protected String GetBinaryOperator(ZType Type, ZToken Token) {
+	@Override protected String GetBinaryOperator(BType Type, BToken Token) {
 		if(Token.EqualsText("<=")) {
 			return "=<";
 		}
@@ -305,7 +305,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		if(Token.EqualsText('%')) {
 			return "rem";
 		}
-		if(Token.EqualsText('/') && Type.Equals(ZType.IntType)) {
+		if(Token.EqualsText('/') && Type.Equals(BType.IntType)) {
 			return "div";
 		}
 		return Token.GetText();
@@ -549,7 +549,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 
 		this.CurrentBuilder.Append("-record(");
 		this.CurrentBuilder.Append(this.ToErlangTypeName(Node.ClassName()));
-		if(!Node.SuperType().Equals(ZClassType._ObjectType)) {
+		if(!Node.SuperType().Equals(BClassType._ObjectType)) {
 			throw new RuntimeException("\"extends\" is not supported yet");
 		}
 		this.CurrentBuilder.Append(", {");

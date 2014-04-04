@@ -3,7 +3,7 @@ package libbun.parser;
 import libbun.util.BField;
 import libbun.util.ZenMethod;
 
-public class ZLangInfo {
+public class BLangInfo {
 	@BField public String GrammarInfo = "";
 
 	@BField public String LangVersion = null;
@@ -13,7 +13,7 @@ public class ZLangInfo {
 	public boolean AllowFunctionOverloading = false;
 	public boolean AllowUndefinedSymbol = false;
 
-	public ZLangInfo(String LangVersion, String Extension) {
+	public BLangInfo(String LangVersion, String Extension) {
 		this.LangVersion = LangVersion;
 		this.Extension   = Extension;
 	}

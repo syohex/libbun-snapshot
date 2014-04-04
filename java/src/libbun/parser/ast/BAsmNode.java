@@ -1,7 +1,7 @@
 package libbun.parser.ast;
 
-import libbun.parser.ZVisitor;
-import libbun.type.ZType;
+import libbun.parser.BVisitor;
+import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.Var;
 
@@ -11,16 +11,16 @@ public class BAsmNode extends BNode {
 	@BField public String RequiredLibrary = null;
 	
 	@BField String MacroText = null;
-	@BField ZType  MacroType = null;
+	@BField BType  MacroType = null;
 
-	public BAsmNode(BNode ParentNode, String LibName, String MacroText, ZType MacroType) {
+	public BAsmNode(BNode ParentNode, String LibName, String MacroText, BType MacroType) {
 		super(ParentNode, null, 2);
 		this.RequiredLibrary = LibName;
 		this.MacroText = MacroText;
 		this.MacroType = MacroType;
 	}
 
-	public final ZType MacroType() {
+	public final BType MacroType() {
 		if(this.MacroType == null) {
 			this.MacroType = this.AST[BAsmNode._TypeInfo].Type;
 		}
@@ -37,7 +37,7 @@ public class BAsmNode extends BNode {
 		return this.MacroText;
 	}
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitAsmNode(this);
 	}
 

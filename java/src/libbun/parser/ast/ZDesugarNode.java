@@ -1,7 +1,7 @@
 package libbun.parser.ast;
 
-import libbun.parser.ZGenerator;
-import libbun.parser.ZTypeChecker;
+import libbun.parser.BGenerator;
+import libbun.parser.BTypeChecker;
 import libbun.util.BField;
 import libbun.util.Var;
 
@@ -27,7 +27,7 @@ public class ZDesugarNode extends ZSugarNode {
 		}
 	}
 
-	@Override public ZDesugarNode DeSugar(ZGenerator Generator, ZTypeChecker TypeChekcer) {
+	@Override public ZDesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChekcer) {
 		return this;
 	}
 

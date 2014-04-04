@@ -27,8 +27,8 @@ package libbun.parser;
 import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZBlockNode;
-import libbun.type.ZClassType;
-import libbun.type.ZType;
+import libbun.type.BClassType;
+import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Nullable;
@@ -37,20 +37,20 @@ import libbun.util.BMap;
 import libbun.util.BMatchFunction;
 import libbun.util.BTokenFunction;
 
-public final class ZNameSpace {
-	@BField public final ZGenerator   Generator;
+public final class BNameSpace {
+	@BField public final BGenerator   Generator;
 	@BField public final ZBlockNode   BlockNode;
-	@BField ZTokenFunc[]       TokenMatrix = null;
-	@BField BMap<ZSyntax>      SyntaxTable = null;
+	@BField BTokenFuncChain[]       TokenMatrix = null;
+	@BField BMap<BSyntax>      SyntaxTable = null;
 	@BField BMap<BLetVarNode>  SymbolTable2 = null;
 
-	public ZNameSpace(ZGenerator Generator, ZBlockNode BlockNode) {
+	public BNameSpace(BGenerator Generator, ZBlockNode BlockNode) {
 		this.BlockNode = BlockNode;   // rootname is null
 		this.Generator = Generator;
 		assert(this.Generator != null);
 	}
 
-	public final ZNameSpace GetParentNameSpace() {
+	public final BNameSpace GetParentNameSpace() {
 		if(this.BlockNode != null) {
 			@Var BNode Node = this.BlockNode.ParentNode;
 			while(Node != null) {
@@ -70,23 +70,23 @@ public final class ZNameSpace {
 		return "NS[" + this.BlockNode + "]";
 	}
 
-	public final ZNameSpace GetRootNameSpace() {
+	public final BNameSpace GetRootNameSpace() {
 		return this.Generator.RootNameSpace;
 	}
 
 	// TokenMatrix
-	public final ZTokenFunc GetTokenFunc(int ZenChar) {
+	public final BTokenFuncChain GetTokenFunc(int ZenChar) {
 		if(this.TokenMatrix == null) {
 			return this.GetParentNameSpace().GetTokenFunc(ZenChar);
 		}
 		return this.TokenMatrix[ZenChar];
 	}
 
-	private final ZTokenFunc JoinParentFunc(BTokenFunction Func, ZTokenFunc Parent) {
+	private final BTokenFuncChain JoinParentFunc(BTokenFunction Func, BTokenFuncChain Parent) {
 		if(Parent != null && Parent.Func == Func) {
 			return Parent;
 		}
-		return new ZTokenFunc(Func, Parent);
+		return new BTokenFuncChain(Func, Parent);
 	}
 
 	public final void AppendTokenFunc(String keys, BTokenFunction TokenFunc) {
@@ -109,8 +109,8 @@ public final class ZNameSpace {
 	}
 
 	// Pattern
-	public final ZSyntax GetSyntaxPattern(String PatternName) {
-		@Var ZNameSpace NameSpace = this;
+	public final BSyntax GetSyntaxPattern(String PatternName) {
+		@Var BNameSpace NameSpace = this;
 		while(NameSpace != null) {
 			if(NameSpace.SyntaxTable != null) {
 				return NameSpace.SyntaxTable.GetOrNull(PatternName);
@@ -120,9 +120,9 @@ public final class ZNameSpace {
 		return null;
 	}
 
-	public final void SetSyntaxPattern(String PatternName, ZSyntax Syntax) {
+	public final void SetSyntaxPattern(String PatternName, BSyntax Syntax) {
 		if(this.SyntaxTable == null) {
-			this.SyntaxTable = new BMap<ZSyntax>(null);
+			this.SyntaxTable = new BMap<BSyntax>(null);
 		}
 		this.SyntaxTable.put(PatternName, Syntax);
 	}
@@ -131,13 +131,13 @@ public final class ZNameSpace {
 		return "\t" + PatternName;
 	}
 
-	public final ZSyntax GetRightSyntaxPattern(String PatternName) {
-		return this.GetSyntaxPattern(ZNameSpace._RightPatternSymbol(PatternName));
+	public final BSyntax GetRightSyntaxPattern(String PatternName) {
+		return this.GetSyntaxPattern(BNameSpace._RightPatternSymbol(PatternName));
 	}
 
-	private void AppendSyntaxPattern(String PatternName, ZSyntax NewPattern) {
+	private void AppendSyntaxPattern(String PatternName, BSyntax NewPattern) {
 		BLib._Assert(NewPattern.ParentPattern == null);
-		@Var ZSyntax ParentPattern = this.GetSyntaxPattern(PatternName);
+		@Var BSyntax ParentPattern = this.GetSyntaxPattern(PatternName);
 		NewPattern.ParentPattern = ParentPattern;
 		this.SetSyntaxPattern(PatternName, NewPattern);
 	}
@@ -148,7 +148,7 @@ public final class ZNameSpace {
 		if(Alias != -1) {
 			Name = PatternName.substring(0, Alias);
 		}
-		@Var ZSyntax Pattern = new ZSyntax(this, Name, MatchFunc);
+		@Var BSyntax Pattern = new BSyntax(this, Name, MatchFunc);
 		Pattern.IsStatement = true;
 		this.AppendSyntaxPattern(Name, Pattern);
 		if(Alias != -1) {
@@ -162,7 +162,7 @@ public final class ZNameSpace {
 		if(Alias != -1) {
 			Name = PatternName.substring(0, Alias);
 		}
-		@Var ZSyntax Pattern = new ZSyntax(this, Name, MatchFunc);
+		@Var BSyntax Pattern = new BSyntax(this, Name, MatchFunc);
 		this.AppendSyntaxPattern(Name, Pattern);
 		if(Alias != -1) {
 			this.DefineExpression(PatternName.substring(Alias+1), MatchFunc);
@@ -175,9 +175,9 @@ public final class ZNameSpace {
 		if(Alias != -1) {
 			Name = PatternName.substring(0, Alias);
 		}
-		@Var ZSyntax Pattern = new ZSyntax(this, Name, MatchFunc);
+		@Var BSyntax Pattern = new BSyntax(this, Name, MatchFunc);
 		Pattern.SyntaxFlag = SyntaxFlag;
-		this.AppendSyntaxPattern(ZNameSpace._RightPatternSymbol(Name), Pattern);
+		this.AppendSyntaxPattern(BNameSpace._RightPatternSymbol(Name), Pattern);
 		if(Alias != -1) {
 			this.DefineRightExpression(PatternName.substring(Alias+1), SyntaxFlag, MatchFunc);
 		}
@@ -191,7 +191,7 @@ public final class ZNameSpace {
 	}
 
 	public final BLetVarNode GetSymbol(String Symbol) {
-		@Var ZNameSpace NameSpace = this;
+		@Var BNameSpace NameSpace = this;
 		while(NameSpace != null) {
 			if(NameSpace.SymbolTable2 != null) {
 				@Var BLetVarNode EntryNode = NameSpace.SymbolTable2.GetOrNull(Symbol);
@@ -229,7 +229,7 @@ public final class ZNameSpace {
 
 	public final int GetNameIndex(String Name) {
 		@Var int NameIndex = -1;
-		@Var ZNameSpace NameSpace = this;
+		@Var BNameSpace NameSpace = this;
 		while(NameSpace != null) {
 			if(NameSpace.SymbolTable2 != null) {
 				@Var BNode EntryNode = NameSpace.SymbolTable2.GetOrNull(Name);
@@ -256,24 +256,24 @@ public final class ZNameSpace {
 	}
 
 	// Type
-	public final void SetTypeName(String Name, ZType Type, @Nullable ZToken SourceToken) {
+	public final void SetTypeName(String Name, BType Type, @Nullable BToken SourceToken) {
 		//@Var ZTypeNode Node = new ZTypeNode(null, SourceToken, Type);
 		@Var BLetVarNode Node = new BLetVarNode(null, BLetVarNode._IsReadOnly, Type, Name);
 		Node.SourceToken = SourceToken;
 		this.SetSymbol(Name, Node);
 	}
 
-	public final void SetTypeName(ZType Type, @Nullable ZToken SourceToken) {
+	public final void SetTypeName(BType Type, @Nullable BToken SourceToken) {
 		this.SetTypeName(Type.ShortName, Type, SourceToken);
 	}
 
-	public final ZType GetType(String TypeName, ZToken SourceToken, boolean IsCreation) {
+	public final BType GetType(String TypeName, BToken SourceToken, boolean IsCreation) {
 		@Var BLetVarNode Node = this.GetSymbol(TypeName);
 		if(Node != null) {
 			return Node.DeclType();
 		}
 		if(IsCreation && BLib._IsSymbol(BLib._GetChar(TypeName, 0))) {
-			@Var ZType Type = new ZClassType(TypeName, ZType.VarType);
+			@Var BType Type = new BClassType(TypeName, BType.VarType);
 			this.GetRootNameSpace().SetTypeName(TypeName, Type, SourceToken);
 			return Type;
 		}

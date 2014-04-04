@@ -1,8 +1,8 @@
 package libbun.parser.ast;
 
-import libbun.parser.ZGenerator;
-import libbun.parser.ZVisitor;
-import libbun.type.ZType;
+import libbun.parser.BGenerator;
+import libbun.parser.BVisitor;
+import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Nullable;
@@ -21,11 +21,11 @@ public class BLetVarNode extends ZListNode {
 	public final static int _IsUsed     = 1 << 3;
 
 	@BField public int NameFlag = 0;
-	@BField public ZType   GivenType = null;
+	@BField public BType   GivenType = null;
 	@BField public String  GivenName = null;
 	@BField public int NameIndex = 0;
 
-	public BLetVarNode(BNode ParentNode, int NameFlag, @Nullable ZType GivenType, @Nullable String GivenName) {
+	public BLetVarNode(BNode ParentNode, int NameFlag, @Nullable BType GivenType, @Nullable String GivenName) {
 		super(ParentNode, null, 3);
 		this.NameFlag = NameFlag;
 		this.GivenType = GivenType;
@@ -56,19 +56,19 @@ public class BLetVarNode extends ZListNode {
 		this.NameFlag = this.NameFlag | BLetVarNode._IsUsed;
 	}
 
-	public final ZType DeclType() {
+	public final BType DeclType() {
 		if(this.GivenType == null) {
 			if(this.AST[BLetVarNode._TypeInfo] != null) {
 				this.GivenType = this.AST[BLetVarNode._TypeInfo].Type;
 			}
 			else {
-				this.GivenType = ZType.VarType;
+				this.GivenType = BType.VarType;
 			}
 		}
 		return this.GivenType;
 	}
 
-	public final void SetDeclType(ZType Type) {
+	public final void SetDeclType(BType Type) {
 		this.GivenType = Type;
 	}
 
@@ -79,7 +79,7 @@ public class BLetVarNode extends ZListNode {
 		return this.GivenName;
 	}
 
-	public final String GetUniqueName(ZGenerator Generator) {
+	public final String GetUniqueName(BGenerator Generator) {
 		if(this.NameIndex == 0 || this.IsExport()) {
 			return this.GetGivenName();
 		}
@@ -94,7 +94,7 @@ public class BLetVarNode extends ZListNode {
 		return this.AST[BLetVarNode._InitValue];
 	}
 
-	@Override public final void Accept(ZVisitor Visitor) {
+	@Override public final void Accept(BVisitor Visitor) {
 		Visitor.VisitLetNode(this);
 	}
 

@@ -1,7 +1,7 @@
 package libbun.parser.ast;
 
 import libbun.encode.jvm.JavaImportNode;
-import libbun.parser.ZNameSpace;
+import libbun.parser.BNameSpace;
 import libbun.util.Var;
 
 public class ZRequireNode extends ZTopLevelNode {
@@ -11,7 +11,7 @@ public class ZRequireNode extends ZTopLevelNode {
 		super(ParentNode, null, 1);
 	}
 
-	@Override public final void Perform(ZNameSpace NameSpace) {
+	@Override public final void Perform(BNameSpace NameSpace) {
 		@Var String ResourcePath = this.AST[JavaImportNode._Path].SourceToken.GetTextAsName();
 		NameSpace.Generator.RequireLibrary(ResourcePath, this.GetAstToken(JavaImportNode._Path));
 	}

@@ -1,13 +1,13 @@
 package libbun.type;
 
-import libbun.parser.ZToken;
+import libbun.parser.BToken;
 import libbun.util.BField;
 
-public class ZPrototype extends ZFunc {
+public class BPrototype extends BFunc {
 	@BField public int DefinedCount = 0;
 	@BField public int UsedCount = 0;
 
-	public ZPrototype(int FuncFlag, String FuncName, ZFuncType FuncType, ZToken SourceToken) {
+	public BPrototype(int FuncFlag, String FuncName, BFuncType FuncType, BToken SourceToken) {
 		super(FuncFlag, FuncName, FuncType);
 		this.DefinedCount = 0;
 		this.UsedCount = 0;

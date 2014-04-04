@@ -25,11 +25,11 @@
 package libbun.encode;
 
 import libbun.lang.bun.BunTypeSafer;
-import libbun.parser.ZGenerator;
-import libbun.parser.ZLangInfo;
-import libbun.parser.ZLogger;
-import libbun.parser.ZNameSpace;
-import libbun.parser.ZToken;
+import libbun.parser.BGenerator;
+import libbun.parser.BLangInfo;
+import libbun.parser.BLogger;
+import libbun.parser.BNameSpace;
+import libbun.parser.BToken;
 import libbun.parser.ast.BAsmNode;
 import libbun.parser.ast.BBooleanNode;
 import libbun.parser.ast.BFloatNode;
@@ -77,9 +77,9 @@ import libbun.parser.ast.ZTryNode;
 import libbun.parser.ast.ZUnaryNode;
 import libbun.parser.ast.ZVarBlockNode;
 import libbun.parser.ast.ZWhileNode;
-import libbun.type.ZClassType;
-import libbun.type.ZFuncType;
-import libbun.type.ZType;
+import libbun.type.BClassType;
+import libbun.type.BFuncType;
+import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Nullable;
@@ -88,7 +88,7 @@ import libbun.util.BArray;
 import libbun.util.BMap;
 import libbun.util.ZenMethod;
 
-public class ZSourceGenerator extends ZGenerator {
+public class ZSourceGenerator extends BGenerator {
 
 	@BField public BMap<String> NativeTypeMap = new BMap<String>(null);
 	@BField public BMap<String> ReservedNameMap = new BMap<String>(null);
@@ -123,7 +123,7 @@ public class ZSourceGenerator extends ZGenerator {
 	@BField public boolean ReadableCode = true;
 
 	public ZSourceGenerator(String Extension, String LangVersion) {
-		super(new ZLangInfo(LangVersion, Extension));
+		super(new BLangInfo(LangVersion, Extension));
 		this.InitBuilderList();
 		this.SetTypeChecker(new BunTypeSafer(this));
 	}
@@ -163,12 +163,12 @@ public class ZSourceGenerator extends ZGenerator {
 		this.HeaderBuilder.AppendNewLine("require ", LibName, this.SemiColon);
 	}
 
-	protected void SetNativeType(ZType Type, String TypeName) {
+	protected void SetNativeType(BType Type, String TypeName) {
 		@Var String Key = "" + Type.TypeId;
 		this.NativeTypeMap.put(Key, TypeName);
 	}
 
-	protected String GetNativeTypeName(ZType Type) {
+	protected String GetNativeTypeName(BType Type) {
 		@Var String Key = "" + Type.TypeId;
 		@Var String TypeName = this.NativeTypeMap.GetOrNull(Key);
 		if (TypeName == null) {
@@ -215,7 +215,7 @@ public class ZSourceGenerator extends ZGenerator {
 	//		this.CurrentBuilder.Append(Node.toString());
 	//	}
 
-	public String NameLocalVariable(ZNameSpace NameSpace, String Name) {
+	public String NameLocalVariable(BNameSpace NameSpace, String Name) {
 		@Var String SafeName = this.ReservedNameMap.GetOrNull(Name);
 		if(SafeName != null) {
 			Name = SafeName;
@@ -263,7 +263,7 @@ public class ZSourceGenerator extends ZGenerator {
 		this.InitBuilderList();
 	}
 
-	protected final void GenerateCode2(String Pre, ZType ContextType, BNode Node, String Post) {
+	protected final void GenerateCode2(String Pre, BType ContextType, BNode Node, String Post) {
 		if(Pre != null && Pre.length() > 0) {
 			this.CurrentBuilder.Append(Pre);
 		}
@@ -273,7 +273,7 @@ public class ZSourceGenerator extends ZGenerator {
 		}
 	}
 
-	protected final void GenerateCode2(String Pre, ZType ContextType, BNode Node, String Delim, ZType ContextType2, BNode Node2, String Post) {
+	protected final void GenerateCode2(String Pre, BType ContextType, BNode Node, String Delim, BType ContextType2, BNode Node2, String Post) {
 		if(Pre != null && Pre.length() > 0) {
 			this.CurrentBuilder.Append(Pre);
 		}
@@ -315,7 +315,7 @@ public class ZSourceGenerator extends ZGenerator {
 
 	@Override public void GenerateStatement(BNode Node) {
 		this.CurrentBuilder.AppendNewLine();
-		if(Node instanceof ZCastNode && Node.Type == ZType.VoidType) {
+		if(Node instanceof ZCastNode && Node.Type == BType.VoidType) {
 			Node.AST[ZCastNode._Expr].Accept(this);
 		}
 		else {
@@ -423,7 +423,7 @@ public class ZSourceGenerator extends ZGenerator {
 	@Override public void VisitGetNameNode(BGetNameNode Node) {
 		@Var BNode ResolvedNode = Node.ResolvedNode;
 		if(ResolvedNode == null && !this.LangInfo.AllowUndefinedSymbol) {
-			ZLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GivenName);
+			BLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GivenName);
 		}
 		this.CurrentBuilder.Append(Node.GetUniqueName(this));
 	}
@@ -453,7 +453,7 @@ public class ZSourceGenerator extends ZGenerator {
 
 	@Override public void VisitMacroNode(ZMacroNode Node) {
 		@Var String Macro = Node.GetMacroText();
-		@Var ZFuncType FuncType = Node.GetFuncType();
+		@Var BFuncType FuncType = Node.GetFuncType();
 		@Var int fromIndex = 0;
 		@Var int BeginNum = Macro.indexOf("$[", fromIndex);
 		while(BeginNum != -1) {
@@ -495,7 +495,7 @@ public class ZSourceGenerator extends ZGenerator {
 		this.VisitListNode("(", Node, ")");
 	}
 
-	@ZenMethod protected String GetUnaryOperator(ZType Type, ZToken Token) {
+	@ZenMethod protected String GetUnaryOperator(BType Type, BToken Token) {
 		if(Token.EqualsText('-')) {
 			return "-";
 		}
@@ -533,7 +533,7 @@ public class ZSourceGenerator extends ZGenerator {
 		this.GenerateTypeName(Node.TargetType());
 	}
 
-	@ZenMethod protected String GetBinaryOperator(ZType Type, ZToken Token) {
+	@ZenMethod protected String GetBinaryOperator(BType Type, BToken Token) {
 		if(Token.EqualsText('+')) {
 			return "+";
 		}
@@ -619,7 +619,7 @@ public class ZSourceGenerator extends ZGenerator {
 		}
 	}
 
-	protected void GenerateTypeAnnotation(ZType Type) {
+	protected void GenerateTypeAnnotation(BType Type) {
 		if(!Type.IsVarType()) {
 			this.CurrentBuilder.Append(": ");
 			this.GenerateTypeName(Type);
@@ -691,7 +691,7 @@ public class ZSourceGenerator extends ZGenerator {
 	}
 
 	@Override public void VisitErrorNode(ZErrorNode Node) {
-		@Var String Message = ZLogger._LogError(Node.SourceToken, Node.ErrorMessage);
+		@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.CurrentBuilder.Append(this.ErrorFunc, "(");
 		this.CurrentBuilder.Append(BLib._QuoteString(Message));
 		this.CurrentBuilder.Append(")");
@@ -723,7 +723,7 @@ public class ZSourceGenerator extends ZGenerator {
 	}
 
 	// Utils
-	protected void GenerateTypeName(ZType Type) {
+	protected void GenerateTypeName(BType Type) {
 		this.CurrentBuilder.Append(this.GetNativeTypeName(Type.GetRealType()));
 	}
 
@@ -759,15 +759,15 @@ public class ZSourceGenerator extends ZGenerator {
 		this.CurrentBuilder.Append(CloseToken);
 	}
 
-	protected final String NameMethod(ZType ClassType, String MethodName) {
+	protected final String NameMethod(BType ClassType, String MethodName) {
 		return "_" + this.NameClass(ClassType) + "_" + MethodName;
 	}
 
-	protected final boolean IsMethod(String FuncName, ZFuncType FuncType) {
-		@Var ZType RecvType = FuncType.GetRecvType();
-		if(RecvType instanceof ZClassType && FuncName != null) {
-			@Var ZClassType ClassType = (ZClassType)RecvType;
-			@Var ZType FieldType = ClassType.GetFieldType(FuncName, null);
+	protected final boolean IsMethod(String FuncName, BFuncType FuncType) {
+		@Var BType RecvType = FuncType.GetRecvType();
+		if(RecvType instanceof BClassType && FuncName != null) {
+			@Var BClassType ClassType = (BClassType)RecvType;
+			@Var BType FieldType = ClassType.GetFieldType(FuncName, null);
 			if(FieldType == null || !FieldType.IsFuncType()) {
 				FuncName = BLib._AnotherName(FuncName);
 				FieldType = ClassType.GetFieldType(FuncName, null);
@@ -775,8 +775,8 @@ public class ZSourceGenerator extends ZGenerator {
 					return false;
 				}
 			}
-			if(FieldType instanceof ZFuncType) {
-				if(((ZFuncType)FieldType).AcceptAsFieldFunc(FuncType)) {
+			if(FieldType instanceof BFuncType) {
+				if(((BFuncType)FieldType).AcceptAsFieldFunc(FuncType)) {
 					return true;
 				}
 			}

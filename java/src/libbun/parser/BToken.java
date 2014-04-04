@@ -5,20 +5,20 @@ import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.BIgnored;
 
-public class ZToken {
-	public final static ZToken _NullToken = new ZToken();
+public class BToken {
+	public final static BToken _NullToken = new BToken();
 
-	@BField public final ZSource Source;
+	@BField public final BSource Source;
 	@BField public int  StartIndex;
 	@BField public int  EndIndex;
 
-	private ZToken() {
-		this.Source = new ZSource();
+	private BToken() {
+		this.Source = new BSource();
 		this.StartIndex = 0;
 		this.EndIndex = 0;
 	}
 
-	public ZToken(ZSource Source, int StartIndex, int EndIndex) {
+	public BToken(BSource Source, int StartIndex, int EndIndex) {
 		this.Source = Source;
 		this.StartIndex = StartIndex;
 		this.EndIndex = EndIndex;
@@ -98,11 +98,11 @@ public class ZToken {
 	}
 
 	public final boolean IsNull() {
-		return (this == ZToken._NullToken);
+		return (this == BToken._NullToken);
 	}
 
 	public final boolean IsIndent() {
-		return this instanceof ZIndentToken;
+		return this instanceof BIndentToken;
 	}
 
 	public final boolean IsNextWhiteSpace() {

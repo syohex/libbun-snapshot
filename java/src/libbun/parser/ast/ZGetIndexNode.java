@@ -24,7 +24,7 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZVisitor;
+import libbun.parser.BVisitor;
 
 //E.g., $Recv[$Index]
 public final class ZGetIndexNode extends BNode {
@@ -41,7 +41,7 @@ public final class ZGetIndexNode extends BNode {
 	public final BNode IndexNode() {
 		return this.AST[ZGetIndexNode._Index ];
 	}
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitGetIndexNode(this);
 	}
 

@@ -24,14 +24,14 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZToken;
-import libbun.parser.ZVisitor;
+import libbun.parser.BToken;
+import libbun.parser.BVisitor;
 import libbun.util.BField;
 import libbun.util.BIgnored;
 
 public class ZErrorNode extends BConstNode {
 	@BField public String ErrorMessage;
-	public ZErrorNode(BNode ParentNode, ZToken SourceToken, String ErrorMessage) {
+	public ZErrorNode(BNode ParentNode, BToken SourceToken, String ErrorMessage) {
 		super(ParentNode, SourceToken);
 		this.ErrorMessage = ErrorMessage;
 	}
@@ -40,7 +40,7 @@ public class ZErrorNode extends BConstNode {
 		this.ErrorMessage = ErrorMessage;
 	}
 
-	@Override public final void Accept(ZVisitor Visitor) {
+	@Override public final void Accept(BVisitor Visitor) {
 		Visitor.VisitErrorNode(this);
 	}
 

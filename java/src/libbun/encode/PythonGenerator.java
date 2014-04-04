@@ -25,7 +25,7 @@
 
 package libbun.encode;
 
-import libbun.parser.ZLogger;
+import libbun.parser.BLogger;
 import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.ZBlockNode;
@@ -41,10 +41,10 @@ import libbun.parser.ast.ZStupidCastErrorNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
 import libbun.parser.ast.ZVarBlockNode;
-import libbun.type.ZClassField;
-import libbun.type.ZClassType;
-import libbun.type.ZFuncType;
-import libbun.type.ZType;
+import libbun.type.BClassField;
+import libbun.type.BClassType;
+import libbun.type.BFuncType;
+import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
@@ -74,10 +74,10 @@ public class PythonGenerator extends ZSourceGenerator {
 		this.NotOperator = "not ";
 
 		this.TopType = "object";
-		this.SetNativeType(ZType.BooleanType, "bool");
-		this.SetNativeType(ZType.IntType, "int");
-		this.SetNativeType(ZType.FloatType, "float");
-		this.SetNativeType(ZType.StringType, "str");
+		this.SetNativeType(BType.BooleanType, "bool");
+		this.SetNativeType(BType.IntType, "int");
+		this.SetNativeType(BType.FloatType, "float");
+		this.SetNativeType(BType.StringType, "str");
 
 		this.HeaderBuilder.Append("#! /usr/bin/env python");
 		this.HeaderBuilder.AppendNewLine("# -*- coding: utf-8 -*-");
@@ -144,7 +144,7 @@ public class PythonGenerator extends ZSourceGenerator {
 	}
 
 	@Override public void VisitGetIndexNode(ZGetIndexNode Node) {
-		@Var ZType RecvType = Node.GetAstType(ZGetIndexNode._Recv);
+		@Var BType RecvType = Node.GetAstType(ZGetIndexNode._Recv);
 		if(RecvType.IsMapType()) {
 			this.ImportLibrary("def zGetMap(m,k): return m[k] if m.has_key(k) else None");
 			this.GenerateCode2("zGetMap(", null, Node.RecvNode(), ", ");
@@ -159,7 +159,7 @@ public class PythonGenerator extends ZSourceGenerator {
 	@Override public void VisitInstanceOfNode(ZInstanceOfNode Node) {
 		this.CurrentBuilder.Append("isinstance(");
 		this.GenerateCode(null, Node.LeftNode());
-		if(Node.TargetType() instanceof ZClassType) {
+		if(Node.TargetType() instanceof BClassType) {
 			this.CurrentBuilder.Append(this.Camma, this.NameClass(Node.TargetType()), ")");
 		}
 		else {
@@ -221,7 +221,7 @@ public class PythonGenerator extends ZSourceGenerator {
 			this.CurrentBuilder.Append(FuncName);
 		}
 		else {
-			@Var ZFuncType FuncType = Node.GetFuncType();
+			@Var BFuncType FuncType = Node.GetFuncType();
 			this.CurrentBuilder.Append("def ");
 			this.CurrentBuilder.Append(Node.GetSignature());
 			this.VisitFuncParamNode("(", Node, ")");
@@ -245,7 +245,7 @@ public class PythonGenerator extends ZSourceGenerator {
 	private void GenerateMethodVariables(ZClassNode Node) {
 		@Var int i = 0;
 		while (i < Node.ClassType.GetFieldSize()) {
-			@Var ZClassField ClassField = Node.ClassType.GetFieldAt(i);
+			@Var BClassField ClassField = Node.ClassType.GetFieldAt(i);
 			if(ClassField.FieldType.IsFuncType()) {
 				this.CurrentBuilder.AppendNewLine();
 				this.CurrentBuilder.Append(this.NameMethod(Node.ClassType, ClassField.FieldName));
@@ -257,11 +257,11 @@ public class PythonGenerator extends ZSourceGenerator {
 	}
 
 	@Override public void VisitClassNode(ZClassNode Node) {
-		@Var ZType SuperType = Node.ClassType.GetSuperType();
+		@Var BType SuperType = Node.ClassType.GetSuperType();
 		this.GenerateMethodVariables(Node);
 		this.CurrentBuilder.Append("class ");
 		this.CurrentBuilder.Append(this.NameClass(Node.ClassType));
-		if(!SuperType.Equals(ZClassType._ObjectType)) {
+		if(!SuperType.Equals(BClassType._ObjectType)) {
 			this.CurrentBuilder.Append("(");
 			this.CurrentBuilder.Append(this.NameClass(SuperType));
 			this.CurrentBuilder.Append(")");
@@ -271,7 +271,7 @@ public class PythonGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.AppendNewLine();
 		this.CurrentBuilder.Append("def __init__(self):");
 		this.CurrentBuilder.Indent();
-		if(!Node.SuperType().Equals(ZClassType._ObjectType)) {
+		if(!Node.SuperType().Equals(BClassType._ObjectType)) {
 			this.CurrentBuilder.AppendNewLine();
 			this.CurrentBuilder.Append(this.NameClass(SuperType));
 			this.CurrentBuilder.Append(".__init__(self)");
@@ -290,7 +290,7 @@ public class PythonGenerator extends ZSourceGenerator {
 
 		i = 0;
 		while (i < Node.ClassType.GetFieldSize()) {
-			@Var ZClassField ClassField = Node.ClassType.GetFieldAt(i);
+			@Var BClassField ClassField = Node.ClassType.GetFieldAt(i);
 			if(ClassField.FieldType.IsFuncType()) {
 				this.CurrentBuilder.AppendNewLine();
 				this.CurrentBuilder.Append("self." + ClassField.FieldName);
@@ -310,7 +310,7 @@ public class PythonGenerator extends ZSourceGenerator {
 			this.GenerateCode(null, ErrorNode.ErrorNode);
 		}
 		else {
-			@Var String Message = ZLogger._LogError(Node.SourceToken, Node.ErrorMessage);
+			@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 			this.CurrentBuilder.AppendWhiteSpace();
 			this.CurrentBuilder.Append("LibZen.ThrowError(");
 			this.CurrentBuilder.Append(BLib._QuoteString(Message));

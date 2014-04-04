@@ -24,14 +24,14 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZVisitor;
+import libbun.parser.BVisitor;
 
 public final class ZGroupNode extends BNode {
 	public final static int _Expr = 0;
 	public ZGroupNode(BNode ParentNode) {
 		super(ParentNode, null, 1);
 	}
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitGroupNode(this);
 	}
 	public final BNode ExprNode() {

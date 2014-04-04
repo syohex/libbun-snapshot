@@ -28,10 +28,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 
-import libbun.type.ZFuncType;
-import libbun.type.ZGenericType;
-import libbun.type.ZType;
-import libbun.type.ZTypePool;
+import libbun.type.BFuncType;
+import libbun.type.BGenericType;
+import libbun.type.BType;
+import libbun.type.BTypePool;
 import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.BArray;
@@ -47,51 +47,51 @@ import libbun.util.BStringArray;
 
 public class JavaTypeTable {
 	static HashMap<String, Class<?>> ClassMap = new HashMap<String,Class<?>>();
-	static HashMap<String, ZType> TypeMap = new HashMap<String,ZType>();
+	static HashMap<String, BType> TypeMap = new HashMap<String,BType>();
 
 	static {
-		JavaTypeTable.SetTypeTable(ZType.VarType, Object.class);
-		JavaTypeTable.SetTypeTable(ZType.VoidType, void.class);
-		JavaTypeTable.SetTypeTable(ZType.BooleanType, boolean.class);
-		JavaTypeTable.SetTypeTable(ZType.IntType, long.class);
-		JavaTypeTable.SetTypeTable(ZType.FloatType, double.class);
-		JavaTypeTable.SetTypeTable(ZType.StringType, String.class);
-		JavaTypeTable.SetTypeTable(ZFuncType._FuncType, BFunction.class);
-		JavaTypeTable.SetTypeTable(ZGenericType._ArrayType, ZObjectArray.class);
-		JavaTypeTable.SetTypeTable(ZGenericType._MapType, ZObjectMap.class);
+		JavaTypeTable.SetTypeTable(BType.VarType, Object.class);
+		JavaTypeTable.SetTypeTable(BType.VoidType, void.class);
+		JavaTypeTable.SetTypeTable(BType.BooleanType, boolean.class);
+		JavaTypeTable.SetTypeTable(BType.IntType, long.class);
+		JavaTypeTable.SetTypeTable(BType.FloatType, double.class);
+		JavaTypeTable.SetTypeTable(BType.StringType, String.class);
+		JavaTypeTable.SetTypeTable(BFuncType._FuncType, BFunction.class);
+		JavaTypeTable.SetTypeTable(BGenericType._ArrayType, ZObjectArray.class);
+		JavaTypeTable.SetTypeTable(BGenericType._MapType, ZObjectMap.class);
 
-		ZType BooleanArrayType = ZTypePool._GetGenericType1(ZGenericType._ArrayType, ZType.BooleanType);
-		ZType IntArrayType = ZTypePool._GetGenericType1(ZGenericType._ArrayType, ZType.IntType);
-		ZType FloatArrayType = ZTypePool._GetGenericType1(ZGenericType._ArrayType, ZType.FloatType);
-		ZType StringArrayType = ZTypePool._GetGenericType1(ZGenericType._ArrayType, ZType.StringType);
+		BType BooleanArrayType = BTypePool._GetGenericType1(BGenericType._ArrayType, BType.BooleanType);
+		BType IntArrayType = BTypePool._GetGenericType1(BGenericType._ArrayType, BType.IntType);
+		BType FloatArrayType = BTypePool._GetGenericType1(BGenericType._ArrayType, BType.FloatType);
+		BType StringArrayType = BTypePool._GetGenericType1(BGenericType._ArrayType, BType.StringType);
 		JavaTypeTable.SetTypeTable(BooleanArrayType, BBooleanArray.class);
 		JavaTypeTable.SetTypeTable(IntArrayType, BIntArray.class);
 		JavaTypeTable.SetTypeTable(FloatArrayType, BFloatArray.class);
 		JavaTypeTable.SetTypeTable(StringArrayType, BStringArray.class);
 
-		JavaTypeTable.SetTypeTable(ZType.BooleanType, Boolean.class);
-		JavaTypeTable.SetTypeTable(ZType.IntType, Long.class);
-		JavaTypeTable.SetTypeTable(ZType.FloatType, Double.class);
-		JavaTypeTable.SetTypeTable(ZType.IntType, int.class);
-		JavaTypeTable.SetTypeTable(ZType.IntType, Integer.class);
-		JavaTypeTable.SetTypeTable(ZType.IntType, short.class);
-		JavaTypeTable.SetTypeTable(ZType.IntType, Short.class);
-		JavaTypeTable.SetTypeTable(ZType.IntType, byte.class);
-		JavaTypeTable.SetTypeTable(ZType.IntType, Byte.class);
-		JavaTypeTable.SetTypeTable(ZType.FloatType, float.class);
-		JavaTypeTable.SetTypeTable(ZType.FloatType, Float.class);
-		JavaTypeTable.SetTypeTable(ZType.StringType, char.class);
-		JavaTypeTable.SetTypeTable(ZType.StringType, Character.class);
+		JavaTypeTable.SetTypeTable(BType.BooleanType, Boolean.class);
+		JavaTypeTable.SetTypeTable(BType.IntType, Long.class);
+		JavaTypeTable.SetTypeTable(BType.FloatType, Double.class);
+		JavaTypeTable.SetTypeTable(BType.IntType, int.class);
+		JavaTypeTable.SetTypeTable(BType.IntType, Integer.class);
+		JavaTypeTable.SetTypeTable(BType.IntType, short.class);
+		JavaTypeTable.SetTypeTable(BType.IntType, Short.class);
+		JavaTypeTable.SetTypeTable(BType.IntType, byte.class);
+		JavaTypeTable.SetTypeTable(BType.IntType, Byte.class);
+		JavaTypeTable.SetTypeTable(BType.FloatType, float.class);
+		JavaTypeTable.SetTypeTable(BType.FloatType, Float.class);
+		JavaTypeTable.SetTypeTable(BType.StringType, char.class);
+		JavaTypeTable.SetTypeTable(BType.StringType, Character.class);
 	}
 
-	public static void SetTypeTable(ZType zType, Class<?> c) {
+	public static void SetTypeTable(BType zType, Class<?> c) {
 		if(JavaTypeTable.ClassMap.get(zType.GetUniqueName()) == null) {
 			JavaTypeTable.ClassMap.put(zType.GetUniqueName(), c);
 		}
 		JavaTypeTable.TypeMap.put(c.getCanonicalName(), zType);
 	}
 
-	public static Class<?> GetJavaClass(ZType zType, Class<?> Default) {
+	public static Class<?> GetJavaClass(BType zType, Class<?> Default) {
 		Class<?> jClass = JavaTypeTable.ClassMap.get(zType.GetUniqueName());
 		if(jClass == null) {
 			jClass = JavaTypeTable.ClassMap.get(zType.GetBaseType().GetUniqueName());
@@ -102,8 +102,8 @@ public class JavaTypeTable {
 		return jClass;
 	}
 
-	public static ZType GetZenType(Class<?> JavaClass) {
-		ZType NativeType = JavaTypeTable.TypeMap.get(JavaClass.getCanonicalName());
+	public static BType GetZenType(Class<?> JavaClass) {
+		BType NativeType = JavaTypeTable.TypeMap.get(JavaClass.getCanonicalName());
 		if (NativeType == null) {
 			NativeType = new ZNativeType(JavaClass);
 			JavaTypeTable.SetTypeTable(NativeType, JavaClass);
@@ -111,9 +111,9 @@ public class JavaTypeTable {
 		return NativeType;
 	}
 
-	public final static ZFuncType ConvertToFuncType(Method JMethod) {
+	public final static BFuncType ConvertToFuncType(Method JMethod) {
 		@Var Class<?>[] ParamTypes = JMethod.getParameterTypes();
-		@Var BArray<ZType> TypeList = new BArray<ZType>(new ZType[BLib._Size(ParamTypes) + 2]);
+		@Var BArray<BType> TypeList = new BArray<BType>(new BType[BLib._Size(ParamTypes) + 2]);
 		if (!Modifier.isStatic(JMethod.getModifiers())) {
 			TypeList.add(JavaTypeTable.GetZenType(JMethod.getDeclaringClass()));
 		}
@@ -125,16 +125,16 @@ public class JavaTypeTable {
 			}
 		}
 		TypeList.add(JavaTypeTable.GetZenType(JMethod.getReturnType()));
-		return ZTypePool._LookupFuncType2(TypeList);
+		return BTypePool._LookupFuncType2(TypeList);
 	}
 
-	public final static ZFuncType FuncType(Class<?> ReturnT, Class<?> ... paramsT) {
-		@Var BArray<ZType> TypeList = new BArray<ZType>(new ZType[10]);
+	public final static BFuncType FuncType(Class<?> ReturnT, Class<?> ... paramsT) {
+		@Var BArray<BType> TypeList = new BArray<BType>(new BType[10]);
 		for(Class<?> C : paramsT) {
 			TypeList.add(JavaTypeTable.GetZenType(C));
 		}
 		TypeList.add(JavaTypeTable.GetZenType(ReturnT));
-		return ZTypePool._LookupFuncType2(TypeList);
+		return BTypePool._LookupFuncType2(TypeList);
 	}
 
 }

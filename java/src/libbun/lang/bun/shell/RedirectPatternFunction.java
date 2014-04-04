@@ -3,28 +3,28 @@ package libbun.lang.bun.shell;
 import libbun.parser.ast.BNode;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
-import libbun.parser.ZToken;
-import libbun.parser.ZTokenContext;
+import libbun.parser.BToken;
+import libbun.parser.BTokenContext;
 
 public class RedirectPatternFunction extends BMatchFunction {
 	public final static String _PatternName = "$Redirect$";
 
 	// <, >, >>, >&, 1>, 2>, 1>>, 2>>, &>, &>>
-	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
-		@Var ZToken Token = TokenContext.GetToken(ZTokenContext._MoveNext);
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		@Var BToken Token = TokenContext.GetToken(BTokenContext._MoveNext);
 		@Var String RedirectSymbol = Token.GetText();
 		if(Token.EqualsText(">>") || Token.EqualsText("<")) {
 			return this.CreateRedirectNode(ParentNode, TokenContext, RedirectSymbol, true);
 		}
 		else if(Token.EqualsText("&")) {
-			@Var ZToken Token2 = TokenContext.GetToken(ZTokenContext._MoveNext);
+			@Var BToken Token2 = TokenContext.GetToken(BTokenContext._MoveNext);
 			if(Token2.EqualsText(">") || Token2.EqualsText(">>")) {
 				RedirectSymbol += Token2.GetText();
 				return this.CreateRedirectNode(ParentNode, TokenContext, RedirectSymbol, true);
 			}
 		}
 		else if(Token.EqualsText(">")) {
-			@Var ZToken Token2 = TokenContext.GetToken();
+			@Var BToken Token2 = TokenContext.GetToken();
 			if(Token2.EqualsText("&")) {
 				RedirectSymbol += Token2.GetText();
 				return this.CreateRedirectNode(ParentNode, TokenContext, RedirectSymbol, true);
@@ -32,7 +32,7 @@ public class RedirectPatternFunction extends BMatchFunction {
 			return this.CreateRedirectNode(ParentNode, TokenContext, RedirectSymbol, true);
 		}
 		else if(Token.EqualsText("1") || Token.EqualsText("2")) {
-			@Var ZToken Token2 = TokenContext.GetToken(ZTokenContext._MoveNext);
+			@Var BToken Token2 = TokenContext.GetToken(BTokenContext._MoveNext);
 			if(Token2.EqualsText(">>")) {
 				RedirectSymbol += Token2.GetText();
 				return this.CreateRedirectNode(ParentNode, TokenContext, RedirectSymbol, true);
@@ -51,10 +51,10 @@ public class RedirectPatternFunction extends BMatchFunction {
 		return null;
 	}
 
-	private BNode CreateRedirectNode(BNode ParentNode, ZTokenContext TokenContext, String RedirectSymbol, boolean existTarget) {
+	private BNode CreateRedirectNode(BNode ParentNode, BTokenContext TokenContext, String RedirectSymbol, boolean existTarget) {
 		@Var CommandNode Node = new CommandNode(ParentNode, null, RedirectSymbol);
 		if(existTarget) {
-			@Var BNode TargetNode = TokenContext.ParsePattern(Node, SimpleArgumentPatternFunction._PatternName, ZTokenContext._Required);
+			@Var BNode TargetNode = TokenContext.ParsePattern(Node, SimpleArgumentPatternFunction._PatternName, BTokenContext._Required);
 			if(TargetNode.IsErrorNode()) {
 				return TargetNode;
 			}

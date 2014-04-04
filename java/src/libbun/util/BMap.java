@@ -26,13 +26,13 @@ package libbun.util;
 
 import java.util.HashMap;
 
-import libbun.type.ZType;
+import libbun.type.BType;
 
 
 public final class BMap <T> extends BObject {
 	final HashMap<String, T>	Map;
 
-	public BMap(ZType ElementType) {
+	public BMap(BType ElementType) {
 		super(0);
 		this.Map = new HashMap<String, T>();
 	}

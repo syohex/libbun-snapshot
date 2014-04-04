@@ -1,6 +1,6 @@
 package libbun.util;
 
-import libbun.parser.ZTokenContext;
+import libbun.parser.BTokenContext;
 import libbun.parser.ast.BNode;
 
 public abstract class BMatchFunction extends BFunction {
@@ -10,6 +10,6 @@ public abstract class BMatchFunction extends BFunction {
 	protected BMatchFunction() {
 		super(0, null);
 	}
-	public abstract BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode);
+	public abstract BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode);
 }
 

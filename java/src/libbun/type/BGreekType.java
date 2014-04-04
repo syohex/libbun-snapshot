@@ -4,16 +4,16 @@ import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
 
-public class ZGreekType extends ZType {
+public class BGreekType extends BType {
 
 	@BField public final int GreekId;
 
-	public ZGreekType(int GreekId) {
-		super(ZType.UniqueTypeFlag, BLib._GreekNames[GreekId], ZType.VarType);
+	public BGreekType(int GreekId) {
+		super(BType.UniqueTypeFlag, BLib._GreekNames[GreekId], BType.VarType);
 		this.GreekId = GreekId;
 	}
 
-	public final static ZType[] _NewGreekTypes(ZType[] GreekTypes) {
+	public final static BType[] _NewGreekTypes(BType[] GreekTypes) {
 		if(GreekTypes == null) {
 			return BLib._NewTypeArray(BLib._GreekNames.length);
 		}
@@ -38,14 +38,14 @@ public class ZGreekType extends ZType {
 		return true;
 	}
 
-	@Override public ZType GetGreekRealType(ZType[] Greek) {
+	@Override public BType GetGreekRealType(BType[] Greek) {
 		if(Greek[this.GreekId] == null) {
-			return ZType.VarType;
+			return BType.VarType;
 		}
 		return Greek[this.GreekId];
 	}
 
-	@Override public final boolean AcceptValueType(ZType ValueType, boolean ExactMatch, ZType[] Greek) {
+	@Override public final boolean AcceptValueType(BType ValueType, boolean ExactMatch, BType[] Greek) {
 		if(Greek[this.GreekId] == null) {
 			if(ValueType.IsVarType()) {
 				return true;

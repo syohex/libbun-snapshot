@@ -24,9 +24,9 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZToken;
-import libbun.parser.ZVisitor;
-import libbun.type.ZType;
+import libbun.parser.BToken;
+import libbun.parser.BVisitor;
+import libbun.type.BType;
 import libbun.util.Var;
 
 // E.g., $NativeName = $ValueNode
@@ -34,7 +34,7 @@ public class BSetNameNode extends BNode {
 	public final static int _NameInfo = 0;
 	public final static int _Expr = 0;
 
-	public BSetNameNode(BNode ParentNode, ZToken Token, BGetNameNode NameNode) {
+	public BSetNameNode(BNode ParentNode, BToken Token, BGetNameNode NameNode) {
 		super(ParentNode, Token, 2);
 		this.SetNode(BSetNameNode._NameInfo, NameNode);
 	}
@@ -43,7 +43,7 @@ public class BSetNameNode extends BNode {
 		this(null, null, new BGetNameNode(null, null, Name));
 		this.SetNode(BSetNameNode._Expr, ExprNode);
 		if(!ExprNode.IsUntyped()) {
-			this.Type = ZType.VoidType;
+			this.Type = BType.VoidType;
 		}
 	}
 
@@ -63,7 +63,7 @@ public class BSetNameNode extends BNode {
 		return this.AST[BSetNameNode._Expr ];
 	}
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitSetNameNode(this);
 	}
 }

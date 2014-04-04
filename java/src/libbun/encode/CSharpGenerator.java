@@ -1,6 +1,6 @@
 package libbun.encode;
 
-import libbun.parser.ZLogger;
+import libbun.parser.BLogger;
 import libbun.parser.ast.BLetVarNode;
 import libbun.parser.ast.BNode;
 import libbun.parser.ast.BNullNode;
@@ -19,9 +19,9 @@ import libbun.parser.ast.ZReturnNode;
 import libbun.parser.ast.ZSetIndexNode;
 import libbun.parser.ast.ZThrowNode;
 import libbun.parser.ast.ZTryNode;
-import libbun.type.ZClassType;
-import libbun.type.ZFuncType;
-import libbun.type.ZType;
+import libbun.type.BClassType;
+import libbun.type.BFuncType;
+import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
@@ -38,11 +38,11 @@ public class CSharpGenerator extends ZSourceGenerator {
 		super("cs", "5.0");
 		this.IntLiteralSuffix="";
 		this.TopType = "object";
-		this.SetNativeType(ZType.BooleanType, "bool");
-		this.SetNativeType(ZType.IntType, "long");  // for beautiful code
-		this.SetNativeType(ZType.FloatType, "double");
-		this.SetNativeType(ZType.StringType, "string");
-		this.SetNativeType(ZType.VarType, "object");  // for safety
+		this.SetNativeType(BType.BooleanType, "bool");
+		this.SetNativeType(BType.IntType, "long");  // for beautiful code
+		this.SetNativeType(BType.FloatType, "double");
+		this.SetNativeType(BType.StringType, "string");
+		this.SetNativeType(BType.VarType, "object");  // for safety
 
 		this.SetReservedName("this", "@this");
 		this.CurrentBuilder.AppendNewLine("/* end of header */", this.LineFeed);
@@ -64,14 +64,14 @@ public class CSharpGenerator extends ZSourceGenerator {
 			}
 		}*/
 
-		this.GenerateClass("public static", FileName, ZClassType._ObjectType);
+		this.GenerateClass("public static", FileName, BClassType._ObjectType);
 		this.CurrentBuilder.OpenIndent(" {");
 		if(this.MainFuncNode != null) {
 			this.CurrentBuilder.AppendNewLine("public static void Main(String[] a)");
 			this.CurrentBuilder.OpenIndent(" {");
 			//this.CurrentBuilder.AppendNewLine(this.NameFunctionClass(this.MainFuncNode.FuncName(), ZType.VoidType, 0), ".f();");
 			this.CurrentBuilder.AppendNewLine(this.MainFuncNode.FuncName() + "();");
-			this.NameFunctionClass(this.MainFuncNode.FuncName(), ZType.VoidType, 0);
+			this.NameFunctionClass(this.MainFuncNode.FuncName(), BType.VoidType, 0);
 			this.CurrentBuilder.CloseIndent("}");
 		}
 		this.CurrentBuilder.CloseIndent("}");
@@ -80,9 +80,9 @@ public class CSharpGenerator extends ZSourceGenerator {
 	}
 
 
-	@Override protected void GenerateCode(ZType ContextType, BNode Node) {
+	@Override protected void GenerateCode(BType ContextType, BNode Node) {
 		if(Node.IsUntyped() && !Node.IsErrorNode() && !(Node instanceof ZFuncNameNode)) {
-			ZLogger._LogError(Node.SourceToken, "untyped error: " + Node);
+			BLogger._LogError(Node.SourceToken, "untyped error: " + Node);
 			Node.Accept(this);
 			this.CurrentBuilder.Append("/*untyped*/");
 		}
@@ -131,7 +131,7 @@ public class CSharpGenerator extends ZSourceGenerator {
 
 	@Override public void VisitGetIndexNode(ZGetIndexNode Node) {
 		this.GenerateCode(null, Node.RecvNode());
-		if(Node.RecvNode().Type == ZType.StringType){
+		if(Node.RecvNode().Type == BType.StringType){
 			this.GenerateCode2(".Substring(", null, Node.IndexNode(), ", 1)");
 		}else{
 			this.GenerateCode2("[", null, Node.IndexNode(), "]");
@@ -194,7 +194,7 @@ public class CSharpGenerator extends ZSourceGenerator {
 		}
 	}
 
-	private String GetCSharpTypeName(ZType Type, boolean Boxing) {
+	private String GetCSharpTypeName(BType Type, boolean Boxing) {
 		this.ImportLibrary("System");
 		this.ImportLibrary("System.Diagnostics");
 		this.ImportLibrary("System.Collections.Generic");
@@ -208,10 +208,10 @@ public class CSharpGenerator extends ZSourceGenerator {
 			this.ImportLibrary("System.Collections.Generic");
 			return "Dictionary<string," + this.GetCSharpTypeName(Type.GetParamType(0), true) + ">";
 		}
-		if(Type instanceof ZFuncType) {
-			return this.GetFuncTypeClass((ZFuncType)Type);
+		if(Type instanceof BFuncType) {
+			return this.GetFuncTypeClass((BFuncType)Type);
 		}
-		if(Type instanceof ZClassType) {
+		if(Type instanceof BClassType) {
 			return this.NameClass(Type);
 		}
 		if(Boxing) {
@@ -231,12 +231,12 @@ public class CSharpGenerator extends ZSourceGenerator {
 
 	@BField private final BMap<String> FuncNameMap = new BMap<String>(null);
 
-	String GetFuncTypeClass(ZFuncType FuncType) {
+	String GetFuncTypeClass(BFuncType FuncType) {
 		@Var String ClassName = this.FuncNameMap.GetOrNull(FuncType.GetUniqueName());
 		if(ClassName == null){
 			@Var ZSourceBuilder MainBuilder = this.CurrentBuilder;
 			this.CurrentBuilder = new ZSourceBuilder(this, null);
-			@Var boolean HasReturnValue = !FuncType.GetReturnType().equals(ZType.VoidType);
+			@Var boolean HasReturnValue = !FuncType.GetReturnType().equals(BType.VoidType);
 			if(HasReturnValue){
 				this.CurrentBuilder.Append("Func");
 			}else{
@@ -263,9 +263,9 @@ public class CSharpGenerator extends ZSourceGenerator {
 		return ClassName;
 	}
 
-	@Override protected void GenerateTypeName(ZType Type) {
-		if(Type instanceof ZFuncType) {
-			this.CurrentBuilder.Append(this.GetFuncTypeClass((ZFuncType)Type));
+	@Override protected void GenerateTypeName(BType Type) {
+		if(Type instanceof BFuncType) {
+			this.CurrentBuilder.Append(this.GetFuncTypeClass((BFuncType)Type));
 		}
 		else {
 			this.CurrentBuilder.Append(this.GetCSharpTypeName(Type.GetRealType(), false));
@@ -387,7 +387,7 @@ public class CSharpGenerator extends ZSourceGenerator {
 	}
 
 
-	private void GenerateClass(String Qualifier, String ClassName, ZType SuperType) {
+	private void GenerateClass(String Qualifier, String ClassName, BType SuperType) {
 		if(Qualifier != null && Qualifier.length() > 0) {
 			this.CurrentBuilder.AppendNewLine(Qualifier);
 			this.CurrentBuilder.AppendWhiteSpace("partial class ", ClassName);
@@ -395,13 +395,13 @@ public class CSharpGenerator extends ZSourceGenerator {
 		else {
 			this.CurrentBuilder.AppendNewLine("partial class ", ClassName);
 		}
-		if(!SuperType.Equals(ZClassType._ObjectType) && !SuperType.IsFuncType()) {
+		if(!SuperType.Equals(BClassType._ObjectType) && !SuperType.IsFuncType()) {
 			this.CurrentBuilder.Append(" : ");
 			this.GenerateTypeName(SuperType);
 		}
 	}
 
-	private void GenerateClassField(String Qualifier, ZType FieldType, String FieldName, String Value) {
+	private void GenerateClassField(String Qualifier, BType FieldType, String FieldName, String Value) {
 		if(Qualifier.length() > 1){
 			this.CurrentBuilder.AppendNewLine(Qualifier);
 			this.CurrentBuilder.Append("public ");
@@ -417,7 +417,7 @@ public class CSharpGenerator extends ZSourceGenerator {
 	}
 
 	@Override public void VisitClassNode(ZClassNode Node) {
-		@Var ZType SuperType = Node.ClassType.GetSuperType();
+		@Var BType SuperType = Node.ClassType.GetSuperType();
 		@Var String ClassName = this.NameClass(Node.ClassType);
 		this.GenerateClass("public", ClassName, SuperType);
 		this.CurrentBuilder.OpenIndent(" {");
@@ -469,7 +469,7 @@ public class CSharpGenerator extends ZSourceGenerator {
 	}
 
 	@Override public void VisitErrorNode(ZErrorNode Node) {
-		ZLogger._LogError(Node.SourceToken, Node.ErrorMessage);
+		BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.CurrentBuilder.Append("ThrowError(");
 		this.CurrentBuilder.Append(BLib._QuoteString(Node.ErrorMessage));
 		this.CurrentBuilder.Append(")");

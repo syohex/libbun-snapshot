@@ -24,10 +24,10 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZTypeChecker;
-import libbun.parser.ZVisitor;
-import libbun.type.ZFunc;
-import libbun.type.ZFuncType;
+import libbun.parser.BTypeChecker;
+import libbun.parser.BVisitor;
+import libbun.type.BFunc;
+import libbun.type.BFuncType;
 import libbun.util.BField;
 import libbun.util.Nullable;
 import libbun.util.Var;
@@ -54,11 +54,11 @@ public final class ZMethodCallNode extends ZListNode {
 		return this.GivenName;
 	}
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitMethodCallNode(this);
 	}
 
-	public final ZFuncCallNode ToGetterFuncCall(ZFuncType FuncType) {
+	public final ZFuncCallNode ToGetterFuncCall(BFuncType FuncType) {
 		@Var ZGetterNode Getter = new ZGetterNode(null, this.RecvNode());
 		if(this.AST[ZMethodCallNode._NameInfo] != null) {
 			Getter.SetNode(ZGetterNode._NameInfo, this.AST[ZMethodCallNode._NameInfo]);
@@ -79,7 +79,7 @@ public final class ZMethodCallNode extends ZListNode {
 		return FuncNode;
 	}
 
-	public final ZListNode ToFuncCallNode(ZTypeChecker Gamma, ZFunc Func, @Nullable BNode RecvNode) {
+	public final ZListNode ToFuncCallNode(BTypeChecker Gamma, BFunc Func, @Nullable BNode RecvNode) {
 		@Var ZListNode FuncNode = Gamma.CreateDefinedFuncCallNode(this.ParentNode, this.GetAstToken(ZMethodCallNode._NameInfo), Func);
 		FuncNode.SourceToken = this.GetAstToken(ZMethodCallNode._NameInfo);
 		if(RecvNode != null) {

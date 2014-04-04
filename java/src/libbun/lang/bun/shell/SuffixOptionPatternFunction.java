@@ -4,14 +4,14 @@ import libbun.parser.ast.ZErrorNode;
 import libbun.parser.ast.BNode;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
-import libbun.parser.ZToken;
-import libbun.parser.ZTokenContext;
+import libbun.parser.BToken;
+import libbun.parser.BTokenContext;
 
 public class SuffixOptionPatternFunction extends BMatchFunction {
 	public final static String _PatternName = "$SuffixOption$";
 
-	@Override public BNode Invoke(BNode ParentNode, ZTokenContext TokenContext, BNode LeftNode) {
-		@Var ZToken Token = TokenContext.GetToken();
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		@Var BToken Token = TokenContext.GetToken();
 		TokenContext.MoveNext();
 		@Var String OptionSymbol = Token.GetText();
 		if(Token.EqualsText(ShellUtils._background)) {	// set background job
@@ -20,9 +20,9 @@ public class SuffixOptionPatternFunction extends BMatchFunction {
 		return null;
 	}
 
-	public BNode CreateNodeAndMatchNextOption(BNode ParentNode, ZTokenContext TokenContext, String OptionSymbol) {
+	public BNode CreateNodeAndMatchNextOption(BNode ParentNode, BTokenContext TokenContext, String OptionSymbol) {
 		@Var CommandNode Node = new CommandNode(ParentNode, null, OptionSymbol);
-		@Var BNode PipedNode = TokenContext.ParsePattern(ParentNode, SuffixOptionPatternFunction._PatternName, ZTokenContext._Optional);
+		@Var BNode PipedNode = TokenContext.ParsePattern(ParentNode, SuffixOptionPatternFunction._PatternName, BTokenContext._Optional);
 		if(PipedNode != null) {
 			Node.AppendPipedNextNode((CommandNode)PipedNode);
 		}

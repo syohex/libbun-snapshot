@@ -24,7 +24,7 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZVisitor;
+import libbun.parser.BVisitor;
 import libbun.util.Var;
 
 public final class ZTryNode extends BNode {
@@ -77,7 +77,7 @@ public final class ZTryNode extends BNode {
 	}
 
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitTryNode(this);
 	}
 

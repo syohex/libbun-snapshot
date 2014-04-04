@@ -24,7 +24,7 @@
 
 package libbun.parser.ast;
 
-import libbun.parser.ZVisitor;
+import libbun.parser.BVisitor;
 import libbun.util.BField;
 
 public class ZGetterNode extends BNode {
@@ -63,7 +63,7 @@ public class ZGetterNode extends BNode {
 		return this.GivenName;
 	}
 
-	@Override public void Accept(ZVisitor Visitor) {
+	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitGetterNode(this);
 	}
 
