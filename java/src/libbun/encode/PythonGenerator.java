@@ -25,22 +25,22 @@
 
 package libbun.encode;
 
+import libbun.ast.BBlockNode;
+import libbun.ast.BNode;
+import libbun.ast.binary.BInstanceOfNode;
+import libbun.ast.decl.BClassNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.error.BErrorNode;
+import libbun.ast.error.ZStupidCastErrorNode;
+import libbun.ast.expression.BGetIndexNode;
+import libbun.ast.expression.BNewObjectNode;
+import libbun.ast.statement.BIfNode;
+import libbun.ast.statement.BThrowNode;
+import libbun.ast.statement.BTryNode;
+import libbun.ast.unary.BCastNode;
 import libbun.parser.BLogger;
-import libbun.parser.ast.BLetVarNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.ZBlockNode;
-import libbun.parser.ast.ZCastNode;
-import libbun.parser.ast.ZClassNode;
-import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZGetIndexNode;
-import libbun.parser.ast.ZIfNode;
-import libbun.parser.ast.ZInstanceOfNode;
-import libbun.parser.ast.ZNewObjectNode;
-import libbun.parser.ast.ZStupidCastErrorNode;
-import libbun.parser.ast.ZThrowNode;
-import libbun.parser.ast.ZTryNode;
-import libbun.parser.ast.ZVarBlockNode;
 import libbun.type.BClassField;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
@@ -103,7 +103,7 @@ public class PythonGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitStmtList(ZBlockNode BlockNode) {
+	public void VisitStmtList(BBlockNode BlockNode) {
 		@Var int i = 0;
 		while (i < BlockNode.GetListSize()) {
 			BNode SubNode = BlockNode.GetListAt(i);
@@ -115,7 +115,7 @@ public class PythonGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitBlockNode(ZBlockNode Node) {
+	@Override public void VisitBlockNode(BBlockNode Node) {
 		this.CurrentBuilder.OpenIndent(":");
 		this.VisitStmtList(Node);
 		this.CurrentBuilder.CloseIndent("");
@@ -134,17 +134,17 @@ public class PythonGenerator extends ZSourceGenerator {
 		this.VisitStmtList(Node);
 	}
 
-	@Override public void VisitNewObjectNode(ZNewObjectNode Node) {
+	@Override public void VisitNewObjectNode(BNewObjectNode Node) {
 		this.CurrentBuilder.Append(this.NameClass(Node.Type));
 		this.VisitListNode("(", Node, ")");
 	}
 
-	@Override public void VisitCastNode(ZCastNode Node) {
+	@Override public void VisitCastNode(BCastNode Node) {
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
-	@Override public void VisitGetIndexNode(ZGetIndexNode Node) {
-		@Var BType RecvType = Node.GetAstType(ZGetIndexNode._Recv);
+	@Override public void VisitGetIndexNode(BGetIndexNode Node) {
+		@Var BType RecvType = Node.GetAstType(BGetIndexNode._Recv);
 		if(RecvType.IsMapType()) {
 			this.ImportLibrary("def zGetMap(m,k): return m[k] if m.has_key(k) else None");
 			this.GenerateCode2("zGetMap(", null, Node.RecvNode(), ", ");
@@ -156,7 +156,7 @@ public class PythonGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitInstanceOfNode(ZInstanceOfNode Node) {
+	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
 		this.CurrentBuilder.Append("isinstance(");
 		this.GenerateCode(null, Node.LeftNode());
 		if(Node.TargetType() instanceof BClassType) {
@@ -169,13 +169,13 @@ public class PythonGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitIfNode(ZIfNode Node) {
+	@Override public void VisitIfNode(BIfNode Node) {
 		this.CurrentBuilder.Append("if ");
 		this.GenerateCode(null, Node.CondNode());
 		this.GenerateCode(null, Node.ThenNode());
 		if (Node.HasElseNode()) {
 			BNode ElseNode = Node.ElseNode();
-			if(ElseNode instanceof ZIfNode) {
+			if(ElseNode instanceof BIfNode) {
 				this.CurrentBuilder.AppendNewLine("el");
 			}
 			else {
@@ -207,7 +207,7 @@ public class PythonGenerator extends ZSourceGenerator {
 		4
 	 **/
 
-	@Override public void VisitFunctionNode(ZFunctionNode Node) {
+	@Override public void VisitFunctionNode(BFunctionNode Node) {
 		if(!Node.IsTopLevelDefineFunction()) {
 			@Var String FuncName = Node.GetUniqueName(this);
 			this.CurrentBuilder = this.InsertNewSourceBuilder();
@@ -242,7 +242,7 @@ public class PythonGenerator extends ZSourceGenerator {
 		}
 	}
 
-	private void GenerateMethodVariables(ZClassNode Node) {
+	private void GenerateMethodVariables(BClassNode Node) {
 		@Var int i = 0;
 		while (i < Node.ClassType.GetFieldSize()) {
 			@Var BClassField ClassField = Node.ClassType.GetFieldAt(i);
@@ -256,7 +256,7 @@ public class PythonGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.AppendNewLine();
 	}
 
-	@Override public void VisitClassNode(ZClassNode Node) {
+	@Override public void VisitClassNode(BClassNode Node) {
 		@Var BType SuperType = Node.ClassType.GetSuperType();
 		this.GenerateMethodVariables(Node);
 		this.CurrentBuilder.Append("class ");
@@ -304,7 +304,7 @@ public class PythonGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.AppendLineFeed();
 	}
 
-	@Override public void VisitErrorNode(ZErrorNode Node) {
+	@Override public void VisitErrorNode(BErrorNode Node) {
 		if(Node instanceof ZStupidCastErrorNode) {
 			@Var ZStupidCastErrorNode ErrorNode = (ZStupidCastErrorNode)Node;
 			this.GenerateCode(null, ErrorNode.ErrorNode);
@@ -318,12 +318,12 @@ public class PythonGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitThrowNode(ZThrowNode Node) {
+	@Override public void VisitThrowNode(BThrowNode Node) {
 		this.CurrentBuilder.Append("raise ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
-	@Override public void VisitTryNode(ZTryNode Node) {
+	@Override public void VisitTryNode(BTryNode Node) {
 		this.CurrentBuilder.Append("try");
 		this.GenerateCode(null, Node.TryBlockNode());
 		if(Node.HasCatchBlockNode()) {

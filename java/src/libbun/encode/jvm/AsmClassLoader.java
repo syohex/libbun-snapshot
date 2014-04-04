@@ -2,7 +2,7 @@ package libbun.encode.jvm;
 
 import java.util.HashMap;
 
-import libbun.parser.ast.BNode;
+import libbun.ast.BNode;
 import libbun.util.BLib;
 import libbun.util.Var;
 

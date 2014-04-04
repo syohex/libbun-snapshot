@@ -1,15 +1,15 @@
 package libbun.parser.ssa;
 
-import libbun.parser.ast.BGetNameNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.ZBlockNode;
-import libbun.parser.ast.ZLocalDefinedNode;
+import libbun.ast.BBlockNode;
+import libbun.ast.BNode;
+import libbun.ast.ZLocalDefinedNode;
+import libbun.ast.expression.BGetNameNode;
 import libbun.util.Var;
 import libbun.util.BArray;
 
 public class PHINode extends ZLocalDefinedNode {
 	public BArray<BNode>      Args;
-	public BArray<ZBlockNode> Blocks;
+	public BArray<BBlockNode> Blocks;
 	public Variable VarRef;
 	public Variable BackupValue;
 	public String VariableName;
@@ -19,11 +19,11 @@ public class PHINode extends ZLocalDefinedNode {
 		this.BackupValue = BackupValue;
 		this.VariableName = VariableName;
 		this.Args = new BArray<BNode>(new BNode[0]);
-		this.Blocks = new BArray<ZBlockNode>(new ZBlockNode[0]);
+		this.Blocks = new BArray<BBlockNode>(new BBlockNode[0]);
 		this.Type = NodeLib.GetType(BackupValue.Node);
 	}
 
-	public void AddIncoming(int Index, ZBlockNode block, BNode node) {
+	public void AddIncoming(int Index, BBlockNode block, BNode node) {
 		while(Index + 1 > this.Args.size()) {
 			this.Args.add(this.BackupValue.Node);
 			this.Blocks.add(null);

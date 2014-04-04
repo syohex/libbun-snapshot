@@ -1,7 +1,7 @@
 package libbun.lang.bun;
 
+import libbun.ast.BNode;
 import libbun.parser.BTokenContext;
-import libbun.parser.ast.BNode;
 import libbun.util.BMatchFunction;
 
 public class AnnotationPatternFunction extends BMatchFunction {

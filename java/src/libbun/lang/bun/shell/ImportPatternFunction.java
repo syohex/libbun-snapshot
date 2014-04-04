@@ -1,6 +1,6 @@
 package libbun.lang.bun.shell;
 
-import libbun.parser.ast.BNode;
+import libbun.ast.BNode;
 import libbun.util.BMatchFunction;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;

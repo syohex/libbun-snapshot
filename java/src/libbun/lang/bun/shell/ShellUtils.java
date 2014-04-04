@@ -2,13 +2,13 @@ package libbun.lang.bun.shell;
 
 import java.io.File;
 
+import libbun.ast.BNode;
+import libbun.ast.binary.BBinaryNode;
+import libbun.ast.literal.BStringNode;
 import libbun.parser.BSource;
 import libbun.parser.BSyntax;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
-import libbun.parser.ast.ZBinaryNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.BStringNode;
 import libbun.util.BArray;
 
 // you must implement this class if you use shell grammar
@@ -44,8 +44,8 @@ public class ShellUtils {
 		BSyntax Pattern = TokenContext.NameSpace.GetRightSyntaxPattern("+");
 		BToken PlusToken = new BToken(new BSource(Token.GetFileName(), Token.GetLineNumber(), "+", TokenContext), 0, "+".length());
 		for(BNode CurrentNode : NodeList.ArrayValues) {
-			ZBinaryNode BinaryNode = new ZBinaryNode(ParentNode, PlusToken, Node, Pattern);
-			BinaryNode.SetNode(ZBinaryNode._Right, CurrentNode);
+			BBinaryNode BinaryNode = new BBinaryNode(ParentNode, PlusToken, Node, Pattern);
+			BinaryNode.SetNode(BBinaryNode._Right, CurrentNode);
 			Node = BinaryNode;
 		}
 		return Node;

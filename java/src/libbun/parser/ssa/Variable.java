@@ -1,6 +1,6 @@
 package libbun.parser.ssa;
 
-import libbun.parser.ast.BNode;
+import libbun.ast.BNode;
 
 class Variable {
 	public BNode  Node;

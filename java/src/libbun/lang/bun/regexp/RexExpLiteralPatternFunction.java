@@ -1,11 +1,11 @@
 package libbun.lang.bun.regexp;
 
+import libbun.ast.BNode;
+import libbun.ast.expression.BMethodCallNode;
+import libbun.ast.expression.BNewObjectNode;
+import libbun.ast.literal.BStringNode;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
-import libbun.parser.ast.ZMethodCallNode;
-import libbun.parser.ast.ZNewObjectNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.BStringNode;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
 
@@ -17,7 +17,7 @@ public class RexExpLiteralPatternFunction extends BMatchFunction {
 		if(TokenContext.MatchToken("$RexExpLiteralFlag$")) {
 			PatternFlag = TokenContext.GetToken(BTokenContext._MoveNext).GetText();
 		}
-		ZMethodCallNode Node = new ZMethodCallNode(ParentNode, new ZNewObjectNode(ParentNode));
+		BMethodCallNode Node = new BMethodCallNode(ParentNode, new BNewObjectNode(ParentNode));
 		Node.GivenName = "RegExp_Init";
 		Node.Append(new BStringNode(ParentNode, Token, Token.GetText()));
 		Node.Append(new BStringNode(ParentNode, Token, PatternFlag));

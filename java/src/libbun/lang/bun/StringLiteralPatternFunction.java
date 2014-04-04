@@ -1,9 +1,9 @@
 package libbun.lang.bun;
 
+import libbun.ast.BNode;
+import libbun.ast.literal.BStringNode;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.BStringNode;
 import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;

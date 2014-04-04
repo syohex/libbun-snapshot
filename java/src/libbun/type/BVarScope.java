@@ -1,13 +1,13 @@
 package libbun.type;
 
+import libbun.ast.BNode;
+import libbun.ast.decl.BFunctionNode;
 import libbun.parser.BLogger;
 import libbun.parser.BToken;
 import libbun.parser.BTypeChecker;
-import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.BNode;
+import libbun.util.BArray;
 import libbun.util.BField;
 import libbun.util.Var;
-import libbun.util.BArray;
 
 public final class BVarScope {
 	@BField public BVarScope Parent;
@@ -16,7 +16,6 @@ public final class BVarScope {
 	@BField int TypedNodeCount = 0;
 	@BField int VarNodeCount = 0;
 	@BField int UnresolvedSymbolCount = 0;
-
 
 	public BVarScope(BVarScope Parent, BLogger Logger, BArray<BVarType> VarList) {
 		this.Parent = Parent;
@@ -87,14 +86,14 @@ public final class BVarScope {
 	//		return false;
 	//	}
 
-	public final void TypeCheckFuncBlock(BTypeChecker TypeSafer, ZFunctionNode FunctionNode) {
+	public final void TypeCheckFuncBlock(BTypeChecker TypeSafer, BFunctionNode FunctionNode) {
 		@Var int PrevCount = -1;
 		while(true) {
 			this.VarNodeCount = 0;
 			this.UnresolvedSymbolCount = 0;
 			this.TypedNodeCount = 0;
 			TypeSafer.DefineFunction(FunctionNode, false/*Enforced*/);
-			TypeSafer.CheckTypeAt(FunctionNode, ZFunctionNode._Block, BType.VoidType);
+			TypeSafer.CheckTypeAt(FunctionNode, BFunctionNode._Block, BType.VoidType);
 			if(!FunctionNode.BlockNode().IsUntyped() || this.TypedNodeCount == 0) {
 				break;
 			}

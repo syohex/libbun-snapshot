@@ -27,23 +27,23 @@ package libbun.encode.haskell;
 
 import java.util.ArrayList;
 
+import libbun.ast.BBlockNode;
+import libbun.ast.BNode;
+import libbun.ast.binary.BBinaryNode;
+import libbun.ast.binary.ZComparatorNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.expression.BFuncCallNode;
+import libbun.ast.expression.BGetNameNode;
+import libbun.ast.expression.BSetNameNode;
+import libbun.ast.statement.BReturnNode;
+import libbun.ast.statement.BThrowNode;
+import libbun.ast.statement.BTryNode;
+import libbun.ast.statement.BWhileNode;
+import libbun.ast.unary.BCastNode;
 import libbun.encode.ZSourceBuilder;
 import libbun.encode.ZSourceGenerator;
 import libbun.parser.BNodeUtils;
-import libbun.parser.ast.BGetNameNode;
-import libbun.parser.ast.BLetVarNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.BSetNameNode;
-import libbun.parser.ast.ZBinaryNode;
-import libbun.parser.ast.ZBlockNode;
-import libbun.parser.ast.ZCastNode;
-import libbun.parser.ast.ZComparatorNode;
-import libbun.parser.ast.ZFuncCallNode;
-import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZReturnNode;
-import libbun.parser.ast.ZThrowNode;
-import libbun.parser.ast.ZTryNode;
-import libbun.parser.ast.ZWhileNode;
 import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BLib;
@@ -96,7 +96,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitBlockNode(ZBlockNode Node) {
+	public void VisitBlockNode(BBlockNode Node) {
 		@Var int count = 0;
 
 		this.Indent(this.CurrentBuilder);
@@ -132,17 +132,17 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitCastNode(ZCastNode Node) {
+	public void VisitCastNode(BCastNode Node) {
 	}
 
 	@Override
-	public void VisitThrowNode(ZThrowNode Node) {
+	public void VisitThrowNode(BThrowNode Node) {
 		this.CurrentBuilder.Append("raise ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
 	@Override
-	public void VisitTryNode(ZTryNode Node) {
+	public void VisitTryNode(BTryNode Node) {
 		// See: http://d.hatena.ne.jp/kazu-yamamoto/20090819/1250660658
 		this.GenerateCode(null, Node.TryBlockNode());
 		this.CurrentBuilder.Append(" `catch` ");
@@ -167,7 +167,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(Node.GetGivenName());
 	}
 
-	@Override public void VisitFunctionNode(ZFunctionNode Node) {
+	@Override public void VisitFunctionNode(BFunctionNode Node) {
 		this.Variables = new ArrayList<String>();
 		if(Node.FuncName().equals("main")){
 			this.CurrentBuilder.Append("main");
@@ -203,7 +203,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		}
 		this.UnIndent(this.CurrentBuilder);
 
-		ZReturnNode ReturnNode = BNodeUtils._CheckIfSingleReturnNode(Node);
+		BReturnNode ReturnNode = BNodeUtils._CheckIfSingleReturnNode(Node);
 		if(ReturnNode != null && ReturnNode.HasReturnExpr()) {
 			this.Indent(this.CurrentBuilder);
 
@@ -237,7 +237,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitReturnNode(ZReturnNode Node) {
+	public void VisitReturnNode(BReturnNode Node) {
 		if (Node.HasReturnExpr()) {
 			this.GenerateCode(null, Node.ExprNode());
 		}
@@ -257,7 +257,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitBinaryNode(ZBinaryNode Node) {
+	public void VisitBinaryNode(BBinaryNode Node) {
 		String Op = this.ZenOpToHaskellOp(Node.SourceToken.GetText());
 
 		this.CurrentBuilder.Append("(");
@@ -278,7 +278,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitWhileNode(ZWhileNode Node) {
+	public void VisitWhileNode(BWhileNode Node) {
 		this.CurrentBuilder.Append("let __loop = do");
 		this.CurrentBuilder.AppendLineFeed();
 
@@ -328,8 +328,8 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
-		if(Node.ParentNode instanceof ZBlockNode){
+	@Override public void VisitFuncCallNode(BFuncCallNode Node) {
+		if(Node.ParentNode instanceof BBlockNode){
 			this.GenerateCode(null, Node.FunctorNode());
 			this.VisitListNode(" ", Node, " ", " ");
 		}else{

@@ -18,8 +18,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Stack;
 
-import libbun.parser.ast.ZListNode;
-import libbun.parser.ast.BNode;
+import libbun.ast.BListNode;
+import libbun.ast.BNode;
 import libbun.type.BFuncType;
 import libbun.type.BType;
 
@@ -250,7 +250,7 @@ class AsmMethodBuilder extends MethodNode {
 		this.ApplyStaticMethod(Node, sMethod);
 	}
 
-	void ApplyStaticMethod(BNode Node, Method sMethod, ZListNode ListNode) {
+	void ApplyStaticMethod(BNode Node, Method sMethod, BListNode ListNode) {
 		Class<?>[] P = sMethod.getParameterTypes();
 		for(int i = 0; i < P.length; i++) {
 			this.PushNode(P[i], ListNode.GetListAt(i));
@@ -258,7 +258,7 @@ class AsmMethodBuilder extends MethodNode {
 		this.ApplyStaticMethod(Node, sMethod);
 	}
 
-	void ApplyFuncName(BNode Node, String FuncName, BFuncType FuncType, ZListNode ListNode) {
+	void ApplyFuncName(BNode Node, String FuncName, BFuncType FuncType, BListNode ListNode) {
 		if(ListNode != null) {
 			for(int i = 0; i < ListNode.GetListSize(); i++) {
 				this.PushNode(null, ListNode.GetListAt(i));
@@ -276,7 +276,7 @@ class AsmMethodBuilder extends MethodNode {
 		}
 	}
 
-	void ApplyFuncObject(BNode Node, Class<?> FuncClass, BNode FuncNode, BFuncType FuncType, ZListNode ListNode) {
+	void ApplyFuncObject(BNode Node, Class<?> FuncClass, BNode FuncNode, BFuncType FuncType, BListNode ListNode) {
 		this.PushNode(FuncClass, FuncNode);
 		for(int i = 0; i < ListNode.GetListSize(); i++) {
 			this.PushNode(null, ListNode.GetListAt(i));
@@ -285,7 +285,7 @@ class AsmMethodBuilder extends MethodNode {
 		this.visitMethodInsn(INVOKEVIRTUAL, FuncClass, "Invoke", FuncType);
 	}
 
-	void PushNodeListAsArray(Class<?> T, int StartIdx, ZListNode NodeList) {
+	void PushNodeListAsArray(Class<?> T, int StartIdx, BListNode NodeList) {
 		this.PushInt(NodeList.GetListSize() - StartIdx);
 		int StoreOpcode = -1;
 		if(T == boolean.class) {

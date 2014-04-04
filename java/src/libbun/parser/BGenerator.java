@@ -25,18 +25,18 @@
 
 package libbun.parser;
 
-import libbun.parser.ast.BLetVarNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.BNullNode;
-import libbun.parser.ast.ZBlockNode;
-import libbun.parser.ast.ZClassNode;
-import libbun.parser.ast.ZDefaultValueNode;
-import libbun.parser.ast.ZDesugarNode;
-import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZListNode;
-import libbun.parser.ast.ZSugarNode;
-import libbun.parser.ast.ZTopLevelNode;
+import libbun.ast.BBlockNode;
+import libbun.ast.BListNode;
+import libbun.ast.BNode;
+import libbun.ast.ZDesugarNode;
+import libbun.ast.ZSugarNode;
+import libbun.ast.decl.BClassNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.ZTopLevelNode;
+import libbun.ast.error.BErrorNode;
+import libbun.ast.literal.BDefaultValueNode;
+import libbun.ast.literal.BNullNode;
 import libbun.type.BClassType;
 import libbun.type.BFunc;
 import libbun.type.BFuncType;
@@ -143,12 +143,12 @@ public abstract class BGenerator extends BVisitor {
 		return BType.VarType;     // undefined
 	}
 
-	@ZenMethod public BFuncType GetConstructorFuncType(BType ClassType, ZListNode List) {
+	@ZenMethod public BFuncType GetConstructorFuncType(BType ClassType, BListNode List) {
 		//return null;              // undefined and undefined error
 		return BFuncType._FuncType;    // undefined and no error
 	}
 
-	@ZenMethod public BFuncType GetMethodFuncType(BType RecvType, String MethodName, ZListNode List) {
+	@ZenMethod public BFuncType GetMethodFuncType(BType RecvType, String MethodName, BListNode List) {
 		//return null;              // undefined and undefined error
 		return BFuncType._FuncType;     // undefined and no error
 	}
@@ -269,11 +269,11 @@ public abstract class BGenerator extends BVisitor {
 	}
 
 	public final void VisitUndefinedNode(BNode Node) {
-		@Var ZErrorNode ErrorNode = new ZErrorNode(Node.ParentNode, Node.SourceToken, "undefined node:" + Node.toString());
+		@Var BErrorNode ErrorNode = new BErrorNode(Node.ParentNode, Node.SourceToken, "undefined node:" + Node.toString());
 		this.VisitErrorNode(ErrorNode);
 	}
 
-	@Override public final void VisitDefaultValueNode(ZDefaultValueNode Node) {
+	@Override public final void VisitDefaultValueNode(BDefaultValueNode Node) {
 		this.VisitNullNode(new BNullNode(Node.ParentNode, null));
 	}
 
@@ -306,7 +306,7 @@ public abstract class BGenerator extends BVisitor {
 				Node = this.TypeChecker.CheckType(Node, BType.VarType);
 			}
 			if(this.IsVisitable()) {
-				if(Node instanceof ZFunctionNode || Node instanceof ZClassNode || Node instanceof BLetVarNode) {
+				if(Node instanceof BFunctionNode || Node instanceof BClassNode || Node instanceof BLetVarNode) {
 					Node.Type = BType.VoidType;
 					this.GenerateStatement(Node);
 				}
@@ -325,7 +325,7 @@ public abstract class BGenerator extends BVisitor {
 
 	public final boolean LoadScript(String ScriptText, String FileName, int LineNumber, boolean IsInteractive) {
 		@Var boolean Result = true;
-		@Var ZBlockNode TopBlockNode = new ZBlockNode(null, this.RootNameSpace);
+		@Var BBlockNode TopBlockNode = new BBlockNode(null, this.RootNameSpace);
 		@Var BTokenContext TokenContext = new BTokenContext(this, this.RootNameSpace, FileName, LineNumber, ScriptText);
 		TokenContext.SkipEmptyStatement();
 		@Var BToken SkipToken = TokenContext.GetToken();

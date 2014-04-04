@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 
+import libbun.ast.BNode;
 import libbun.encode.BunGenerator;
 import libbun.encode.ZSourceBuilder;
 import libbun.encode.jvm.JavaTypeTable;
@@ -46,7 +47,6 @@ import libbun.parser.BNameSpace;
 import libbun.parser.BSourceContext;
 import libbun.parser.BTokenContext;
 import libbun.parser.BTokenFuncChain;
-import libbun.parser.ast.BNode;
 import libbun.type.BType;
 
 
@@ -537,6 +537,8 @@ public class BLib {
 		GenMap.put("jvm", libbun.encode.jvm.AsmJavaGenerator.class);
 		GenMap.put("debug-jvm", libbun.encode.jvm.DebugAsmGenerator.class);
 		GenMap.put("ll", libbun.encode.llvm.LLVMSourceGenerator.class);
+
+		GenMap.put(".bun", libbun.lang.bun.BunGrammar.class);
 	}
 
 	public final static BGenerator _LoadGenerator(@Nullable String ClassName, String OutputFile) {

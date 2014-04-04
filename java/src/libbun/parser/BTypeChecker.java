@@ -24,23 +24,23 @@
 
 package libbun.parser;
 
-import libbun.parser.ast.BGetNameNode;
-import libbun.parser.ast.BLetVarNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.BAsmNode;
-import libbun.parser.ast.ZBlockNode;
-import libbun.parser.ast.ZCastNode;
-import libbun.parser.ast.ZDesugarNode;
-import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.ZFuncCallNode;
-import libbun.parser.ast.ZFuncNameNode;
-import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZListNode;
-import libbun.parser.ast.ZMacroNode;
-import libbun.parser.ast.ZReturnNode;
-import libbun.parser.ast.ZStupidCastErrorNode;
-import libbun.parser.ast.ZSugarNode;
-import libbun.parser.ast.ZVarBlockNode;
+import libbun.ast.BBlockNode;
+import libbun.ast.BListNode;
+import libbun.ast.BNode;
+import libbun.ast.ZDesugarNode;
+import libbun.ast.ZSugarNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.error.BErrorNode;
+import libbun.ast.error.ZStupidCastErrorNode;
+import libbun.ast.expression.BFuncCallNode;
+import libbun.ast.expression.BFuncNameNode;
+import libbun.ast.expression.BGetNameNode;
+import libbun.ast.expression.BMacroNode;
+import libbun.ast.literal.BAsmNode;
+import libbun.ast.statement.BReturnNode;
+import libbun.ast.unary.BCastNode;
 import libbun.type.BFunc;
 import libbun.type.BFuncType;
 import libbun.type.BGreekType;
@@ -106,7 +106,7 @@ public abstract class BTypeChecker extends BVisitor {
 		if(ErrorToken == null) {
 			ErrorToken = Node.SourceToken;
 		}
-		this.ReturnNode(new ZErrorNode(Node.ParentNode, ErrorToken, Message));
+		this.ReturnNode(new BErrorNode(Node.ParentNode, ErrorToken, Message));
 	}
 
 	protected final BNode CreateStupidCastNode(BType Requested, BNode Node, BToken SourceToken, String Message) {
@@ -125,7 +125,7 @@ public abstract class BTypeChecker extends BVisitor {
 			Func = this.Generator.LookupFunc("toString", Node.Type, 1);
 		}
 		if(Func != null) {
-			@Var ZListNode FuncNode = this.CreateDefinedFuncCallNode(Node.ParentNode, null, Func);
+			@Var BListNode FuncNode = this.CreateDefinedFuncCallNode(Node.ParentNode, null, Func);
 			FuncNode.Append(Node);
 			return this.TypeListNodeAsFuncCall(FuncNode, Func.GetFuncType());
 		}
@@ -146,7 +146,7 @@ public abstract class BTypeChecker extends BVisitor {
 			return Node;
 		}
 		if(ContextType.IsVoidType() && !Node.Type.IsVoidType()) {
-			return new ZCastNode(Node.ParentNode, BType.VoidType, Node);
+			return new BCastNode(Node.ParentNode, BType.VoidType, Node);
 		}
 		if(ContextType.IsFloatType() && Node.Type.IsIntType()) {
 			return this.EnforceNodeType(Node, ContextType);
@@ -215,7 +215,7 @@ public abstract class BTypeChecker extends BVisitor {
 		//		}
 	}
 
-	public final void TypeCheckNodeList(ZListNode List) {
+	public final void TypeCheckNodeList(BListNode List) {
 		@Var int i = 0;
 		while(i < List.GetListSize()) {
 			@Var BNode SubNode = List.GetListAt(i);
@@ -225,7 +225,7 @@ public abstract class BTypeChecker extends BVisitor {
 		}
 	}
 
-	public final BNode TypeListNodeAsFuncCall(ZListNode FuncNode, BFuncType FuncType) {
+	public final BNode TypeListNodeAsFuncCall(BListNode FuncNode, BFuncType FuncType) {
 		@Var int i = 0;
 		@Var BType[] Greek = BGreekType._NewGreekTypes(null);
 		//		if(FuncNode.GetListSize() != FuncType.GetFuncParamSize()) {
@@ -248,9 +248,9 @@ public abstract class BTypeChecker extends BVisitor {
 	}
 
 
-	public abstract void DefineFunction(ZFunctionNode FunctionNode, boolean Enforced);
+	public abstract void DefineFunction(BFunctionNode FunctionNode, boolean Enforced);
 
-	@Override public void VisitErrorNode(ZErrorNode Node) {
+	@Override public void VisitErrorNode(BErrorNode Node) {
 		@Var BType ContextType = this.GetContextType();
 		if(!ContextType.IsVarType()) {
 			this.ReturnTypeNode(Node, ContextType);
@@ -278,12 +278,12 @@ public abstract class BTypeChecker extends BVisitor {
 	// ----------------------------------------------------------------------
 	/* Note : the CreateNode serise are designed to treat typed node */
 
-	public ZFunctionNode CreateFunctionNode(BNode ParentNode, String FuncName, BNode Node) {
-		@Var ZFunctionNode FuncNode = new ZFunctionNode(ParentNode);
+	public BFunctionNode CreateFunctionNode(BNode ParentNode, String FuncName, BNode Node) {
+		@Var BFunctionNode FuncNode = new BFunctionNode(ParentNode);
 		FuncNode.GivenName = FuncName;
 		FuncNode.GivenType = Node.Type;
-		@Var ZBlockNode BlockNode = this.CreateBlockNode(FuncNode);
-		FuncNode.SetNode(ZFunctionNode._Block, BlockNode);
+		@Var BBlockNode BlockNode = this.CreateBlockNode(FuncNode);
+		FuncNode.SetNode(BFunctionNode._Block, BlockNode);
 		if(Node.Type.IsVoidType()) {
 			BlockNode.Append(Node);
 			BlockNode.Append(this.CreateReturnNode(BlockNode));
@@ -295,21 +295,21 @@ public abstract class BTypeChecker extends BVisitor {
 		return FuncNode;
 	}
 
-	public ZBlockNode CreateBlockNode(BNode ParentNode) {
-		@Var ZBlockNode BlockNode = new ZBlockNode(ParentNode, null);
+	public BBlockNode CreateBlockNode(BNode ParentNode) {
+		@Var BBlockNode BlockNode = new BBlockNode(ParentNode, null);
 		BlockNode.Type = BType.VoidType;
 		return BlockNode;
 	}
 
-	public ZReturnNode CreateReturnNode(BNode ParentNode) {
-		@Var ZReturnNode ReturnNode = new ZReturnNode(ParentNode);
+	public BReturnNode CreateReturnNode(BNode ParentNode) {
+		@Var BReturnNode ReturnNode = new BReturnNode(ParentNode);
 		ReturnNode.Type = BType.VoidType;
 		return ReturnNode;
 	}
 
-	public ZReturnNode CreateReturnNode(BNode ParentNode, BNode ExprNode) {
-		@Var ZReturnNode ReturnNode = new ZReturnNode(ParentNode);
-		ReturnNode.SetNode(ZReturnNode._Expr, ExprNode);
+	public BReturnNode CreateReturnNode(BNode ParentNode, BNode ExprNode) {
+		@Var BReturnNode ReturnNode = new BReturnNode(ParentNode);
+		ReturnNode.SetNode(BReturnNode._Expr, ExprNode);
 		ReturnNode.Type = BType.VoidType;
 		return ReturnNode;
 	}
@@ -329,16 +329,16 @@ public abstract class BTypeChecker extends BVisitor {
 		return NameNode;
 	}
 
-	public ZFuncCallNode CreateFuncCallNode(BNode ParentNode, BToken SourceToken, String FuncName, BFuncType FuncType) {
-		@Var ZFuncCallNode FuncNode = new ZFuncCallNode(ParentNode, new ZFuncNameNode(null, SourceToken, FuncName, FuncType));
+	public BFuncCallNode CreateFuncCallNode(BNode ParentNode, BToken SourceToken, String FuncName, BFuncType FuncType) {
+		@Var BFuncCallNode FuncNode = new BFuncCallNode(ParentNode, new BFuncNameNode(null, SourceToken, FuncName, FuncType));
 		FuncNode.Type = FuncType.GetReturnType();
 		return FuncNode;
 	}
 
-	public final ZListNode CreateDefinedFuncCallNode(BNode ParentNode, BToken SourceToken, BFunc Func) {
-		@Var ZListNode FuncNode = null;
+	public final BListNode CreateDefinedFuncCallNode(BNode ParentNode, BToken SourceToken, BFunc Func) {
+		@Var BListNode FuncNode = null;
 		if(Func instanceof BMacroFunc) {
-			FuncNode = new ZMacroNode(ParentNode, SourceToken, (BMacroFunc)Func);
+			FuncNode = new BMacroNode(ParentNode, SourceToken, (BMacroFunc)Func);
 		}
 		else {
 			FuncNode = this.CreateFuncCallNode(ParentNode, SourceToken, Func.FuncName, Func.GetFuncType());

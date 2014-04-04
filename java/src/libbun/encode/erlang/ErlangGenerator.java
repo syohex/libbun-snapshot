@@ -1,33 +1,33 @@
 
 package libbun.encode.erlang;
 
+import libbun.ast.BBlockNode;
+import libbun.ast.BListNode;
+import libbun.ast.BNode;
+import libbun.ast.binary.BBinaryNode;
+import libbun.ast.binary.BOrNode;
+import libbun.ast.binary.BAndNode;
+import libbun.ast.binary.ZComparatorNode;
+import libbun.ast.decl.BClassNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.expression.BFuncCallNode;
+import libbun.ast.expression.BFuncNameNode;
+import libbun.ast.expression.BGetIndexNode;
+import libbun.ast.expression.BGetNameNode;
+import libbun.ast.expression.BGetterNode;
+import libbun.ast.expression.BNewObjectNode;
+import libbun.ast.expression.BSetNameNode;
+import libbun.ast.expression.BSetterNode;
+import libbun.ast.statement.BBreakNode;
+import libbun.ast.statement.BIfNode;
+import libbun.ast.statement.BReturnNode;
+import libbun.ast.statement.BWhileNode;
+import libbun.ast.unary.BCastNode;
+import libbun.ast.unary.BNotNode;
 import libbun.encode.ZSourceBuilder;
 import libbun.encode.ZSourceGenerator;
 import libbun.parser.BToken;
-import libbun.parser.ast.BGetNameNode;
-import libbun.parser.ast.BLetVarNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.BSetNameNode;
-import libbun.parser.ast.ZAndNode;
-import libbun.parser.ast.ZBinaryNode;
-import libbun.parser.ast.ZBlockNode;
-import libbun.parser.ast.ZBreakNode;
-import libbun.parser.ast.ZCastNode;
-import libbun.parser.ast.ZClassNode;
-import libbun.parser.ast.ZComparatorNode;
-import libbun.parser.ast.ZFuncCallNode;
-import libbun.parser.ast.ZFuncNameNode;
-import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZGetIndexNode;
-import libbun.parser.ast.ZGetterNode;
-import libbun.parser.ast.ZIfNode;
-import libbun.parser.ast.ZListNode;
-import libbun.parser.ast.ZNewObjectNode;
-import libbun.parser.ast.ZNotNode;
-import libbun.parser.ast.ZOrNode;
-import libbun.parser.ast.ZReturnNode;
-import libbun.parser.ast.ZSetterNode;
-import libbun.parser.ast.ZWhileNode;
 import libbun.type.BClassType;
 import libbun.type.BType;
 import libbun.util.BField;
@@ -61,11 +61,11 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.AppendZStrDecl();
 	}
 
-	@Override public void VisitStmtList(ZBlockNode BlockNode) {
+	@Override public void VisitStmtList(BBlockNode BlockNode) {
 		this.VisitStmtList(BlockNode, ",");
 	}
 
-	public void VisitStmtList(ZBlockNode BlockNode, String last) {
+	public void VisitStmtList(BBlockNode BlockNode, String last) {
 		@Var int i = 0;
 		@Var int size = BlockNode.GetListSize();
 		while (i < size) {
@@ -83,12 +83,12 @@ public class ErlangGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitBlockNode(ZBlockNode Node) {
+	@Override public void VisitBlockNode(BBlockNode Node) {
 		this.CurrentBuilder.Indent();
 		this.VisitStmtList(Node, ".");
 		this.CurrentBuilder.UnIndent();
 	}
-	public void VisitBlockNode(ZBlockNode Node, String last) {
+	public void VisitBlockNode(BBlockNode Node, String last) {
 		this.VarMgr.PushScope();
 		this.CurrentBuilder.Indent();
 		this.VisitBlockNode(Node);
@@ -132,7 +132,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 	// 	// TODO Auto-generated method stub
 	// }
 
-	@Override public void VisitNewObjectNode(ZNewObjectNode Node) {
+	@Override public void VisitNewObjectNode(BNewObjectNode Node) {
 		this.CurrentBuilder.Append("#");
 		this.CurrentBuilder.Append(this.ToErlangTypeName(Node.Type.ShortName));
 		this.VisitListNode("{", Node, "}");
@@ -144,7 +144,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 	// 	this.CurrentBuilder.Append(")");
 	// }
 
-	@Override public void VisitGetIndexNode(ZGetIndexNode Node) {
+	@Override public void VisitGetIndexNode(BGetIndexNode Node) {
 		if (Node.Type.Equals(BType.StringType)) {
 			this.CurrentBuilder.Append("string:substr(");
 			this.GenerateCode(null, Node.RecvNode());
@@ -194,7 +194,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 	}
 
 
-	@Override public void VisitGetterNode(ZGetterNode Node) {
+	@Override public void VisitGetterNode(BGetterNode Node) {
 		this.GenerateSurroundCode(Node.RecvNode());
 		this.CurrentBuilder.Append("#");
 		this.CurrentBuilder.Append(this.ToErlangTypeName(Node.RecvNode().Type.ShortName));
@@ -202,7 +202,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(this.ToErlangTypeName(Node.GetName()));
 	}
 
-	@Override public void VisitSetterNode(ZSetterNode Node) {
+	@Override public void VisitSetterNode(BSetterNode Node) {
 		int mark = this.GetLazyMark();
 
 		BGetNameNode GetNameNode = (BGetNameNode)Node.RecvNode();
@@ -252,8 +252,8 @@ public class ErlangGenerator extends ZSourceGenerator {
 	// 	this.CurrentBuilder.Append(Macro.substring(fromIndex));
 	// }
 
-	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
-		ZFuncNameNode FuncNameNode = Node.FuncNameNode();
+	@Override public void VisitFuncCallNode(BFuncCallNode Node) {
+		BFuncNameNode FuncNameNode = Node.FuncNameNode();
 		if (FuncNameNode != null) {
 			this.CurrentBuilder.Append(this.ToErlangFuncName(Node.FuncNameNode().GetSignature()));
 		}
@@ -268,12 +268,12 @@ public class ErlangGenerator extends ZSourceGenerator {
 	// 	this.GenerateCode(null, Node.RecvNode());
 	// }
 
-	@Override public void VisitNotNode(ZNotNode Node) {
+	@Override public void VisitNotNode(BNotNode Node) {
 		this.CurrentBuilder.AppendToken(this.NotOperator);
 		this.GenerateSurroundCode(Node.RecvNode());
 	}
 
-	@Override public void VisitCastNode(ZCastNode Node) {
+	@Override public void VisitCastNode(BCastNode Node) {
 		// this.CurrentBuilder.Append("(");
 		// this.GenerateTypeName(Node.Type);
 		// this.CurrentBuilder.Append(")");
@@ -312,8 +312,8 @@ public class ErlangGenerator extends ZSourceGenerator {
 	}
 
 
-	@Override public void VisitBinaryNode(ZBinaryNode Node) {
-		if (Node.ParentNode instanceof ZBinaryNode) {
+	@Override public void VisitBinaryNode(BBinaryNode Node) {
+		if (Node.ParentNode instanceof BBinaryNode) {
 			this.CurrentBuilder.Append("(");
 		}
 		this.GenerateCode(null, Node.LeftNode());
@@ -321,7 +321,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		@Var String Operator = this.GetBinaryOperator(Node.Type, Node.SourceToken);
 		this.CurrentBuilder.AppendToken(Operator);
 		this.GenerateCode(null, Node.RightNode());
-		if (Node.ParentNode instanceof ZBinaryNode) {
+		if (Node.ParentNode instanceof BBinaryNode) {
 			this.CurrentBuilder.Append(")");
 		}
 	}
@@ -333,25 +333,25 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.GenerateCode(null, Node.RightNode());
 	}
 
-	@Override public void VisitAndNode(ZAndNode Node) {
+	@Override public void VisitAndNode(BAndNode Node) {
 		this.GenerateSurroundCode(Node.LeftNode());
 		this.CurrentBuilder.AppendToken(this.AndOperator);
 		this.GenerateSurroundCode(Node.RightNode());
 	}
 
-	@Override public void VisitOrNode(ZOrNode Node) {
+	@Override public void VisitOrNode(BOrNode Node) {
 		this.GenerateSurroundCode(Node.LeftNode());
 		this.CurrentBuilder.AppendToken(this.OrOperator);
 		this.GenerateSurroundCode(Node.RightNode());
 	}
 
 	public void AppendGuardAndBlock(BNode Node) {
-		if (Node instanceof ZIfNode) {
-			ZIfNode IfNode = (ZIfNode)Node;
+		if (Node instanceof BIfNode) {
+			BIfNode IfNode = (BIfNode)Node;
 			this.CurrentBuilder.AppendIndent();
 			this.GenerateSurroundCode(IfNode.CondNode());
 			this.CurrentBuilder.Append(" ->");
-			this.VisitBlockNode((ZBlockNode)IfNode.ThenNode(), ";");
+			this.VisitBlockNode((BBlockNode)IfNode.ThenNode(), ";");
 			this.CurrentBuilder.AppendLineFeed();
 			if (IfNode.HasElseNode()) {
 				this.AppendGuardAndBlock(IfNode.ElseNode());
@@ -361,7 +361,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		} else {
 			this.CurrentBuilder.IndentAndAppend("true ->");
 			if (Node != null) {
-				this.VisitBlockNode((ZBlockNode)Node, "");
+				this.VisitBlockNode((BBlockNode)Node, "");
 			} else {
 				this.CurrentBuilder.Indent();
 				this.CurrentBuilder.AppendLineFeed();
@@ -371,7 +371,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitIfNode(ZIfNode Node) {
+	@Override public void VisitIfNode(BIfNode Node) {
 		int mark = this.GetLazyMark();
 
 		this.CurrentBuilder.Append("if");
@@ -383,7 +383,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.AppendLazy(mark, this.VarMgr.GenVarTuple(VarFlag.Assigned, true) + " = ");
 	}
 
-	@Override public void VisitReturnNode(ZReturnNode Node) {
+	@Override public void VisitReturnNode(BReturnNode Node) {
 		this.CurrentBuilder.Append("throw({return, ");
 		if (Node.HasReturnExpr()) {
 			this.GenerateCode(null, Node.ExprNode());
@@ -393,7 +393,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append("})");
 	}
 
-	@Override public void VisitWhileNode(ZWhileNode Node) {
+	@Override public void VisitWhileNode(BWhileNode Node) {
 		this.LoopNodeNumber += 1;
 		String WhileNodeName = "Loop" + Integer.toString(this.LoopNodeNumber);
 
@@ -445,7 +445,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.AppendLazy(mark2, this.VarMgr.GenVarTuple(VarFlag.AssignedByChildScope, true));
 	}
 
-	@Override public void VisitBreakNode(ZBreakNode Node) {
+	@Override public void VisitBreakNode(BBreakNode Node) {
 		this.CurrentBuilder.Append("throw({break, ");
 		//this.VarMgr.GenVarTupleOnlyUsed(false);
 		this.BreakMark = this.GetLazyMark();
@@ -516,7 +516,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(VarName);
 	}
 
-	@Override public void VisitFunctionNode(ZFunctionNode Node) {
+	@Override public void VisitFunctionNode(BFunctionNode Node) {
 		this.VarMgr.Init();
 		this.DefineVariables(Node);
 
@@ -543,7 +543,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.AppendLineFeed();
 	}
 
-	@Override public void VisitClassNode(ZClassNode Node) {
+	@Override public void VisitClassNode(BClassNode Node) {
 		ZSourceBuilder BodyBuilder = this.CurrentBuilder;
 		this.CurrentBuilder = this.HeaderBuilder;
 
@@ -599,7 +599,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 	// }
 
 	@Override
-	protected void VisitListNode(String OpenToken, ZListNode VargNode, String DelimToken, String CloseToken) {
+	protected void VisitListNode(String OpenToken, BListNode VargNode, String DelimToken, String CloseToken) {
 		this.CurrentBuilder.Append(OpenToken);
 		@Var int i = 0;
 		while(i < VargNode.GetListSize()) {
@@ -613,7 +613,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(CloseToken);
 	}
 	@Override
-	protected void VisitListNode(String OpenToken, ZListNode VargNode, String CloseToken) {
+	protected void VisitListNode(String OpenToken, BListNode VargNode, String CloseToken) {
 		this.VisitListNode(OpenToken, VargNode, ", ", CloseToken);
 	}
 
@@ -661,7 +661,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.HeaderBuilder.AppendLineFeed();
 	}
 
-	private void AppendWrapperFuncDecl(ZFunctionNode Node) {
+	private void AppendWrapperFuncDecl(BFunctionNode Node) {
 		String FuncName = this.ToErlangFuncName(Node.FuncName());
 		this.CurrentBuilder.Append(FuncName);
 		if (FuncName.equals("main")) { //FIX ME!!
@@ -701,7 +701,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 	private void AppendLazy(int mark, String Code) {
 		this.CurrentBuilder.SourceList.ArrayValues[mark] = Code;
 	}
-	private void DefineVariables(ZListNode VargNode) {
+	private void DefineVariables(BListNode VargNode) {
 		@Var int i = 0;
 		while(i < VargNode.GetListSize()) {
 			@Var BLetVarNode ParamNode = (BLetVarNode)VargNode.GetListAt(i);

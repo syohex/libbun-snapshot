@@ -1,10 +1,10 @@
 package libbun.parser.ssa;
 
+import libbun.ast.BNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.expression.BSetNameNode;
 import libbun.parser.BGenerator;
-import libbun.parser.ast.BLetVarNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.BSetNameNode;
-import libbun.parser.ast.ZVarBlockNode;
 import libbun.type.BType;
 
 public class NodeLib {

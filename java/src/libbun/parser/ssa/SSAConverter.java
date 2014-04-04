@@ -2,18 +2,18 @@ package libbun.parser.ssa;
 
 import java.util.HashMap;
 
+import libbun.ast.BBlockNode;
+import libbun.ast.BNode;
+import libbun.ast.binary.BBinaryNode;
+import libbun.ast.binary.BAndNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.expression.BGetNameNode;
+import libbun.ast.expression.BSetNameNode;
+import libbun.ast.statement.BIfNode;
+import libbun.ast.statement.BWhileNode;
 import libbun.parser.BGenerator;
-import libbun.parser.ast.BGetNameNode;
-import libbun.parser.ast.BLetVarNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.BSetNameNode;
-import libbun.parser.ast.ZAndNode;
-import libbun.parser.ast.ZBinaryNode;
-import libbun.parser.ast.ZBlockNode;
-import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZIfNode;
-import libbun.parser.ast.ZVarBlockNode;
-import libbun.parser.ast.ZWhileNode;
 import libbun.type.BType;
 import libbun.util.Var;
 import libbun.util.BArray;
@@ -183,8 +183,8 @@ public class SSAConverter extends ZASTTransformer {
 			phi = new PHINode(OldVal, NewVal.Name);
 			phi.VarRef = new Variable(OldVal.Name, this.GetRefreshNumber(OldVal), phi);
 			JNode.Append(phi);
-			if(this.GetCurrentJoinNode().ParentNode instanceof ZWhileNode) {
-				ZWhileNode WNode = (ZWhileNode) this.GetCurrentJoinNode().ParentNode;
+			if(this.GetCurrentJoinNode().ParentNode instanceof BWhileNode) {
+				BWhileNode WNode = (BWhileNode) this.GetCurrentJoinNode().ParentNode;
 				this.ReplaceNodeWith(WNode, OldVal, phi);
 			}
 		}
@@ -240,7 +240,7 @@ public class SSAConverter extends ZASTTransformer {
 	 * }              | }
 	 */
 	private void RemoveJoinNode(BNode TargetNode, JoinNode JNode) {
-		@Var ZBlockNode Parent = TargetNode.GetScopeBlockNode();
+		@Var BBlockNode Parent = TargetNode.GetScopeBlockNode();
 		@Var int Index = 0;
 		assert(Parent != null);
 		while(Index < Parent.GetListSize()) {
@@ -252,7 +252,7 @@ public class SSAConverter extends ZASTTransformer {
 		}
 		assert(Index < Parent.GetListSize());
 
-		if(TargetNode instanceof ZIfNode) {
+		if(TargetNode instanceof BIfNode) {
 			// JoinNode for ZIfNode is placed after if-statement.
 			@Var int i = JNode.size() - 1;
 			while(i >= 0) {
@@ -261,23 +261,23 @@ public class SSAConverter extends ZASTTransformer {
 				this.UpdateVariable(phi.VarRef);
 				i = i - 1;
 			}
-		} else if (TargetNode instanceof ZWhileNode) {
+		} else if (TargetNode instanceof BWhileNode) {
 			// JoinNode for WhileNode is placed at a header of loop.
 			// ... while((x1 = phi() && i1 = phi()) && x1 == true) {...}
-			@Var ZWhileNode WNode = (ZWhileNode) TargetNode;
+			@Var BWhileNode WNode = (BWhileNode) TargetNode;
 			@Var BNode CondNode = WNode.CondNode();
 			@Var int i = JNode.size() - 1;
 			while(i >= 0) {
 				@Var PHINode phi = JNode.ListAt(i);
-				@Var ZAndNode And = new ZAndNode(Parent, null, phi, null);
-				And.SetNode(ZBinaryNode._Right, CondNode);
+				@Var BAndNode And = new BAndNode(Parent, null, phi, null);
+				And.SetNode(BBinaryNode._Right, CondNode);
 				And.Type = BType.BooleanType;
 				CondNode = And;
 				this.ReplaceNodeWith(TargetNode, phi.VarRef, phi);
 				this.UpdateVariable(phi.VarRef);
 				i = i - 1;
 			}
-			WNode.SetNode(ZWhileNode._Cond, CondNode);
+			WNode.SetNode(BWhileNode._Cond, CondNode);
 		}
 	}
 
@@ -309,7 +309,7 @@ public class SSAConverter extends ZASTTransformer {
 	}
 
 	@Override
-	public void VisitIfNode(ZIfNode Node) {
+	public void VisitIfNode(BIfNode Node) {
 		this.PushState(new SSAConverterState(new JoinNode(Node), 0));
 		this.RecordListOfVariablesBeforeVisit(Node);
 		Node.CondNode().Accept(this);
@@ -330,7 +330,7 @@ public class SSAConverter extends ZASTTransformer {
 	}
 
 	@Override
-	public void VisitWhileNode(ZWhileNode Node) {
+	public void VisitWhileNode(BWhileNode Node) {
 		this.PushState(new SSAConverterState(new JoinNode(Node), 0));
 		this.RecordListOfVariablesBeforeVisit(Node);
 		Node.CondNode().Accept(this);
@@ -345,7 +345,7 @@ public class SSAConverter extends ZASTTransformer {
 	}
 
 	@Override
-	public void VisitFunctionNode(ZFunctionNode Node) {
+	public void VisitFunctionNode(BFunctionNode Node) {
 		this.LocalVariables = new BArray<Variable>(new Variable[0]);
 		@Var int i = 0;
 		while(i < Node.GetListSize()) {

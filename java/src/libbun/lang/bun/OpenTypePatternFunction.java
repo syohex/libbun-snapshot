@@ -1,10 +1,10 @@
 package libbun.lang.bun;
 
+import libbun.ast.BNode;
+import libbun.ast.literal.BTypeNode;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
 import libbun.parser.BTypeChecker;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.ZTypeNode;
 import libbun.type.BType;
 import libbun.type.BTypePool;
 import libbun.util.Var;
@@ -24,9 +24,9 @@ public class OpenTypePatternFunction extends BMatchFunction {
 		@Var BToken Token = TokenContext.GetToken(BTokenContext._MoveNext);
 		@Var BType Type = ParentNode.GetNameSpace().GetType(Token.GetText(), Token, true/*IsCreation*/);
 		if(Type != null) {
-			@Var ZTypeNode TypeNode = new ZTypeNode(ParentNode, Token, Type);
+			@Var BTypeNode TypeNode = new BTypeNode(ParentNode, Token, Type);
 			@Var BNode Node = TokenContext.ParsePatternAfter(ParentNode, TypeNode, "$TypeRight$", BTokenContext._Optional);
-			if(Node instanceof ZTypeNode) {
+			if(Node instanceof BTypeNode) {
 				@Var BTypeChecker Gamma = ParentNode.GetNameSpace().Generator.TypeChecker;
 				if(MutableToken != null) {
 					Node.Type = BTypePool._LookupMutableType(Gamma, Node.Type, MutableToken);

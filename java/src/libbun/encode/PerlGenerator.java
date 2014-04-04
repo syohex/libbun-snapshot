@@ -24,17 +24,17 @@
 
 //ifdef  JAVA
 package libbun.encode;
+import libbun.ast.BBlockNode;
+import libbun.ast.BNode;
+import libbun.ast.decl.BClassNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.expression.BGetNameNode;
+import libbun.ast.expression.BGetterNode;
+import libbun.ast.expression.BSetNameNode;
+import libbun.ast.expression.BSetterNode;
+import libbun.ast.statement.BBreakNode;
 import libbun.parser.BToken;
-import libbun.parser.ast.BGetNameNode;
-import libbun.parser.ast.BLetVarNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.BSetNameNode;
-import libbun.parser.ast.ZBlockNode;
-import libbun.parser.ast.ZBreakNode;
-import libbun.parser.ast.ZClassNode;
-import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZGetterNode;
-import libbun.parser.ast.ZSetterNode;
 import libbun.type.BClassField;
 import libbun.type.BClassType;
 import libbun.type.BType;
@@ -106,12 +106,12 @@ public class PerlGenerator extends ZSourceGenerator {
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
-	@Override public void VisitGetterNode(ZGetterNode Node) {
+	@Override public void VisitGetterNode(BGetterNode Node) {
 		this.GenerateCode(null, Node.RecvNode());
 		this.CurrentBuilder.Append("->{\'", Node.GetName(), "\'} = ");
 	}
 
-	@Override public void VisitSetterNode(ZSetterNode Node) {
+	@Override public void VisitSetterNode(BSetterNode Node) {
 		this.GenerateCode(null, Node.RecvNode());
 		this.CurrentBuilder.Append("->{\'", Node.GetName(), "\'}");
 		this.GenerateCode(null, Node.ExprNode());
@@ -150,7 +150,7 @@ public class PerlGenerator extends ZSourceGenerator {
 	//	}
 
 
-	@Override public void VisitBreakNode(ZBreakNode Node) {
+	@Override public void VisitBreakNode(BBreakNode Node) {
 		this.CurrentBuilder.Append("last");
 	}
 
@@ -159,7 +159,7 @@ public class PerlGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = shift");
 	}
 
-	@Override public void VisitFunctionNode(ZFunctionNode Node) {
+	@Override public void VisitFunctionNode(BFunctionNode Node) {
 		this.CurrentBuilder.Append("sub");
 		if(Node.FuncName() != null) {
 			this.CurrentBuilder.AppendWhiteSpace();
@@ -170,8 +170,8 @@ public class PerlGenerator extends ZSourceGenerator {
 		//		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 		this.CurrentBuilder.Append(this.SemiColon);
 		@Var BNode BlockNode = Node.BlockNode();
-		if(BlockNode instanceof ZBlockNode) {
-			this.VisitStmtList((ZBlockNode)BlockNode);
+		if(BlockNode instanceof BBlockNode) {
+			this.VisitStmtList((BBlockNode)BlockNode);
 		}
 		this.CurrentBuilder.Append(this.SemiColon);
 		this.CurrentBuilder.UnIndent();
@@ -203,7 +203,7 @@ public class PerlGenerator extends ZSourceGenerator {
 		return BLib._QuoteString(this.NameClass(ClassType));
 	}
 
-	@Override public void VisitClassNode(ZClassNode Node) {
+	@Override public void VisitClassNode(BClassNode Node) {
 		this.CurrentBuilder.Append("sub _Init", this.NameClass(Node.ClassType), "{");
 		this.CurrentBuilder.Indent();
 		this.CurrentBuilder.AppendNewLine();

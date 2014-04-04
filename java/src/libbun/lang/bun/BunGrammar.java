@@ -29,8 +29,8 @@ import libbun.type.BClassType;
 import libbun.type.BFuncType;
 import libbun.type.BGenericType;
 import libbun.type.BType;
-import libbun.util.Var;
 import libbun.util.BMatchFunction;
+import libbun.util.Var;
 
 public class BunGrammar {
 	public static void ImportGrammar(BNameSpace NameSpace) {
@@ -54,9 +54,9 @@ public class BunGrammar {
 		NameSpace.AppendTokenFunc("\"", new StringLiteralTokenFunction());
 		NameSpace.AppendTokenFunc("1",  new NumberLiteralTokenFunction());
 
-		@Var BMatchFunction MatchUnary     = new UnaryPatternFunction();
-		@Var BMatchFunction MatchBinary    = new BinaryPatternFunction();
-		@Var BMatchFunction MatchComparator    = new ComparatorPatternFunction();
+		@Var BMatchFunction MatchUnary = new UnaryPatternFunction();
+		@Var BMatchFunction MatchBinary = new BinaryPatternFunction();
+		@Var BMatchFunction MatchComparator = new ComparatorPatternFunction();
 
 		NameSpace.DefineExpression("null", new NullPatternFunction());
 		NameSpace.DefineExpression("true", new TruePatternFunction());
@@ -139,13 +139,11 @@ public class BunGrammar {
 		NameSpace.DefineRightExpression("instanceof", BunPrecedence._Instanceof, new InstanceOfPatternFunction());
 
 		NameSpace.DefineStatement("assert", new AssertPatternFunction());
-		NameSpace.DefineStatement("asm", new AsmPatternFunction());
 		NameSpace.DefineStatement("require", new RequirePatternFunction());
 
+		NameSpace.DefineStatement("asm", new AsmPatternFunction());
 		NameSpace.DefineStatement("$DefineName$", new BunDefineNamePatternFunction());
 		NameSpace.DefineStatement("define", new BunDefinePatternFunction());
-
-
 		NameSpace.Generator.LangInfo.AppendGrammarInfo("zen-0.1");
 
 		NameSpace.DefineStatement("try", new TryPatternFunction());

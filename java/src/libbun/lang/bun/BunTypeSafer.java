@@ -24,58 +24,58 @@
 
 package libbun.lang.bun;
 
+import libbun.ast.BBlockNode;
+import libbun.ast.BGroupNode;
+import libbun.ast.BListNode;
+import libbun.ast.BNode;
+import libbun.ast.ZLocalDefinedNode;
+import libbun.ast.binary.BBinaryNode;
+import libbun.ast.binary.BInstanceOfNode;
+import libbun.ast.binary.BOrNode;
+import libbun.ast.binary.BAndNode;
+import libbun.ast.binary.ZComparatorNode;
+import libbun.ast.decl.BClassNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.ZTopLevelNode;
+import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.error.BErrorNode;
+import libbun.ast.expression.BFuncCallNode;
+import libbun.ast.expression.BFuncNameNode;
+import libbun.ast.expression.BGetIndexNode;
+import libbun.ast.expression.BGetNameNode;
+import libbun.ast.expression.BGetterNode;
+import libbun.ast.expression.BMacroNode;
+import libbun.ast.expression.BMethodCallNode;
+import libbun.ast.expression.BNewObjectNode;
+import libbun.ast.expression.BSetIndexNode;
+import libbun.ast.expression.BSetNameNode;
+import libbun.ast.expression.BSetterNode;
+import libbun.ast.literal.BArrayLiteralNode;
+import libbun.ast.literal.BBooleanNode;
+import libbun.ast.literal.BDefaultValueNode;
+import libbun.ast.literal.BFloatNode;
+import libbun.ast.literal.BIntNode;
+import libbun.ast.literal.BNullNode;
+import libbun.ast.literal.BStringNode;
+import libbun.ast.literal.BTypeNode;
+import libbun.ast.literal.ZMapEntryNode;
+import libbun.ast.literal.ZMapLiteralNode;
+import libbun.ast.statement.BBreakNode;
+import libbun.ast.statement.BIfNode;
+import libbun.ast.statement.BReturnNode;
+import libbun.ast.statement.BThrowNode;
+import libbun.ast.statement.BTryNode;
+import libbun.ast.statement.BWhileNode;
+import libbun.ast.unary.BCastNode;
+import libbun.ast.unary.BNotNode;
+import libbun.ast.unary.BUnaryNode;
 import libbun.parser.BGenerator;
 import libbun.parser.BLogger;
 import libbun.parser.BNameSpace;
 import libbun.parser.BNodeUtils;
 import libbun.parser.BToken;
 import libbun.parser.BTypeChecker;
-import libbun.parser.ast.BBooleanNode;
-import libbun.parser.ast.BFloatNode;
-import libbun.parser.ast.BGetNameNode;
-import libbun.parser.ast.BIntNode;
-import libbun.parser.ast.BLetVarNode;
-import libbun.parser.ast.BNode;
-import libbun.parser.ast.BNullNode;
-import libbun.parser.ast.BSetNameNode;
-import libbun.parser.ast.BStringNode;
-import libbun.parser.ast.ZAndNode;
-import libbun.parser.ast.ZArrayLiteralNode;
-import libbun.parser.ast.ZBinaryNode;
-import libbun.parser.ast.ZBlockNode;
-import libbun.parser.ast.ZBreakNode;
-import libbun.parser.ast.ZCastNode;
-import libbun.parser.ast.ZClassNode;
-import libbun.parser.ast.ZComparatorNode;
-import libbun.parser.ast.ZDefaultValueNode;
-import libbun.parser.ast.ZErrorNode;
-import libbun.parser.ast.ZFuncCallNode;
-import libbun.parser.ast.ZFuncNameNode;
-import libbun.parser.ast.ZFunctionNode;
-import libbun.parser.ast.ZGetIndexNode;
-import libbun.parser.ast.ZGetterNode;
-import libbun.parser.ast.ZGroupNode;
-import libbun.parser.ast.ZIfNode;
-import libbun.parser.ast.ZInstanceOfNode;
-import libbun.parser.ast.ZListNode;
-import libbun.parser.ast.ZLocalDefinedNode;
-import libbun.parser.ast.ZMacroNode;
-import libbun.parser.ast.ZMapEntryNode;
-import libbun.parser.ast.ZMapLiteralNode;
-import libbun.parser.ast.ZMethodCallNode;
-import libbun.parser.ast.ZNewObjectNode;
-import libbun.parser.ast.ZNotNode;
-import libbun.parser.ast.ZOrNode;
-import libbun.parser.ast.ZReturnNode;
-import libbun.parser.ast.ZSetIndexNode;
-import libbun.parser.ast.ZSetterNode;
-import libbun.parser.ast.ZThrowNode;
-import libbun.parser.ast.ZTopLevelNode;
-import libbun.parser.ast.ZTryNode;
-import libbun.parser.ast.ZTypeNode;
-import libbun.parser.ast.ZUnaryNode;
-import libbun.parser.ast.ZVarBlockNode;
-import libbun.parser.ast.ZWhileNode;
 import libbun.type.BClassType;
 import libbun.type.BFunc;
 import libbun.type.BFuncType;
@@ -93,7 +93,7 @@ import libbun.util.Var;
 
 public class BunTypeSafer extends BTypeChecker {
 
-	@BField protected ZFunctionNode CurrentFunctionNode = null;
+	@BField protected BFunctionNode CurrentFunctionNode = null;
 
 	public BunTypeSafer(BGenerator Generator) {
 		super(Generator);
@@ -103,7 +103,7 @@ public class BunTypeSafer extends BTypeChecker {
 		return (this.CurrentFunctionNode == null);
 	}
 
-	@Override public void VisitDefaultValueNode(ZDefaultValueNode Node) {
+	@Override public void VisitDefaultValueNode(BDefaultValueNode Node) {
 		@Var BType Type = this.GetContextType();
 		if(Type.IsIntType()) {
 			this.ReturnTypeNode(new BIntNode(Node.ParentNode, null, 0), Type);
@@ -143,7 +143,7 @@ public class BunTypeSafer extends BTypeChecker {
 		this.ReturnTypeNode(Node, BType.StringType);
 	}
 
-	@Override public void VisitArrayLiteralNode(ZArrayLiteralNode Node) {
+	@Override public void VisitArrayLiteralNode(BArrayLiteralNode Node) {
 		@Var BType ArrayType = this.GetContextType();
 		if(ArrayType.IsMapType() && Node.GetListSize() == 0) {
 			/* this is exceptional treatment for map literal */
@@ -245,56 +245,56 @@ public class BunTypeSafer extends BTypeChecker {
 		return BType.VarType;
 	}
 
-	@Override public void VisitGetIndexNode(ZGetIndexNode Node) {
+	@Override public void VisitGetIndexNode(BGetIndexNode Node) {
 		@Var BNameSpace NameSpace = Node.GetNameSpace();
-		this.CheckTypeAt(Node, ZGetIndexNode._Recv, BType.VarType);
-		this.CheckTypeAt(Node, ZGetIndexNode._Index, this.GetIndexType(NameSpace, Node.RecvNode().Type));
+		this.CheckTypeAt(Node, BGetIndexNode._Recv, BType.VarType);
+		this.CheckTypeAt(Node, BGetIndexNode._Index, this.GetIndexType(NameSpace, Node.RecvNode().Type));
 		this.ReturnTypeNode(Node, this.GetElementType(NameSpace, Node.RecvNode().Type));
 	}
 
-	@Override public void VisitSetIndexNode(ZSetIndexNode Node) {
+	@Override public void VisitSetIndexNode(BSetIndexNode Node) {
 		@Var BNameSpace NameSpace = Node.GetNameSpace();
-		this.CheckTypeAt(Node, ZSetIndexNode._Recv, BType.VarType);
-		this.CheckTypeAt(Node, ZSetIndexNode._Index, this.GetIndexType(NameSpace, Node.RecvNode().Type));
-		this.CheckTypeAt(Node, ZSetIndexNode._Expr, this.GetElementType(NameSpace, Node.RecvNode().Type));
+		this.CheckTypeAt(Node, BSetIndexNode._Recv, BType.VarType);
+		this.CheckTypeAt(Node, BSetIndexNode._Index, this.GetIndexType(NameSpace, Node.RecvNode().Type));
+		this.CheckTypeAt(Node, BSetIndexNode._Expr, this.GetElementType(NameSpace, Node.RecvNode().Type));
 		this.ReturnTypeNode(Node, BType.VoidType);
 	}
 
-	@Override public void VisitGroupNode(ZGroupNode Node) {
+	@Override public void VisitGroupNode(BGroupNode Node) {
 		@Var BType ContextType = this.GetContextType();
-		this.CheckTypeAt(Node, ZGroupNode._Expr, ContextType);
-		this.ReturnTypeNode(Node, Node.GetAstType(ZGroupNode._Expr));
+		this.CheckTypeAt(Node, BGroupNode._Expr, ContextType);
+		this.ReturnTypeNode(Node, Node.GetAstType(BGroupNode._Expr));
 	}
 
-	@Override public void VisitMacroNode(ZMacroNode FuncNode) {
+	@Override public void VisitMacroNode(BMacroNode FuncNode) {
 		this.ReturnNode(this.TypeListNodeAsFuncCall(FuncNode, FuncNode.GetFuncType()));
 	}
 
-	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
+	@Override public void VisitFuncCallNode(BFuncCallNode Node) {
 		@Var BNameSpace NameSpace = Node.GetNameSpace();
 		this.TypeCheckNodeList(Node);
-		this.CheckTypeAt(Node, ZFuncCallNode._Functor, BType.VarType);
+		this.CheckTypeAt(Node, BFuncCallNode._Functor, BType.VarType);
 		@Var BNode FuncNode = Node.FunctorNode();
-		@Var BType FuncNodeType = Node.GetAstType(ZFuncCallNode._Functor);
+		@Var BType FuncNodeType = Node.GetAstType(BFuncCallNode._Functor);
 		if(FuncNodeType instanceof BFuncType) {
 			this.ReturnNode(this.TypeListNodeAsFuncCall(Node, (BFuncType)FuncNodeType));
 			return;
 		}
-		if(FuncNode instanceof ZTypeNode) {   // TypeName()..;
+		if(FuncNode instanceof BTypeNode) {   // TypeName()..;
 			@Var String FuncName = FuncNode.Type.GetName();
-			FuncNode = new ZFuncNameNode(Node, FuncNode.SourceToken, FuncName, FuncNode.Type, Node.GetListSize());
-			Node.SetNode(ZFuncCallNode._Functor, FuncNode);
+			FuncNode = new BFuncNameNode(Node, FuncNode.SourceToken, FuncName, FuncNode.Type, Node.GetListSize());
+			Node.SetNode(BFuncCallNode._Functor, FuncNode);
 		}
 		if(FuncNode instanceof BGetNameNode) {
 			@Var String FuncName = ((BGetNameNode)FuncNode).GivenName;
-			FuncNode = new ZFuncNameNode(Node, FuncNode.SourceToken, FuncName, Node.GetRecvType(), Node.GetListSize());
-			Node.SetNode(ZFuncCallNode._Functor, FuncNode);
+			FuncNode = new BFuncNameNode(Node, FuncNode.SourceToken, FuncName, Node.GetRecvType(), Node.GetListSize());
+			Node.SetNode(BFuncCallNode._Functor, FuncNode);
 		}
-		if(FuncNode instanceof ZFuncNameNode) {
-			ZFuncNameNode FuncNameNode = (ZFuncNameNode)FuncNode;
+		if(FuncNode instanceof BFuncNameNode) {
+			BFuncNameNode FuncNameNode = (BFuncNameNode)FuncNode;
 			@Var BFunc Func = this.LookupFunc(NameSpace, FuncNameNode.FuncName, FuncNameNode.RecvType, FuncNameNode.FuncParamSize);
 			if(Func instanceof BMacroFunc) {
-				@Var ZMacroNode MacroNode = Node.ToMacroNode((BMacroFunc)Func);
+				@Var BMacroNode MacroNode = Node.ToMacroNode((BMacroFunc)Func);
 				this.ReturnNode(this.TypeListNodeAsFuncCall(MacroNode, Func.GetFuncType()));
 				return;
 			}
@@ -305,7 +305,7 @@ public class BunTypeSafer extends BTypeChecker {
 			this.ReturnTypeNode(Node, BType.VarType);
 		}
 		else {
-			this.ReturnNode(new ZErrorNode(Node, "not function: " + FuncNodeType + " of node " + Node.FunctorNode()));
+			this.ReturnNode(new BErrorNode(Node, "not function: " + FuncNodeType + " of node " + Node.FunctorNode()));
 		}
 	}
 
@@ -326,14 +326,14 @@ public class BunTypeSafer extends BTypeChecker {
 	}
 
 	private BNode UndefinedFieldNode(BNode Node, String Name) {
-		return new ZErrorNode(Node, "undefined field: " + Name + " of " + Node.GetAstType(ZGetterNode._Recv));
+		return new BErrorNode(Node, "undefined field: " + Name + " of " + Node.GetAstType(BGetterNode._Recv));
 	}
 
-	@Override public void VisitGetterNode(ZGetterNode Node) {
-		this.CheckTypeAt(Node, ZGetterNode._Recv, BType.VarType);
+	@Override public void VisitGetterNode(BGetterNode Node) {
+		this.CheckTypeAt(Node, BGetterNode._Recv, BType.VarType);
 		@Var BNode RecvNode = Node.RecvNode();
 		if(!RecvNode.IsUntyped()) {
-			@Var BType FieldType = this.LookupFieldType(Node.GetNameSpace(), Node.GetAstType(ZGetterNode._Recv), Node.GetName());
+			@Var BType FieldType = this.LookupFieldType(Node.GetNameSpace(), Node.GetAstType(BGetterNode._Recv), Node.GetName());
 			if(FieldType.IsVoidType()) {
 				this.ReturnNode(this.UndefinedFieldNode(Node, Node.GetName()));
 				return;
@@ -354,16 +354,16 @@ public class BunTypeSafer extends BTypeChecker {
 		this.ReturnTypeNode(Node, BType.VarType);
 	}
 
-	@Override public void VisitSetterNode(ZSetterNode Node) {
-		this.CheckTypeAt(Node, ZSetterNode._Recv, BType.VarType);
+	@Override public void VisitSetterNode(BSetterNode Node) {
+		this.CheckTypeAt(Node, BSetterNode._Recv, BType.VarType);
 		if(!Node.RecvNode().IsUntyped()) {
 			@Var BNameSpace NameSpace = Node.GetNameSpace();
-			@Var BType FieldType = this.LookupSetterType(NameSpace, Node.GetAstType(ZSetterNode._Recv), Node.GetName());
+			@Var BType FieldType = this.LookupSetterType(NameSpace, Node.GetAstType(BSetterNode._Recv), Node.GetName());
 			if(FieldType.IsVoidType()) {
 				this.ReturnNode(this.UndefinedFieldNode(Node, Node.GetName()));
 				return;
 			}
-			this.CheckTypeAt(Node, ZSetterNode._Expr, FieldType);
+			this.CheckTypeAt(Node, BSetterNode._Expr, FieldType);
 			this.ReturnTypeNode(Node, BType.VoidType);
 		}
 		else {
@@ -372,7 +372,7 @@ public class BunTypeSafer extends BTypeChecker {
 		}
 	}
 
-	private void VisitListAsNativeMethod(BNode Node, BType RecvType, String MethodName, ZListNode List) {
+	private void VisitListAsNativeMethod(BNode Node, BType RecvType, String MethodName, BListNode List) {
 		@Var BFuncType FuncType = this.Generator.GetMethodFuncType(RecvType, MethodName, List);
 		if(FuncType != null) {
 			if(!FuncType.IsVarType()) {
@@ -399,26 +399,26 @@ public class BunTypeSafer extends BTypeChecker {
 		this.ReturnErrorNode(Node, null, Message);
 	}
 
-	@Override public void VisitMethodCallNode(ZMethodCallNode Node) {
-		this.CheckTypeAt(Node, ZMethodCallNode._Recv, BType.VarType);
+	@Override public void VisitMethodCallNode(BMethodCallNode Node) {
+		this.CheckTypeAt(Node, BMethodCallNode._Recv, BType.VarType);
 		@Var BNameSpace NameSpace = Node.GetNameSpace();
 		@Var BNode RecvNode = Node.RecvNode();
 		if(!RecvNode.IsUntyped()) {
-			@Var BType FieldType = this.LookupFieldType(NameSpace, Node.GetAstType(ZMethodCallNode._Recv), Node.MethodName());
+			@Var BType FieldType = this.LookupFieldType(NameSpace, Node.GetAstType(BMethodCallNode._Recv), Node.MethodName());
 			if(FieldType instanceof BFuncType) {
 				@Var BFuncType FieldFuncType = (BFuncType)FieldType;
-				@Var ZFuncCallNode FuncCall = Node.ToGetterFuncCall(FieldFuncType);
+				@Var BFuncCallNode FuncCall = Node.ToGetterFuncCall(FieldFuncType);
 				this.ReturnNode(this.TypeListNodeAsFuncCall(FuncCall, FieldFuncType));
 				return;
 			}
 			@Var int FuncParamSize = Node.GetListSize() + 1;
-			@Var BFunc Func = this.LookupFunc(NameSpace, Node.MethodName(), Node.GetAstType(ZMethodCallNode._Recv), FuncParamSize);
+			@Var BFunc Func = this.LookupFunc(NameSpace, Node.MethodName(), Node.GetAstType(BMethodCallNode._Recv), FuncParamSize);
 			if(Func != null) {
-				@Var ZListNode FuncCallNode = Node.ToFuncCallNode(this, Func, RecvNode);
+				@Var BListNode FuncCallNode = Node.ToFuncCallNode(this, Func, RecvNode);
 				this.ReturnNode(this.TypeListNodeAsFuncCall(FuncCallNode, Func.GetFuncType()));
 				return;
 			}
-			this.VisitListAsNativeMethod(Node, Node.GetAstType(ZMethodCallNode._Recv), Node.MethodName(), Node);
+			this.VisitListAsNativeMethod(Node, Node.GetAstType(BMethodCallNode._Recv), Node.MethodName(), Node);
 			return;
 		}
 		this.TypeCheckNodeList(Node);
@@ -443,7 +443,7 @@ public class BunTypeSafer extends BTypeChecker {
 		this.ReturnTypeNode(Node, BType.VarType);
 	}
 
-	@Override public void VisitNewObjectNode(ZNewObjectNode Node) {
+	@Override public void VisitNewObjectNode(BNewObjectNode Node) {
 		@Var BNameSpace NameSpace = Node.GetNameSpace();
 		@Var BType ContextType = this.GetContextType();
 		this.TypeCheckNodeList(Node);
@@ -457,7 +457,7 @@ public class BunTypeSafer extends BTypeChecker {
 		@Var int FuncParamSize = Node.GetListSize() + 1;
 		@Var BFunc Func = this.LookupFunc(NameSpace, Node.ClassType().GetName(), Node.ClassType(), FuncParamSize);
 		if(Func != null) {
-			@Var ZListNode FuncCall = Node.ToFuncCallNode(NameSpace.Generator.TypeChecker, Func);
+			@Var BListNode FuncCall = Node.ToFuncCallNode(NameSpace.Generator.TypeChecker, Func);
 			this.ReturnNode(this.TypeListNodeAsFuncCall(FuncCall, Func.GetFuncType()));
 			return;
 		}
@@ -469,22 +469,22 @@ public class BunTypeSafer extends BTypeChecker {
 		}
 	}
 
-	@Override public void VisitUnaryNode(ZUnaryNode Node) {
-		this.CheckTypeAt(Node, ZUnaryNode._Recv, BType.VarType);
+	@Override public void VisitUnaryNode(BUnaryNode Node) {
+		this.CheckTypeAt(Node, BUnaryNode._Recv, BType.VarType);
 		this.ReturnTypeNode(Node, Node.RecvNode().Type);
 	}
 
-	@Override public void VisitNotNode(ZNotNode Node) {
-		this.CheckTypeAt(Node, ZNotNode._Recv, BType.BooleanType);
+	@Override public void VisitNotNode(BNotNode Node) {
+		this.CheckTypeAt(Node, BNotNode._Recv, BType.BooleanType);
 		this.ReturnTypeNode(Node, BType.BooleanType);
 	}
 
-	@Override public void VisitCastNode(ZCastNode Node) {
+	@Override public void VisitCastNode(BCastNode Node) {
 		@Var BType ContextType = this.GetContextType();
 		if(Node.CastType().IsVarType()) {
 			Node.Type = ContextType;
 		}
-		this.TryTypeAt(Node, ZCastNode._Expr, Node.CastType());
+		this.TryTypeAt(Node, BCastNode._Expr, Node.CastType());
 		@Var BType ExprType = Node.ExprNode().Type;
 		if(Node.Type.IsVarType() || ExprType.IsVarType()) {
 			this.ReturnNode(Node);
@@ -495,7 +495,7 @@ public class BunTypeSafer extends BTypeChecker {
 			return;
 		}
 		if(ExprType.Accept(Node.Type)) {
-			this.ReturnNode(this.CreateStupidCastNode(Node.Type, Node.ExprNode(), Node.GetAstToken(ZCastNode._TypeInfo), "unsafe downcast"));
+			this.ReturnNode(this.CreateStupidCastNode(Node.Type, Node.ExprNode(), Node.GetAstToken(BCastNode._TypeInfo), "unsafe downcast"));
 			return;
 		}
 		else {
@@ -505,13 +505,13 @@ public class BunTypeSafer extends BTypeChecker {
 				return;
 			}
 		}
-		this.ReturnNode(this.CreateStupidCastNode(Node.Type, Node.ExprNode(), Node.GetAstToken(ZCastNode._TypeInfo), "undefined converter"));
+		this.ReturnNode(this.CreateStupidCastNode(Node.Type, Node.ExprNode(), Node.GetAstToken(BCastNode._TypeInfo), "undefined converter"));
 	}
 
-	@Override public void VisitInstanceOfNode(ZInstanceOfNode Node) {
-		this.CheckTypeAt(Node, ZBinaryNode._Left, BType.VarType);
+	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
+		this.CheckTypeAt(Node, BBinaryNode._Left, BType.VarType);
 		if(!(Node.TargetType() instanceof BClassType)) {
-			BLogger._LogWarning(Node.GetAstToken(ZInstanceOfNode._TypeInfo), "instanceof takes a class type; the result is implementation-dependant.");
+			BLogger._LogWarning(Node.GetAstToken(BInstanceOfNode._TypeInfo), "instanceof takes a class type; the result is implementation-dependant.");
 		}
 		this.ReturnTypeNode(Node, BType.BooleanType);
 	}
@@ -528,59 +528,59 @@ public class BunTypeSafer extends BTypeChecker {
 		return BType.VarType;
 	}
 
-	private void UnifyBinaryNodeType(ZBinaryNode Node, BType Type) {
-		if(Node.GetAstType(ZBinaryNode._Left).Equals(Type)) {
-			this.CheckTypeAt(Node, ZBinaryNode._Right, Type);
+	private void UnifyBinaryNodeType(BBinaryNode Node, BType Type) {
+		if(Node.GetAstType(BBinaryNode._Left).Equals(Type)) {
+			this.CheckTypeAt(Node, BBinaryNode._Right, Type);
 			return;
 		}
-		if(Node.GetAstType(ZBinaryNode._Right).Equals(Type)) {
-			this.CheckTypeAt(Node, ZBinaryNode._Left, Type);
+		if(Node.GetAstType(BBinaryNode._Right).Equals(Type)) {
+			this.CheckTypeAt(Node, BBinaryNode._Left, Type);
 		}
 	}
 
-	private void UnifyBinaryEnforcedType(ZBinaryNode Node, BType Type) {
-		if(Node.GetAstType(ZBinaryNode._Left).Equals(Type)) {
-			Node.SetNode(ZBinaryNode._Right, this.EnforceNodeType(Node.RightNode(), Type));
+	private void UnifyBinaryEnforcedType(BBinaryNode Node, BType Type) {
+		if(Node.GetAstType(BBinaryNode._Left).Equals(Type)) {
+			Node.SetNode(BBinaryNode._Right, this.EnforceNodeType(Node.RightNode(), Type));
 			return;
 		}
-		if(Node.GetAstType(ZBinaryNode._Right).Equals(Type)) {
-			Node.SetNode(ZBinaryNode._Left, this.EnforceNodeType(Node.LeftNode(), Type));
+		if(Node.GetAstType(BBinaryNode._Right).Equals(Type)) {
+			Node.SetNode(BBinaryNode._Left, this.EnforceNodeType(Node.LeftNode(), Type));
 		}
 	}
 
-	@Override public void VisitBinaryNode(ZBinaryNode Node) {
+	@Override public void VisitBinaryNode(BBinaryNode Node) {
 		@Var BType ContextType = this.GetContextType();
 		@Var BType LeftType = this.GuessBinaryLeftType(Node.SourceToken, ContextType);
 		@Var BType RightType = this.GuessBinaryLeftType(Node.SourceToken, ContextType);
-		this.CheckTypeAt(Node, ZBinaryNode._Left, LeftType);
-		this.CheckTypeAt(Node, ZBinaryNode._Right, RightType);
-		if(!Node.GetAstType(ZBinaryNode._Left).Equals(Node.GetAstType(ZBinaryNode._Right))) {
+		this.CheckTypeAt(Node, BBinaryNode._Left, LeftType);
+		this.CheckTypeAt(Node, BBinaryNode._Right, RightType);
+		if(!Node.GetAstType(BBinaryNode._Left).Equals(Node.GetAstType(BBinaryNode._Right))) {
 			if(Node.SourceToken.EqualsText('+')) {
 				this.UnifyBinaryEnforcedType(Node, BType.StringType);
 			}
 			this.UnifyBinaryNodeType(Node, BType.FloatType);
-			this.CheckTypeAt(Node, ZBinaryNode._Left, Node.GetAstType(ZBinaryNode._Right));
+			this.CheckTypeAt(Node, BBinaryNode._Left, Node.GetAstType(BBinaryNode._Right));
 		}
-		this.ReturnTypeNode(Node.TryMacroNode(this.Generator), Node.GetAstType(ZBinaryNode._Left));
+		this.ReturnTypeNode(Node.TryMacroNode(this.Generator), Node.GetAstType(BBinaryNode._Left));
 	}
 
 	@Override public void VisitComparatorNode(ZComparatorNode Node) {
-		this.CheckTypeAt(Node, ZBinaryNode._Left, BType.VarType);
-		this.TryTypeAt(Node, ZBinaryNode._Right, Node.GetAstType(ZBinaryNode._Left));
+		this.CheckTypeAt(Node, BBinaryNode._Left, BType.VarType);
+		this.TryTypeAt(Node, BBinaryNode._Right, Node.GetAstType(BBinaryNode._Left));
 		this.UnifyBinaryNodeType(Node, BType.FloatType);
 		//this.CheckTypeAt(Node, ZBinaryNode._Right, Node.GetAstType(ZBinaryNode._Left));
 		this.ReturnTypeNode(Node, BType.BooleanType);
 	}
 
-	@Override public void VisitAndNode(ZAndNode Node) {
-		this.CheckTypeAt(Node, ZBinaryNode._Left, BType.BooleanType);
-		this.CheckTypeAt(Node, ZBinaryNode._Right, BType.BooleanType);
+	@Override public void VisitAndNode(BAndNode Node) {
+		this.CheckTypeAt(Node, BBinaryNode._Left, BType.BooleanType);
+		this.CheckTypeAt(Node, BBinaryNode._Right, BType.BooleanType);
 		this.ReturnTypeNode(Node, BType.BooleanType);
 	}
 
-	@Override public void VisitOrNode(ZOrNode Node) {
-		this.CheckTypeAt(Node, ZBinaryNode._Left, BType.BooleanType);
-		this.CheckTypeAt(Node, ZBinaryNode._Right, BType.BooleanType);
+	@Override public void VisitOrNode(BOrNode Node) {
+		this.CheckTypeAt(Node, BBinaryNode._Left, BType.BooleanType);
+		this.CheckTypeAt(Node, BBinaryNode._Right, BType.BooleanType);
 		this.ReturnTypeNode(Node, BType.BooleanType);
 	}
 
@@ -598,7 +598,7 @@ public class BunTypeSafer extends BTypeChecker {
 		}
 	}
 
-	@Override public void VisitBlockNode(ZBlockNode Node) {
+	@Override public void VisitBlockNode(BBlockNode Node) {
 		@Var int i = 0;
 		while(i < Node.GetListSize()) {
 			@Var BNode SubNode = Node.GetListAt(i);
@@ -631,30 +631,30 @@ public class BunTypeSafer extends BTypeChecker {
 		}
 	}
 
-	@Override public void VisitIfNode(ZIfNode Node) {
-		this.CheckTypeAt(Node, ZIfNode._Cond, BType.BooleanType);
-		this.CheckTypeAt(Node, ZIfNode._Then, BType.VoidType);
+	@Override public void VisitIfNode(BIfNode Node) {
+		this.CheckTypeAt(Node, BIfNode._Cond, BType.BooleanType);
+		this.CheckTypeAt(Node, BIfNode._Then, BType.VoidType);
 		if(Node.HasElseNode()) {
-			this.CheckTypeAt(Node, ZIfNode._Else, BType.VoidType);
+			this.CheckTypeAt(Node, BIfNode._Else, BType.VoidType);
 		}
 		this.ReturnTypeNode(Node, BType.VoidType);
 	}
 
-	@Override public void VisitReturnNode(ZReturnNode Node) {
+	@Override public void VisitReturnNode(BReturnNode Node) {
 		if(this.IsTopLevel()) {
 			this.ReturnErrorNode(Node, Node.SourceToken, "only available inside function");
 			return;
 		}
 		@Var BType ReturnType = this.CurrentFunctionNode.ReturnType();
 		if(Node.HasReturnExpr() && ReturnType.IsVoidType()) {
-			Node.AST[ZReturnNode._Expr] = null;
+			Node.AST[BReturnNode._Expr] = null;
 		}
 		else if(!Node.HasReturnExpr() && !ReturnType.IsVarType() && !ReturnType.IsVoidType()) {
 			BLogger._LogWarning(Node.SourceToken, "returning default value of " + ReturnType);
-			Node.SetNode(ZReturnNode._Expr, new ZDefaultValueNode());
+			Node.SetNode(BReturnNode._Expr, new BDefaultValueNode());
 		}
 		if(Node.HasReturnExpr()) {
-			this.CheckTypeAt(Node, ZReturnNode._Expr, ReturnType);
+			this.CheckTypeAt(Node, BReturnNode._Expr, ReturnType);
 		}
 		else {
 			if(ReturnType instanceof BVarType) {
@@ -664,37 +664,37 @@ public class BunTypeSafer extends BTypeChecker {
 		this.ReturnTypeNode(Node, BType.VoidType);
 	}
 
-	@Override public void VisitWhileNode(ZWhileNode Node) {
-		this.CheckTypeAt(Node, ZWhileNode._Cond, BType.BooleanType);
-		this.CheckTypeAt(Node, ZWhileNode._Block, BType.VoidType);
+	@Override public void VisitWhileNode(BWhileNode Node) {
+		this.CheckTypeAt(Node, BWhileNode._Cond, BType.BooleanType);
+		this.CheckTypeAt(Node, BWhileNode._Block, BType.VoidType);
 		if(Node.HasNextNode()) {
-			this.CheckTypeAt(Node, ZWhileNode._Next, BType.VoidType);
+			this.CheckTypeAt(Node, BWhileNode._Next, BType.VoidType);
 			Node.BlockNode().Append(Node.NextNode());
 		}
 		this.ReturnTypeNode(Node, BType.VoidType);
 	}
 
-	@Override public void VisitBreakNode(ZBreakNode Node) {
+	@Override public void VisitBreakNode(BBreakNode Node) {
 		this.ReturnTypeNode(Node, BType.VoidType);
 	}
 
-	@Override public void VisitThrowNode(ZThrowNode Node) {
-		this.CheckTypeAt(Node, ZThrowNode._Expr, BType.VarType);
+	@Override public void VisitThrowNode(BThrowNode Node) {
+		this.CheckTypeAt(Node, BThrowNode._Expr, BType.VarType);
 		this.ReturnTypeNode(Node, BType.VoidType);
 	}
 
-	@Override public void VisitTryNode(ZTryNode Node) {
-		this.CheckTypeAt(Node, ZTryNode._Try, BType.VoidType);
+	@Override public void VisitTryNode(BTryNode Node) {
+		this.CheckTypeAt(Node, BTryNode._Try, BType.VoidType);
 		if(Node.HasCatchBlockNode()) {
 			@Var BNameSpace NameSpace = Node.CatchBlockNode().GetBlockNameSpace();
 			@Var BLetVarNode VarNode = new BLetVarNode(Node, BLetVarNode._IsReadOnly, null, null);
 			VarNode.GivenName = Node.ExceptionName();
 			VarNode.GivenType = BClassType._ObjectType;
 			NameSpace.SetSymbol(VarNode.GetGivenName(), VarNode);
-			this.CheckTypeAt(Node, ZTryNode._Catch, BType.VoidType);
+			this.CheckTypeAt(Node, BTryNode._Catch, BType.VoidType);
 		}
 		if(Node.HasFinallyBlockNode()) {
-			this.CheckTypeAt(Node, ZTryNode._Finally, BType.VoidType);
+			this.CheckTypeAt(Node, BTryNode._Finally, BType.VoidType);
 		}
 		this.ReturnTypeNode(Node, BType.VoidType);
 	}
@@ -714,7 +714,7 @@ public class BunTypeSafer extends BTypeChecker {
 		}
 	}
 
-	@Override public void DefineFunction(ZFunctionNode FunctionNode, boolean Enforced) {
+	@Override public void DefineFunction(BFunctionNode FunctionNode, boolean Enforced) {
 		if(FunctionNode.FuncName() != null && FunctionNode.ResolvedFuncType == null) {
 			@Var BFuncType FuncType = FunctionNode.GetFuncType();
 			if(Enforced || !FuncType.IsVarType()) {
@@ -730,7 +730,7 @@ public class BunTypeSafer extends BTypeChecker {
 		}
 	}
 
-	private void PushFunctionNode(BNameSpace NameSpace, ZFunctionNode FunctionNode, BType ContextType) {
+	private void PushFunctionNode(BNameSpace NameSpace, BFunctionNode FunctionNode, BType ContextType) {
 		@Var BFuncType FuncType = null;
 		if(ContextType instanceof BFuncType) {
 			FuncType = (BFuncType)ContextType;
@@ -758,7 +758,7 @@ public class BunTypeSafer extends BTypeChecker {
 		this.VarScope = this.VarScope.Parent;
 	}
 
-	@Override public void VisitFunctionNode(ZFunctionNode Node) {
+	@Override public void VisitFunctionNode(BFunctionNode Node) {
 		//LibZen._PrintDebug("name="+Node.FuncName+ ", Type=" + Node.Type + ", IsTopLevel=" + this.IsTopLevel());
 		@Var BType ContextType = this.GetContextType();
 		if(Node.IsUntyped()) {
@@ -783,7 +783,7 @@ public class BunTypeSafer extends BTypeChecker {
 		}
 		if(!BNodeUtils._HasFunctionBreak(Node.BlockNode())) {
 			//System.out.println("adding return.. ");
-			Node.BlockNode().SetNode(BNode._AppendIndex, new ZReturnNode(Node));
+			Node.BlockNode().SetNode(BNode._AppendIndex, new BReturnNode(Node));
 		}
 		@Var BNameSpace NameSpace = Node.BlockNode().GetBlockNameSpace();
 		this.PushFunctionNode(NameSpace, Node, ContextType);
@@ -795,18 +795,18 @@ public class BunTypeSafer extends BTypeChecker {
 		this.ReturnNode(Node);
 	}
 
-	@Override public void VisitClassNode(ZClassNode Node) {
+	@Override public void VisitClassNode(BClassNode Node) {
 		@Var BNameSpace NameSpace = Node.GetNameSpace();
 		@Var BType ClassType = NameSpace.GetType(Node.ClassName(), Node.SourceToken, true/*IsCreation*/);
 		if(ClassType instanceof BClassType) {
 			if(!ClassType.IsOpenType()) {
-				this.ReturnNode(new ZErrorNode(Node, Node.ClassName() + " has been defined."));
+				this.ReturnNode(new BErrorNode(Node, Node.ClassName() + " has been defined."));
 				return;
 			}
 			Node.ClassType = (BClassType)ClassType;
 		}
 		else {
-			this.ReturnNode(new ZErrorNode(Node, Node.ClassName() + " is not a Zen class."));
+			this.ReturnNode(new BErrorNode(Node, Node.ClassName() + " is not a Zen class."));
 			return;
 		}
 		//System.out.println(" B NodeClass.ToOpen="+Node.ClassType+", IsOpenType="+Node.ClassType.IsOpenType());
@@ -815,7 +815,7 @@ public class BunTypeSafer extends BTypeChecker {
 				Node.ClassType.EnforceSuperClass((BClassType)Node.SuperType());
 			}
 			else {
-				this.ReturnNode(new ZErrorNode(Node.ParentNode, Node.GetAstToken(ZClassNode._TypeInfo), "" + Node.SuperType() + " cannot be extended."));
+				this.ReturnNode(new BErrorNode(Node.ParentNode, Node.GetAstToken(BClassNode._TypeInfo), "" + Node.SuperType() + " cannot be extended."));
 				return;
 			}
 		}

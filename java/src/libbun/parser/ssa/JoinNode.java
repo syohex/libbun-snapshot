@@ -1,7 +1,7 @@
 package libbun.parser.ssa;
 
-import libbun.parser.ast.ZLocalDefinedNode;
-import libbun.parser.ast.BNode;
+import libbun.ast.BNode;
+import libbun.ast.ZLocalDefinedNode;
 import libbun.util.Var;
 import libbun.util.BArray;
 
