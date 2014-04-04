@@ -24,31 +24,31 @@
 
 package libbun.encode;
 
-import libbun.ast.BArrayLiteralNode;
 import libbun.ast.BBlockNode;
-import libbun.ast.BBreakNode;
-import libbun.ast.BErrorNode;
-import libbun.ast.BFunctionNode;
-import libbun.ast.BGetIndexNode;
 import libbun.ast.BGroupNode;
-import libbun.ast.BIfNode;
-import libbun.ast.BLetVarNode;
 import libbun.ast.BNode;
-import libbun.ast.BReturnNode;
-import libbun.ast.BSetIndexNode;
-import libbun.ast.BSetNameNode;
-import libbun.ast.BThrowNode;
-import libbun.ast.BTryNode;
-import libbun.ast.BWhileNode;
-import libbun.ast.ZFuncCallNode;
-import libbun.ast.ZFuncNameNode;
-import libbun.ast.ZVarBlockNode;
 import libbun.ast.binary.BBinaryNode;
-import libbun.ast.binary.BNotNode;
 import libbun.ast.binary.BOrNode;
-import libbun.ast.binary.BUnaryNode;
 import libbun.ast.binary.BAndNode;
 import libbun.ast.binary.ZComparatorNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.error.BErrorNode;
+import libbun.ast.expression.BFuncCallNode;
+import libbun.ast.expression.BFuncNameNode;
+import libbun.ast.expression.BGetIndexNode;
+import libbun.ast.expression.BSetIndexNode;
+import libbun.ast.expression.BSetNameNode;
+import libbun.ast.literal.BArrayLiteralNode;
+import libbun.ast.statement.BBreakNode;
+import libbun.ast.statement.BIfNode;
+import libbun.ast.statement.BReturnNode;
+import libbun.ast.statement.BThrowNode;
+import libbun.ast.statement.BTryNode;
+import libbun.ast.statement.BWhileNode;
+import libbun.ast.unary.BNotNode;
+import libbun.ast.unary.BUnaryNode;
 import libbun.parser.BToken;
 import libbun.type.BFuncType;
 import libbun.type.BType;
@@ -233,9 +233,9 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
+	@Override public void VisitFuncCallNode(BFuncCallNode Node) {
 		this.CurrentBuilder.Append("(");
-		@Var ZFuncNameNode FuncNameNode = Node.FuncNameNode();
+		@Var BFuncNameNode FuncNameNode = Node.FuncNameNode();
 		if(FuncNameNode != null) {
 			this.GenerateFuncName(FuncNameNode);
 		}

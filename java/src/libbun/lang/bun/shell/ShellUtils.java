@@ -3,8 +3,8 @@ package libbun.lang.bun.shell;
 import java.io.File;
 
 import libbun.ast.BNode;
-import libbun.ast.BStringNode;
 import libbun.ast.binary.BBinaryNode;
+import libbun.ast.literal.BStringNode;
 import libbun.parser.BSource;
 import libbun.parser.BSyntax;
 import libbun.parser.BToken;

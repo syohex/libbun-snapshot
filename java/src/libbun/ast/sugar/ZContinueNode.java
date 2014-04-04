@@ -1,15 +1,15 @@
 package libbun.ast.sugar;
 
 import libbun.ast.BBlockNode;
-import libbun.ast.BBooleanNode;
-import libbun.ast.BBreakNode;
-import libbun.ast.BErrorNode;
 import libbun.ast.BNode;
-import libbun.ast.BSetNameNode;
-import libbun.ast.BWhileNode;
 import libbun.ast.ZDesugarNode;
 import libbun.ast.ZSugarNode;
-import libbun.ast.ZVarBlockNode;
+import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.error.BErrorNode;
+import libbun.ast.expression.BSetNameNode;
+import libbun.ast.literal.BBooleanNode;
+import libbun.ast.statement.BBreakNode;
+import libbun.ast.statement.BWhileNode;
 import libbun.parser.BGenerator;
 import libbun.parser.BTypeChecker;
 import libbun.type.BType;

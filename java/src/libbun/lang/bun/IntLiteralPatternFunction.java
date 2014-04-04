@@ -1,7 +1,7 @@
 package libbun.lang.bun;
 
-import libbun.ast.BIntNode;
 import libbun.ast.BNode;
+import libbun.ast.literal.BIntNode;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
 import libbun.util.BLib;

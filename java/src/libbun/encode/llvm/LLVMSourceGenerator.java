@@ -28,49 +28,49 @@ package libbun.encode.llvm;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import libbun.ast.BArrayLiteralNode;
 import libbun.ast.BBlockNode;
-import libbun.ast.BBooleanNode;
-import libbun.ast.BBreakNode;
-import libbun.ast.BCastNode;
-import libbun.ast.BConstNode;
-import libbun.ast.BErrorNode;
-import libbun.ast.BFloatNode;
-import libbun.ast.BFunctionNode;
-import libbun.ast.BGetIndexNode;
-import libbun.ast.BGetNameNode;
-import libbun.ast.BGetterNode;
 import libbun.ast.BGroupNode;
-import libbun.ast.BIfNode;
-import libbun.ast.BIntNode;
-import libbun.ast.BLetVarNode;
 import libbun.ast.BListNode;
-import libbun.ast.BNewObjectNode;
 import libbun.ast.BNode;
-import libbun.ast.BNullNode;
-import libbun.ast.BReturnNode;
-import libbun.ast.BSetIndexNode;
-import libbun.ast.BSetNameNode;
-import libbun.ast.BSetterNode;
-import libbun.ast.BStringNode;
-import libbun.ast.BThrowNode;
-import libbun.ast.BTryNode;
-import libbun.ast.BWhileNode;
-import libbun.ast.ZClassNode;
-import libbun.ast.ZFuncCallNode;
-import libbun.ast.ZFuncNameNode;
-import libbun.ast.ZInstanceOfNode;
 import libbun.ast.ZLocalDefinedNode;
-import libbun.ast.ZMacroNode;
-import libbun.ast.ZMapLiteralNode;
-import libbun.ast.ZMethodCallNode;
-import libbun.ast.ZVarBlockNode;
 import libbun.ast.binary.BBinaryNode;
-import libbun.ast.binary.BNotNode;
+import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BOrNode;
-import libbun.ast.binary.BUnaryNode;
 import libbun.ast.binary.BAndNode;
 import libbun.ast.binary.ZComparatorNode;
+import libbun.ast.decl.BClassNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.error.BErrorNode;
+import libbun.ast.expression.BFuncCallNode;
+import libbun.ast.expression.BFuncNameNode;
+import libbun.ast.expression.BGetIndexNode;
+import libbun.ast.expression.BGetNameNode;
+import libbun.ast.expression.BGetterNode;
+import libbun.ast.expression.BMacroNode;
+import libbun.ast.expression.BMethodCallNode;
+import libbun.ast.expression.BNewObjectNode;
+import libbun.ast.expression.BSetIndexNode;
+import libbun.ast.expression.BSetNameNode;
+import libbun.ast.expression.BSetterNode;
+import libbun.ast.literal.BArrayLiteralNode;
+import libbun.ast.literal.BBooleanNode;
+import libbun.ast.literal.BConstNode;
+import libbun.ast.literal.BFloatNode;
+import libbun.ast.literal.BIntNode;
+import libbun.ast.literal.BNullNode;
+import libbun.ast.literal.BStringNode;
+import libbun.ast.literal.ZMapLiteralNode;
+import libbun.ast.statement.BBreakNode;
+import libbun.ast.statement.BIfNode;
+import libbun.ast.statement.BReturnNode;
+import libbun.ast.statement.BThrowNode;
+import libbun.ast.statement.BTryNode;
+import libbun.ast.statement.BWhileNode;
+import libbun.ast.unary.BCastNode;
+import libbun.ast.unary.BNotNode;
+import libbun.ast.unary.BUnaryNode;
 import libbun.encode.ZSourceBuilder;
 import libbun.encode.ZSourceGenerator;
 import libbun.parser.BLogger;
@@ -177,7 +177,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	@BField private final ArrayList<String> GlobalSymbolList;
 	@BField private final ArrayList<String> ExternalStructList;
 	@BField private final HashMap<String, String> ExternalFunctionMap;
-	@BField private final HashMap<String, ZClassNode> ClassFieldMap;
+	@BField private final HashMap<String, BClassNode> ClassFieldMap;
 	@BField private LLVMScope CurrentScope;
 
 	private static final boolean WithInitValue = true;
@@ -206,7 +206,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		this.GlobalSymbolList = new ArrayList<String>();
 		this.ExternalStructList = new ArrayList<String>();
 		this.ExternalFunctionMap = new HashMap<String, String>();
-		this.ClassFieldMap = new HashMap<String, ZClassNode>();
+		this.ClassFieldMap = new HashMap<String, BClassNode>();
 		this.CurrentScope = null;
 	}
 
@@ -226,7 +226,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 			this.GlobalSymbolList.add(Symbol);
 		}
 	}
-	private void DefineClass(String ClassName, ZClassNode Node) {
+	private void DefineClass(String ClassName, BClassNode Node) {
 		this.ClassFieldMap.put(ClassName, Node);
 	}
 	private String ToLocalSymbol(String Symbol) {
@@ -661,7 +661,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitClassNode(ZClassNode Node) {
+	@Override public void VisitClassNode(BClassNode Node) {
 		@Var LLVMScope PushedScope = this.CurrentScope;
 		this.CurrentScope = new LLVMScope();
 
@@ -756,14 +756,14 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitFuncCallNode(ZFuncCallNode Node) {
+	public void VisitFuncCallNode(BFuncCallNode Node) {
 		@Var BFuncType FuncType = Node.GetFuncType();
 		if(FuncType == null) {
 			BLogger._LogError(Node.SourceToken, "Can't interpret this function call");
 			return;
 		}
 		@Var BType ReturnType = FuncType.GetReturnType();
-		@Var ZFuncNameNode FuncNameNode = Node.FuncNameNode();
+		@Var BFuncNameNode FuncNameNode = Node.FuncNameNode();
 		if(FuncNameNode != null) {
 			@Var String FuncName = FuncNameNode.GetSignature();
 			this.DefineGlobalSymbol(FuncName);
@@ -991,7 +991,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitInstanceOfNode(ZInstanceOfNode Node) {
+	public void VisitInstanceOfNode(BInstanceOfNode Node) {
 		// TODO
 	}
 
@@ -1023,7 +1023,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		//this.Writer.PushValue(this.ToGlobalSymbol(Node.GlobalName));
 	}
 
-	@Override public void VisitMacroNode(ZMacroNode Node) {
+	@Override public void VisitMacroNode(BMacroNode Node) {
 		@Var StringBuilder sb = new StringBuilder();
 
 		@Var String TempVar = "";
@@ -1094,7 +1094,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitMethodCallNode(ZMethodCallNode Node) {
+	public void VisitMethodCallNode(BMethodCallNode Node) {
 		// TODO
 	}
 
@@ -1494,9 +1494,9 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		}
 	}
 
-	private void VisitFieldList(ZClassNode ClassNode, boolean WithInitValue) {
+	private void VisitFieldList(BClassNode ClassNode, boolean WithInitValue) {
 		if(ClassNode.SuperType() != BClassType._ObjectType) {
-			ZClassNode SuperClassNode = this.ClassFieldMap.get(ClassNode.SuperType().ShortName);
+			BClassNode SuperClassNode = this.ClassFieldMap.get(ClassNode.SuperType().ShortName);
 			this.VisitFieldList(SuperClassNode, WithInitValue);
 		}
 		@Var int i = 0;
@@ -1572,7 +1572,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	}
 	private void GetObjectElementOffset(BType Type, String FieldName) {
 		@Var String ClassName = Type.ShortName;
-		@Var ZClassNode ClassNode = this.ClassFieldMap.get(ClassName);
+		@Var BClassNode ClassNode = this.ClassFieldMap.get(ClassName);
 		if(ClassNode != null) {
 			@Var int Size = ClassNode.GetListSize();
 			@Var int i = 0;
@@ -1594,7 +1594,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 	private int GetClassFieldSize(BType Type) {
 		if(Type != null) {
 			@Var String ClassName = Type.ShortName;
-			@Var ZClassNode ClassNode = this.ClassFieldMap.get(ClassName);
+			@Var BClassNode ClassNode = this.ClassFieldMap.get(ClassName);
 			if(ClassNode != null) {
 				return ClassNode.GetListSize() + this.GetClassFieldSize(Type.RefType);
 			}

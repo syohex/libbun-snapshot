@@ -25,8 +25,8 @@
 
 package libbun.parser;
 import libbun.ast.BBlockNode;
-import libbun.ast.BLetVarNode;
 import libbun.ast.BNode;
+import libbun.ast.decl.BLetVarNode;
 import libbun.type.BClassType;
 import libbun.type.BType;
 import libbun.util.BField;

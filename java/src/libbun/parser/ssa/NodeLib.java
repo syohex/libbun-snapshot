@@ -1,9 +1,9 @@
 package libbun.parser.ssa;
 
-import libbun.ast.BLetVarNode;
 import libbun.ast.BNode;
-import libbun.ast.BSetNameNode;
-import libbun.ast.ZVarBlockNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.expression.BSetNameNode;
 import libbun.parser.BGenerator;
 import libbun.type.BType;
 

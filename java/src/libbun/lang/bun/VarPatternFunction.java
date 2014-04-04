@@ -1,8 +1,8 @@
 package libbun.lang.bun;
 
-import libbun.ast.BLetVarNode;
 import libbun.ast.BNode;
-import libbun.ast.ZVarBlockNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.ZVarBlockNode;
 import libbun.parser.BTokenContext;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;

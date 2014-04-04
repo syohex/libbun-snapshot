@@ -1,5 +1,7 @@
 package libbun.ast;
 
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.literal.BDefaultValueNode;
 import libbun.type.BType;
 import libbun.util.BField;
 

@@ -1,7 +1,7 @@
 package libbun.lang.bun;
 
 import libbun.ast.BNode;
-import libbun.ast.ZMapEntryNode;
+import libbun.ast.literal.ZMapEntryNode;
 import libbun.parser.BTokenContext;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;

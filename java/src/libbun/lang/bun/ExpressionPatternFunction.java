@@ -1,7 +1,7 @@
 package libbun.lang.bun;
 
-import libbun.ast.BErrorNode;
 import libbun.ast.BNode;
+import libbun.ast.error.BErrorNode;
 import libbun.parser.BNameSpace;
 import libbun.parser.BPatternToken;
 import libbun.parser.BSyntax;

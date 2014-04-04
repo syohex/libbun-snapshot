@@ -25,9 +25,9 @@
 
 package libbun.parser;
 import libbun.ast.BBlockNode;
-import libbun.ast.BErrorNode;
 import libbun.ast.BNode;
 import libbun.ast.ZEmptyNode;
+import libbun.ast.error.BErrorNode;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;

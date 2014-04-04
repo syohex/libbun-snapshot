@@ -1,8 +1,8 @@
 package libbun.lang.bun.shell;
 
-import libbun.ast.BErrorNode;
 import libbun.ast.BNode;
-import libbun.ast.BStringNode;
+import libbun.ast.error.BErrorNode;
+import libbun.ast.literal.BStringNode;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
 import libbun.parser.BToken;

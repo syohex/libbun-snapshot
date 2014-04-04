@@ -24,6 +24,7 @@
 
 package libbun.ast;
 
+import libbun.ast.decl.BLetVarNode;
 import libbun.parser.BNameSpace;
 import libbun.parser.BVisitor;
 import libbun.util.BField;

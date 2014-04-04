@@ -1,12 +1,12 @@
 package libbun.lang.bun.shell;
 
-import libbun.ast.BArrayLiteralNode;
 import libbun.ast.BBlockNode;
-import libbun.ast.BGetNameNode;
 import libbun.ast.BNode;
 import libbun.ast.ZDesugarNode;
-import libbun.ast.ZFuncCallNode;
 import libbun.ast.ZSugarNode;
+import libbun.ast.expression.BFuncCallNode;
+import libbun.ast.expression.BGetNameNode;
+import libbun.ast.literal.BArrayLiteralNode;
 import libbun.parser.BGenerator;
 import libbun.parser.BToken;
 import libbun.parser.BTypeChecker;
@@ -93,7 +93,7 @@ public class CommandNode extends ZSugarNode {
 			ArrayNode.Append(SubArrayNode);
 			CurrentNode = CurrentNode.PipedNextNode;
 		}
-		@Var ZFuncCallNode Node = new ZFuncCallNode(this.ParentNode, new BGetNameNode(this.ParentNode, null, FuncName));
+		@Var BFuncCallNode Node = new BFuncCallNode(this.ParentNode, new BGetNameNode(this.ParentNode, null, FuncName));
 		Node.Append(ArrayNode);
 		return new ZDesugarNode(this, Node);
 	}

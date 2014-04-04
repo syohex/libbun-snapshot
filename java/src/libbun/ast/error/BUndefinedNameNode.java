@@ -1,7 +1,6 @@
 package libbun.ast.error;
 
-import libbun.ast.BErrorNode;
-import libbun.ast.BGetNameNode;
+import libbun.ast.expression.BGetNameNode;
 import libbun.util.BField;
 
 public class BUndefinedNameNode extends BErrorNode {

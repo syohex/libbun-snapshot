@@ -4,12 +4,12 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 import libbun.ast.BBlockNode;
-import libbun.ast.BCastNode;
-import libbun.ast.BFunctionNode;
-import libbun.ast.BLetVarNode;
-import libbun.ast.BThrowNode;
-import libbun.ast.BTryNode;
-import libbun.ast.ZInstanceOfNode;
+import libbun.ast.binary.BInstanceOfNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.statement.BThrowNode;
+import libbun.ast.statement.BTryNode;
+import libbun.ast.unary.BCastNode;
 import libbun.type.BType;
 
 
@@ -76,7 +76,7 @@ public class RubyGenerator extends ZSourceGenerator {
 		// Use method (like 1.to_s) in Ruby.
 	}
 
-	@Override public void VisitInstanceOfNode(ZInstanceOfNode Node) {
+	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
 		// Use method (like "a".is_a?(Object)) in Ruby.
 	}
 

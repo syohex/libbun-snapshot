@@ -2,29 +2,29 @@
 package libbun.encode.erlang;
 
 import libbun.ast.BBlockNode;
-import libbun.ast.BBreakNode;
-import libbun.ast.BCastNode;
-import libbun.ast.BFunctionNode;
-import libbun.ast.BGetIndexNode;
-import libbun.ast.BGetNameNode;
-import libbun.ast.BGetterNode;
-import libbun.ast.BIfNode;
-import libbun.ast.BLetVarNode;
 import libbun.ast.BListNode;
-import libbun.ast.BNewObjectNode;
 import libbun.ast.BNode;
-import libbun.ast.BReturnNode;
-import libbun.ast.BSetNameNode;
-import libbun.ast.BSetterNode;
-import libbun.ast.BWhileNode;
-import libbun.ast.ZClassNode;
-import libbun.ast.ZFuncCallNode;
-import libbun.ast.ZFuncNameNode;
 import libbun.ast.binary.BBinaryNode;
-import libbun.ast.binary.BNotNode;
 import libbun.ast.binary.BOrNode;
 import libbun.ast.binary.BAndNode;
 import libbun.ast.binary.ZComparatorNode;
+import libbun.ast.decl.BClassNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.expression.BFuncCallNode;
+import libbun.ast.expression.BFuncNameNode;
+import libbun.ast.expression.BGetIndexNode;
+import libbun.ast.expression.BGetNameNode;
+import libbun.ast.expression.BGetterNode;
+import libbun.ast.expression.BNewObjectNode;
+import libbun.ast.expression.BSetNameNode;
+import libbun.ast.expression.BSetterNode;
+import libbun.ast.statement.BBreakNode;
+import libbun.ast.statement.BIfNode;
+import libbun.ast.statement.BReturnNode;
+import libbun.ast.statement.BWhileNode;
+import libbun.ast.unary.BCastNode;
+import libbun.ast.unary.BNotNode;
 import libbun.encode.ZSourceBuilder;
 import libbun.encode.ZSourceGenerator;
 import libbun.parser.BToken;
@@ -252,8 +252,8 @@ public class ErlangGenerator extends ZSourceGenerator {
 	// 	this.CurrentBuilder.Append(Macro.substring(fromIndex));
 	// }
 
-	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
-		ZFuncNameNode FuncNameNode = Node.FuncNameNode();
+	@Override public void VisitFuncCallNode(BFuncCallNode Node) {
+		BFuncNameNode FuncNameNode = Node.FuncNameNode();
 		if (FuncNameNode != null) {
 			this.CurrentBuilder.Append(this.ToErlangFuncName(Node.FuncNameNode().GetSignature()));
 		}
@@ -543,7 +543,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.AppendLineFeed();
 	}
 
-	@Override public void VisitClassNode(ZClassNode Node) {
+	@Override public void VisitClassNode(BClassNode Node) {
 		ZSourceBuilder BodyBuilder = this.CurrentBuilder;
 		this.CurrentBuilder = this.HeaderBuilder;
 

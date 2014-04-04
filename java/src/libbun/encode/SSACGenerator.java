@@ -25,26 +25,26 @@
 
 package libbun.encode;
 
-import libbun.ast.BArrayLiteralNode;
-import libbun.ast.BFunctionNode;
-import libbun.ast.BGetIndexNode;
-import libbun.ast.BGetNameNode;
-import libbun.ast.BGetterNode;
-import libbun.ast.BLetVarNode;
-import libbun.ast.BNewObjectNode;
 import libbun.ast.BNode;
-import libbun.ast.BSetIndexNode;
-import libbun.ast.BSetNameNode;
-import libbun.ast.BSetterNode;
-import libbun.ast.BThrowNode;
-import libbun.ast.BTryNode;
-import libbun.ast.ZClassNode;
-import libbun.ast.ZFuncCallNode;
-import libbun.ast.ZFuncNameNode;
-import libbun.ast.ZInstanceOfNode;
 import libbun.ast.ZLocalDefinedNode;
-import libbun.ast.ZMapLiteralNode;
-import libbun.ast.ZMethodCallNode;
+import libbun.ast.binary.BInstanceOfNode;
+import libbun.ast.decl.BClassNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.expression.BFuncCallNode;
+import libbun.ast.expression.BFuncNameNode;
+import libbun.ast.expression.BGetIndexNode;
+import libbun.ast.expression.BGetNameNode;
+import libbun.ast.expression.BGetterNode;
+import libbun.ast.expression.BMethodCallNode;
+import libbun.ast.expression.BNewObjectNode;
+import libbun.ast.expression.BSetIndexNode;
+import libbun.ast.expression.BSetNameNode;
+import libbun.ast.expression.BSetterNode;
+import libbun.ast.literal.BArrayLiteralNode;
+import libbun.ast.literal.ZMapLiteralNode;
+import libbun.ast.statement.BThrowNode;
+import libbun.ast.statement.BTryNode;
 import libbun.parser.BLogger;
 import libbun.parser.ssa.NodeLib;
 import libbun.parser.ssa.PHINode;
@@ -80,7 +80,7 @@ public class SSACGenerator extends ZSourceGenerator {
 	}
 
 	@Override protected void GenerateCode(BType ContextType, BNode Node) {
-		if(Node.IsUntyped() && !Node.IsErrorNode() && !(Node instanceof ZFuncNameNode)) {
+		if(Node.IsUntyped() && !Node.IsErrorNode() && !(Node instanceof BFuncNameNode)) {
 			this.CurrentBuilder.Append("/*untyped*/" + this.NullLiteral);
 			BLogger._LogError(Node.SourceToken, "untyped error: " + Node);
 		}
@@ -183,15 +183,15 @@ public class SSACGenerator extends ZSourceGenerator {
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
-	@Override public void VisitMethodCallNode(ZMethodCallNode Node) {
+	@Override public void VisitMethodCallNode(BMethodCallNode Node) {
 		//		this.GenerateSurroundCode(Node.RecvNode());
 		//		this.CurrentBuilder.Append(".");
 		//		this.CurrentBuilder.Append(Node.MethodName());
 		//		this.VisitListNode("(", Node, ")");
 	}
 
-	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
-		@Var ZFuncNameNode FuncNameNode = Node.FuncNameNode();
+	@Override public void VisitFuncCallNode(BFuncCallNode Node) {
+		@Var BFuncNameNode FuncNameNode = Node.FuncNameNode();
 		if(FuncNameNode != null) {
 			this.GenerateFuncName(FuncNameNode);
 		}
@@ -385,9 +385,9 @@ public class SSACGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.CloseIndent("}");
 	}
 
-	@Override public void VisitInstanceOfNode(ZInstanceOfNode Node) {
+	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
 		this.CurrentBuilder.Append("LibZen_Is(");
-		this.GenerateCode(null, Node.AST[ZInstanceOfNode._Left]);
+		this.GenerateCode(null, Node.AST[BInstanceOfNode._Left]);
 		this.CurrentBuilder.Append(this.Camma);
 		this.CurrentBuilder.AppendInt(Node.TargetType().TypeId);
 		this.CurrentBuilder.Append(")");
@@ -421,7 +421,7 @@ public class SSACGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitClassNode(ZClassNode Node) {
+	@Override public void VisitClassNode(BClassNode Node) {
 		this.CurrentBuilder.AppendNewLine("struct ", this.NameClass(Node.ClassType));
 		this.CurrentBuilder.OpenIndent(" {");
 		this.GenerateFields(Node.ClassType, Node.ClassType);

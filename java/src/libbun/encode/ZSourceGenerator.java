@@ -24,53 +24,53 @@
 
 package libbun.encode;
 
-import libbun.ast.BArrayLiteralNode;
-import libbun.ast.BAsmNode;
 import libbun.ast.BBlockNode;
-import libbun.ast.BBooleanNode;
-import libbun.ast.BBreakNode;
-import libbun.ast.BCastNode;
-import libbun.ast.BErrorNode;
-import libbun.ast.BFloatNode;
-import libbun.ast.BFunctionNode;
-import libbun.ast.BGetIndexNode;
-import libbun.ast.BGetNameNode;
-import libbun.ast.BGetterNode;
 import libbun.ast.BGroupNode;
-import libbun.ast.BIfNode;
-import libbun.ast.BIntNode;
-import libbun.ast.BLetVarNode;
 import libbun.ast.BListNode;
-import libbun.ast.BNewObjectNode;
 import libbun.ast.BNode;
-import libbun.ast.BNullNode;
-import libbun.ast.BReturnNode;
-import libbun.ast.BSetIndexNode;
-import libbun.ast.BSetNameNode;
-import libbun.ast.BSetterNode;
-import libbun.ast.BStringNode;
-import libbun.ast.BThrowNode;
-import libbun.ast.BTryNode;
-import libbun.ast.BWhileNode;
-import libbun.ast.ZClassNode;
 import libbun.ast.ZDesugarNode;
-import libbun.ast.ZFuncCallNode;
-import libbun.ast.ZFuncNameNode;
-import libbun.ast.ZInstanceOfNode;
 import libbun.ast.ZLocalDefinedNode;
-import libbun.ast.ZMacroNode;
-import libbun.ast.ZMapEntryNode;
-import libbun.ast.ZMapLiteralNode;
-import libbun.ast.ZMethodCallNode;
 import libbun.ast.ZSugarNode;
-import libbun.ast.ZTopLevelNode;
-import libbun.ast.ZVarBlockNode;
 import libbun.ast.binary.BBinaryNode;
-import libbun.ast.binary.BNotNode;
+import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BOrNode;
-import libbun.ast.binary.BUnaryNode;
 import libbun.ast.binary.BAndNode;
 import libbun.ast.binary.ZComparatorNode;
+import libbun.ast.decl.BClassNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.ZTopLevelNode;
+import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.error.BErrorNode;
+import libbun.ast.expression.BFuncCallNode;
+import libbun.ast.expression.BFuncNameNode;
+import libbun.ast.expression.BGetIndexNode;
+import libbun.ast.expression.BGetNameNode;
+import libbun.ast.expression.BGetterNode;
+import libbun.ast.expression.BMacroNode;
+import libbun.ast.expression.BMethodCallNode;
+import libbun.ast.expression.BNewObjectNode;
+import libbun.ast.expression.BSetIndexNode;
+import libbun.ast.expression.BSetNameNode;
+import libbun.ast.expression.BSetterNode;
+import libbun.ast.literal.BArrayLiteralNode;
+import libbun.ast.literal.BAsmNode;
+import libbun.ast.literal.BBooleanNode;
+import libbun.ast.literal.BFloatNode;
+import libbun.ast.literal.BIntNode;
+import libbun.ast.literal.BNullNode;
+import libbun.ast.literal.BStringNode;
+import libbun.ast.literal.ZMapEntryNode;
+import libbun.ast.literal.ZMapLiteralNode;
+import libbun.ast.statement.BBreakNode;
+import libbun.ast.statement.BIfNode;
+import libbun.ast.statement.BReturnNode;
+import libbun.ast.statement.BThrowNode;
+import libbun.ast.statement.BTryNode;
+import libbun.ast.statement.BWhileNode;
+import libbun.ast.unary.BCastNode;
+import libbun.ast.unary.BNotNode;
+import libbun.ast.unary.BUnaryNode;
 import libbun.lang.bun.BunTypeSafer;
 import libbun.parser.BGenerator;
 import libbun.parser.BLangInfo;
@@ -445,13 +445,13 @@ public class ZSourceGenerator extends BGenerator {
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
-	@Override public void VisitMethodCallNode(ZMethodCallNode Node) {
+	@Override public void VisitMethodCallNode(BMethodCallNode Node) {
 		this.GenerateSurroundCode(Node.RecvNode());
 		this.CurrentBuilder.Append(".", Node.MethodName());
 		this.VisitListNode("(", Node, ")");
 	}
 
-	@Override public void VisitMacroNode(ZMacroNode Node) {
+	@Override public void VisitMacroNode(BMacroNode Node) {
 		@Var String Macro = Node.GetMacroText();
 		@Var BFuncType FuncType = Node.GetFuncType();
 		@Var int fromIndex = 0;
@@ -475,7 +475,7 @@ public class ZSourceGenerator extends BGenerator {
 		}
 	}
 
-	protected final void GenerateFuncName(ZFuncNameNode Node) {
+	protected final void GenerateFuncName(BFuncNameNode Node) {
 		if(this.LangInfo.AllowFunctionOverloading) {
 			this.CurrentBuilder.Append(Node.FuncName);
 		}
@@ -484,8 +484,8 @@ public class ZSourceGenerator extends BGenerator {
 		}
 	}
 
-	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
-		@Var ZFuncNameNode FuncNameNode = Node.FuncNameNode();
+	@Override public void VisitFuncCallNode(BFuncCallNode Node) {
+		@Var BFuncNameNode FuncNameNode = Node.FuncNameNode();
 		if(FuncNameNode != null) {
 			this.GenerateFuncName(FuncNameNode);
 		}
@@ -527,7 +527,7 @@ public class ZSourceGenerator extends BGenerator {
 		}
 	}
 
-	@Override public void VisitInstanceOfNode(ZInstanceOfNode Node) {
+	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
 		this.GenerateCode(null, Node.LeftNode());
 		this.CurrentBuilder.Append(" instanceof ");
 		this.GenerateTypeName(Node.TargetType());
@@ -670,7 +670,7 @@ public class ZSourceGenerator extends BGenerator {
 		this.GenerateCode(null, Node.BlockNode());
 	}
 
-	@Override public void VisitClassNode(ZClassNode Node) {
+	@Override public void VisitClassNode(BClassNode Node) {
 		this.CurrentBuilder.AppendNewLine("class ", Node.ClassName());
 		if(Node.SuperType() != null) {
 			this.CurrentBuilder.Append(" extends ");

@@ -28,19 +28,19 @@ package libbun.encode.haskell;
 import java.util.ArrayList;
 
 import libbun.ast.BBlockNode;
-import libbun.ast.BCastNode;
-import libbun.ast.BFunctionNode;
-import libbun.ast.BGetNameNode;
-import libbun.ast.BLetVarNode;
 import libbun.ast.BNode;
-import libbun.ast.BReturnNode;
-import libbun.ast.BSetNameNode;
-import libbun.ast.BThrowNode;
-import libbun.ast.BTryNode;
-import libbun.ast.BWhileNode;
-import libbun.ast.ZFuncCallNode;
 import libbun.ast.binary.BBinaryNode;
 import libbun.ast.binary.ZComparatorNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.expression.BFuncCallNode;
+import libbun.ast.expression.BGetNameNode;
+import libbun.ast.expression.BSetNameNode;
+import libbun.ast.statement.BReturnNode;
+import libbun.ast.statement.BThrowNode;
+import libbun.ast.statement.BTryNode;
+import libbun.ast.statement.BWhileNode;
+import libbun.ast.unary.BCastNode;
 import libbun.encode.ZSourceBuilder;
 import libbun.encode.ZSourceGenerator;
 import libbun.parser.BNodeUtils;
@@ -328,7 +328,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
+	@Override public void VisitFuncCallNode(BFuncCallNode Node) {
 		if(Node.ParentNode instanceof BBlockNode){
 			this.GenerateCode(null, Node.FunctorNode());
 			this.VisitListNode(" ", Node, " ", " ");

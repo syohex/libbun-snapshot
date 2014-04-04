@@ -1,11 +1,11 @@
 package libbun.lang.bun.shell;
 
-import libbun.ast.BGetNameNode;
 import libbun.ast.BNode;
-import libbun.ast.BStringNode;
 import libbun.ast.ZDesugarNode;
-import libbun.ast.ZFuncCallNode;
 import libbun.ast.ZSugarNode;
+import libbun.ast.expression.BFuncCallNode;
+import libbun.ast.expression.BGetNameNode;
+import libbun.ast.literal.BStringNode;
 import libbun.parser.BGenerator;
 import libbun.parser.BTypeChecker;
 import libbun.util.BField;
@@ -31,7 +31,7 @@ public class ArgumentNode extends ZSugarNode {
 	}
 
 	@Override public ZDesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChekcer) {
-		@Var BNode Node = new ZFuncCallNode(this, new BGetNameNode(this, null, _funcNames[this.ArgType]));
+		@Var BNode Node = new BFuncCallNode(this, new BGetNameNode(this, null, _funcNames[this.ArgType]));
 		Node.SetNode(BNode._AppendIndex, this.AST[_Expr]);
 		return new ZDesugarNode(this, Node);
 	}

@@ -1,7 +1,7 @@
 package libbun.lang.bun;
 
-import libbun.ast.BGetIndexNode;
 import libbun.ast.BNode;
+import libbun.ast.expression.BGetIndexNode;
 import libbun.parser.BTokenContext;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;

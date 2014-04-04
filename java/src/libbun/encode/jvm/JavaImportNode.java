@@ -1,7 +1,7 @@
 package libbun.encode.jvm;
 
 import libbun.ast.BNode;
-import libbun.ast.ZTopLevelNode;
+import libbun.ast.decl.ZTopLevelNode;
 import libbun.parser.BLogger;
 import libbun.parser.BNameSpace;
 import libbun.type.BType;

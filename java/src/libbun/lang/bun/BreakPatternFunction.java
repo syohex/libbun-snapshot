@@ -1,7 +1,7 @@
 package libbun.lang.bun;
 
-import libbun.ast.BBreakNode;
 import libbun.ast.BNode;
+import libbun.ast.statement.BBreakNode;
 import libbun.parser.BTokenContext;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;

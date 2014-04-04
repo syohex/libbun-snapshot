@@ -25,21 +25,21 @@
 
 package libbun.encode;
 
-import libbun.ast.BCastNode;
-import libbun.ast.BErrorNode;
-import libbun.ast.BFunctionNode;
-import libbun.ast.BLetVarNode;
 import libbun.ast.BNode;
-import libbun.ast.BNullNode;
-import libbun.ast.BThrowNode;
-import libbun.ast.BTryNode;
-import libbun.ast.ZClassNode;
-import libbun.ast.ZFuncCallNode;
-import libbun.ast.ZFuncNameNode;
-import libbun.ast.ZInstanceOfNode;
-import libbun.ast.ZMapLiteralNode;
-import libbun.ast.ZMethodCallNode;
-import libbun.ast.ZStupidCastErrorNode;
+import libbun.ast.binary.BInstanceOfNode;
+import libbun.ast.decl.BClassNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.error.BErrorNode;
+import libbun.ast.error.ZStupidCastErrorNode;
+import libbun.ast.expression.BFuncCallNode;
+import libbun.ast.expression.BFuncNameNode;
+import libbun.ast.expression.BMethodCallNode;
+import libbun.ast.literal.BNullNode;
+import libbun.ast.literal.ZMapLiteralNode;
+import libbun.ast.statement.BThrowNode;
+import libbun.ast.statement.BTryNode;
+import libbun.ast.unary.BCastNode;
 import libbun.parser.BLogger;
 import libbun.type.BClassType;
 import libbun.type.BGenericType;
@@ -83,7 +83,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
-	@Override public void VisitInstanceOfNode(ZInstanceOfNode Node) {
+	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
 		this.CurrentBuilder.Append("(");
 		this.GenerateCode(null, Node.LeftNode());
 		this.CurrentBuilder.Append(").constructor.name === ");
@@ -233,8 +233,8 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 	//		this.VisitListNode("(", Node, ")");
 	//	}
 
-	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
-		@Var ZFuncNameNode FuncNameNode = Node.FuncNameNode();
+	@Override public void VisitFuncCallNode(BFuncCallNode Node) {
+		@Var BFuncNameNode FuncNameNode = Node.FuncNameNode();
 		if(FuncNameNode != null) {
 			this.GenerateFuncName(FuncNameNode);
 		}
@@ -244,7 +244,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.VisitListNode("(", Node, ")");
 	}
 
-	@Override public void VisitMethodCallNode(ZMethodCallNode Node) {
+	@Override public void VisitMethodCallNode(BMethodCallNode Node) {
 		// (recv.method || Type_method)(...)
 		@Var BNode RecvNode = Node.RecvNode();
 
@@ -304,7 +304,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(this.SemiColon);
 	}
 
-	private void GenerateExtendCode(ZClassNode Node) {
+	private void GenerateExtendCode(BClassNode Node) {
 		this.CurrentBuilder.Append("var __extends = this.__extends || function (d, b) {");
 		this.CurrentBuilder.AppendLineFeed();
 		this.CurrentBuilder.Indent();
@@ -325,7 +325,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.UnIndent();
 	}
 
-	@Override public void VisitClassNode(ZClassNode Node) {
+	@Override public void VisitClassNode(BClassNode Node) {
 		/* var ClassName = (function(_super) {
 		 *  __extends(ClassName, _super);
 		 * 	function ClassName(params) {

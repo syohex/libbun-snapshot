@@ -1,13 +1,13 @@
 package libbun.parser;
 
 import libbun.ast.BBlockNode;
-import libbun.ast.BBreakNode;
-import libbun.ast.BFunctionNode;
-import libbun.ast.BIfNode;
 import libbun.ast.BListNode;
 import libbun.ast.BNode;
-import libbun.ast.BReturnNode;
-import libbun.ast.BThrowNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.statement.BBreakNode;
+import libbun.ast.statement.BIfNode;
+import libbun.ast.statement.BReturnNode;
+import libbun.ast.statement.BThrowNode;
 import libbun.util.Var;
 
 public class BNodeUtils {

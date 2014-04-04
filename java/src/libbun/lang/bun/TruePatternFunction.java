@@ -1,7 +1,7 @@
 package libbun.lang.bun;
 
-import libbun.ast.BBooleanNode;
 import libbun.ast.BNode;
+import libbun.ast.literal.BBooleanNode;
 import libbun.parser.BTokenContext;
 import libbun.util.BMatchFunction;
 

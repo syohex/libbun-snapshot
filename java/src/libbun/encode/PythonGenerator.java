@@ -26,20 +26,20 @@
 package libbun.encode;
 
 import libbun.ast.BBlockNode;
-import libbun.ast.BCastNode;
-import libbun.ast.BErrorNode;
-import libbun.ast.BFunctionNode;
-import libbun.ast.BGetIndexNode;
-import libbun.ast.BIfNode;
-import libbun.ast.BLetVarNode;
-import libbun.ast.BNewObjectNode;
 import libbun.ast.BNode;
-import libbun.ast.BThrowNode;
-import libbun.ast.BTryNode;
-import libbun.ast.ZClassNode;
-import libbun.ast.ZInstanceOfNode;
-import libbun.ast.ZStupidCastErrorNode;
-import libbun.ast.ZVarBlockNode;
+import libbun.ast.binary.BInstanceOfNode;
+import libbun.ast.decl.BClassNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.error.BErrorNode;
+import libbun.ast.error.ZStupidCastErrorNode;
+import libbun.ast.expression.BGetIndexNode;
+import libbun.ast.expression.BNewObjectNode;
+import libbun.ast.statement.BIfNode;
+import libbun.ast.statement.BThrowNode;
+import libbun.ast.statement.BTryNode;
+import libbun.ast.unary.BCastNode;
 import libbun.parser.BLogger;
 import libbun.type.BClassField;
 import libbun.type.BClassType;
@@ -156,7 +156,7 @@ public class PythonGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitInstanceOfNode(ZInstanceOfNode Node) {
+	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
 		this.CurrentBuilder.Append("isinstance(");
 		this.GenerateCode(null, Node.LeftNode());
 		if(Node.TargetType() instanceof BClassType) {
@@ -242,7 +242,7 @@ public class PythonGenerator extends ZSourceGenerator {
 		}
 	}
 
-	private void GenerateMethodVariables(ZClassNode Node) {
+	private void GenerateMethodVariables(BClassNode Node) {
 		@Var int i = 0;
 		while (i < Node.ClassType.GetFieldSize()) {
 			@Var BClassField ClassField = Node.ClassType.GetFieldAt(i);
@@ -256,7 +256,7 @@ public class PythonGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.AppendNewLine();
 	}
 
-	@Override public void VisitClassNode(ZClassNode Node) {
+	@Override public void VisitClassNode(BClassNode Node) {
 		@Var BType SuperType = Node.ClassType.GetSuperType();
 		this.GenerateMethodVariables(Node);
 		this.CurrentBuilder.Append("class ");

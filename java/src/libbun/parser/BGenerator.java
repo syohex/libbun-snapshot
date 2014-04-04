@@ -26,17 +26,17 @@
 package libbun.parser;
 
 import libbun.ast.BBlockNode;
-import libbun.ast.BDefaultValueNode;
-import libbun.ast.BErrorNode;
-import libbun.ast.BFunctionNode;
-import libbun.ast.BLetVarNode;
 import libbun.ast.BListNode;
 import libbun.ast.BNode;
-import libbun.ast.BNullNode;
-import libbun.ast.ZClassNode;
 import libbun.ast.ZDesugarNode;
 import libbun.ast.ZSugarNode;
-import libbun.ast.ZTopLevelNode;
+import libbun.ast.decl.BClassNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.ZTopLevelNode;
+import libbun.ast.error.BErrorNode;
+import libbun.ast.literal.BDefaultValueNode;
+import libbun.ast.literal.BNullNode;
 import libbun.type.BClassType;
 import libbun.type.BFunc;
 import libbun.type.BFuncType;
@@ -306,7 +306,7 @@ public abstract class BGenerator extends BVisitor {
 				Node = this.TypeChecker.CheckType(Node, BType.VarType);
 			}
 			if(this.IsVisitable()) {
-				if(Node instanceof BFunctionNode || Node instanceof ZClassNode || Node instanceof BLetVarNode) {
+				if(Node instanceof BFunctionNode || Node instanceof BClassNode || Node instanceof BLetVarNode) {
 					Node.Type = BType.VoidType;
 					this.GenerateStatement(Node);
 				}

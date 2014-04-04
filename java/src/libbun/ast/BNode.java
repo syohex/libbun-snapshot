@@ -25,6 +25,10 @@
 
 package libbun.ast;
 
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.error.BErrorNode;
+import libbun.ast.expression.BGetNameNode;
+import libbun.ast.statement.BWhileNode;
 import libbun.parser.BNameSpace;
 import libbun.parser.BToken;
 import libbun.parser.BTypeChecker;

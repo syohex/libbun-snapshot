@@ -1,7 +1,7 @@
 package libbun.lang.bun;
 
-import libbun.ast.BArrayLiteralNode;
 import libbun.ast.BNode;
+import libbun.ast.literal.BArrayLiteralNode;
 import libbun.parser.BTokenContext;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;

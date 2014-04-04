@@ -2,10 +2,10 @@ package libbun.ast.sugar;
 
 import libbun.ast.BListNode;
 import libbun.ast.BNode;
-import libbun.ast.BStringNode;
 import libbun.ast.ZDesugarNode;
-import libbun.ast.ZFuncCallNode;
 import libbun.ast.ZSugarNode;
+import libbun.ast.expression.BFuncCallNode;
+import libbun.ast.literal.BStringNode;
 import libbun.parser.BGenerator;
 import libbun.parser.BTypeChecker;
 import libbun.type.BFuncType;
@@ -29,7 +29,7 @@ public class ZAssertNode extends ZSugarNode {
 			return new ZDesugarNode(this, FuncNode);
 		}
 		else {
-			@Var ZFuncCallNode MacroNode = TypeChecker.CreateFuncCallNode(this.ParentNode, this.SourceToken, "assert", BFuncType._FuncType);
+			@Var BFuncCallNode MacroNode = TypeChecker.CreateFuncCallNode(this.ParentNode, this.SourceToken, "assert", BFuncType._FuncType);
 			MacroNode.Append(this.AST[ZAssertNode._Expr]);
 			return new ZDesugarNode(this, MacroNode);
 		}

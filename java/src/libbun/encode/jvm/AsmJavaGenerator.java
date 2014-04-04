@@ -55,52 +55,52 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Stack;
 
-import libbun.ast.BArrayLiteralNode;
-import libbun.ast.BAsmNode;
 import libbun.ast.BBlockNode;
-import libbun.ast.BBooleanNode;
-import libbun.ast.BBreakNode;
-import libbun.ast.BCastNode;
-import libbun.ast.BErrorNode;
-import libbun.ast.BFloatNode;
-import libbun.ast.BFunctionNode;
-import libbun.ast.BGetIndexNode;
-import libbun.ast.BGetNameNode;
-import libbun.ast.BGetterNode;
 import libbun.ast.BGroupNode;
-import libbun.ast.BIfNode;
-import libbun.ast.BIntNode;
-import libbun.ast.BLetVarNode;
 import libbun.ast.BListNode;
-import libbun.ast.BNewObjectNode;
 import libbun.ast.BNode;
-import libbun.ast.BNullNode;
-import libbun.ast.BReturnNode;
-import libbun.ast.BSetIndexNode;
-import libbun.ast.BSetNameNode;
-import libbun.ast.BSetterNode;
-import libbun.ast.BStringNode;
-import libbun.ast.BThrowNode;
-import libbun.ast.BTryNode;
-import libbun.ast.BTypeNode;
-import libbun.ast.BWhileNode;
-import libbun.ast.ZClassNode;
-import libbun.ast.ZFuncCallNode;
-import libbun.ast.ZFuncNameNode;
-import libbun.ast.ZInstanceOfNode;
 import libbun.ast.ZLocalDefinedNode;
-import libbun.ast.ZMacroNode;
-import libbun.ast.ZMapEntryNode;
-import libbun.ast.ZMapLiteralNode;
-import libbun.ast.ZMethodCallNode;
-import libbun.ast.ZTopLevelNode;
-import libbun.ast.ZVarBlockNode;
 import libbun.ast.binary.BBinaryNode;
-import libbun.ast.binary.BNotNode;
+import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BOrNode;
-import libbun.ast.binary.BUnaryNode;
 import libbun.ast.binary.BAndNode;
 import libbun.ast.binary.ZComparatorNode;
+import libbun.ast.decl.BClassNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.ZTopLevelNode;
+import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.error.BErrorNode;
+import libbun.ast.expression.BFuncCallNode;
+import libbun.ast.expression.BFuncNameNode;
+import libbun.ast.expression.BGetIndexNode;
+import libbun.ast.expression.BGetNameNode;
+import libbun.ast.expression.BGetterNode;
+import libbun.ast.expression.BMacroNode;
+import libbun.ast.expression.BMethodCallNode;
+import libbun.ast.expression.BNewObjectNode;
+import libbun.ast.expression.BSetIndexNode;
+import libbun.ast.expression.BSetNameNode;
+import libbun.ast.expression.BSetterNode;
+import libbun.ast.literal.BArrayLiteralNode;
+import libbun.ast.literal.BAsmNode;
+import libbun.ast.literal.BBooleanNode;
+import libbun.ast.literal.BFloatNode;
+import libbun.ast.literal.BIntNode;
+import libbun.ast.literal.BNullNode;
+import libbun.ast.literal.BStringNode;
+import libbun.ast.literal.BTypeNode;
+import libbun.ast.literal.ZMapEntryNode;
+import libbun.ast.literal.ZMapLiteralNode;
+import libbun.ast.statement.BBreakNode;
+import libbun.ast.statement.BIfNode;
+import libbun.ast.statement.BReturnNode;
+import libbun.ast.statement.BThrowNode;
+import libbun.ast.statement.BTryNode;
+import libbun.ast.statement.BWhileNode;
+import libbun.ast.unary.BCastNode;
+import libbun.ast.unary.BNotNode;
+import libbun.ast.unary.BUnaryNode;
 import libbun.parser.BGenerator;
 import libbun.parser.BLangInfo;
 import libbun.parser.BLogger;
@@ -593,7 +593,7 @@ public class AsmJavaGenerator extends BGenerator {
 		return INVOKEVIRTUAL;
 	}
 
-	@Override public void VisitMethodCallNode(ZMethodCallNode Node) {
+	@Override public void VisitMethodCallNode(BMethodCallNode Node) {
 		this.AsmBuilder.SetLineNumber(Node);
 		Method jMethod = this.GetMethod(Node.RecvNode().Type, Node.MethodName(), Node);
 		if(jMethod != null) {
@@ -618,7 +618,7 @@ public class AsmJavaGenerator extends BGenerator {
 		}
 	}
 
-	@Override public void VisitMacroNode(ZMacroNode Node) {
+	@Override public void VisitMacroNode(BMacroNode Node) {
 		for(int i = 0; i < Node.GetListSize(); i++) {
 			this.AsmBuilder.PushNode(null, Node.GetListAt(i));
 		}
@@ -633,10 +633,10 @@ public class AsmJavaGenerator extends BGenerator {
 		this.AsmBuilder.visitMethodInsn(INVOKESTATIC, ClassName, MethodName, Node.MacroFunc.FuncType);
 	}
 
-	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
+	@Override public void VisitFuncCallNode(BFuncCallNode Node) {
 		BType FuncType = Node.FunctorNode().Type;
 		if(FuncType instanceof BFuncType) {
-			@Var ZFuncNameNode FuncNameNode = Node.FuncNameNode();
+			@Var BFuncNameNode FuncNameNode = Node.FuncNameNode();
 			if(FuncNameNode != null) {
 				this.AsmBuilder.ApplyFuncName(FuncNameNode, FuncNameNode.FuncName, (BFuncType)FuncType, Node);
 			}
@@ -678,7 +678,7 @@ public class AsmJavaGenerator extends BGenerator {
 		}
 	}
 
-	@Override public void VisitInstanceOfNode(ZInstanceOfNode Node) {
+	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
 		// TODO Auto-generated method stub
 
 	}
@@ -1101,7 +1101,7 @@ public class AsmJavaGenerator extends BGenerator {
 		return null;
 	}
 
-	@Override public void VisitClassNode(ZClassNode Node) {
+	@Override public void VisitClassNode(BClassNode Node) {
 		@Var Class<?> SuperClass = this.GetSuperClass(Node.SuperType());
 		@Var AsmClassBuilder ClassBuilder = this.AsmLoader.NewClass(ACC_PUBLIC, Node, Node.ClassName(), SuperClass);
 		// add class field (not function)

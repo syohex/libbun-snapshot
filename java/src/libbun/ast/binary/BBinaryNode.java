@@ -25,7 +25,7 @@
 package libbun.ast.binary;
 
 import libbun.ast.BNode;
-import libbun.ast.ZMacroNode;
+import libbun.ast.expression.BMacroNode;
 import libbun.parser.BGenerator;
 import libbun.parser.BSyntax;
 import libbun.parser.BToken;
@@ -98,7 +98,7 @@ public class BBinaryNode extends BNode {
 			@Var String Op = this.SourceToken.GetText();
 			@Var BFunc Func = Generator.GetDefinedFunc(Op, this.GetAstType(BBinaryNode._Left), 2);
 			if(Func instanceof BMacroFunc) {
-				@Var ZMacroNode MacroNode = new ZMacroNode(this.ParentNode, this.SourceToken, (BMacroFunc)Func);
+				@Var BMacroNode MacroNode = new BMacroNode(this.ParentNode, this.SourceToken, (BMacroFunc)Func);
 				MacroNode.Append(this.LeftNode());
 				MacroNode.Append(this.RightNode());
 				return MacroNode;

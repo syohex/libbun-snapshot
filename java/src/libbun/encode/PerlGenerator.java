@@ -25,15 +25,15 @@
 //ifdef  JAVA
 package libbun.encode;
 import libbun.ast.BBlockNode;
-import libbun.ast.BBreakNode;
-import libbun.ast.BFunctionNode;
-import libbun.ast.BGetNameNode;
-import libbun.ast.BGetterNode;
-import libbun.ast.BLetVarNode;
 import libbun.ast.BNode;
-import libbun.ast.BSetNameNode;
-import libbun.ast.BSetterNode;
-import libbun.ast.ZClassNode;
+import libbun.ast.decl.BClassNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.expression.BGetNameNode;
+import libbun.ast.expression.BGetterNode;
+import libbun.ast.expression.BSetNameNode;
+import libbun.ast.expression.BSetterNode;
+import libbun.ast.statement.BBreakNode;
 import libbun.parser.BToken;
 import libbun.type.BClassField;
 import libbun.type.BClassType;
@@ -203,7 +203,7 @@ public class PerlGenerator extends ZSourceGenerator {
 		return BLib._QuoteString(this.NameClass(ClassType));
 	}
 
-	@Override public void VisitClassNode(ZClassNode Node) {
+	@Override public void VisitClassNode(BClassNode Node) {
 		this.CurrentBuilder.Append("sub _Init", this.NameClass(Node.ClassType), "{");
 		this.CurrentBuilder.Indent();
 		this.CurrentBuilder.AppendNewLine();

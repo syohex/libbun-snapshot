@@ -1,10 +1,10 @@
 package libbun.lang.bun;
 
-import libbun.ast.BErrorNode;
-import libbun.ast.BFunctionNode;
-import libbun.ast.BLetVarNode;
 import libbun.ast.BNode;
-import libbun.ast.ZClassNode;
+import libbun.ast.decl.BClassNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.error.BErrorNode;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
 import libbun.util.Var;
@@ -25,8 +25,8 @@ public class ExportPatternFunction extends BMatchFunction {
 			return Node;
 		}
 		Node = TokenContext.ParsePattern(ParentNode, "class", BTokenContext._Optional);
-		if(Node instanceof ZClassNode) {
-			((ZClassNode)Node).IsExport = true;
+		if(Node instanceof BClassNode) {
+			((BClassNode)Node).IsExport = true;
 			return Node;
 		}
 

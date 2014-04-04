@@ -1,22 +1,22 @@
 package libbun.encode;
 
-import libbun.ast.BArrayLiteralNode;
-import libbun.ast.BErrorNode;
-import libbun.ast.BFunctionNode;
-import libbun.ast.BGetIndexNode;
-import libbun.ast.BLetVarNode;
-import libbun.ast.BNewObjectNode;
 import libbun.ast.BNode;
-import libbun.ast.BSetIndexNode;
-import libbun.ast.BThrowNode;
-import libbun.ast.BTryNode;
-import libbun.ast.ZClassNode;
-import libbun.ast.ZFuncCallNode;
-import libbun.ast.ZFuncNameNode;
-import libbun.ast.ZInstanceOfNode;
-import libbun.ast.ZMapEntryNode;
-import libbun.ast.ZMapLiteralNode;
-import libbun.ast.ZMethodCallNode;
+import libbun.ast.binary.BInstanceOfNode;
+import libbun.ast.decl.BClassNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.error.BErrorNode;
+import libbun.ast.expression.BFuncCallNode;
+import libbun.ast.expression.BFuncNameNode;
+import libbun.ast.expression.BGetIndexNode;
+import libbun.ast.expression.BMethodCallNode;
+import libbun.ast.expression.BNewObjectNode;
+import libbun.ast.expression.BSetIndexNode;
+import libbun.ast.literal.BArrayLiteralNode;
+import libbun.ast.literal.ZMapEntryNode;
+import libbun.ast.literal.ZMapLiteralNode;
+import libbun.ast.statement.BThrowNode;
+import libbun.ast.statement.BTryNode;
 import libbun.parser.BLogger;
 import libbun.type.BClassField;
 import libbun.type.BClassType;
@@ -78,7 +78,7 @@ public class JavaGenerator extends ZSourceGenerator {
 
 
 	@Override protected void GenerateCode(BType ContextType, BNode Node) {
-		if(Node.IsUntyped() && !Node.IsErrorNode() && !(Node instanceof ZFuncNameNode)) {
+		if(Node.IsUntyped() && !Node.IsErrorNode() && !(Node instanceof BFuncNameNode)) {
 			BLogger._LogError(Node.SourceToken, "untyped error: " + Node);
 			Node.Accept(this);
 			this.CurrentBuilder.Append("/*untyped*/");
@@ -153,15 +153,15 @@ public class JavaGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitMethodCallNode(ZMethodCallNode Node) {
+	@Override public void VisitMethodCallNode(BMethodCallNode Node) {
 		this.GenerateSurroundCode(Node.RecvNode());
 		this.CurrentBuilder.Append(".");
 		this.CurrentBuilder.Append(Node.MethodName());
 		this.VisitListNode("(", Node, ")");
 	}
 
-	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
-		@Var ZFuncNameNode FuncNameNode = Node.FuncNameNode();
+	@Override public void VisitFuncCallNode(BFuncCallNode Node) {
+		@Var BFuncNameNode FuncNameNode = Node.FuncNameNode();
 		if(FuncNameNode != null) {
 			this.CurrentBuilder.Append(this.NameFunctionClass(FuncNameNode.FuncName, FuncNameNode.RecvType, FuncNameNode.FuncParamSize), ".f");
 		}
@@ -373,8 +373,8 @@ public class JavaGenerator extends ZSourceGenerator {
 		return ClassName + ".function";
 	}
 
-	@Override public void VisitInstanceOfNode(ZInstanceOfNode Node) {
-		this.GenerateCode(null, Node.AST[ZInstanceOfNode._Left]);
+	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
+		this.GenerateCode(null, Node.AST[BInstanceOfNode._Left]);
 		this.CurrentBuilder.Append(" instanceof ");
 		this.GenerateTypeName(Node.TargetType());
 	}
@@ -405,7 +405,7 @@ public class JavaGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitClassNode(ZClassNode Node) {
+	@Override public void VisitClassNode(BClassNode Node) {
 		@Var BType SuperType = Node.ClassType.GetSuperType();
 		@Var String ClassName = this.NameClass(Node.ClassType);
 		this.GenerateClass("", ClassName, SuperType);

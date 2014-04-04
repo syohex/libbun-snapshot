@@ -1,9 +1,9 @@
 package libbun.parser.ssa;
 
 import libbun.ast.BBlockNode;
-import libbun.ast.BGetNameNode;
 import libbun.ast.BNode;
 import libbun.ast.ZLocalDefinedNode;
+import libbun.ast.expression.BGetNameNode;
 import libbun.util.Var;
 import libbun.util.BArray;
 

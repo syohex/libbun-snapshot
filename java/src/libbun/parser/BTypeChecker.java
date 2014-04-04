@@ -24,23 +24,23 @@
 
 package libbun.parser;
 
-import libbun.ast.BAsmNode;
 import libbun.ast.BBlockNode;
-import libbun.ast.BCastNode;
-import libbun.ast.BErrorNode;
-import libbun.ast.BFunctionNode;
-import libbun.ast.BGetNameNode;
-import libbun.ast.BLetVarNode;
 import libbun.ast.BListNode;
 import libbun.ast.BNode;
-import libbun.ast.BReturnNode;
 import libbun.ast.ZDesugarNode;
-import libbun.ast.ZFuncCallNode;
-import libbun.ast.ZFuncNameNode;
-import libbun.ast.ZMacroNode;
-import libbun.ast.ZStupidCastErrorNode;
 import libbun.ast.ZSugarNode;
-import libbun.ast.ZVarBlockNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.error.BErrorNode;
+import libbun.ast.error.ZStupidCastErrorNode;
+import libbun.ast.expression.BFuncCallNode;
+import libbun.ast.expression.BFuncNameNode;
+import libbun.ast.expression.BGetNameNode;
+import libbun.ast.expression.BMacroNode;
+import libbun.ast.literal.BAsmNode;
+import libbun.ast.statement.BReturnNode;
+import libbun.ast.unary.BCastNode;
 import libbun.type.BFunc;
 import libbun.type.BFuncType;
 import libbun.type.BGreekType;
@@ -329,8 +329,8 @@ public abstract class BTypeChecker extends BVisitor {
 		return NameNode;
 	}
 
-	public ZFuncCallNode CreateFuncCallNode(BNode ParentNode, BToken SourceToken, String FuncName, BFuncType FuncType) {
-		@Var ZFuncCallNode FuncNode = new ZFuncCallNode(ParentNode, new ZFuncNameNode(null, SourceToken, FuncName, FuncType));
+	public BFuncCallNode CreateFuncCallNode(BNode ParentNode, BToken SourceToken, String FuncName, BFuncType FuncType) {
+		@Var BFuncCallNode FuncNode = new BFuncCallNode(ParentNode, new BFuncNameNode(null, SourceToken, FuncName, FuncType));
 		FuncNode.Type = FuncType.GetReturnType();
 		return FuncNode;
 	}
@@ -338,7 +338,7 @@ public abstract class BTypeChecker extends BVisitor {
 	public final BListNode CreateDefinedFuncCallNode(BNode ParentNode, BToken SourceToken, BFunc Func) {
 		@Var BListNode FuncNode = null;
 		if(Func instanceof BMacroFunc) {
-			FuncNode = new ZMacroNode(ParentNode, SourceToken, (BMacroFunc)Func);
+			FuncNode = new BMacroNode(ParentNode, SourceToken, (BMacroFunc)Func);
 		}
 		else {
 			FuncNode = this.CreateFuncCallNode(ParentNode, SourceToken, Func.FuncName, Func.GetFuncType());

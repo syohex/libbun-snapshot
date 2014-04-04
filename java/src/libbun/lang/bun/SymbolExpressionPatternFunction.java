@@ -1,8 +1,8 @@
 package libbun.lang.bun;
 
-import libbun.ast.BErrorNode;
-import libbun.ast.BGetNameNode;
 import libbun.ast.BNode;
+import libbun.ast.error.BErrorNode;
+import libbun.ast.expression.BGetNameNode;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
 import libbun.util.Var;

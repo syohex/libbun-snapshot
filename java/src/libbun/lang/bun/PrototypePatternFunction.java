@@ -1,8 +1,8 @@
 package libbun.lang.bun;
 
-import libbun.ast.BFunctionNode;
 import libbun.ast.BNode;
-import libbun.ast.ZPrototypeNode;
+import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.ZPrototypeNode;
 import libbun.parser.BTokenContext;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
