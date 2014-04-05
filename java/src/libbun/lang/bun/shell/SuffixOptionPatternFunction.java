@@ -1,7 +1,6 @@
 package libbun.lang.bun.shell;
 
 import libbun.ast.BNode;
-import libbun.ast.error.BErrorNode;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
 import libbun.parser.BToken;
@@ -15,20 +14,8 @@ public class SuffixOptionPatternFunction extends BMatchFunction {
 		TokenContext.MoveNext();
 		@Var String OptionSymbol = Token.GetText();
 		if(Token.EqualsText(ShellUtils._background)) {	// set background job
-			return this.CreateNodeAndMatchNextOption(ParentNode, TokenContext, OptionSymbol);
+			return new CommandNode(ParentNode, Token, OptionSymbol);
 		}
 		return null;
-	}
-
-	public BNode CreateNodeAndMatchNextOption(BNode ParentNode, BTokenContext TokenContext, String OptionSymbol) {
-		@Var CommandNode Node = new CommandNode(ParentNode, null, OptionSymbol);
-		@Var BNode PipedNode = TokenContext.ParsePattern(ParentNode, SuffixOptionPatternFunction._PatternName, BTokenContext._Optional);
-		if(PipedNode != null) {
-			Node.AppendPipedNextNode((CommandNode)PipedNode);
-		}
-		if(!ShellUtils._MatchStopToken(TokenContext)) {
-			return new BErrorNode(ParentNode, TokenContext.GetToken(), "not match stop token");
-		}
-		return Node;
 	}
 }
