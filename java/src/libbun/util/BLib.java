@@ -491,9 +491,18 @@ public class BLib {
 
 	// HighLevel Library
 
+	private final static BMap<Class<?>> ParserMap = new BMap<Class<?>>(null);
+
+	static {
+		// source code by file extension
+		ParserMap.put("konoha", libbun.lang.konoha.KonohaGrammar.class);
+		ParserMap.put("py", libbun.lang.python.PythonGrammar.class);
+	}
+
+
 	public final static boolean _ImportGrammar(BNameSpace NameSpace, String ClassName) {
 		try {
-			@Var Class<?> NativeClass =  Class.forName(ClassName);
+			@Var Class<?> NativeClass =  ParserMap.GetOrNull(ClassName.toLowerCase());
 			@Var Method LoaderMethod = NativeClass.getMethod("ImportGrammar", BNameSpace.class);
 			LoaderMethod.invoke(null, NameSpace);
 			return true;

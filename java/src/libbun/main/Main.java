@@ -26,18 +26,20 @@ package libbun.main;
 
 import java.io.IOException;
 
-import libbun.lang.konoha.KonohaGrammar;
-import libbun.parser.BGenerator;
 import libbun.parser.BConst;
+import libbun.parser.BGenerator;
 import libbun.util.BLib;
-import libbun.util.Var;
 import libbun.util.BStringArray;
+import libbun.util.Var;
 
 
 public class Main {
 
-	// -t zen
+	// -t bun
 	private static String Target = "bun";
+
+	// -p konoha
+	private static String Parser = "konoha";
 
 	// -o
 	private static String OutputFileName = null;
@@ -58,6 +60,7 @@ public class Main {
 		@Var int Index = 0;
 		@Var String GivenTarget = null;
 		@Var String GuessTarget = null;
+		@Var String GivenParser = null;
 		while (Index < Args.length) {
 			@Var String Argument = Args[Index];
 			if (!Argument.startsWith("-")) {
@@ -77,6 +80,11 @@ public class Main {
 			}
 			if ((Argument.equals("-t") || Argument.equals("--target")) && (Index < Args.length)) {
 				GivenTarget = Args[Index];
+				Index += 1;
+				continue;
+			}
+			if ((Argument.equals("-p") || Argument.equals("--parser")) && (Index < Args.length)) {
+				GivenParser = Args[Index];
 				Index += 1;
 				continue;
 			}
@@ -100,6 +108,9 @@ public class Main {
 		if(GivenTarget != null) {
 			Target = GivenTarget;
 		}
+		if(GivenParser != null) {
+			Parser = GivenParser;
+		}
 		ARGV = new BStringArray();
 		while (Index < Args.length) {
 			ARGV.Add(Args[Index]);
@@ -122,7 +133,7 @@ public class Main {
 
 	public final static void InvokeLibBun(String[] Args) {
 		ParseCommand(Args);
-		@Var BGenerator Generator = BLib._InitGenerator(Target, KonohaGrammar.class.getName());
+		@Var BGenerator Generator = BLib._InitGenerator(Target, Parser);
 		if(InputFileName != null) {
 			Generator.LoadFile(InputFileName, null);
 		}
