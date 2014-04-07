@@ -25,39 +25,40 @@
 
 package libbun.encode;
 
-import libbun.ast.BNode;
-import libbun.ast.binary.BInstanceOfNode;
-import libbun.ast.decl.BClassNode;
-import libbun.ast.decl.BFunctionNode;
-import libbun.ast.decl.BLetVarNode;
-import libbun.ast.error.BErrorNode;
-import libbun.ast.error.ZStupidCastErrorNode;
-import libbun.ast.expression.BFuncCallNode;
-import libbun.ast.expression.BFuncNameNode;
-import libbun.ast.expression.BMethodCallNode;
-import libbun.ast.literal.BNullNode;
-import libbun.ast.literal.ZMapLiteralNode;
-import libbun.ast.statement.BThrowNode;
-import libbun.ast.statement.BTryNode;
-import libbun.ast.unary.BCastNode;
-import libbun.parser.BLogger;
-import libbun.type.BClassType;
-import libbun.type.BGenericType;
-import libbun.type.BType;
+import libbun.parser.ZLogger;
+import libbun.parser.ast.BLetVarNode;
+import libbun.parser.ast.BNode;
+import libbun.parser.ast.BNullNode;
+import libbun.parser.ast.ZClassNode;
+import libbun.parser.ast.ZErrorNode;
+import libbun.parser.ast.ZFuncCallNode;
+import libbun.parser.ast.ZFuncNameNode;
+import libbun.parser.ast.ZFunctionNode;
+import libbun.parser.ast.ZInstanceOfNode;
+import libbun.parser.ast.ZMapLiteralNode;
+import libbun.parser.ast.ZMethodCallNode;
+import libbun.parser.ast.ZStupidCastErrorNode;
+import libbun.parser.ast.ZThrowNode;
+import libbun.parser.ast.ZTryNode;
+import libbun.type.ZClassType;
+import libbun.type.ZGenericType;
+import libbun.type.ZType;
 import libbun.util.BLib;
 import libbun.util.Var;
+import libbun.util.ZenMethod;
 
 public class JavaScriptGenerator extends ZSourceGenerator {
 	private static boolean UseExtend;
+	private boolean HasMainFunction;
 
 	public JavaScriptGenerator() {
 		super("js", "JavaScript-1.4");
 		this.TopType = "Object";
-		this.SetNativeType(BType.BooleanType, "Boolean");
-		this.SetNativeType(BType.IntType, "Number");
-		this.SetNativeType(BType.FloatType, "Number");
-		this.SetNativeType(BType.StringType, "String");
-		this.SetNativeType(BType.VarType, "Object");
+		this.SetNativeType(ZType.BooleanType, "Boolean");
+		this.SetNativeType(ZType.IntType, "Number");
+		this.SetNativeType(ZType.FloatType, "Number");
+		this.SetNativeType(ZType.StringType, "String");
+		this.SetNativeType(ZType.VarType, "Object");
 
 		this.SetReservedName("this", "self");
 
@@ -79,11 +80,18 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 	//		}
 	//	}
 
-	@Override public void VisitCastNode(BCastNode Node) {
-		this.GenerateCode(null, Node.ExprNode());
+	@Override @ZenMethod protected void Finish(String FileName) {
+		if(this.HasMainFunction) {
+			this.CurrentBuilder.AppendNewLine("if(main) main();");
+			this.CurrentBuilder.AppendLineFeed();
+		}
 	}
 
-	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
+	//	@Override public void VisitCastNode(ZCastNode Node) {
+	//		this.GenerateCode(null, Node.ExprNode());
+	//	}
+
+	@Override public void VisitInstanceOfNode(ZInstanceOfNode Node) {
 		this.CurrentBuilder.Append("(");
 		this.GenerateCode(null, Node.LeftNode());
 		this.CurrentBuilder.Append(").constructor.name === ");
@@ -91,12 +99,12 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(".name");
 	}
 
-	@Override public void VisitThrowNode(BThrowNode Node) {
+	@Override public void VisitThrowNode(ZThrowNode Node) {
 		this.CurrentBuilder.Append("throw ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
-	@Override public void VisitTryNode(BTryNode Node) {
+	@Override public void VisitTryNode(ZTryNode Node) {
 		this.CurrentBuilder.Append("try");
 		this.GenerateCode(null, Node.TryBlockNode());
 		if(Node.HasCatchBlockNode()){
@@ -110,15 +118,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		}
 	}
 
-	//	@Override public void VisitCatchNode(ZCatchNode Node) {
-	//		this.CurrentBuilder.Append("catch");
-	//		this.CurrentBuilder.AppendWhiteSpace();
-	//		this.CurrentBuilder.Append(Node.GivenName);
-	//		this.GenerateCode(null, Node.AST[ZCatchNode._Block]);
-	//	}
-
-	@Override
-	protected void VisitVarDeclNode(BLetVarNode Node) {
+	@Override protected void VisitVarDeclNode(BLetVarNode Node) {
 		this.CurrentBuilder.AppendToken("var");
 		this.CurrentBuilder.AppendWhiteSpace();
 		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
@@ -132,22 +132,22 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 	}
 
-	private boolean IsUserDefinedType(BType SelfType){
-		return SelfType != BType.BooleanType &&
-				SelfType != BType.IntType &&
-				SelfType != BType.FloatType &&
-				SelfType != BType.StringType &&
-				SelfType != BType.VoidType &&
-				SelfType != BType.TypeType &&
+	private boolean IsUserDefinedType(ZType SelfType){
+		return SelfType != ZType.BooleanType &&
+				SelfType != ZType.IntType &&
+				SelfType != ZType.FloatType &&
+				SelfType != ZType.StringType &&
+				SelfType != ZType.VoidType &&
+				SelfType != ZType.TypeType &&
 				//SelfType != ZType.VarType &&
-				SelfType.GetBaseType() != BGenericType._ArrayType &&
-				SelfType.GetBaseType() != BGenericType._MapType;
+				SelfType.GetBaseType() != ZGenericType._ArrayType &&
+				SelfType.GetBaseType() != ZGenericType._MapType;
 	}
 
-	@Override public void VisitFunctionNode(BFunctionNode Node) {
+	@Override public void VisitFunctionNode(ZFunctionNode Node) {
 		@Var boolean IsLambda = (Node.FuncName() == null);
 		@Var boolean IsInstanceMethod = (!IsLambda && Node.AST.length > 1 && Node.AST[1/*first param*/] instanceof BLetVarNode);
-		@Var BType SelfType = IsInstanceMethod ? Node.AST[1/*first param*/].Type : null;
+		@Var ZType SelfType = IsInstanceMethod ? Node.AST[1/*first param*/].Type : null;
 		@Var boolean IsConstructor = IsInstanceMethod && Node.FuncName().equals(SelfType.GetName());
 
 		if(IsConstructor){
@@ -158,7 +158,13 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 			this.CurrentBuilder.Append("(function");
 		}else{
 			this.CurrentBuilder.Append("function ");
-			if(!Node.Type.IsVoidType()) {
+			if(Node.IsExport) {
+				this.CurrentBuilder.Append(Node.FuncName());
+				if(Node.FuncName().equals("main")) {
+					this.HasMainFunction = true;
+				}
+			}
+			else if(!Node.Type.IsVoidType()) {
 				@Var String FuncName = Node.GetUniqueName(this);
 				this.CurrentBuilder.Append(FuncName);
 			}
@@ -166,6 +172,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 				this.CurrentBuilder.Append(Node.GetSignature());
 			}
 		}
+
 		this.VisitFuncParamNode("(", Node, ")");
 		this.GenerateCode(null, Node.BlockNode());
 		if(IsLambda) {
@@ -202,39 +209,13 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 					this.CurrentBuilder.Append("}");
 				}
 			}
-			this.CurrentBuilder.AppendLineFeed();
-			this.CurrentBuilder.AppendLineFeed();
+			//			this.CurrentBuilder.AppendLineFeed();
+			//			this.CurrentBuilder.AppendLineFeed();
 		}
 	}
 
-	//	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
-	//		//this.GenerateCode(null, Node.FuncNameNode());
-	//		@Var ZType FuncType = Node.GetFuncType();
-	//		if(FuncType != null){
-	//			@Var ZType RecvType = Node.GetFuncType().GetRecvType();
-	//			if(this.IsUserDefinedType(RecvType) && RecvType.ShortName != null && !RecvType.ShortName.equals(Node.GetStaticFuncName())){
-	//				this.CurrentBuilder.Append("(");
-	//				this.GenerateCode(null, Node.FunctionNode());
-	//				if(Node.FunctionNode() instanceof ZGetterNode){
-	//					this.CurrentBuilder.Append("__ || ");
-	//				}else{
-	//					this.CurrentBuilder.Append(" || ");
-	//				}
-	//				this.CurrentBuilder.Append(RecvType.ShortName);
-	//				this.CurrentBuilder.Append("_");
-	//				this.CurrentBuilder.Append(Node.GetStaticFuncName());
-	//				this.CurrentBuilder.Append(")");
-	//			}else{
-	//				this.GenerateCode(null, Node.FunctionNode());
-	//			}
-	//		}else{
-	//			this.GenerateCode(null, Node.FunctionNode());
-	//		}
-	//		this.VisitListNode("(", Node, ")");
-	//	}
-
-	@Override public void VisitFuncCallNode(BFuncCallNode Node) {
-		@Var BFuncNameNode FuncNameNode = Node.FuncNameNode();
+	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
+		@Var ZFuncNameNode FuncNameNode = Node.FuncNameNode();
 		if(FuncNameNode != null) {
 			this.GenerateFuncName(FuncNameNode);
 		}
@@ -244,7 +225,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.VisitListNode("(", Node, ")");
 	}
 
-	@Override public void VisitMethodCallNode(BMethodCallNode Node) {
+	@Override public void VisitMethodCallNode(ZMethodCallNode Node) {
 		// (recv.method || Type_method)(...)
 		@Var BNode RecvNode = Node.RecvNode();
 
@@ -272,7 +253,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		@Var int i = 0;
 		while(i < ListSize) {
 			@Var BNode KeyNode = Node.GetListAt(i);
-			if(KeyNode instanceof BErrorNode){
+			if(KeyNode instanceof ZErrorNode){
 				this.GenerateCode(null, KeyNode);
 				return;
 			}
@@ -301,10 +282,10 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 	@Override public void VisitLetNode(BLetVarNode Node) {
 		this.CurrentBuilder.AppendNewLine("var ", Node.GetUniqueName(this), " = ");
 		this.GenerateCode(null, Node.InitValueNode());
-		this.CurrentBuilder.Append(this.SemiColon);
+		//this.CurrentBuilder.Append(this.SemiColon);
 	}
 
-	private void GenerateExtendCode(BClassNode Node) {
+	private void GenerateExtendCode(ZClassNode Node) {
 		this.CurrentBuilder.Append("var __extends = this.__extends || function (d, b) {");
 		this.CurrentBuilder.AppendLineFeed();
 		this.CurrentBuilder.Indent();
@@ -325,7 +306,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.UnIndent();
 	}
 
-	@Override public void VisitClassNode(BClassNode Node) {
+	@Override public void VisitClassNode(ZClassNode Node) {
 		/* var ClassName = (function(_super) {
 		 *  __extends(ClassName, _super);
 		 * 	function ClassName(params) {
@@ -335,13 +316,13 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		 * 	return ClassName;
 		 * })(_super);
 		 */
-		if(!Node.SuperType().Equals(BClassType._ObjectType) && !JavaScriptGenerator.UseExtend) {
+		if(!Node.SuperType().Equals(ZClassType._ObjectType) && !JavaScriptGenerator.UseExtend) {
 			JavaScriptGenerator.UseExtend = true;
 			this.GenerateExtendCode(Node);
 		}
 		this.CurrentBuilder.AppendNewLine("var ", Node.ClassName(), " = ");
 		this.CurrentBuilder.Append("(function(");
-		if(!Node.SuperType().Equals(BClassType._ObjectType)) {
+		if(!Node.SuperType().Equals(ZClassType._ObjectType)) {
 			this.CurrentBuilder.OpenIndent("_super) {");
 			this.CurrentBuilder.AppendNewLine("__extends(", Node.ClassName(), this.Camma);
 			this.CurrentBuilder.Append("_super)", this.SemiColon);
@@ -350,7 +331,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		}
 		this.CurrentBuilder.AppendNewLine("function ", Node.ClassName());
 		this.CurrentBuilder.OpenIndent("() {");
-		if(!Node.SuperType().Equals(BClassType._ObjectType)) {
+		if(!Node.SuperType().Equals(ZClassType._ObjectType)) {
 			this.CurrentBuilder.AppendNewLine("_super.call(this)", this.SemiColon);
 		}
 
@@ -377,13 +358,13 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")", this.SemiColon);
 	}
 
-	@Override public void VisitErrorNode(BErrorNode Node) {
+	@Override public void VisitErrorNode(ZErrorNode Node) {
 		if(Node instanceof ZStupidCastErrorNode) {
 			@Var ZStupidCastErrorNode ErrorNode = (ZStupidCastErrorNode)Node;
 			this.GenerateCode(null, ErrorNode.ErrorNode);
 		}
 		else {
-			@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
+			@Var String Message = ZLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 			this.CurrentBuilder.AppendWhiteSpace();
 			this.CurrentBuilder.Append("LibZen.ThrowError(");
 			this.CurrentBuilder.Append(BLib._QuoteString(Message));

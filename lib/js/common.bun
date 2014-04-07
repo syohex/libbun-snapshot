@@ -2,6 +2,8 @@ define assert  "console.assert($[0], $[1])": Func<boolean,String,void>;
 define print   "console.log($[0])" : Func<String,void>;
 define println "console.log($[0])" : Func<String,void>;
 
+define / "($[0] / $[1]) | 0" : Func<int,int,int>;
+
 // converter
 define _ "$[0]" : Func<int,float>;
 define _ "($[0]|0)" : Func<float,int>;
