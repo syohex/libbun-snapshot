@@ -43,7 +43,7 @@ public class SSAConverter extends ZASTTransformer {
 	public SSAConverter(BGenerator Generator) {
 		this.Generator = Generator;
 		this.LocalVariables = null;
-		this.Replacer = new ValueReplacer();
+		this.Replacer = new ValueReplacer(Generator);
 		this.State = new SSAConverterState(null, -1);
 		this.ValueNumber = new BMap<Integer>(BType.IntType);
 		this.CurVariableTableBefore = new HashMap<BNode, BArray<Variable>>();
@@ -176,6 +176,9 @@ public class SSAConverter extends ZASTTransformer {
 	}
 
 	private void InsertPHI(JoinNode JNode, int BranchIndex, Variable OldVal, Variable NewVal) {
+		if(JNode == null) { // top-level statament.
+			return;
+		}
 		// 1. Find PHINode from JoinNode
 		@Var PHINode phi = JNode.FindPHINode(OldVal);
 
@@ -285,7 +288,7 @@ public class SSAConverter extends ZASTTransformer {
 
 	@Override
 	public void VisitGetNameNode(BGetNameNode Node) {
-		@Var Variable V = this.FindVariable(Node.GivenName);  //FIXME
+		@Var Variable V = this.FindVariable(Node.GetUniqueName(this.Generator));
 		Node.VarIndex = V.Index;
 	}
 
@@ -300,7 +303,7 @@ public class SSAConverter extends ZASTTransformer {
 
 	@Override
 	public void VisitVarBlockNode(ZVarBlockNode Node) {
-		@Var Variable V = new Variable(Node.VarDeclNode().GetGivenName(), 0, Node);
+		@Var Variable V = new Variable(Node.VarDeclNode().GetUniqueName(this.Generator), 0, Node);
 		this.AddVariable(V);
 		@Var int i = 0;
 		while(i < Node.GetListSize()) {
@@ -352,7 +355,7 @@ public class SSAConverter extends ZASTTransformer {
 		@Var int i = 0;
 		while(i < Node.GetListSize()) {
 			BLetVarNode ParamNode = Node.GetParamNode(i);
-			this.AddVariable(new Variable(ParamNode.GetGivenName(), 0, ParamNode));
+			this.AddVariable(new Variable(ParamNode.GetUniqueName(this.Generator), 0, ParamNode));
 			i = i + 1;
 		}
 		Node.BlockNode().Accept(this);
