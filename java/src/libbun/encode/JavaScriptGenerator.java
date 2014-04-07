@@ -81,21 +81,6 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.HeaderBuilder.AppendNewLine(LibName);
 	}
 
-	//	@Override public void VisitGlobalNameNode(ZFuncNameNode Node) {
-	//		//		if(Node.IsUntyped()) {
-	//		//			this.CurrentBuilder.Append(Node.GlobalName);
-	//		//		}
-	//		if(Node.IsFuncNameNode()) {
-	//			if(Node.GlobalName.startsWith("LibZen")){
-	//				this.CurrentBuilder.Append(Node.GlobalName.replace('_', '.'));
-	//			}else{
-	//				this.CurrentBuilder.Append(Node.Type.StringfySignature(Node.GlobalName));
-	//			}
-	//		}else{
-	//			this.CurrentBuilder.Append(Node.GlobalName);
-	//		}
-	//	}
-
 	@Override public void VisitNewObjectNode(BNewObjectNode Node) {
 		this.CurrentBuilder.Append(this.NameClass(Node.Type));
 		this.VisitListNode("(", Node, ")");
@@ -132,13 +117,6 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		}
 	}
 
-	//	@Override public void VisitCatchNode(ZCatchNode Node) {
-	//		this.CurrentBuilder.Append("catch");
-	//		this.CurrentBuilder.AppendWhiteSpace();
-	//		this.CurrentBuilder.Append(Node.GivenName);
-	//		this.GenerateCode(null, Node.AST[ZCatchNode._Block]);
-	//	}
-
 	@Override
 	protected void VisitVarDeclNode(BLetVarNode Node) {
 		this.CurrentBuilder.AppendToken("var");
@@ -154,90 +132,36 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 	}
 
-	//	private boolean IsUserDefinedType(BType SelfType){
-	//		return SelfType != BType.BooleanType &&
-	//				SelfType != BType.IntType &&
-	//				SelfType != BType.FloatType &&
-	//				SelfType != BType.StringType &&
-	//				SelfType != BType.VoidType &&
-	//				SelfType != BType.TypeType &&
-	//				//SelfType != ZType.VarType &&
-	//				SelfType.GetBaseType() != BGenericType._ArrayType &&
-	//				SelfType.GetBaseType() != BGenericType._MapType;
-	//	}
-
-	@Override public void VisitFunctionNode(BFunctionNode Node) {
-		@Var boolean IsLambda = (Node.FuncName() == null);
-		@Var boolean IsInstanceMethod = (!IsLambda && Node.AST.length > 1 && Node.AST[1/*first param*/] instanceof BLetVarNode);
-		@Var BType SelfType = IsInstanceMethod ? Node.AST[1/*first param*/].Type : null;
-		//		@Var boolean IsConstructor = IsInstanceMethod && Node.FuncName().equals(SelfType.GetName());
-		@Var BFuncType FuncType = Node.GetFuncType();
-
-		//		if(IsConstructor){
-		//			@Var BNode Block = Node.BlockNode();
-		//			Block.AST[Block.AST.length - 1].AST[0] = Node.AST[1];
-		//		}
-		if(IsLambda) {
-			this.CurrentBuilder.Append("(function");
-		}else{
-			this.CurrentBuilder.Append("function ");
-			this.CurrentBuilder.Append(Node.GetSignature());
-		}
-		this.VisitFuncParamNode("(", Node, ")");
+	private void VisitAnonymousFunctionNode(BFunctionNode Node) {
+		this.VisitFuncParamNode("(function(", Node, ")");
 		this.GenerateCode(null, Node.BlockNode());
-		if(IsLambda) {
-			this.CurrentBuilder.Append(")");
-		}else{
-			if(Node.IsExport) {
-				this.CurrentBuilder.Append(";");
-				this.CurrentBuilder.AppendLineFeed();
-				this.CurrentBuilder.Append(Node.FuncName(), " = ", FuncType.StringfySignature(Node.FuncName()));
-				if(Node.FuncName().equals("main")) {
-					this.HasMainFunction = true;
-				}
-			}
-			if(this.IsMethod(Node.FuncName(), FuncType)) {
-				this.CurrentBuilder.Append(";");
-				this.CurrentBuilder.AppendLineFeed();
-				this.CurrentBuilder.Append(this.NameClass(FuncType.GetRecvType()), ".prototype.", Node.FuncName());
-				this.CurrentBuilder.Append(" = ", FuncType.StringfySignature(Node.FuncName()));
-			}
-		}
+		this.CurrentBuilder.Append(")");
 	}
 
-	//	@Override public void VisitFuncCallNode(BFuncCallNode Node) {
-	//		@Var BFuncNameNode FuncNameNode = Node.FuncNameNode();
-	//		if(FuncNameNode != null) {
-	//			this.GenerateFuncName(FuncNameNode);
-	//		}
-	//		else {
-	//			this.GenerateCode(null, Node.FunctorNode());
-	//		}
-	//		this.VisitListNode("(", Node, ")");
-	//	}
-
-	//	@Override public void VisitMethodCallNode(BMethodCallNode Node) {
-	//		// (recv.method || Type_method)(...)
-	//		@Var BNode RecvNode = Node.RecvNode();
-	//
-	//		if(this.IsUserDefinedType(RecvNode.Type)){
-	//			this.CurrentBuilder.Append("(");
-	//			this.GenerateSurroundCode(RecvNode);
-	//			this.CurrentBuilder.Append(".");
-	//			this.CurrentBuilder.Append(Node.MethodName());
-	//			this.CurrentBuilder.Append("__ || ");
-	//			this.CurrentBuilder.Append(RecvNode.Type.ShortName);
-	//			this.CurrentBuilder.Append("_");
-	//			this.CurrentBuilder.Append(Node.MethodName());
-	//			this.CurrentBuilder.Append(")");
-	//		}else{
-	//			this.GenerateSurroundCode(RecvNode);
-	//			this.CurrentBuilder.Append(".");
-	//			this.CurrentBuilder.Append(Node.MethodName());
-	//		}
-	//		//this.GenerateSurroundCode(Node.RecvNode());
-	//		this.VisitListNode("(", Node, ")");
-	//	}
+	@Override public void VisitFunctionNode(BFunctionNode Node) {
+		if(Node.FuncName() == null) {
+			this.VisitAnonymousFunctionNode(Node);
+			return;
+		}
+		@Var BFuncType FuncType = Node.GetFuncType();
+		this.CurrentBuilder.Append("function ", Node.GetSignature());
+		this.VisitFuncParamNode("(", Node, ")");
+		this.GenerateCode(null, Node.BlockNode());
+		if(Node.IsExport) {
+			this.CurrentBuilder.Append(";");
+			this.CurrentBuilder.AppendLineFeed();
+			this.CurrentBuilder.Append(Node.FuncName(), " = ", FuncType.StringfySignature(Node.FuncName()));
+			if(Node.FuncName().equals("main")) {
+				this.HasMainFunction = true;
+			}
+		}
+		if(this.IsMethod(Node.FuncName(), FuncType)) {
+			this.CurrentBuilder.Append(";");
+			this.CurrentBuilder.AppendLineFeed();
+			this.CurrentBuilder.Append(this.NameClass(FuncType.GetRecvType()), ".prototype.", Node.FuncName());
+			this.CurrentBuilder.Append(" = ", FuncType.StringfySignature(Node.FuncName()));
+		}
+	}
 
 	@Override public void VisitMapLiteralNode(ZMapLiteralNode Node) {
 		@Var int ListSize =  Node.GetListSize();
