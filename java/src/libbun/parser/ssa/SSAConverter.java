@@ -4,8 +4,8 @@ import java.util.HashMap;
 
 import libbun.ast.BBlockNode;
 import libbun.ast.BNode;
-import libbun.ast.binary.BBinaryNode;
 import libbun.ast.binary.BAndNode;
+import libbun.ast.binary.BBinaryNode;
 import libbun.ast.decl.BFunctionNode;
 import libbun.ast.decl.BLetVarNode;
 import libbun.ast.decl.ZVarBlockNode;
@@ -14,10 +14,11 @@ import libbun.ast.expression.BSetNameNode;
 import libbun.ast.statement.BIfNode;
 import libbun.ast.statement.BWhileNode;
 import libbun.parser.BGenerator;
+import libbun.parser.BSyntax;
 import libbun.type.BType;
-import libbun.util.Var;
 import libbun.util.BArray;
 import libbun.util.BMap;
+import libbun.util.Var;
 
 /**
  * @see
@@ -267,9 +268,10 @@ public class SSAConverter extends ZASTTransformer {
 			@Var BWhileNode WNode = (BWhileNode) TargetNode;
 			@Var BNode CondNode = WNode.CondNode();
 			@Var int i = JNode.size() - 1;
+			@Var BSyntax AndPattern = TargetNode.GetNameSpace().GetRightSyntaxPattern("&&");
 			while(i >= 0) {
 				@Var PHINode phi = JNode.ListAt(i);
-				@Var BAndNode And = new BAndNode(Parent, null, phi, null);
+				@Var BAndNode And = new BAndNode(Parent, null, phi, AndPattern);
 				And.SetNode(BBinaryNode._Right, CondNode);
 				And.Type = BType.BooleanType;
 				CondNode = And;
