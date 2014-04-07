@@ -35,6 +35,7 @@ import static org.objectweb.asm.Opcodes.ANEWARRAY;
 import static org.objectweb.asm.Opcodes.CHECKCAST;
 import static org.objectweb.asm.Opcodes.DUP;
 import static org.objectweb.asm.Opcodes.GETFIELD;
+import static org.objectweb.asm.Opcodes.GETSTATIC;
 import static org.objectweb.asm.Opcodes.GOTO;
 import static org.objectweb.asm.Opcodes.IFEQ;
 import static org.objectweb.asm.Opcodes.IFNE;
@@ -504,7 +505,25 @@ public class AsmJavaGenerator extends BGenerator {
 	//		}
 	//	}
 
+	protected void VisitGlobalNameNode(BGetNameNode Node) {
+		if(Node.ResolvedNode instanceof BLetVarNode) {
+			BLetVarNode LetNode = (BLetVarNode) Node.ResolvedNode;
+			Class<?> JavaClass = this.GetJavaClass(LetNode.GetAstType(BLetVarNode._NameInfo));
+			this.AsmBuilder.visitFieldInsn(GETSTATIC, this.NameGlobalNameClass(LetNode.GetUniqueName(this)), "_", JavaClass);
+		}
+		else {
+			this.VisitErrorNode(new BErrorNode(Node, "unimplemented ResolvedNode: " + Node.ResolvedNode.getClass().getName()));
+		}
+	}
+
 	@Override public void VisitGetNameNode(BGetNameNode Node) {
+		if(Node.ResolvedNode == null) {
+			this.VisitErrorNode(new BErrorNode(Node, "undefined symbol: " + Node.GivenName));
+		}
+		if(Node.ResolvedNode.GetDefiningFunctionNode() == null) {
+			this.VisitGlobalNameNode(Node);
+			return;
+		}
 		this.AsmBuilder.LoadLocal(Node.GetUniqueName(this));
 		this.AsmBuilder.CheckReturnCast(Node, this.AsmBuilder.GetLocalType(Node.GetUniqueName(this)));
 	}
