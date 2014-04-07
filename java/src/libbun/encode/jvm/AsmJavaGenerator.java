@@ -519,6 +519,7 @@ public class AsmJavaGenerator extends BGenerator {
 	@Override public void VisitGetNameNode(BGetNameNode Node) {
 		if(Node.ResolvedNode == null) {
 			this.VisitErrorNode(new BErrorNode(Node, "undefined symbol: " + Node.GivenName));
+			return;
 		}
 		if(Node.ResolvedNode.GetDefiningFunctionNode() == null) {
 			this.VisitGlobalNameNode(Node);
