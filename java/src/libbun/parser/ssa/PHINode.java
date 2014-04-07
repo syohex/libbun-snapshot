@@ -4,8 +4,9 @@ import libbun.ast.BBlockNode;
 import libbun.ast.BNode;
 import libbun.ast.ZLocalDefinedNode;
 import libbun.ast.expression.BGetNameNode;
-import libbun.util.Var;
+import libbun.parser.BGenerator;
 import libbun.util.BArray;
+import libbun.util.Var;
 
 public class PHINode extends ZLocalDefinedNode {
 	public BArray<BNode>      Args;
@@ -64,8 +65,7 @@ public class PHINode extends ZLocalDefinedNode {
 		return BArray.GetIndex(this.Args, Index);
 	}
 
-	public boolean EqualsName(BGetNameNode gNode) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean EqualsName(BGetNameNode Node, BGenerator Generator) {
+		return Node.GetUniqueName(Generator).equals(this.VariableName);
 	}
 }
