@@ -54,8 +54,8 @@ import libbun.type.BClassType;
 import libbun.type.BFunc;
 import libbun.type.BFuncType;
 import libbun.type.BType;
-import libbun.util.Var;
 import libbun.util.BArray;
+import libbun.util.Var;
 
 public class SSACGenerator extends ZSourceGenerator {
 
@@ -98,11 +98,12 @@ public class SSACGenerator extends ZSourceGenerator {
 		if(Node.ResolvedNode == null && !this.LangInfo.AllowUndefinedSymbol) {
 			BLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GetUniqueName(this));
 		}
-		this.CurrentBuilder.Append(Node.GetUniqueName(this));
+		this.CurrentBuilder.Append(Node.GetUniqueName(this) + Node.VarIndex);
 	}
 
 	@Override public void VisitSetNameNode(BSetNameNode Node) {
-		//this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetName())  + Node.VarIndex, " = ");
+		this.VisitGetNameNode(Node.NameNode());
+		this.CurrentBuilder.Append(" = ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
