@@ -10,10 +10,11 @@ define _ "($[0]|0)" : Func<float,int>;
 define _ "String($[0])" : Func<boolean,String>;
 define _ "String($[0])" : Func<int,String>;
 define _ "String($[0])" : Func<float,String>;
-define _ "parseInt($[0])" : Func<String,int>;
-define _ "parseFloat($[0])" : Func<String,float>;
 define _ "String($[0])" : Func<α[],String>;
 define _ "String($[0])" : Func<Object,String>;
+define _ "parseInt($[0])" : Func<String,int>;
+define _ "parseFloat($[0])" : Func<String,float>;
+
 
 // String
 //define + "zstr($[0]) + zstr($[1])" : Func<String,String,String>;
