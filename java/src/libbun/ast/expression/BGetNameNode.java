@@ -42,7 +42,7 @@ public class BGetNameNode extends BNode {
 	public BGetNameNode(BNode ParentNode, BToken SourceToken, String GivenName) {
 		super(ParentNode, SourceToken, 0);
 		this.GivenName = GivenName;
-		this.Type = BType.VoidType; // FIXME
+		this.Type = BType.VarType; // FIXME
 	}
 
 	//	public final boolean IsGlobalName() {
