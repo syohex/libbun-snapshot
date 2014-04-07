@@ -322,11 +322,20 @@ public class SSAConverter extends ZASTTransformer {
 		this.RecordListOfVariablesBeforeVisit(Node.ThenNode());
 		Node.ThenNode().Accept(this);
 		this.RecordListOfVariablesAfterVisit(Node.ThenNode());
+		this.SetCurrentBranchIndex(IfElseBranchIndex);
 		if(Node.HasElseNode()) {
 			this.RecordListOfVariablesBeforeVisit(Node.ElseNode());
-			this.SetCurrentBranchIndex(IfElseBranchIndex);
 			Node.ElseNode().Accept(this);
 			this.RecordListOfVariablesAfterVisit(Node.ElseNode());
+		}
+		else {
+			@Var JoinNode JNode = this.GetCurrentJoinNode();
+			@Var int i = JNode.size() - 1;
+			while(i >= 0) {
+				PHINode phi = JNode.ListAt(i);
+				this.InsertPHI(JNode, IfElseBranchIndex, phi.BackupValue, phi.BackupValue);
+				i = i - 1;
+			}
 		}
 		this.RecordListOfVariablesAfterVisit(Node);
 		this.RemoveJoinNode(Node, this.GetCurrentJoinNode());
