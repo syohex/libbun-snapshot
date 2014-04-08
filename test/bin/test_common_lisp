@@ -1,0 +1,3 @@
+#!/bin/sh
+
+OUTDIR=test/w TARGET=cl CHECK=clisp test/bin/buntest test/bun/*.bun
