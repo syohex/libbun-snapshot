@@ -26,15 +26,15 @@ package libbun.parser;
 
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
-import libbun.ast.SyntaxSugarNode;
 import libbun.ast.LocalDefinedNode;
+import libbun.ast.SyntaxSugarNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.decl.TopLevelNode;
 import libbun.ast.decl.BunVarBlockNode;
+import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.BunMacroNode;
 import libbun.ast.expression.FuncCallNode;
@@ -106,7 +106,20 @@ public abstract class BVisitor {
 	public abstract void VisitSyntaxSugarNode(SyntaxSugarNode Node);
 	public abstract void VisitLocalDefinedNode(LocalDefinedNode Node);
 
-	public abstract void EnableVisitor();
-	public abstract void StopVisitor();
-	public abstract boolean IsVisitable();
+	private boolean StoppedVisitor;
+	public final void EnableVisitor() {
+		this.StoppedVisitor = false;
+	}
+
+	public final void StopVisitor() {
+		this.StoppedVisitor = true;
+	}
+
+	public final boolean IsVisitable() {
+		return !this.StoppedVisitor;
+	}
+	//
+	//	public abstract void EnableVisitor();
+	//	public abstract void StopVisitor();
+	//	public abstract boolean IsVisitable();
 }

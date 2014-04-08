@@ -57,7 +57,7 @@ import libbun.type.BType;
 import libbun.util.BArray;
 import libbun.util.Var;
 
-public class SSACGenerator extends ZSourceGenerator {
+public class SSACGenerator extends OldSourceGenerator {
 
 	public SSACGenerator() {
 		super("c", "C99");

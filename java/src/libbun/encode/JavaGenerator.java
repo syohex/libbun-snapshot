@@ -6,8 +6,8 @@ import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.error.ErrorNode;
-import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.BunFuncNameNode;
+import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.MethodCallNode;
 import libbun.ast.expression.NewObjectNode;
@@ -22,14 +22,14 @@ import libbun.type.BClassField;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
 import libbun.type.BType;
+import libbun.util.BArray;
 import libbun.util.BField;
 import libbun.util.BLib;
-import libbun.util.Var;
-import libbun.util.BArray;
 import libbun.util.BMap;
+import libbun.util.Var;
 import libbun.util.ZenMethod;
 
-public class JavaGenerator extends ZSourceGenerator {
+public class JavaGenerator extends OldSourceGenerator {
 
 	@BField private BunFunctionNode MainFuncNode = null;
 	@BField private final BArray<BunFunctionNode> ExportFunctionList = new BArray<BunFunctionNode>(new BunFunctionNode[4]);
@@ -383,7 +383,8 @@ public class JavaGenerator extends ZSourceGenerator {
 	private void GenerateClass(String Qualifier, String ClassName, BType SuperType) {
 		if(Qualifier != null && Qualifier.length() > 0) {
 			this.CurrentBuilder.AppendNewLine(Qualifier);
-			this.CurrentBuilder.AppendWhiteSpace("class ", ClassName);
+			this.CurrentBuilder.AppendToken("class");
+			this.CurrentBuilder.Append(ClassName);
 		}
 		else {
 			this.CurrentBuilder.AppendNewLine("class ", ClassName);

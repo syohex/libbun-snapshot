@@ -91,7 +91,7 @@ import libbun.ast.unary.UnaryOperatorNode;
 import libbun.ast.unary.BunComplementNode;
 import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunPlusNode;
-import libbun.parser.BGenerator;
+import libbun.encode.AbstractGenerator;
 import libbun.parser.BLogger;
 import libbun.parser.BNameSpace;
 import libbun.parser.BNodeUtils;
@@ -116,7 +116,7 @@ public class BunTypeSafer extends BTypeChecker {
 
 	@BField protected BunFunctionNode CurrentFunctionNode = null;
 
-	public BunTypeSafer(BGenerator Generator) {
+	public BunTypeSafer(AbstractGenerator Generator) {
 		super(Generator);
 	}
 

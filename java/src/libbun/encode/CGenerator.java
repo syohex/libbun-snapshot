@@ -50,7 +50,7 @@ import libbun.type.BFuncType;
 import libbun.type.BType;
 import libbun.util.Var;
 
-public class CGenerator extends ZSourceGenerator {
+public class CGenerator extends OldSourceGenerator {
 
 	public CGenerator() {
 		super("c", "C99");

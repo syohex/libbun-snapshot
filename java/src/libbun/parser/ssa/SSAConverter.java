@@ -13,7 +13,7 @@ import libbun.ast.expression.GetNameNode;
 import libbun.ast.expression.SetNameNode;
 import libbun.ast.statement.BunIfNode;
 import libbun.ast.statement.BunWhileNode;
-import libbun.parser.BGenerator;
+import libbun.encode.AbstractGenerator;
 import libbun.parser.BSyntax;
 import libbun.type.BType;
 import libbun.util.BArray;
@@ -38,9 +38,9 @@ public class SSAConverter extends ZASTTransformer {
 	public BMap<Integer> ValueNumber;
 	private final HashMap<BNode, BArray<Variable>> CurVariableTableBefore;
 	private final HashMap<BNode, BArray<Variable>> CurVariableTableAfter;
-	private final BGenerator Generator;
+	private final AbstractGenerator Generator;
 
-	public SSAConverter(BGenerator Generator) {
+	public SSAConverter(AbstractGenerator Generator) {
 		this.Generator = Generator;
 		this.LocalVariables = null;
 		this.Replacer = new ValueReplacer(Generator);

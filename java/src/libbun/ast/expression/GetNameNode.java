@@ -26,7 +26,7 @@ package libbun.ast.expression;
 
 import libbun.ast.BNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.parser.BGenerator;
+import libbun.encode.AbstractGenerator;
 import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 import libbun.type.BType;
@@ -65,7 +65,7 @@ public class GetNameNode extends BNode {
 	//		return this.GivenName;
 	//	}
 
-	public final String GetUniqueName(BGenerator Generator) {
+	public final String GetUniqueName(AbstractGenerator Generator) {
 		if(this.ResolvedNode != null) {
 			return this.ResolvedNode.GetUniqueName(Generator);
 		}

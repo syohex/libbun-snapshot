@@ -71,8 +71,8 @@ import libbun.ast.statement.BunWhileNode;
 import libbun.ast.unary.BunCastNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.encode.ZSourceBuilder;
-import libbun.encode.ZSourceGenerator;
+import libbun.encode.SourceBuilder;
+import libbun.encode.OldSourceGenerator;
 import libbun.parser.BLogger;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
@@ -172,7 +172,7 @@ class LLVMScope {
 	}
 }
 
-public class LLVMSourceGenerator extends ZSourceGenerator {
+public class LLVMSourceGenerator extends OldSourceGenerator {
 	@BField private int TempGlobalSymbolNumber;
 	@BField private final ArrayList<String> GlobalSymbolList;
 	@BField private final ArrayList<String> ExternalStructList;
@@ -1361,7 +1361,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 
 	@Override protected void VisitVarDeclNode(BunLetVarNode Node) {
 		//@Var ZSourceBuilder EntryBlockBuilder = this.CurrentBuilder.Pop();
-		@Var ZSourceBuilder VarDeclBuilder = this.CurrentBuilder; //FIXME
+		@Var SourceBuilder VarDeclBuilder = this.CurrentBuilder; //FIXME
 
 		@Var String VarName = this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName());
 		this.CurrentScope.DefineLocalVar(VarName);

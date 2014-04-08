@@ -12,9 +12,9 @@ import libbun.ast.expression.MethodCallNode;
 import libbun.ast.expression.NewObjectNode;
 import libbun.ast.expression.SetIndexNode;
 import libbun.ast.literal.BunArrayLiteralNode;
-import libbun.ast.literal.BunNullNode;
 import libbun.ast.literal.BunMapEntryNode;
 import libbun.ast.literal.BunMapLiteralNode;
+import libbun.ast.literal.BunNullNode;
 import libbun.ast.statement.BunReturnNode;
 import libbun.ast.statement.BunThrowNode;
 import libbun.ast.statement.BunTryNode;
@@ -22,14 +22,14 @@ import libbun.parser.BLogger;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
 import libbun.type.BType;
+import libbun.util.BArray;
 import libbun.util.BField;
 import libbun.util.BLib;
-import libbun.util.Var;
-import libbun.util.BArray;
 import libbun.util.BMap;
+import libbun.util.Var;
 import libbun.util.ZenMethod;
 
-public class CSharpGenerator extends ZSourceGenerator {
+public class CSharpGenerator extends OldSourceGenerator {
 
 	@BField private BunFunctionNode MainFuncNode = null;
 	@BField private final BArray<BunFunctionNode> ExportFunctionList = new BArray<BunFunctionNode>(new BunFunctionNode[4]);
@@ -234,8 +234,8 @@ public class CSharpGenerator extends ZSourceGenerator {
 	String GetFuncTypeClass(BFuncType FuncType) {
 		@Var String ClassName = this.FuncNameMap.GetOrNull(FuncType.GetUniqueName());
 		if(ClassName == null){
-			@Var ZSourceBuilder MainBuilder = this.CurrentBuilder;
-			this.CurrentBuilder = new ZSourceBuilder(this, null);
+			@Var SourceBuilder MainBuilder = this.CurrentBuilder;
+			this.CurrentBuilder = new SourceBuilder(this, null);
 			@Var boolean HasReturnValue = !FuncType.GetReturnType().equals(BType.VoidType);
 			if(HasReturnValue){
 				this.CurrentBuilder.Append("Func");
@@ -390,7 +390,8 @@ public class CSharpGenerator extends ZSourceGenerator {
 	private void GenerateClass(String Qualifier, String ClassName, BType SuperType) {
 		if(Qualifier != null && Qualifier.length() > 0) {
 			this.CurrentBuilder.AppendNewLine(Qualifier);
-			this.CurrentBuilder.AppendWhiteSpace("partial class ", ClassName);
+			this.CurrentBuilder.AppendToken("partial class");
+			this.CurrentBuilder.Append(ClassName);
 		}
 		else {
 			this.CurrentBuilder.AppendNewLine("partial class ", ClassName);

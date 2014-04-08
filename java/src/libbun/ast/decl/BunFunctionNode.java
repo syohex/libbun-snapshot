@@ -27,7 +27,7 @@ package libbun.ast.decl;
 import libbun.ast.BunBlockNode;
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
-import libbun.parser.BGenerator;
+import libbun.encode.AbstractGenerator;
 import libbun.parser.BVisitor;
 import libbun.type.BFuncType;
 import libbun.type.BType;
@@ -75,7 +75,7 @@ public class BunFunctionNode extends AbstractListNode {
 		return this.GivenName;
 	}
 
-	public final String GetUniqueName(BGenerator Generator) {
+	public final String GetUniqueName(AbstractGenerator Generator) {
 		@Var String FuncName = this.FuncName();
 		if(FuncName == null) {
 			FuncName = "f";

@@ -25,26 +25,25 @@
 
 package libbun.encode;
 
-import libbun.ast.AbstractListNode;
+import libbun.util.BArray;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.BArray;
 
-public final class ZSourceBuilder {
+public final class SourceBuilder {
 	@BField public BArray<String> SourceList = new BArray<String>(new String[128]);
-	@BField ZSourceGenerator Template;
-	@BField ZSourceBuilder Parent;
+	@BField SourceBuilder Parent;
 	@BField int IndentLevel = 0;
 	@BField String CurrentIndentString = "";
 	@BField String BufferedLineComment = "";
+	@BField SourceGenerator Template;
 
-	public ZSourceBuilder(ZSourceGenerator Template, ZSourceBuilder Parent) {
+	public SourceBuilder(SourceGenerator Template, SourceBuilder Parent) {
 		this.Template = Template;
 		this.Parent = Parent;
 	}
 
-	public final ZSourceBuilder Pop() {
+	public final SourceBuilder Pop() {
 		this.AppendLineFeed();
 		return this.Parent;
 	}
@@ -61,31 +60,31 @@ public final class ZSourceBuilder {
 		return BLib._SourceBuilderToString(this, BeginIndex, EndIndex);
 	}
 
-	public final void AppendCode(String Source) {
-		@Var int StartIndex = 0;
-		@Var int i = 0;
-		while(i < Source.length()) {
-			@Var char ch = BLib._GetChar(Source, i);
-			if(ch == '\n') {
-				if(StartIndex < i) {
-					this.SourceList.add(Source.substring(StartIndex, i));
-				}
-				this.AppendNewLine();
-				StartIndex = i + 1;
-			}
-			if(ch == '\t') {
-				if(StartIndex < i) {
-					this.SourceList.add(Source.substring(StartIndex, i));
-				}
-				this.Append(this.Template.Tab);
-				StartIndex = i + 1;
-			}
-			i = i + 1;
-		}
-		if(StartIndex < i) {
-			this.SourceList.add(Source.substring(StartIndex, i));
-		}
-	}
+	//	public final void AppendCode(String Source) {
+	//		@Var int StartIndex = 0;
+	//		@Var int i = 0;
+	//		while(i < Source.length()) {
+	//			@Var char ch = BLib._GetChar(Source, i);
+	//			if(ch == '\n') {
+	//				if(StartIndex < i) {
+	//					this.SourceList.add(Source.substring(StartIndex, i));
+	//				}
+	//				this.AppendNewLine();
+	//				StartIndex = i + 1;
+	//			}
+	//			if(ch == '\t') {
+	//				if(StartIndex < i) {
+	//					this.SourceList.add(Source.substring(StartIndex, i));
+	//				}
+	//				this.Append(this.Template.Tab);
+	//				StartIndex = i + 1;
+	//			}
+	//			i = i + 1;
+	//		}
+	//		if(StartIndex < i) {
+	//			this.SourceList.add(Source.substring(StartIndex, i));
+	//		}
+	//	}
 
 	public final void Append(String Source) {
 		this.SourceList.add(Source);
@@ -106,7 +105,7 @@ public final class ZSourceBuilder {
 		this.SourceList.add("" + Value);
 	}
 
-	public final void AppendQuote(String Text) {
+	public final void AppendQuotedText(String Text) {
 		this.SourceList.add(BLib._QuoteString(Text));
 	}
 
@@ -116,17 +115,6 @@ public final class ZSourceBuilder {
 			this.BufferedLineComment = "";
 		}
 		this.SourceList.add(this.Template.LineFeed);
-	}
-
-	public final void AppendLineFeed(boolean AppendIndent) {
-		if (this.BufferedLineComment.length() > 0) {
-			this.SourceList.add(this.BufferedLineComment);
-			this.BufferedLineComment = "";
-		}
-		this.SourceList.add(this.Template.LineFeed);
-		if(AppendIndent) {
-			this.AppendIndent();
-		}
 	}
 
 	public final boolean EndsWith(String s) {
@@ -151,23 +139,23 @@ public final class ZSourceBuilder {
 		this.SourceList.add(" ");
 	}
 
-	public final void AppendWhiteSpace(String Text) {
-		this.AppendWhiteSpace();
-		this.Append(Text);
-	}
-
-	public final void AppendWhiteSpace(String Text, String Text2) {
-		this.AppendWhiteSpace();
-		this.Append(Text);
-		this.Append(Text2);
-	}
-
-	public final void AppendWhiteSpace(String Text, String Text2, String Text3) {
-		this.AppendWhiteSpace();
-		this.Append(Text);
-		this.Append(Text2);
-		this.Append(Text3);
-	}
+	//	public final void AppendWhiteSpace(String Text) {
+	//		this.AppendWhiteSpace();
+	//		this.Append(Text);
+	//	}
+	//
+	//	public final void AppendWhiteSpace(String Text, String Text2) {
+	//		this.AppendWhiteSpace();
+	//		this.Append(Text);
+	//		this.Append(Text2);
+	//	}
+	//
+	//	public final void AppendWhiteSpace(String Text, String Text2, String Text3) {
+	//		this.AppendWhiteSpace();
+	//		this.Append(Text);
+	//		this.Append(Text2);
+	//		this.Append(Text3);
+	//	}
 
 	public final void AppendToken(String Text) {
 		this.AppendWhiteSpace();
@@ -175,27 +163,27 @@ public final class ZSourceBuilder {
 		this.AppendWhiteSpace();
 	}
 
-	public final void AppendBlockComment(String Text) {
-		if (this.Template.BeginComment != null) {
-			this.SourceList.add(this.Template.BeginComment);
-			this.SourceList.add(Text);
-			this.SourceList.add(this.Template.EndComment);
-		} else if (this.Template.LineComment != null) {
-			this.BufferedLineComment = this.BufferedLineComment + this.Template.LineComment + Text;
-		}
-	}
-
-	public final void AppendCommentLine(String Text) {
-		if (this.Template.LineComment == null) {
-			this.SourceList.add(this.Template.BeginComment);
-			this.SourceList.add(Text);
-			this.SourceList.add(this.Template.EndComment);
-		} else {
-			this.SourceList.add(this.Template.LineComment);
-			this.SourceList.add(Text);
-		}
-		this.SourceList.add(this.Template.LineFeed);
-	}
+	//	public final void AppendBlockComment(String Text) {
+	//		if (this.Template.BeginComment != null) {
+	//			this.SourceList.add(this.Template.BeginComment);
+	//			this.SourceList.add(Text);
+	//			this.SourceList.add(this.Template.EndComment);
+	//		} else if (this.Template.LineComment != null) {
+	//			this.BufferedLineComment = this.BufferedLineComment + this.Template.LineComment + Text;
+	//		}
+	//	}
+	//
+	//	public final void AppendCommentLine(String Text) {
+	//		if (this.Template.LineComment == null) {
+	//			this.SourceList.add(this.Template.BeginComment);
+	//			this.SourceList.add(Text);
+	//			this.SourceList.add(this.Template.EndComment);
+	//		} else {
+	//			this.SourceList.add(this.Template.LineComment);
+	//			this.SourceList.add(Text);
+	//		}
+	//		this.SourceList.add(this.Template.LineFeed);
+	//	}
 
 	public final void Indent() {
 		this.IndentLevel = this.IndentLevel + 1;
@@ -254,31 +242,30 @@ public final class ZSourceBuilder {
 			this.Append(Text);
 		}
 	}
-
-
-	public final void IndentAndAppend(String Text) {
-		this.SourceList.add(this.GetIndentString());
-		this.SourceList.add(Text);
-	}
-
-	public final void AppendParamList(AbstractListNode ParamList, int BeginIdx, int EndIdx) {
-		@Var int i = BeginIdx;
-		while(i < EndIdx) {
-			if (i > BeginIdx) {
-				this.Append(this.Template.Camma);
-			}
-			ParamList.GetListAt(i).Accept(this.Template);
-			i = i + 1;
-		}
-	}
+	//
+	//	public final void IndentAndAppend(String Text) {
+	//		this.SourceList.add(this.GetIndentString());
+	//		this.SourceList.add(Text);
+	//	}
+	//
+	//	public final void AppendParamList(AbstractListNode ParamList, int BeginIdx, int EndIdx) {
+	//		@Var int i = BeginIdx;
+	//		while(i < EndIdx) {
+	//			if (i > BeginIdx) {
+	//				this.Append(this.Template.Camma);
+	//			}
+	//			ParamList.GetListAt(i).Accept(this.Template);
+	//			i = i + 1;
+	//		}
+	//	}
 
 	@Override public final String toString() {
 		return BLib._SourceBuilderToString(this);
 	}
-
-	@Deprecated public final void AppendLine(String Text) {
-		this.Append(Text);
-		this.AppendLineFeed();
-	}
+	////
+	////	@Deprecated public final void AppendLine(String Text) {
+	////		this.Append(Text);
+	////		this.AppendLineFeed();
+	//	}
 
 }

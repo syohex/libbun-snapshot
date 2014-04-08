@@ -4,7 +4,7 @@ import libbun.ast.BNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.expression.SetNameNode;
-import libbun.parser.BGenerator;
+import libbun.encode.AbstractGenerator;
 import libbun.type.BType;
 
 public class NodeLib {
@@ -44,7 +44,7 @@ public class NodeLib {
 		return BType.VarType;
 	}
 
-	static public String GetVarName(BNode Node, BGenerator Generator) {
+	static public String GetVarName(BNode Node, AbstractGenerator Generator) {
 		if(Node instanceof BunLetVarNode) {
 			BunLetVarNode LNode = (BunLetVarNode) Node;
 			return LNode.GetGivenName();

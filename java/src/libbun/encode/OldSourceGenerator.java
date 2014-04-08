@@ -24,19 +24,17 @@
 
 package libbun.encode;
 
+import libbun.ast.AbstractListNode;
+import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.DesugarNode;
 import libbun.ast.GroupNode;
-import libbun.ast.AbstractListNode;
-import libbun.ast.BNode;
-import libbun.ast.SyntaxSugarNode;
 import libbun.ast.LocalDefinedNode;
-import libbun.ast.binary.BunAndNode;
-import libbun.ast.binary.BinaryOperatorNode;
-import libbun.ast.binary.ComparatorNode;
+import libbun.ast.SyntaxSugarNode;
 import libbun.ast.binary.BInstanceOfNode;
-import libbun.ast.binary.BunOrNode;
+import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAddNode;
+import libbun.ast.binary.BunAndNode;
 import libbun.ast.binary.BunBitwiseAndNode;
 import libbun.ast.binary.BunBitwiseOrNode;
 import libbun.ast.binary.BunBitwiseXorNode;
@@ -50,35 +48,37 @@ import libbun.ast.binary.BunLessThanNode;
 import libbun.ast.binary.BunModNode;
 import libbun.ast.binary.BunMulNode;
 import libbun.ast.binary.BunNotEqualsNode;
+import libbun.ast.binary.BunOrNode;
 import libbun.ast.binary.BunRightShiftNode;
 import libbun.ast.binary.BunSubNode;
+import libbun.ast.binary.ComparatorNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.decl.TopLevelNode;
 import libbun.ast.decl.BunVarBlockNode;
+import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
-import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.BunFuncNameNode;
+import libbun.ast.expression.BunMacroNode;
+import libbun.ast.expression.FuncCallNode;
+import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.GetNameNode;
-import libbun.ast.expression.GetFieldNode;
-import libbun.ast.expression.BunMacroNode;
 import libbun.ast.expression.MethodCallNode;
 import libbun.ast.expression.NewObjectNode;
+import libbun.ast.expression.SetFieldNode;
 import libbun.ast.expression.SetIndexNode;
 import libbun.ast.expression.SetNameNode;
-import libbun.ast.expression.SetFieldNode;
 import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.ast.literal.BunAsmNode;
 import libbun.ast.literal.BunBooleanNode;
 import libbun.ast.literal.BunFloatNode;
 import libbun.ast.literal.BunIntNode;
+import libbun.ast.literal.BunMapEntryNode;
+import libbun.ast.literal.BunMapLiteralNode;
 import libbun.ast.literal.BunNullNode;
 import libbun.ast.literal.BunStringNode;
 import libbun.ast.literal.LiteralNode;
-import libbun.ast.literal.BunMapEntryNode;
-import libbun.ast.literal.BunMapLiteralNode;
 import libbun.ast.statement.BunBreakNode;
 import libbun.ast.statement.BunIfNode;
 import libbun.ast.statement.BunReturnNode;
@@ -86,38 +86,24 @@ import libbun.ast.statement.BunThrowNode;
 import libbun.ast.statement.BunTryNode;
 import libbun.ast.statement.BunWhileNode;
 import libbun.ast.unary.BunCastNode;
-import libbun.ast.unary.BunNotNode;
-import libbun.ast.unary.UnaryOperatorNode;
 import libbun.ast.unary.BunComplementNode;
 import libbun.ast.unary.BunMinusNode;
+import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
+import libbun.ast.unary.UnaryOperatorNode;
 import libbun.lang.bun.BunTypeSafer;
-import libbun.parser.BGenerator;
 import libbun.parser.BLangInfo;
 import libbun.parser.BLogger;
-import libbun.parser.BNameSpace;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
 import libbun.type.BType;
-import libbun.util.BArray;
 import libbun.util.BField;
 import libbun.util.BLib;
-import libbun.util.BMap;
-import libbun.util.Nullable;
 import libbun.util.Var;
-import libbun.util.ZenMethod;
 
-public class ZSourceGenerator extends BGenerator {
-	@BField public BMap<String> NativeTypeMap = new BMap<String>(null);
-	@BField public BMap<String> ReservedNameMap = new BMap<String>(null);
-
-	@BField private final BArray<ZSourceBuilder> BuilderList = new BArray<ZSourceBuilder>(new ZSourceBuilder[4]);
-	@BField protected ZSourceBuilder HeaderBuilder;
-	@BField protected ZSourceBuilder CurrentBuilder;
+public class OldSourceGenerator extends SourceGenerator {
 
 	@BField public boolean IsDynamicLanguage = false;
-	@BField public String Tab = "   ";
-	@BField public String LineFeed = "\n";
 	@BField public String LineComment = "//";
 	@BField public String BeginComment = "/*";
 	@BField public String EndComment = "*/";
@@ -140,146 +126,15 @@ public class ZSourceGenerator extends BGenerator {
 
 	@BField public boolean ReadableCode = true;
 
-	public ZSourceGenerator(String Extension, String LangVersion) {
+	public OldSourceGenerator(String Extension, String LangVersion) {
 		super(new BLangInfo(LangVersion, Extension));
-		this.InitBuilderList();
 		this.SetTypeChecker(new BunTypeSafer(this));
-	}
-
-	@ZenMethod protected void InitBuilderList() {
-		this.CurrentBuilder = null;
-		this.BuilderList.clear(0);
-		this.HeaderBuilder = this.AppendNewSourceBuilder();
-		this.CurrentBuilder = this.AppendNewSourceBuilder();
-	}
-
-	@ZenMethod protected void Finish(String FileName) {
-
-	}
-
-	protected final ZSourceBuilder AppendNewSourceBuilder() {
-		@Var ZSourceBuilder Builder = new ZSourceBuilder(this, this.CurrentBuilder);
-		this.BuilderList.add(Builder);
-		return Builder;
-	}
-
-	protected final ZSourceBuilder InsertNewSourceBuilder() {
-		@Var ZSourceBuilder Builder = new ZSourceBuilder(this, this.CurrentBuilder);
-		@Var int i = 0;
-		while(i < this.BuilderList.size()) {
-			if(this.BuilderList.ArrayValues[i] == this.CurrentBuilder) {
-				this.BuilderList.add(i, Builder);
-				return Builder;
-			}
-			i = i + 1;
-		}
-		this.BuilderList.add(Builder);
-		return Builder;
 	}
 
 	@Override protected void GenerateImportLibrary(String LibName) {
 		this.HeaderBuilder.AppendNewLine("require ", LibName, this.SemiColon);
 	}
 
-	protected void SetNativeType(BType Type, String TypeName) {
-		@Var String Key = "" + Type.TypeId;
-		this.NativeTypeMap.put(Key, TypeName);
-	}
-
-	protected String GetNativeTypeName(BType Type) {
-		@Var String Key = "" + Type.TypeId;
-		@Var String TypeName = this.NativeTypeMap.GetOrNull(Key);
-		if (TypeName == null) {
-			return Type.ShortName;
-		}
-		return TypeName;
-	}
-
-	public final void SetReservedName(String Keyword, @Nullable String AnotherName) {
-		if(AnotherName == null) {
-			AnotherName = "_" + Keyword;
-		}
-		this.ReservedNameMap.put(Keyword, AnotherName);
-	}
-
-	//	public String NameLocalVariable(String Name, int Index) {
-	//		if(Index == 0) {
-	//			@Var String SafeName = this.ReservedNameMap.GetOrNull(Name);
-	//			if(SafeName == null) {
-	//				SafeName = Name;
-	//			}
-	//			return SafeName;
-	//		}
-	//		return Name + "__" + Index;
-	//	}
-
-	//	protected void GenerateName(BNode Node) {
-	//		if(Node instanceof BGetNameNode) {
-	//			@Var BGetNameNode NameNode = (BGetNameNode)Node;
-	//			@Var String Name = NameNode.GetName();
-	//			if(NameNode.ResolvedNode != null) {
-	//				@Var String SafeName = this.ReservedNameMap.GetOrNull(Name);
-	//				if(SafeName != null) {
-	//					Name = SafeName;
-	//				}
-	//				@Var int NameIndex = Node.GetNameSpace().GetNameIndex(Name);
-	//				if(NameIndex > 0) {
-	//					Name = Name + "__" + NameIndex;
-	//				}
-	//			}
-	//			this.CurrentBuilder.Append(Name);
-	//			return;
-	//		}
-	//		this.CurrentBuilder.Append(Node.toString());
-	//	}
-
-	public String NameLocalVariable(BNameSpace NameSpace, String Name) {
-		@Var String SafeName = this.ReservedNameMap.GetOrNull(Name);
-		if(SafeName != null) {
-			Name = SafeName;
-		}
-		@Var int NameIndex = NameSpace.GetNameIndex(Name);
-		if(NameIndex > 0) {
-			Name = Name + "__" + NameIndex;
-		}
-		return Name;
-	}
-
-	@Override public final void WriteTo(@Nullable String FileName) {
-		this.Finish(FileName);
-		this.Logger.OutputErrorsToStdErr();
-		BLib._WriteTo(this.LangInfo.NameOutputFile(FileName), this.BuilderList);
-		this.InitBuilderList();
-	}
-
-	@Override public final String GetSourceText() {
-		this.Finish(null);
-		@Var ZSourceBuilder sb = new ZSourceBuilder(this, null);
-		@Var int i = 0;
-		while(i < this.BuilderList.size()) {
-			@Var ZSourceBuilder Builder = this.BuilderList.ArrayValues[i];
-			sb.Append(Builder.toString());
-			Builder.Clear();
-			sb.AppendLineFeed();
-			sb.AppendLineFeed();
-			i = i + 1;
-		}
-		this.InitBuilderList();
-		return BLib._SourceBuilderToString(sb);
-	}
-
-	@Override public void Perform() {
-		@Var int i = 0;
-		//this.Logger.OutputErrorsToStdErr();
-		BLib._PrintLine("---");
-		while(i < this.BuilderList.size()) {
-			@Var ZSourceBuilder Builder = this.BuilderList.ArrayValues[i];
-			BLib._PrintLine(Builder.toString());
-			Builder.Clear();
-			i = i + 1;
-		}
-		this.InitBuilderList();
-	}
 
 	protected final void GenerateCode2(String Pre, BType ContextType, BNode Node, String Post) {
 		if(Pre != null && Pre.length() > 0) {
@@ -373,10 +228,6 @@ public class ZSourceGenerator extends BGenerator {
 		this.VisitVarDeclNode(Node.VarDeclNode());
 		this.VisitStmtList(Node);
 	}
-
-
-
-
 
 	@Override public void VisitNullNode(BunNullNode Node) {
 		this.CurrentBuilder.Append(this.NullLiteral);
@@ -777,7 +628,7 @@ public class ZSourceGenerator extends BGenerator {
 
 	@Override public void VisitAsmNode(BunAsmNode Node) {
 		this.ImportLibrary(Node.RequiredLibrary);
-		this.CurrentBuilder.AppendCode(Node.GetMacroText());
+		this.CurrentBuilder.Append(Node.GetMacroText());
 	}
 
 	@Override public void VisitLocalDefinedNode(LocalDefinedNode Node) {

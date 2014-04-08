@@ -52,7 +52,7 @@ import libbun.util.ZenMethod;
 
 //Zen Generator should be written in each language.
 
-public class PythonGenerator extends ZSourceGenerator {
+public class PythonGenerator extends OldSourceGenerator {
 
 	@BField boolean HasMainFunction = false;
 

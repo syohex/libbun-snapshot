@@ -10,7 +10,7 @@ import libbun.ast.expression.SetNameNode;
 import libbun.ast.literal.BunBooleanNode;
 import libbun.ast.statement.BunBreakNode;
 import libbun.ast.statement.BunWhileNode;
-import libbun.parser.BGenerator;
+import libbun.encode.AbstractGenerator;
 import libbun.parser.BTypeChecker;
 import libbun.type.BType;
 import libbun.util.BLib;
@@ -72,7 +72,7 @@ public class BunContinueNode extends SyntaxSugarNode {
 		return FirstDesugarNode;
 	}
 
-	@Override public DesugarNode DeSugar(BGenerator Generator, BTypeChecker Typer) {
+	@Override public DesugarNode DeSugar(AbstractGenerator Generator, BTypeChecker Typer) {
 		@Var BunWhileNode WhileNode = this.LookupWhileNode();
 		if(WhileNode == null) {
 			return new DesugarNode(this, new ErrorNode(this.ParentNode, this.SourceToken, "continue must be inside the while statement"));

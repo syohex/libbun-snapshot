@@ -28,7 +28,7 @@ package libbun.encode;
 
 //Zen Generator should be written in each language.
 
-public class BashGenerator extends ZSourceGenerator {
+public class BashGenerator extends OldSourceGenerator {
 
 	public BashGenerator(String TargetCode, String TargetVersion) {
 		super(TargetCode, TargetVersion);

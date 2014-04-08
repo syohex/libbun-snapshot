@@ -24,10 +24,10 @@
 
 package libbun.parser;
 
-import libbun.ast.BunBlockNode;
-import libbun.ast.DesugarNode;
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
+import libbun.ast.BunBlockNode;
+import libbun.ast.DesugarNode;
 import libbun.ast.SyntaxSugarNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.decl.BunFunctionNode;
@@ -35,13 +35,14 @@ import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.error.StupidCastErrorNode;
-import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.BunFuncNameNode;
-import libbun.ast.expression.GetNameNode;
 import libbun.ast.expression.BunMacroNode;
+import libbun.ast.expression.FuncCallNode;
+import libbun.ast.expression.GetNameNode;
 import libbun.ast.literal.BunAsmNode;
 import libbun.ast.statement.BunReturnNode;
 import libbun.ast.unary.BunCastNode;
+import libbun.encode.AbstractGenerator;
 import libbun.type.BFunc;
 import libbun.type.BFuncType;
 import libbun.type.BGreekType;
@@ -59,32 +60,19 @@ public abstract class BTypeChecker extends BOperatorVisitor {
 	@BField private BType      StackedContextType;
 	@BField private BNode      ReturnedNode;
 
-	@BField public BGenerator  Generator;
+	@BField public AbstractGenerator  Generator;
 	@BField public BLogger     Logger;
 	@BField private boolean    StoppedVisitor;
 	@BField public BVarScope   VarScope;
 	@BField public boolean     IsSupportNullable = false;
 	@BField public boolean     IsSupportMutable  = false;
 
-	public BTypeChecker(BGenerator Generator) {
+	public BTypeChecker(AbstractGenerator Generator) {
 		this.Generator = Generator;
 		this.Logger = Generator.Logger;
 		this.StackedContextType = null;
 		this.ReturnedNode = null;
-		this.StoppedVisitor = false;
 		this.VarScope = new BVarScope(null, this.Logger, null);
-	}
-
-	@Override public final void EnableVisitor() {
-		this.StoppedVisitor = false;
-	}
-
-	@Override public final void StopVisitor() {
-		this.StoppedVisitor = true;
-	}
-
-	@Override public final boolean IsVisitable() {
-		return !this.StoppedVisitor;
 	}
 
 	public final BType GetContextType() {

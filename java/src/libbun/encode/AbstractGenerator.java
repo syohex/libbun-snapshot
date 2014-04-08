@@ -23,20 +23,27 @@
 // **************************************************************************
 
 
-package libbun.parser;
+package libbun.encode;
 
-import libbun.ast.BunBlockNode;
-import libbun.ast.DesugarNode;
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
+import libbun.ast.BunBlockNode;
+import libbun.ast.DesugarNode;
 import libbun.ast.SyntaxSugarNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
-import libbun.ast.literal.DefaultValueNode;
 import libbun.ast.literal.BunNullNode;
+import libbun.ast.literal.DefaultValueNode;
+import libbun.parser.BLangInfo;
+import libbun.parser.BLogger;
+import libbun.parser.BNameSpace;
+import libbun.parser.BOperatorVisitor;
+import libbun.parser.BToken;
+import libbun.parser.BTokenContext;
+import libbun.parser.BTypeChecker;
 import libbun.type.BClassType;
 import libbun.type.BFunc;
 import libbun.type.BFuncType;
@@ -51,8 +58,9 @@ import libbun.util.Nullable;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
-public abstract class BGenerator extends BOperatorVisitor {
+public abstract class AbstractGenerator extends BOperatorVisitor {
 	@BField public BMap<String>        ImportedLibraryMap = new BMap<String>(null);
+	@BField public BMap<String>        SymbolMap = new BMap<String>(null);
 	@BField private final BMap<BFunc>  DefinedFuncMap = new BMap<BFunc>(null);
 
 	@BField public final BNameSpace      RootNameSpace;
@@ -61,35 +69,24 @@ public abstract class BGenerator extends BOperatorVisitor {
 	@BField public BLangInfo             LangInfo;
 	@BField protected String             TopLevelSymbol = null;
 	@BField private int                  UniqueNumber = 0;
-	@BField private boolean              StoppedVisitor;
 
-	protected BGenerator(BLangInfo LangInfo) {
+	protected AbstractGenerator(BLangInfo LangInfo) {
 		this.RootNameSpace = new BNameSpace(this, null);
 		this.Logger        = new BLogger();
 		this.LangInfo      = LangInfo;
 		this.TypeChecker   = null;
-		this.StoppedVisitor = false;
 	}
 
 	public final void SetTypeChecker(BTypeChecker TypeChecker) {
 		this.TypeChecker = TypeChecker;
 	}
 
-	@Override public final void EnableVisitor() {
-		this.StoppedVisitor = false;
-	}
-
-	@Override public final void StopVisitor() {
-		this.StoppedVisitor = true;
-	}
-
-	@Override public final boolean IsVisitable() {
-		return !this.StoppedVisitor;
-	}
-
-	@ZenMethod protected void GenerateImportLibrary(String LibName) {
-		//	this.HeaderBuilder.AppendNewLine("require ", LibName, this.LineFeed);
-	}
+	protected abstract void GenerateImportLibrary(String LibName);
+	//
+	//	// library
+	//	@ZenMethod protected void GenerateImportLibrary(String LibName) {
+	//		//	this.HeaderBuilder.AppendNewLine("require ", LibName, this.LineFeed);
+	//	}
 
 	public final void ImportLibrary(@Nullable String LibName) {
 		if(LibName != null) {
@@ -101,59 +98,14 @@ public abstract class BGenerator extends BOperatorVisitor {
 		}
 	}
 
-	public final void SetDefinedFunc(BFunc Func) {
+	// symbol map
 
-		this.DefinedFuncMap.put(Func.GetSignature(), Func);
-	}
-
-	private String NameConverterFunc(BType FromType, BType ToType) {
-		return FromType.GetUniqueName() + "T" + ToType.GetUniqueName();
-	}
-
-	public final void SetConverterFunc(BType FromType, BType ToType, BFunc Func) {
-		//System.out.println("set " + this.NameConverterFunc(FromType, ToType));
-		this.DefinedFuncMap.put(this.NameConverterFunc(FromType, ToType), Func);
-	}
-
-	public final BFunc LookupConverterFunc(BType FromType, BType ToType) {
-		while(FromType != null) {
-			@Var BFunc Func = this.DefinedFuncMap.GetOrNull(this.NameConverterFunc(FromType, ToType));
-			//System.out.println("get " + this.NameConverterFunc(FromType, ToType) + ", func="+ Func);
-			if(Func != null) {
-				return Func;
-			}
-			FromType = FromType.GetSuperType();
+	protected void SetReservedName(String Keyword, @Nullable String AnotherName) {
+		if(AnotherName == null) {
+			AnotherName = "_" + Keyword;
 		}
-		return null;
+		this.SymbolMap.put(Keyword, AnotherName);
 	}
-
-	@ZenMethod public void WriteTo(@Nullable String FileName) {
-		// TODO Stub
-	}
-
-	@ZenMethod public String GetSourceText() {
-		return null;
-	}
-
-	@ZenMethod public BType GetFieldType(BType BaseType, String Name) {
-		return BType.VarType;     // undefined
-	}
-
-	@ZenMethod public BType GetSetterType(BType BaseType, String Name) {
-		return BType.VarType;     // undefined
-	}
-
-	@ZenMethod public BFuncType GetConstructorFuncType(BType ClassType, AbstractListNode List) {
-		//return null;              // undefined and undefined error
-		return BFuncType._FuncType;    // undefined and no error
-	}
-
-	@ZenMethod public BFuncType GetMethodFuncType(BType RecvType, String MethodName, AbstractListNode List) {
-		//return null;              // undefined and undefined error
-		return BFuncType._FuncType;     // undefined and no error
-	}
-
-	// Naming
 
 	public final int GetUniqueNumber() {
 		@Var int UniqueNumber = this.UniqueNumber;
@@ -161,12 +113,38 @@ public abstract class BGenerator extends BOperatorVisitor {
 		return UniqueNumber;
 	}
 
-	public final String NameUniqueSymbol(String Symbol) {
-		return Symbol + "Z" + this.GetUniqueNumber();
+	public String NameUniqueSymbol(String Symbol, int NameIndex) {
+		return Symbol + "__B" + NameIndex;
 	}
 
-	public final String NameUniqueSymbol(String Symbol, int NameIndex) {
-		return Symbol + "__B" + NameIndex;
+	public final String NameUniqueSymbol(String Symbol) {
+		return this.NameUniqueSymbol(Symbol, this.GetUniqueNumber());
+	}
+
+	public String NameLocalVariable(BNameSpace NameSpace, String Name) {
+		@Var String SafeName = this.SymbolMap.GetOrNull(Name);
+		if(SafeName != null) {
+			Name = SafeName;
+		}
+		@Var int NameIndex = NameSpace.GetNameIndex(Name);
+		if(NameIndex > 0) {
+			Name = Name + "__" + NameIndex;
+		}
+		return Name;
+	}
+
+	protected void SetNativeType(BType Type, String TypeName) {
+		@Var String Key = "" + Type.TypeId;
+		this.SymbolMap.put(Key, TypeName);
+	}
+
+	protected String GetNativeTypeName(BType Type) {
+		@Var String Key = "" + Type.TypeId;
+		@Var String TypeName = this.SymbolMap.GetOrNull(Key);
+		if (TypeName == null) {
+			return Type.ShortName;
+		}
+		return TypeName;
 	}
 
 	public String NameGlobalNameClass(String Name) {
@@ -205,6 +183,32 @@ public abstract class BGenerator extends BOperatorVisitor {
 			return this.NameClass(Type);
 		}
 		return Type.GetName();
+	}
+
+	// function map
+
+	public final void SetDefinedFunc(BFunc Func) {
+		this.DefinedFuncMap.put(Func.GetSignature(), Func);
+	}
+
+	private String NameConverterFunc(BType FromType, BType ToType) {
+		return FromType.GetUniqueName() + "T" + ToType.GetUniqueName();
+	}
+
+	public final void SetConverterFunc(BType FromType, BType ToType, BFunc Func) {
+		this.DefinedFuncMap.put(this.NameConverterFunc(FromType, ToType), Func);
+	}
+
+	public final BFunc LookupConverterFunc(BType FromType, BType ToType) {
+		while(FromType != null) {
+			@Var BFunc Func = this.DefinedFuncMap.GetOrNull(this.NameConverterFunc(FromType, ToType));
+			//System.out.println("get " + this.NameConverterFunc(FromType, ToType) + ", func="+ Func);
+			if(Func != null) {
+				return Func;
+			}
+			FromType = FromType.GetSuperType();
+		}
+		return null;
 	}
 
 	//
@@ -267,6 +271,36 @@ public abstract class BGenerator extends BOperatorVisitor {
 		}
 		return null;
 	}
+
+
+	@ZenMethod public void WriteTo(@Nullable String FileName) {
+		// TODO Stub
+	}
+
+	@ZenMethod public String GetSourceText() {
+		return null;
+	}
+
+	@ZenMethod public BType GetFieldType(BType BaseType, String Name) {
+		return BType.VarType;     // undefined
+	}
+
+	@ZenMethod public BType GetSetterType(BType BaseType, String Name) {
+		return BType.VarType;     // undefined
+	}
+
+	@ZenMethod public BFuncType GetConstructorFuncType(BType ClassType, AbstractListNode List) {
+		//return null;              // undefined and undefined error
+		return BFuncType._FuncType;    // undefined and no error
+	}
+
+	@ZenMethod public BFuncType GetMethodFuncType(BType RecvType, String MethodName, AbstractListNode List) {
+		//return null;              // undefined and undefined error
+		return BFuncType._FuncType;     // undefined and no error
+	}
+
+	// Naming
+
 
 	public final void VisitUndefinedNode(BNode Node) {
 		@Var ErrorNode ErrorNode = new ErrorNode(Node.ParentNode, Node.SourceToken, "undefined node:" + Node.toString());
@@ -384,7 +418,6 @@ public abstract class BGenerator extends BOperatorVisitor {
 	@ZenMethod public void ExecMain() {
 		this.Logger.OutputErrorsToStdErr();
 	}
-
 
 	//	public final String Translate(String ScriptText, String FileName, int LineNumber) {
 	//		@Var ZBlockNode TopBlockNode = new ZBlockNode(this.Generator.RootNameSpace);

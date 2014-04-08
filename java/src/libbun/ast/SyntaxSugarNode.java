@@ -1,6 +1,6 @@
 package libbun.ast;
 
-import libbun.parser.BGenerator;
+import libbun.encode.AbstractGenerator;
 import libbun.parser.BToken;
 import libbun.parser.BTypeChecker;
 import libbun.parser.BVisitor;
@@ -16,7 +16,7 @@ public abstract class SyntaxSugarNode extends BNode {
 		Visitor.VisitSyntaxSugarNode(this);
 	}
 
-	public abstract DesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChekcer);
+	public abstract DesugarNode DeSugar(AbstractGenerator Generator, BTypeChecker TypeChekcer);
 
 
 

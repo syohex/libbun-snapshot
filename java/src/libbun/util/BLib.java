@@ -38,11 +38,11 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 
 import libbun.ast.BNode;
+import libbun.encode.AbstractGenerator;
 import libbun.encode.BunGenerator;
-import libbun.encode.ZSourceBuilder;
+import libbun.encode.SourceBuilder;
 import libbun.encode.jvm.JavaTypeTable;
 import libbun.lang.bun.BunTypeSafer;
-import libbun.parser.BGenerator;
 import libbun.parser.BNameSpace;
 import libbun.parser.BSourceContext;
 import libbun.parser.BTokenContext;
@@ -448,11 +448,11 @@ public class BLib {
 		return buffer;
 	}
 
-	public static String _SourceBuilderToString(ZSourceBuilder Builder) {
+	public static String _SourceBuilderToString(SourceBuilder Builder) {
 		return BLib._SourceBuilderToString(Builder, 0, Builder.SourceList.size());
 	}
 
-	public static String _SourceBuilderToString(ZSourceBuilder Builder, int BeginIndex, int EndIndex) {
+	public static String _SourceBuilderToString(SourceBuilder Builder, int BeginIndex, int EndIndex) {
 		StringBuilder builder = new StringBuilder();
 		for(int i = BeginIndex; i < EndIndex; i = i + 1) {
 			builder.append(Builder.SourceList.ArrayValues[i]);
@@ -460,11 +460,11 @@ public class BLib {
 		return builder.toString();
 	}
 
-	public final static void _WriteTo(String FileName, BArray<ZSourceBuilder> List) {
+	public final static void _WriteTo(String FileName, BArray<SourceBuilder> List) {
 		if(FileName == null) {
 			@Var int i = 0;
 			while(i < List.size()) {
-				@Var ZSourceBuilder Builder = List.ArrayValues[i];
+				@Var SourceBuilder Builder = List.ArrayValues[i];
 				System.out.println(Builder.toString());
 				Builder.Clear();
 				i = i + 1;
@@ -475,7 +475,7 @@ public class BLib {
 				BufferedWriter w = new BufferedWriter(new FileWriter(FileName));
 				@Var int i = 0;
 				while(i < List.size()) {
-					@Var ZSourceBuilder Builder = List.ArrayValues[i];
+					@Var SourceBuilder Builder = List.ArrayValues[i];
 					w.write(Builder.toString());
 					w.write("\n\n");
 					Builder.Clear();
@@ -550,14 +550,14 @@ public class BLib {
 		GenMap.put(".bun", libbun.lang.bun.BunGrammar.class);
 	}
 
-	public final static BGenerator _LoadGenerator(@Nullable String ClassName, String OutputFile) {
+	public final static AbstractGenerator _LoadGenerator(@Nullable String ClassName, String OutputFile) {
 		if (ClassName != null) {
 			try {
 				Class<?> GeneratorClass = GenMap.GetOrNull(ClassName.toLowerCase());
 				if(GeneratorClass == null) {
 					GeneratorClass = Class.forName(ClassName);
 				}
-				return (BGenerator) GeneratorClass.newInstance();
+				return (AbstractGenerator) GeneratorClass.newInstance();
 			} catch (Exception e) {
 				BLib._FixMe(e);
 			}
@@ -565,8 +565,8 @@ public class BLib {
 		return new BunGenerator();
 	}
 
-	public final static BGenerator _InitGenerator(@Nullable String ClassName, String GrammarClass) {
-		@Var BGenerator Generator = BLib._LoadGenerator(ClassName, null);
+	public final static AbstractGenerator _InitGenerator(@Nullable String ClassName, String GrammarClass) {
+		@Var AbstractGenerator Generator = BLib._LoadGenerator(ClassName, null);
 		BLib._ImportGrammar(Generator.RootNameSpace, GrammarClass);
 		Generator.SetTypeChecker(new BunTypeSafer(Generator));
 		Generator.RequireLibrary("common", null);

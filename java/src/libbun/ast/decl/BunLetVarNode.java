@@ -4,7 +4,7 @@ import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
 import libbun.ast.literal.ConstNode;
 import libbun.ast.literal.DefaultValueNode;
-import libbun.parser.BGenerator;
+import libbun.encode.AbstractGenerator;
 import libbun.parser.BVisitor;
 import libbun.type.BType;
 import libbun.util.BField;
@@ -83,7 +83,7 @@ public class BunLetVarNode extends AbstractListNode {
 		return this.GivenName;
 	}
 
-	public final String GetUniqueName(BGenerator Generator) {
+	public final String GetUniqueName(AbstractGenerator Generator) {
 		if(this.NameIndex == 0 || this.IsExport()) {
 			return this.GetGivenName();
 		}

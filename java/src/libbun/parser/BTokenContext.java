@@ -28,6 +28,7 @@ import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
 import libbun.ast.EmptyNode;
 import libbun.ast.error.ErrorNode;
+import libbun.encode.AbstractGenerator;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
@@ -41,7 +42,7 @@ public final class BTokenContext {
 	public final static boolean     _AllowNewLine   = true;
 	public final static boolean     _MoveNext       = true;
 
-	@BField public BGenerator Generator;
+	@BField public AbstractGenerator Generator;
 	@BField public BNameSpace NameSpace;
 	@BField public BSourceContext Source;
 	@BField public BArray<BToken> TokenList = new BArray<BToken>(new BToken[128]);
@@ -51,7 +52,7 @@ public final class BTokenContext {
 	@BField public BToken LatestToken = null;
 	@BField private BSyntax ApplyingPattern = null;
 
-	public BTokenContext(BGenerator Generator, BNameSpace NameSpace, String FileName, int LineNumber, String SourceText) {
+	public BTokenContext(AbstractGenerator Generator, BNameSpace NameSpace, String FileName, int LineNumber, String SourceText) {
 		this.Generator = Generator;
 		this.NameSpace = NameSpace;
 		this.Source = new BSourceContext(FileName, LineNumber, SourceText, this);

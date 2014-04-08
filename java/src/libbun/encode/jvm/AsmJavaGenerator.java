@@ -56,16 +56,15 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Stack;
 
-import libbun.ast.BunBlockNode;
-import libbun.ast.GroupNode;
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
+import libbun.ast.BunBlockNode;
+import libbun.ast.GroupNode;
 import libbun.ast.LocalDefinedNode;
-import libbun.ast.binary.BunAndNode;
-import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BInstanceOfNode;
-import libbun.ast.binary.BunOrNode;
+import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAddNode;
+import libbun.ast.binary.BunAndNode;
 import libbun.ast.binary.BunBitwiseAndNode;
 import libbun.ast.binary.BunBitwiseOrNode;
 import libbun.ast.binary.BunBitwiseXorNode;
@@ -79,36 +78,37 @@ import libbun.ast.binary.BunLessThanNode;
 import libbun.ast.binary.BunModNode;
 import libbun.ast.binary.BunMulNode;
 import libbun.ast.binary.BunNotEqualsNode;
+import libbun.ast.binary.BunOrNode;
 import libbun.ast.binary.BunRightShiftNode;
 import libbun.ast.binary.BunSubNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.decl.TopLevelNode;
 import libbun.ast.decl.BunVarBlockNode;
+import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
-import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.BunFuncNameNode;
+import libbun.ast.expression.BunMacroNode;
+import libbun.ast.expression.FuncCallNode;
+import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.GetNameNode;
-import libbun.ast.expression.GetFieldNode;
-import libbun.ast.expression.BunMacroNode;
 import libbun.ast.expression.MethodCallNode;
 import libbun.ast.expression.NewObjectNode;
+import libbun.ast.expression.SetFieldNode;
 import libbun.ast.expression.SetIndexNode;
 import libbun.ast.expression.SetNameNode;
-import libbun.ast.expression.SetFieldNode;
 import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.ast.literal.BunAsmNode;
 import libbun.ast.literal.BunBooleanNode;
 import libbun.ast.literal.BunFloatNode;
 import libbun.ast.literal.BunIntNode;
+import libbun.ast.literal.BunMapEntryNode;
+import libbun.ast.literal.BunMapLiteralNode;
 import libbun.ast.literal.BunNullNode;
 import libbun.ast.literal.BunStringNode;
 import libbun.ast.literal.BunTypeNode;
 import libbun.ast.literal.LiteralNode;
-import libbun.ast.literal.BunMapEntryNode;
-import libbun.ast.literal.BunMapLiteralNode;
 import libbun.ast.statement.BunBreakNode;
 import libbun.ast.statement.BunIfNode;
 import libbun.ast.statement.BunReturnNode;
@@ -116,12 +116,12 @@ import libbun.ast.statement.BunThrowNode;
 import libbun.ast.statement.BunTryNode;
 import libbun.ast.statement.BunWhileNode;
 import libbun.ast.unary.BunCastNode;
-import libbun.ast.unary.BunNotNode;
-import libbun.ast.unary.UnaryOperatorNode;
 import libbun.ast.unary.BunComplementNode;
 import libbun.ast.unary.BunMinusNode;
+import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
-import libbun.parser.BGenerator;
+import libbun.ast.unary.UnaryOperatorNode;
+import libbun.encode.AbstractGenerator;
 import libbun.parser.BLangInfo;
 import libbun.parser.BLogger;
 import libbun.parser.BNameSpace;
@@ -148,7 +148,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 
-public class AsmJavaGenerator extends BGenerator {
+public class AsmJavaGenerator extends AbstractGenerator {
 	private final BMap<Class<?>> GeneratedClassMap = new BMap<Class<?>>(null);
 	public JavaStaticFieldNode MainFuncNode = null;
 	AsmClassLoader AsmLoader = null;
@@ -1354,6 +1354,11 @@ public class AsmJavaGenerator extends BGenerator {
 	}
 
 	@Override public void VisitLiteralNode(LiteralNode Node) {
+
+	}
+
+	@Override protected void GenerateImportLibrary(String LibName) {
+		// TODO Auto-generated method stub
 
 	}
 

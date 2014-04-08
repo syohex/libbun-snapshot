@@ -4,7 +4,7 @@ import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
 import libbun.ast.LocalDefinedNode;
 import libbun.ast.expression.GetNameNode;
-import libbun.parser.BGenerator;
+import libbun.encode.AbstractGenerator;
 import libbun.util.BArray;
 import libbun.util.Var;
 
@@ -65,7 +65,7 @@ public class PHINode extends LocalDefinedNode {
 		return BArray.GetIndex(this.Args, Index);
 	}
 
-	public boolean EqualsName(GetNameNode Node, BGenerator Generator) {
+	public boolean EqualsName(GetNameNode Node, AbstractGenerator Generator) {
 		return Node.GetUniqueName(Generator).equals(this.VariableName);
 	}
 }

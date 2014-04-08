@@ -44,7 +44,7 @@ import libbun.util.Var;
 
 //Zen Generator should be written in each language.
 
-public class PerlGenerator extends ZSourceGenerator {
+public class PerlGenerator extends OldSourceGenerator {
 
 	public PerlGenerator() {
 		super("pl", "Perl-5.0 or later");

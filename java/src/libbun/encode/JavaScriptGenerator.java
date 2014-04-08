@@ -47,7 +47,7 @@ import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
-public class JavaScriptGenerator extends ZSourceGenerator {
+public class JavaScriptGenerator extends OldSourceGenerator {
 	@BField private boolean HasMainFunction;
 
 	private static String ExtendCode =

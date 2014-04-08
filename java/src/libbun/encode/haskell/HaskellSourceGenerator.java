@@ -41,8 +41,8 @@ import libbun.ast.statement.BunThrowNode;
 import libbun.ast.statement.BunTryNode;
 import libbun.ast.statement.BunWhileNode;
 import libbun.ast.unary.BunCastNode;
-import libbun.encode.ZSourceBuilder;
-import libbun.encode.ZSourceGenerator;
+import libbun.encode.SourceBuilder;
+import libbun.encode.OldSourceGenerator;
 import libbun.parser.BNodeUtils;
 import libbun.type.BType;
 import libbun.util.BField;
@@ -50,7 +50,7 @@ import libbun.util.BLib;
 import libbun.util.Var;
 
 
-public class HaskellSourceGenerator extends ZSourceGenerator {
+public class HaskellSourceGenerator extends OldSourceGenerator {
 	@BField public ArrayList <String> Variables;
 	private static int IndentLevel = 0;
 
@@ -85,12 +85,12 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		this.HeaderBuilder.AppendNewLine("import ", LibName, this.SemiColon);
 	}
 
-	private void Indent(ZSourceBuilder builder) {
+	private void Indent(SourceBuilder builder) {
 		IndentLevel = IndentLevel + 1;
 		builder.Indent();
 	}
 
-	private void UnIndent(ZSourceBuilder builder) {
+	private void UnIndent(SourceBuilder builder) {
 		IndentLevel = IndentLevel - 1;
 		builder.UnIndent();
 	}

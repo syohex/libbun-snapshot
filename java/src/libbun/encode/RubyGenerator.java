@@ -13,7 +13,7 @@ import libbun.ast.unary.BunCastNode;
 import libbun.type.BType;
 
 
-public class RubyGenerator extends ZSourceGenerator {
+public class RubyGenerator extends OldSourceGenerator {
 
 	private final ScriptEngineManager EngineManager;
 	private final ScriptEngine Engine;

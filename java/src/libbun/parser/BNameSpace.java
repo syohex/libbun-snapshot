@@ -27,6 +27,7 @@ package libbun.parser;
 import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
 import libbun.ast.decl.BunLetVarNode;
+import libbun.encode.AbstractGenerator;
 import libbun.type.BClassType;
 import libbun.type.BType;
 import libbun.util.BField;
@@ -38,13 +39,13 @@ import libbun.util.Nullable;
 import libbun.util.Var;
 
 public final class BNameSpace {
-	@BField public final BGenerator   Generator;
+	@BField public final AbstractGenerator   Generator;
 	@BField public final BunBlockNode   BlockNode;
 	@BField BTokenFuncChain[]       TokenMatrix = null;
 	@BField BMap<BSyntax>      SyntaxTable = null;
 	@BField BMap<BunLetVarNode>  SymbolTable2 = null;
 
-	public BNameSpace(BGenerator Generator, BunBlockNode BlockNode) {
+	public BNameSpace(AbstractGenerator Generator, BunBlockNode BlockNode) {
 		this.BlockNode = BlockNode;   // rootname is null
 		this.Generator = Generator;
 		assert(this.Generator != null);

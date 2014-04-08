@@ -1,6 +1,6 @@
 package libbun.ast;
 
-import libbun.parser.BGenerator;
+import libbun.encode.AbstractGenerator;
 import libbun.parser.BTypeChecker;
 import libbun.util.BField;
 import libbun.util.Var;
@@ -27,7 +27,7 @@ public class DesugarNode extends SyntaxSugarNode {
 		}
 	}
 
-	@Override public DesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChekcer) {
+	@Override public DesugarNode DeSugar(AbstractGenerator Generator, BTypeChecker TypeChekcer) {
 		return this;
 	}
 

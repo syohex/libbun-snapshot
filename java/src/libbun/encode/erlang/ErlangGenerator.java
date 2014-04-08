@@ -1,32 +1,32 @@
 
 package libbun.encode.erlang;
 
-import libbun.ast.BunBlockNode;
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
-import libbun.ast.binary.BunAndNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.binary.BinaryOperatorNode;
-import libbun.ast.binary.ComparatorNode;
+import libbun.ast.binary.BunAndNode;
 import libbun.ast.binary.BunOrNode;
+import libbun.ast.binary.ComparatorNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.BunFuncNameNode;
+import libbun.ast.expression.FuncCallNode;
+import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.GetNameNode;
-import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.NewObjectNode;
-import libbun.ast.expression.SetNameNode;
 import libbun.ast.expression.SetFieldNode;
+import libbun.ast.expression.SetNameNode;
 import libbun.ast.statement.BunBreakNode;
 import libbun.ast.statement.BunIfNode;
 import libbun.ast.statement.BunReturnNode;
 import libbun.ast.statement.BunWhileNode;
 import libbun.ast.unary.BunCastNode;
 import libbun.ast.unary.BunNotNode;
-import libbun.encode.ZSourceBuilder;
-import libbun.encode.ZSourceGenerator;
+import libbun.encode.OldSourceGenerator;
+import libbun.encode.SourceBuilder;
 import libbun.parser.BToken;
 import libbun.type.BClassType;
 import libbun.type.BType;
@@ -36,7 +36,7 @@ import libbun.util.ZenMethod;
 
 
 
-public class ErlangGenerator extends ZSourceGenerator {
+public class ErlangGenerator extends OldSourceGenerator {
 	@BField private int LoopNodeNumber;
 	@BField private int BreakMark;
 	@BField private final VariableManager VarMgr;
@@ -93,7 +93,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Indent();
 		this.VisitBlockNode(Node);
 		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.IndentAndAppend("__Arguments__ = " + this.VarMgr.GenVarTuple(VarFlag.Assigned | VarFlag.DefinedByParentScope, false));
+		this.CurrentBuilder.AppendNewLine("__Arguments__ = " + this.VarMgr.GenVarTuple(VarFlag.Assigned | VarFlag.DefinedByParentScope, false));
 		this.CurrentBuilder.Append(last);
 		this.CurrentBuilder.UnIndent();
 		this.VarMgr.PopScope();
@@ -215,8 +215,8 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.GenerateCode(null, Node.ExprNode());
 		this.CurrentBuilder.Append("}");
 		this.VarMgr.AssignVariable(GetNameNode.GetUniqueName(this));
-		ZSourceBuilder LazyBuilder = new ZSourceBuilder(this, this.CurrentBuilder);
-		ZSourceBuilder BodyBuilder = this.CurrentBuilder;
+		SourceBuilder LazyBuilder = new SourceBuilder(this, this.CurrentBuilder);
+		SourceBuilder BodyBuilder = this.CurrentBuilder;
 		this.CurrentBuilder = LazyBuilder;
 		this.GenerateCode(null, Node.RecvNode());
 		this.CurrentBuilder.AppendToken("=");
@@ -359,13 +359,13 @@ public class ErlangGenerator extends ZSourceGenerator {
 				this.AppendGuardAndBlock(null);
 			}
 		} else {
-			this.CurrentBuilder.IndentAndAppend("true ->");
+			this.CurrentBuilder.AppendNewLine("true ->");
 			if (Node != null) {
 				this.VisitBlockNode((BunBlockNode)Node, "");
 			} else {
 				this.CurrentBuilder.Indent();
 				this.CurrentBuilder.AppendLineFeed();
-				this.CurrentBuilder.IndentAndAppend(this.VarMgr.GenVarTuple(VarFlag.AssignedByChildScope, false));
+				this.CurrentBuilder.AppendNewLine(this.VarMgr.GenVarTuple(VarFlag.AssignedByChildScope, false));
 				this.CurrentBuilder.UnIndent();
 			}
 		}
@@ -378,7 +378,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.AppendLineFeed();
 		this.AppendGuardAndBlock(Node);
 		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.IndentAndAppend("end");
+		this.CurrentBuilder.AppendNewLine("end");
 
 		this.AppendLazy(mark, this.VarMgr.GenVarTuple(VarFlag.Assigned, true) + " = ");
 	}
@@ -405,24 +405,24 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.VisitBlockNode(Node.BlockNode(), ",");
 		this.CurrentBuilder.AppendLineFeed();
 		this.CurrentBuilder.Indent();
-		this.CurrentBuilder.IndentAndAppend(WhileNodeName + "(" + WhileNodeName + ", __Arguments__);");
+		this.CurrentBuilder.AppendNewLine(WhileNodeName + "(" + WhileNodeName + ", __Arguments__);");
 		this.CurrentBuilder.UnIndent();
 
 		//Generate Else Guard and Block
 		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.IndentAndAppend("(_, Args) ->");
+		this.CurrentBuilder.AppendNewLine("(_, Args) ->");
 		this.CurrentBuilder.Indent();
 		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.IndentAndAppend("Args");
+		this.CurrentBuilder.AppendNewLine("Args");
 		this.CurrentBuilder.UnIndent();
 
 		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.IndentAndAppend("end,");
+		this.CurrentBuilder.AppendNewLine("end,");
 
 		//Generate While Guard
 		this.VarMgr.ChangeFilterFlag(VarFlag.Assigned);
-		ZSourceBuilder LazyBuilder = new ZSourceBuilder(this, this.CurrentBuilder);
-		ZSourceBuilder BodyBuilder = this.CurrentBuilder;
+		SourceBuilder LazyBuilder = new SourceBuilder(this, this.CurrentBuilder);
+		SourceBuilder BodyBuilder = this.CurrentBuilder;
 		this.CurrentBuilder = LazyBuilder;
 		this.GenerateCode(null, Node.CondNode());
 		this.CurrentBuilder = BodyBuilder;
@@ -493,7 +493,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 			if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 		}
 		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.IndentAndAppend("pad");
+		this.CurrentBuilder.AppendNewLine("pad");
 	}
 
 	// protected void VisitTypeAnnotation(ZType Type) {
@@ -544,7 +544,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 	}
 
 	@Override public void VisitClassNode(BunClassNode Node) {
-		ZSourceBuilder BodyBuilder = this.CurrentBuilder;
+		SourceBuilder BodyBuilder = this.CurrentBuilder;
 		this.CurrentBuilder = this.HeaderBuilder;
 
 		this.CurrentBuilder.Append("-record(");
@@ -621,19 +621,19 @@ public class ErlangGenerator extends ZSourceGenerator {
 		// this.HeaderBuilder.Append("assert(_Expr) when _Expr =:= false ->");
 		// this.HeaderBuilder.AppendLineFeed();
 		// this.HeaderBuilder.Indent();
-		// this.HeaderBuilder.IndentAndAppend("exit(\"Assertion Failed\");");
+		// this.HeaderBuilder.AppendNewLine("exit(\"Assertion Failed\");");
 		// this.HeaderBuilder.UnIndent();
 		// this.HeaderBuilder.AppendLineFeed();
 		// this.HeaderBuilder.Append("assert(_Expr) when _Expr =:= true ->");
 		// this.HeaderBuilder.AppendLineFeed();
 		// this.HeaderBuilder.Indent();
-		// this.HeaderBuilder.IndentAndAppend("do_nothing;");
+		// this.HeaderBuilder.AppendNewLine("do_nothing;");
 		// this.HeaderBuilder.UnIndent();
 		// this.HeaderBuilder.AppendLineFeed();
 		// this.HeaderBuilder.Append("assert(_Expr) ->");
 		// this.HeaderBuilder.AppendLineFeed();
 		// this.HeaderBuilder.Indent();
-		// this.HeaderBuilder.IndentAndAppend("exit(\"Assertion Failed (Expr is not true or false)\").");
+		// this.HeaderBuilder.AppendNewLine("exit(\"Assertion Failed (Expr is not true or false)\").");
 		// this.HeaderBuilder.UnIndent();
 		// this.HeaderBuilder.AppendLineFeed();
 
@@ -672,23 +672,23 @@ public class ErlangGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(" ->");
 		this.CurrentBuilder.AppendLineFeed();
 		this.CurrentBuilder.Indent();
-		this.CurrentBuilder.IndentAndAppend("try "+ FuncName + "_inner");
+		this.CurrentBuilder.AppendNewLine("try "+ FuncName + "_inner");
 		this.VisitListNode("(", Node, ")");
 		this.CurrentBuilder.Append(" of");
 		this.CurrentBuilder.AppendLineFeed();
 		this.CurrentBuilder.Indent();
-		this.CurrentBuilder.IndentAndAppend("_ -> void");
+		this.CurrentBuilder.AppendNewLine("_ -> void");
 		this.CurrentBuilder.AppendLineFeed();
 		this.CurrentBuilder.UnIndent();
-		this.CurrentBuilder.IndentAndAppend("catch");
+		this.CurrentBuilder.AppendNewLine("catch");
 		this.CurrentBuilder.AppendLineFeed();
 		this.CurrentBuilder.Indent();
-		this.CurrentBuilder.IndentAndAppend("throw:{return, Ret} -> Ret;");
+		this.CurrentBuilder.AppendNewLine("throw:{return, Ret} -> Ret;");
 		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.IndentAndAppend("throw:UnKnown -> throw(UnKnown)");
+		this.CurrentBuilder.AppendNewLine("throw:UnKnown -> throw(UnKnown)");
 		this.CurrentBuilder.AppendLineFeed();
 		this.CurrentBuilder.UnIndent();
-		this.CurrentBuilder.IndentAndAppend("end.");
+		this.CurrentBuilder.AppendNewLine("end.");
 
 		this.CurrentBuilder.UnIndent();
 	}

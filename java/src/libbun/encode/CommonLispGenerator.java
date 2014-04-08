@@ -55,7 +55,7 @@ import libbun.type.BType;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
-public class CommonLispGenerator extends ZSourceGenerator {
+public class CommonLispGenerator extends OldSourceGenerator {
 	private boolean hasMain = false;
 	public CommonLispGenerator() {
 		super("cl", "CommonLisp");
