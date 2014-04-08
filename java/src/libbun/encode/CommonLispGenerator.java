@@ -379,22 +379,32 @@ public class CommonLispGenerator extends ZSourceGenerator {
 	}
 
 	@Override public void VisitArrayLiteralNode(BArrayLiteralNode Node) {
-		this.VisitListNode("#(", Node, ")");
+		this.VisitListNode("'(", Node, ")");
 	}
 
 	@Override public void VisitGetIndexNode(BGetIndexNode Node) {
-		this.CurrentBuilder.Append("(aref ");
-		this.GenerateCode(null, Node.RecvNode());
-		this.CurrentBuilder.Append(" ");
-		this.GenerateCode(null, Node.IndexNode());
+		this.CurrentBuilder.Append("(");
+		if (Node.RecvNode().Type == BType.StringType) {
+			this.CurrentBuilder.Append("string (");
+			this.CurrentBuilder.Append("aref ");
+			this.GenerateCode(null, Node.RecvNode());
+			this.CurrentBuilder.Append(" ");
+			this.GenerateCode(null, Node.IndexNode());
+			this.CurrentBuilder.Append(") ");
+		} else {
+			this.CurrentBuilder.Append("nth ");
+			this.GenerateCode(null, Node.IndexNode());
+			this.CurrentBuilder.Append(" ");
+			this.GenerateCode(null, Node.RecvNode());
+		}
 		this.CurrentBuilder.Append(")");
 	}
 
 	@Override public void VisitSetIndexNode(BSetIndexNode Node) {
-		this.CurrentBuilder.Append("(setf (aref ");
-		this.GenerateCode(null, Node.RecvNode());
-		this.CurrentBuilder.Append(" ");
+		this.CurrentBuilder.Append("(setf (nth ");
 		this.GenerateCode(null, Node.IndexNode());
+		this.CurrentBuilder.Append(" ");
+		this.GenerateCode(null, Node.RecvNode());
 		this.CurrentBuilder.Append(") ");
 		this.GenerateCode(null, Node.ExprNode());
 		this.CurrentBuilder.Append(")");
