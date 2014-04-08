@@ -96,38 +96,38 @@ public class PerlGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitGetNameNode(GetNameNode Node) {
-		this.CurrentBuilder.Append(this.VariablePrefix(Node.Type), this.NameLocalVariable(Node.GetNameSpace(), Node.GetUniqueName(this)));
+		this.Source.Append(this.VariablePrefix(Node.Type), this.NameLocalVariable(Node.GetNameSpace(), Node.GetUniqueName(this)));
 	}
 
 	@Override public void VisitSetNameNode(SetNameNode Node) {
-		this.CurrentBuilder.Append(this.VariablePrefix(Node.GetAstType(SetNameNode._Expr)));
+		this.Source.Append(this.VariablePrefix(Node.GetAstType(SetNameNode._Expr)));
 		this.VisitGetNameNode(Node.NameNode());
-		this.CurrentBuilder.Append(" = ");
+		this.Source.Append(" = ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
 	@Override public void VisitGetFieldNode(GetFieldNode Node) {
 		this.GenerateCode(null, Node.RecvNode());
-		this.CurrentBuilder.Append("->{\'", Node.GetName(), "\'} = ");
+		this.Source.Append("->{\'", Node.GetName(), "\'} = ");
 	}
 
 	@Override public void VisitSetFieldNode(SetFieldNode Node) {
 		this.GenerateCode(null, Node.RecvNode());
-		this.CurrentBuilder.Append("->{\'", Node.GetName(), "\'}");
+		this.Source.Append("->{\'", Node.GetName(), "\'}");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
 	@Override
 	protected void VisitVarDeclNode(BunLetVarNode Node) {
-		this.CurrentBuilder.Append("my ", this.VariablePrefix(Node.DeclType().GetRealType()));
-		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = ");
+		this.Source.Append("my ", this.VariablePrefix(Node.DeclType().GetRealType()));
+		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = ");
 		this.GenerateCode(null, Node.InitValueNode());
-		this.CurrentBuilder.Append(this.SemiColon);
+		this.Source.Append(this.SemiColon);
 		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 	}
 
 	@Override public void VisitLetNode(BunLetVarNode Node) {
-		this.CurrentBuilder.Append(this.VariablePrefix(Node.DeclType().GetRealType()), Node.GetUniqueName(this), " = ");
+		this.Source.Append(this.VariablePrefix(Node.DeclType().GetRealType()), Node.GetUniqueName(this), " = ");
 		this.GenerateCode(null, Node.InitValueNode());
 	}
 
@@ -151,29 +151,29 @@ public class PerlGenerator extends OldSourceGenerator {
 
 
 	@Override public void VisitBreakNode(BunBreakNode Node) {
-		this.CurrentBuilder.Append("last");
+		this.Source.Append("last");
 	}
 
 	@Override protected void VisitParamNode(BunLetVarNode Node) {
-		this.CurrentBuilder.Append("my ", this.VariablePrefix(Node.Type));
-		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = shift");
+		this.Source.Append("my ", this.VariablePrefix(Node.Type));
+		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = shift");
 	}
 
 	@Override public void VisitFunctionNode(BunFunctionNode Node) {
-		this.CurrentBuilder.Append("sub");
+		this.Source.Append("sub");
 		if(Node.FuncName() != null) {
-			this.CurrentBuilder.AppendWhiteSpace();
-			this.CurrentBuilder.Append(Node.FuncName());
+			this.Source.AppendWhiteSpace();
+			this.Source.Append(Node.FuncName());
 		}
-		this.CurrentBuilder.OpenIndent(" {");
+		this.Source.OpenIndent(" {");
 		//		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
-		this.CurrentBuilder.Append(this.SemiColon);
+		this.Source.Append(this.SemiColon);
 		@Var BNode BlockNode = Node.BlockNode();
 		if(BlockNode instanceof BunBlockNode) {
 			this.VisitStmtList((BunBlockNode)BlockNode);
 		}
-		this.CurrentBuilder.Append(this.SemiColon);
-		this.CurrentBuilder.CloseIndent("}");
+		this.Source.Append(this.SemiColon);
+		this.Source.CloseIndent("}");
 		//this.CurrentBuilder.AppendNewLine();
 	}
 
@@ -200,27 +200,27 @@ public class PerlGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitClassNode(BunClassNode Node) {
-		this.CurrentBuilder.Append("sub _Init", this.NameClass(Node.ClassType));
-		this.CurrentBuilder.OpenIndent(" {");
-		this.CurrentBuilder.AppendNewLine();
-		this.CurrentBuilder.Append("%o = shift", this.SemiColon);
+		this.Source.Append("sub _Init", this.NameClass(Node.ClassType));
+		this.Source.OpenIndent(" {");
+		this.Source.AppendNewLine();
+		this.Source.Append("%o = shift", this.SemiColon);
 
 		@Var BType SuperType = Node.ClassType.GetSuperType();
 		if(!SuperType.Equals(BClassType._ObjectType)) {
-			this.CurrentBuilder.AppendNewLine();
-			this.CurrentBuilder.Append("_Init" + this.NameClass(SuperType) + "(%o);");
+			this.Source.AppendNewLine();
+			this.Source.Append("_Init" + this.NameClass(SuperType) + "(%o);");
 		}
-		this.CurrentBuilder.AppendNewLine();
-		this.CurrentBuilder.Append("$o{", this.ClassKey(Node.ClassType), "} = ");
-		this.CurrentBuilder.AppendInt(Node.ClassType.TypeId);
-		this.CurrentBuilder.Append(this.SemiColon);
+		this.Source.AppendNewLine();
+		this.Source.Append("$o{", this.ClassKey(Node.ClassType), "} = ");
+		this.Source.AppendInt(Node.ClassType.TypeId);
+		this.Source.Append(this.SemiColon);
 		@Var int i = 0;
 		while (i < Node.GetListSize()) {
 			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
-			this.CurrentBuilder.AppendNewLine();
-			this.CurrentBuilder.Append("$o{", BLib._QuoteString(FieldNode.GetGivenName()), "} = ");
+			this.Source.AppendNewLine();
+			this.Source.Append("$o{", BLib._QuoteString(FieldNode.GetGivenName()), "} = ");
 			this.GenerateCode(null, FieldNode.InitValueNode());
-			this.CurrentBuilder.Append(this.SemiColon);
+			this.Source.Append(this.SemiColon);
 			i = i + 1;
 		}
 
@@ -228,25 +228,25 @@ public class PerlGenerator extends OldSourceGenerator {
 		while (i < Node.ClassType.GetFieldSize()) {
 			@Var BClassField ClassField = Node.ClassType.GetFieldAt(i);
 			if(ClassField.FieldType.IsFuncType()) {
-				this.CurrentBuilder.AppendNewLine();
-				this.CurrentBuilder.Append("if (defined $", this.NameMethod(Node.ClassType, ClassField.FieldName), ")");
-				this.CurrentBuilder.OpenIndent(" {");
-				this.CurrentBuilder.AppendNewLine();
-				this.CurrentBuilder.Append("$o{", BLib._QuoteString(ClassField.FieldName), "} = $");
-				this.CurrentBuilder.Append(this.NameMethod(Node.ClassType, ClassField.FieldName), this.SemiColon);
-				this.CurrentBuilder.CloseIndent("}");
+				this.Source.AppendNewLine();
+				this.Source.Append("if (defined $", this.NameMethod(Node.ClassType, ClassField.FieldName), ")");
+				this.Source.OpenIndent(" {");
+				this.Source.AppendNewLine();
+				this.Source.Append("$o{", BLib._QuoteString(ClassField.FieldName), "} = $");
+				this.Source.Append(this.NameMethod(Node.ClassType, ClassField.FieldName), this.SemiColon);
+				this.Source.CloseIndent("}");
 			}
 			i = i + 1;
 		}
-		this.CurrentBuilder.AppendNewLine();
-		this.CurrentBuilder.CloseIndent("}");
-		this.CurrentBuilder.AppendLineFeed();
+		this.Source.AppendNewLine();
+		this.Source.CloseIndent("}");
+		this.Source.AppendLineFeed();
 
-		this.CurrentBuilder.Append("sub _New", this.NameClass(Node.ClassType));
-		this.CurrentBuilder.OpenIndent(" {");
-		this.CurrentBuilder.AppendNewLine("%o = {}", this.SemiColon);
-		this.CurrentBuilder.AppendNewLine("_Init" + this.NameClass(Node.ClassType) + "(%o);");
-		this.CurrentBuilder.AppendNewLine("return %o;");
-		this.CurrentBuilder.CloseIndent("}");
+		this.Source.Append("sub _New", this.NameClass(Node.ClassType));
+		this.Source.OpenIndent(" {");
+		this.Source.AppendNewLine("%o = {}", this.SemiColon);
+		this.Source.AppendNewLine("_Init" + this.NameClass(Node.ClassType) + "(%o);");
+		this.Source.AppendNewLine("return %o;");
+		this.Source.CloseIndent("}");
 	}
 }
