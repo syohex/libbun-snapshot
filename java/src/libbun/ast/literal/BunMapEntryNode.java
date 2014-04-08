@@ -1,10 +1,10 @@
 package libbun.ast.literal;
 
 import libbun.ast.BNode;
-import libbun.ast.ZLocalDefinedNode;
+import libbun.ast.LocalDefinedNode;
 import libbun.util.BField;
 
-public class BunMapEntryNode extends ZLocalDefinedNode {
+public class BunMapEntryNode extends LocalDefinedNode {
 	public final static int _Key = 0;
 	public final static int _Value = 1;
 	@BField public String  Name = null;

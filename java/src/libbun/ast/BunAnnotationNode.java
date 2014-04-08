@@ -22,41 +22,31 @@
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // **************************************************************************
 
-package libbun.ast.decl;
-import libbun.ast.BunBlockNode;
-import libbun.ast.BNode;
-import libbun.parser.BNodeUtils;
+package libbun.ast;
+import libbun.parser.BToken;
 import libbun.parser.BVisitor;
-import libbun.util.Var;
+import libbun.util.BField;
+import libbun.util.BMap;
 
-public class ZVarBlockNode extends BunBlockNode {
-	public static final int _VarDecl = 0;
+public final class BunAnnotationNode extends BNode {
+	//@Field public ZenMap<Object> Annotation;
+	@BField public BNode AnnotatedNode = null;
 
-	public ZVarBlockNode(BNode ParentNode, BunLetVarNode VarNode) {
-		super(ParentNode, null, 1);
-		this.SetNode(ZVarBlockNode._VarDecl, VarNode);
+	public BunAnnotationNode(BNode ParentNode, BToken Token, BMap<Object> Anno) {
+		super(ParentNode, Token, 0);
+		//this.Annotation = Anno;
 	}
 
-	public ZVarBlockNode(BNode ParentNode, BunLetVarNode VarNode, BunBlockNode ParentBlockNode) {
-		super(ParentNode, null, 1);
-		this.SetNode(ZVarBlockNode._VarDecl, VarNode);
-		@Var int Index = BNodeUtils._AstIndexOf(ParentBlockNode, VarNode);
-		BNodeUtils._MoveAstList(ParentBlockNode, Index+1, this);
+	//	@Override public void Append(ZNode Node) {
+	//		if(Node instanceof ZAnnotationNode) {
+	//			@Var ZAnnotationNode AnnoNode = (ZAnnotationNode)Node;
+	//			this.Annotation.AddMap(AnnoNode.Annotation);
+	//			Node = AnnoNode.AnnotatedNode;
+	//		}
+	//		this.AnnotatedNode = this.SetChild(Node);
+	//	}
+
+	@Override public void Accept(BVisitor Visitor) {
+		this.AnnotatedNode.Accept(Visitor);
 	}
-
-
-
-	public final BunLetVarNode VarDeclNode() {
-		@Var BNode VarNode = this.AST[ZVarBlockNode._VarDecl];
-		if(VarNode instanceof BunLetVarNode) {
-			return (BunLetVarNode)VarNode;
-		}
-		return null;
-	}
-
-	@Override public final void Accept(BVisitor Visitor) {
-		Visitor.VisitVarBlockNode(this);
-	}
-
-
 }

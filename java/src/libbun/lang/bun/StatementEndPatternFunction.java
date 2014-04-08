@@ -1,7 +1,7 @@
 package libbun.lang.bun;
 
 import libbun.ast.BNode;
-import libbun.ast.ZEmptyNode;
+import libbun.ast.EmptyNode;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
 import libbun.util.Var;
@@ -28,7 +28,7 @@ public class StatementEndPatternFunction extends BMatchFunction {
 			}
 		}
 		TokenContext.SetParseFlag(ContextAllowance);
-		return new ZEmptyNode(ParentNode, Token);
+		return new EmptyNode(ParentNode, Token);
 	}
 
 }

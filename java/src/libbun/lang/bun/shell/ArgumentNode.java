@@ -1,7 +1,7 @@
 package libbun.lang.bun.shell;
 
 import libbun.ast.BNode;
-import libbun.ast.BDesugarNode;
+import libbun.ast.DesugarNode;
 import libbun.ast.SyntaxSugarNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetNameNode;
@@ -30,9 +30,9 @@ public class ArgumentNode extends SyntaxSugarNode {
 		this.SetNode(_Expr, new BunStringNode(this, null, Value));
 	}
 
-	@Override public BDesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChekcer) {
+	@Override public DesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChekcer) {
 		@Var BNode Node = new FuncCallNode(this, new GetNameNode(this, null, _funcNames[this.ArgType]));
 		Node.SetNode(BNode._AppendIndex, this.AST[_Expr]);
-		return new BDesugarNode(this, Node);
+		return new DesugarNode(this, Node);
 	}
 }

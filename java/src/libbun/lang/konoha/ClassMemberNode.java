@@ -25,12 +25,12 @@
 package libbun.lang.konoha;
 
 import libbun.ast.BNode;
-import libbun.ast.ZLocalDefinedNode;
+import libbun.ast.LocalDefinedNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.util.BField;
 
-public final class ClassMemberNode extends ZLocalDefinedNode {
+public final class ClassMemberNode extends LocalDefinedNode {
 	@BField public boolean IsPublic   = false;
 	@BField public boolean IsStatic   = false;
 	@BField public boolean IsFinal    = false;

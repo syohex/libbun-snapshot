@@ -33,7 +33,7 @@ import libbun.ast.binary.BunAndNode;
 import libbun.ast.binary.ComparatorNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.BunFuncNameNode;
@@ -213,7 +213,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		this.VisitStmtList(Node);
 	}
 
-	@Override public void VisitVarBlockNode(ZVarBlockNode Node) {
+	@Override public void VisitVarBlockNode(BunVarBlockNode Node) {
 		this.CurrentBuilder.Append("(let (");
 		this.VisitVarDeclNode(Node.VarDeclNode());
 		this.CurrentBuilder.Append(")");

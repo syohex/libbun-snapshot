@@ -2,7 +2,7 @@ package libbun.parser.ssa;
 
 import libbun.ast.BNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.expression.SetNameNode;
 import libbun.parser.BGenerator;
 import libbun.type.BType;
@@ -12,7 +12,7 @@ public class NodeLib {
 		if(Node instanceof BunLetVarNode) {
 			return true;
 		}
-		else if(Node instanceof ZVarBlockNode) {
+		else if(Node instanceof BunVarBlockNode) {
 			return true;
 		}
 		else if(Node instanceof SetNameNode) {
@@ -29,8 +29,8 @@ public class NodeLib {
 			BunLetVarNode LNode = (BunLetVarNode) Node;
 			return LNode.DeclType();
 		}
-		else if(Node instanceof ZVarBlockNode) {
-			ZVarBlockNode VNode = (ZVarBlockNode) Node;
+		else if(Node instanceof BunVarBlockNode) {
+			BunVarBlockNode VNode = (BunVarBlockNode) Node;
 			return VNode.VarDeclNode().DeclType();
 		}
 		else if(Node instanceof SetNameNode) {
@@ -49,8 +49,8 @@ public class NodeLib {
 			BunLetVarNode LNode = (BunLetVarNode) Node;
 			return LNode.GetGivenName();
 		}
-		else if(Node instanceof ZVarBlockNode) {
-			ZVarBlockNode VNode = (ZVarBlockNode) Node;
+		else if(Node instanceof BunVarBlockNode) {
+			BunVarBlockNode VNode = (BunVarBlockNode) Node;
 			return VNode.VarDeclNode().GetGivenName();
 		}
 		else if(Node instanceof SetNameNode) {
@@ -68,7 +68,7 @@ public class NodeLib {
 		if(Node instanceof BunLetVarNode) {
 			return 0;
 		}
-		else if(Node instanceof ZVarBlockNode) {
+		else if(Node instanceof BunVarBlockNode) {
 			return 0;
 		}
 		else if(Node instanceof SetNameNode) {

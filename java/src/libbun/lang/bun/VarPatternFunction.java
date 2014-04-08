@@ -2,7 +2,7 @@ package libbun.lang.bun;
 
 import libbun.ast.BNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.decl.BunVarBlockNode;
 import libbun.parser.BTokenContext;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
@@ -17,7 +17,7 @@ public class VarPatternFunction extends BMatchFunction {
 		VarNode = TokenContext.MatchToken(VarNode, "=", BTokenContext._Required);
 		VarNode = TokenContext.MatchPattern(VarNode, BunLetVarNode._InitValue, "$Expression$", BTokenContext._Required);
 		if(VarNode instanceof BunLetVarNode) {
-			return new ZVarBlockNode(ParentNode, (BunLetVarNode)VarNode);
+			return new BunVarBlockNode(ParentNode, (BunLetVarNode)VarNode);
 		}
 		return VarNode;
 	}

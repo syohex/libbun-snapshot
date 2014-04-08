@@ -26,7 +26,7 @@
 package libbun.parser;
 import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
-import libbun.ast.ZEmptyNode;
+import libbun.ast.EmptyNode;
 import libbun.ast.error.ErrorNode;
 import libbun.util.BField;
 import libbun.util.BLib;
@@ -289,7 +289,7 @@ public final class BTokenContext {
 			this.SetParseFlag(Rememberd);
 			if(ParsedNode != null) {
 				if(Index == BNode._NestedAppendIndex) {
-					if(!(ParsedNode instanceof ZEmptyNode)) {
+					if(!(ParsedNode instanceof EmptyNode)) {
 						ParentNode.SetNode(BNode._AppendIndex, ParsedNode);
 					}
 					if(ParsedNode instanceof BunBlockNode || ParsedNode.IsErrorNode()) {
@@ -300,7 +300,7 @@ public final class BTokenContext {
 					return ParsedNode;
 				}
 				else {
-					if(!(ParsedNode instanceof ZEmptyNode)) {
+					if(!(ParsedNode instanceof EmptyNode)) {
 						ParentNode.SetNode(Index, ParsedNode);
 					}
 				}
@@ -343,7 +343,7 @@ public final class BTokenContext {
 			if(ParsedNode.IsErrorNode()) {
 				return ParsedNode;
 			}
-			if(!(ParsedNode instanceof ZEmptyNode)) {
+			if(!(ParsedNode instanceof EmptyNode)) {
 				ParentNode.SetNode(BNode._AppendIndex, ParsedNode);
 			}
 			if(DelimToken != null) {

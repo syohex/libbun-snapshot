@@ -22,12 +22,39 @@
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // **************************************************************************
 
-package libbun.ast;
+package libbun.ast.decl;
+import libbun.ast.BNode;
+import libbun.ast.BunBlockNode;
+import libbun.parser.BNodeUtils;
+import libbun.parser.BVisitor;
+import libbun.util.Var;
 
-import libbun.parser.BToken;
+public class BunVarBlockNode extends BunBlockNode {
+	public static final int _VarDecl = 0;
 
-public final class ZEmptyNode extends ZLocalDefinedNode {
-	public ZEmptyNode(BNode ParentNode, BToken Token) {
-		super(ParentNode, Token, 0);
+	public BunVarBlockNode(BNode ParentNode, BunLetVarNode VarNode) {
+		super(ParentNode, null, 1);
+		this.SetNode(BunVarBlockNode._VarDecl, VarNode);
 	}
+
+	public BunVarBlockNode(BNode ParentNode, BunLetVarNode VarNode, BunBlockNode ParentBlockNode) {
+		super(ParentNode, null, 1);
+		this.SetNode(BunVarBlockNode._VarDecl, VarNode);
+		@Var int Index = BNodeUtils._AstIndexOf(ParentBlockNode, VarNode);
+		BNodeUtils._MoveAstList(ParentBlockNode, Index+1, this);
+	}
+
+	public final BunLetVarNode VarDeclNode() {
+		@Var BNode VarNode = this.AST[BunVarBlockNode._VarDecl];
+		if(VarNode instanceof BunLetVarNode) {
+			return (BunLetVarNode)VarNode;
+		}
+		return null;
+	}
+
+	@Override public final void Accept(BVisitor Visitor) {
+		Visitor.VisitVarBlockNode(this);
+	}
+
+
 }

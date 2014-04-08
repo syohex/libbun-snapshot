@@ -1,11 +1,11 @@
-package libbun.ast;
+package libbun.ast.decl;
 
-import libbun.ast.decl.BunLetVarNode;
+import libbun.ast.BNode;
 import libbun.ast.literal.DefaultValueNode;
 import libbun.type.BType;
 import libbun.util.BField;
 
-public abstract class ZDefineNameNode extends BNode {
+public abstract class DefineNameNode extends BNode {
 	public static final int _NameInfo = 0;
 	public static final int _TypeInfo = 1;
 	public final static int _InitValue = 2;
@@ -14,7 +14,7 @@ public abstract class ZDefineNameNode extends BNode {
 	@BField public BType   GivenType = null;
 	@BField public String  GivenName = null;
 
-	protected ZDefineNameNode(BNode ParentNode, int Size) {
+	protected DefineNameNode(BNode ParentNode, int Size) {
 		super(ParentNode, null, Size);
 	}
 

@@ -10,7 +10,7 @@ import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.Var;
 
-public class BunDefineNode extends ZTopLevelNode {
+public class BunDefineNode extends TopLevelNode {
 	@BField public BunLetVarNode DefineNode;
 
 	public BunDefineNode(BNode ParentNode, BunLetVarNode DefineNode) {

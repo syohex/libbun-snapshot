@@ -60,7 +60,7 @@ import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
-import libbun.ast.ZLocalDefinedNode;
+import libbun.ast.LocalDefinedNode;
 import libbun.ast.binary.BunAndNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BInstanceOfNode;
@@ -84,8 +84,8 @@ import libbun.ast.binary.BunSubNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.decl.ZTopLevelNode;
-import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.decl.TopLevelNode;
+import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.BunFuncNameNode;
@@ -505,7 +505,7 @@ public class AsmJavaGenerator extends BGenerator {
 		this.AsmBuilder.RemoveLocal(DeclClass, Node.GetGivenName());
 	}
 
-	@Override public void VisitVarBlockNode(ZVarBlockNode Node) {
+	@Override public void VisitVarBlockNode(BunVarBlockNode Node) {
 		this.VisitVarDeclNode(Node.VarDeclNode());
 		this.VisitBlockNode(Node);
 		this.VisitVarDeclNode2(Node.VarDeclNode());
@@ -1300,11 +1300,11 @@ public class AsmJavaGenerator extends BGenerator {
 		// TODO Auto-generated method stub
 	}
 
-	@Override public void VisitTopLevelNode(ZTopLevelNode Node) {
+	@Override public void VisitTopLevelNode(TopLevelNode Node) {
 		this.VisitUndefinedNode(Node);
 	}
 
-	@Override public void VisitLocalDefinedNode(ZLocalDefinedNode Node) {
+	@Override public void VisitLocalDefinedNode(LocalDefinedNode Node) {
 		if(Node instanceof JavaStaticFieldNode) {
 			this.VisitStaticFieldNode(((JavaStaticFieldNode)Node));
 		}

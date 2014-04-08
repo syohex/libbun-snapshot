@@ -25,12 +25,12 @@
 package libbun.encode;
 
 import libbun.ast.BunBlockNode;
-import libbun.ast.BDesugarNode;
+import libbun.ast.DesugarNode;
 import libbun.ast.GroupNode;
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
 import libbun.ast.SyntaxSugarNode;
-import libbun.ast.ZLocalDefinedNode;
+import libbun.ast.LocalDefinedNode;
 import libbun.ast.binary.BunAndNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.ComparatorNode;
@@ -55,8 +55,8 @@ import libbun.ast.binary.BunSubNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.decl.ZTopLevelNode;
-import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.decl.TopLevelNode;
+import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.BunFuncNameNode;
@@ -368,7 +368,7 @@ public class ZSourceGenerator extends BGenerator {
 		}
 	}
 
-	@Override public void VisitVarBlockNode(ZVarBlockNode Node) {
+	@Override public void VisitVarBlockNode(BunVarBlockNode Node) {
 		this.CurrentBuilder.AppendWhiteSpace();
 		this.VisitVarDeclNode(Node.VarDeclNode());
 		this.VisitStmtList(Node);
@@ -780,16 +780,16 @@ public class ZSourceGenerator extends BGenerator {
 		this.CurrentBuilder.AppendCode(Node.GetMacroText());
 	}
 
-	@Override public void VisitLocalDefinedNode(ZLocalDefinedNode Node) {
+	@Override public void VisitLocalDefinedNode(LocalDefinedNode Node) {
 		this.VisitUndefinedNode(Node);
 	}
 
-	@Override public void VisitTopLevelNode(ZTopLevelNode Node) {
+	@Override public void VisitTopLevelNode(TopLevelNode Node) {
 		this.VisitUndefinedNode(Node);
 	}
 
 	@Override public void VisitSyntaxSugarNode(SyntaxSugarNode Node) {
-		@Var BDesugarNode DesugarNode = Node.DeSugar(this, this.TypeChecker);
+		@Var DesugarNode DesugarNode = Node.DeSugar(this, this.TypeChecker);
 		this.GenerateCode(null, DesugarNode.AST[0]);
 		@Var int i = 1;
 		while(i < DesugarNode.GetAstSize()) {

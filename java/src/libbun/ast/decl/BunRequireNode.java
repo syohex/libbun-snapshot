@@ -5,7 +5,7 @@ import libbun.encode.jvm.JavaImportNode;
 import libbun.parser.BNameSpace;
 import libbun.util.Var;
 
-public class BunRequireNode extends ZTopLevelNode {
+public class BunRequireNode extends TopLevelNode {
 	public final static int _Path = 0;
 
 	public BunRequireNode(BNode ParentNode) {

@@ -5,14 +5,14 @@ import libbun.ast.GroupNode;
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
 import libbun.ast.SyntaxSugarNode;
-import libbun.ast.ZLocalDefinedNode;
+import libbun.ast.LocalDefinedNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.decl.ZTopLevelNode;
-import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.decl.TopLevelNode;
+import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetIndexNode;
@@ -172,7 +172,7 @@ public class ZASTTransformer extends BVisitor {
 	}
 
 	@Override
-	public void VisitVarBlockNode(ZVarBlockNode Node) {
+	public void VisitVarBlockNode(BunVarBlockNode Node) {
 		this.Transform(Node, BunLetVarNode._InitValue);
 		this.VisitListNode(Node);
 	}
@@ -267,7 +267,7 @@ public class ZASTTransformer extends BVisitor {
 	}
 
 	@Override
-	public void VisitTopLevelNode(ZTopLevelNode Node) {
+	public void VisitTopLevelNode(TopLevelNode Node) {
 		// TODO Auto-generated method stub
 
 	}
@@ -279,7 +279,7 @@ public class ZASTTransformer extends BVisitor {
 	}
 
 	@Override
-	public void VisitLocalDefinedNode(ZLocalDefinedNode Node) {
+	public void VisitLocalDefinedNode(LocalDefinedNode Node) {
 		// TODO Auto-generated method stub
 
 	}

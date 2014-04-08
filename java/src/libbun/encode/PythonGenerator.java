@@ -31,7 +31,7 @@ import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.error.StupidCastErrorNode;
 import libbun.ast.expression.GetIndexNode;
@@ -129,7 +129,7 @@ public class PythonGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitVarBlockNode(ZVarBlockNode Node) {
+	@Override public void VisitVarBlockNode(BunVarBlockNode Node) {
 		this.VisitVarDeclNode(Node.VarDeclNode());
 		this.VisitStmtList(Node);
 	}

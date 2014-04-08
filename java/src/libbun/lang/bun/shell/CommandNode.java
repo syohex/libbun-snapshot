@@ -2,7 +2,7 @@ package libbun.lang.bun.shell;
 
 import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
-import libbun.ast.BDesugarNode;
+import libbun.ast.DesugarNode;
 import libbun.ast.SyntaxSugarNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetNameNode;
@@ -60,7 +60,7 @@ public class CommandNode extends SyntaxSugarNode {
 		return this.RetType;
 	}
 
-	@Override public BDesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChecker) {
+	@Override public DesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChecker) {
 		@Var BType ContextType = TypeChecker.GetContextType();
 		@Var String FuncName = "ExecCommandInt";
 		if(this.RetType().IsVarType()) {
@@ -95,6 +95,6 @@ public class CommandNode extends SyntaxSugarNode {
 		}
 		@Var FuncCallNode Node = new FuncCallNode(this.ParentNode, new GetNameNode(this.ParentNode, null, FuncName));
 		Node.Append(ArrayNode);
-		return new BDesugarNode(this, Node);
+		return new DesugarNode(this, Node);
 	}
 }

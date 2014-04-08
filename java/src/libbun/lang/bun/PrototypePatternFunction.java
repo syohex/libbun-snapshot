@@ -2,7 +2,7 @@ package libbun.lang.bun;
 
 import libbun.ast.BNode;
 import libbun.ast.decl.BunFunctionNode;
-import libbun.ast.decl.ZPrototypeNode;
+import libbun.ast.decl.BunPrototypeNode;
 import libbun.parser.BTokenContext;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
@@ -16,7 +16,7 @@ public class PrototypePatternFunction extends BMatchFunction {
 		FuncNode = TokenContext.MatchNtimes(FuncNode, "(", "$Param$", ",", ")");
 		FuncNode = TokenContext.MatchPattern(FuncNode, BunFunctionNode._TypeInfo, "$TypeAnnotation$", BTokenContext._Required);
 		if(FuncNode instanceof BunFunctionNode) {
-			return new ZPrototypeNode((BunFunctionNode)FuncNode);
+			return new BunPrototypeNode((BunFunctionNode)FuncNode);
 		}
 		return FuncNode;
 	}

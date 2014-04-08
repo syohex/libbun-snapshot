@@ -23,30 +23,11 @@
 // **************************************************************************
 
 package libbun.ast;
+
 import libbun.parser.BToken;
-import libbun.parser.BVisitor;
-import libbun.util.BField;
-import libbun.util.BMap;
 
-public final class ZAnnotationNode extends BNode {
-	//@Field public ZenMap<Object> Annotation;
-	@BField public BNode AnnotatedNode = null;
-
-	public ZAnnotationNode(BNode ParentNode, BToken Token, BMap<Object> Anno) {
+public final class EmptyNode extends LocalDefinedNode {
+	public EmptyNode(BNode ParentNode, BToken Token) {
 		super(ParentNode, Token, 0);
-		//this.Annotation = Anno;
-	}
-
-	//	@Override public void Append(ZNode Node) {
-	//		if(Node instanceof ZAnnotationNode) {
-	//			@Var ZAnnotationNode AnnoNode = (ZAnnotationNode)Node;
-	//			this.Annotation.AddMap(AnnoNode.Annotation);
-	//			Node = AnnoNode.AnnotatedNode;
-	//		}
-	//		this.AnnotatedNode = this.SetChild(Node);
-	//	}
-
-	@Override public void Accept(BVisitor Visitor) {
-		this.AnnotatedNode.Accept(Visitor);
 	}
 }

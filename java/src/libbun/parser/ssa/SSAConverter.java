@@ -8,7 +8,7 @@ import libbun.ast.binary.BunAndNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.expression.GetNameNode;
 import libbun.ast.expression.SetNameNode;
 import libbun.ast.statement.BunIfNode;
@@ -302,7 +302,7 @@ public class SSAConverter extends ZASTTransformer {
 	}
 
 	@Override
-	public void VisitVarBlockNode(ZVarBlockNode Node) {
+	public void VisitVarBlockNode(BunVarBlockNode Node) {
 		@Var Variable V = new Variable(Node.VarDeclNode().GetUniqueName(this.Generator), 0, Node);
 		this.AddVariable(V);
 		@Var int i = 0;

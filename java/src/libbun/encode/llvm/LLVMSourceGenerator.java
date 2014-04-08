@@ -32,7 +32,7 @@ import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
-import libbun.ast.ZLocalDefinedNode;
+import libbun.ast.LocalDefinedNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BunOrNode;
@@ -41,7 +41,7 @@ import libbun.ast.binary.ComparatorNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.BunFuncNameNode;
@@ -1389,7 +1389,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitVarBlockNode(ZVarBlockNode Node) {
+	@Override public void VisitVarBlockNode(BunVarBlockNode Node) {
 		this.VisitVarDeclNode(Node.VarDeclNode());
 		this.VisitStmtList(Node);
 	}
@@ -1430,7 +1430,7 @@ public class LLVMSourceGenerator extends ZSourceGenerator {
 		this.CurrentScope.SetLabel(EndLabel);
 	}
 
-	@Override public void VisitLocalDefinedNode(ZLocalDefinedNode Node) {
+	@Override public void VisitLocalDefinedNode(LocalDefinedNode Node) {
 		this.VisitUndefinedNode(Node);
 	}
 

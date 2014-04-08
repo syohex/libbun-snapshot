@@ -2,7 +2,7 @@ package libbun.ast.sugar;
 
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
-import libbun.ast.BDesugarNode;
+import libbun.ast.DesugarNode;
 import libbun.ast.SyntaxSugarNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.literal.BunStringNode;
@@ -20,18 +20,18 @@ public class BunAssertNode extends SyntaxSugarNode {
 		super(ParentNode, null, 1);
 	}
 
-	@Override public BDesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChecker) {
+	@Override public DesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChecker) {
 		@Var BMacroFunc Func = Generator.GetMacroFunc("assert", BType.BooleanType, 2);
 		if(Func != null) {
 			@Var AbstractListNode FuncNode = TypeChecker.CreateDefinedFuncCallNode(this.ParentNode, this.SourceToken, Func);
 			FuncNode.Append(this.AST[BunAssertNode._Expr]);
 			FuncNode.Append(new BunStringNode(FuncNode, null, this.GetSourceLocation()));
-			return new BDesugarNode(this, FuncNode);
+			return new DesugarNode(this, FuncNode);
 		}
 		else {
 			@Var FuncCallNode MacroNode = TypeChecker.CreateFuncCallNode(this.ParentNode, this.SourceToken, "assert", BFuncType._FuncType);
 			MacroNode.Append(this.AST[BunAssertNode._Expr]);
-			return new BDesugarNode(this, MacroNode);
+			return new DesugarNode(this, MacroNode);
 		}
 	}
 

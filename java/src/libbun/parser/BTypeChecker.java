@@ -25,14 +25,14 @@
 package libbun.parser;
 
 import libbun.ast.BunBlockNode;
-import libbun.ast.BDesugarNode;
+import libbun.ast.DesugarNode;
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
 import libbun.ast.SyntaxSugarNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.error.StupidCastErrorNode;
 import libbun.ast.expression.FuncCallNode;
@@ -278,7 +278,7 @@ public abstract class BTypeChecker extends BOperatorVisitor {
 
 	@Override public void VisitSyntaxSugarNode(SyntaxSugarNode Node) {
 		@Var BType ContextType = this.GetContextType();
-		@Var BDesugarNode DesugarNode = Node.DeSugar(this.Generator, this.Generator.TypeChecker);
+		@Var DesugarNode DesugarNode = Node.DeSugar(this.Generator, this.Generator.TypeChecker);
 		@Var int i = 0;
 		while(i < DesugarNode.GetAstSize()) {
 			this.CheckTypeAt(DesugarNode, i, ContextType);
@@ -330,13 +330,13 @@ public abstract class BTypeChecker extends BOperatorVisitor {
 		return ReturnNode;
 	}
 
-	public ZVarBlockNode CreateVarNode(BNode ParentNode, String Name, BType DeclType, BNode InitNode) {
+	public BunVarBlockNode CreateVarNode(BNode ParentNode, String Name, BType DeclType, BNode InitNode) {
 		@Var BunLetVarNode VarNode = new BunLetVarNode(null, 0, null, null);
 		VarNode.GivenName   = Name;
 		VarNode.GivenType   = DeclType;
 		VarNode.SetNode(BunLetVarNode._InitValue, InitNode);
 		VarNode.Type = BType.VoidType;
-		return new ZVarBlockNode(ParentNode, VarNode);
+		return new BunVarBlockNode(ParentNode, VarNode);
 	}
 
 	public GetNameNode CreateGetNameNode(BNode ParentNode, String Name, BType Type) {

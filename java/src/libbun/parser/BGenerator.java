@@ -26,14 +26,14 @@
 package libbun.parser;
 
 import libbun.ast.BunBlockNode;
-import libbun.ast.BDesugarNode;
+import libbun.ast.DesugarNode;
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
 import libbun.ast.SyntaxSugarNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.decl.ZTopLevelNode;
+import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.literal.DefaultValueNode;
 import libbun.ast.literal.BunNullNode;
@@ -278,7 +278,7 @@ public abstract class BGenerator extends BOperatorVisitor {
 	}
 
 	@Override public void VisitSyntaxSugarNode(SyntaxSugarNode Node) {
-		@Var BDesugarNode DeNode = Node.DeSugar(this, this.TypeChecker);
+		@Var DesugarNode DeNode = Node.DeSugar(this, this.TypeChecker);
 		@Var int i = 0;
 		while(i < DeNode.GetAstSize()) {
 			DeNode.AST[i].Accept(this);  // FIXME
@@ -298,8 +298,8 @@ public abstract class BGenerator extends BOperatorVisitor {
 		//this.InteractiveContext = IsInteractive;
 		this.EnableVisitor();
 		this.TopLevelSymbol = null;
-		if(Node instanceof ZTopLevelNode) {
-			((ZTopLevelNode)Node).Perform(this.RootNameSpace);
+		if(Node instanceof TopLevelNode) {
+			((TopLevelNode)Node).Perform(this.RootNameSpace);
 		}
 		else {
 			if(this.TypeChecker != null) {

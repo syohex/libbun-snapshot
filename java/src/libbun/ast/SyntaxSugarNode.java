@@ -16,7 +16,7 @@ public abstract class SyntaxSugarNode extends BNode {
 		Visitor.VisitSyntaxSugarNode(this);
 	}
 
-	public abstract BDesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChekcer);
+	public abstract DesugarNode DeSugar(BGenerator Generator, BTypeChecker TypeChekcer);
 
 
 

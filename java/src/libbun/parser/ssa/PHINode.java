@@ -2,13 +2,13 @@ package libbun.parser.ssa;
 
 import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
-import libbun.ast.ZLocalDefinedNode;
+import libbun.ast.LocalDefinedNode;
 import libbun.ast.expression.GetNameNode;
 import libbun.parser.BGenerator;
 import libbun.util.BArray;
 import libbun.util.Var;
 
-public class PHINode extends ZLocalDefinedNode {
+public class PHINode extends LocalDefinedNode {
 	public BArray<BNode>      Args;
 	public BArray<BunBlockNode> Blocks;
 	public Variable VarRef;

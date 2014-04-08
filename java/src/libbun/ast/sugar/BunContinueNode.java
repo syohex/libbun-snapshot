@@ -2,9 +2,9 @@ package libbun.ast.sugar;
 
 import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
-import libbun.ast.BDesugarNode;
+import libbun.ast.DesugarNode;
 import libbun.ast.SyntaxSugarNode;
-import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.SetNameNode;
 import libbun.ast.literal.BunBooleanNode;
@@ -50,12 +50,12 @@ public class BunContinueNode extends SyntaxSugarNode {
 		return null;
 	}
 
-	private BDesugarNode ReplaceContinue(BNode Node, BunContinueNode FirstNode, BNode[] NodeList, BDesugarNode FirstDesugarNode) {
+	private DesugarNode ReplaceContinue(BNode Node, BunContinueNode FirstNode, BNode[] NodeList, DesugarNode FirstDesugarNode) {
 		@Var int i = 0;
 		while(i < Node.GetAstSize()) {
 			@Var BNode SubNode = Node.AST[i];
 			if(SubNode instanceof BunContinueNode) {
-				@Var BDesugarNode DesugarNode = new BDesugarNode(SubNode, NodeList);
+				@Var DesugarNode DesugarNode = new DesugarNode(SubNode, NodeList);
 				if(SubNode == FirstNode) {
 					FirstDesugarNode = DesugarNode;
 				}
@@ -72,14 +72,14 @@ public class BunContinueNode extends SyntaxSugarNode {
 		return FirstDesugarNode;
 	}
 
-	@Override public BDesugarNode DeSugar(BGenerator Generator, BTypeChecker Typer) {
+	@Override public DesugarNode DeSugar(BGenerator Generator, BTypeChecker Typer) {
 		@Var BunWhileNode WhileNode = this.LookupWhileNode();
 		if(WhileNode == null) {
-			return new BDesugarNode(this, new ErrorNode(this.ParentNode, this.SourceToken, "continue must be inside the while statement"));
+			return new DesugarNode(this, new ErrorNode(this.ParentNode, this.SourceToken, "continue must be inside the while statement"));
 		}
 		@Var BunBlockNode ParentBlockNode = WhileNode.GetScopeBlockNode();
 		@Var String VarName = Generator.NameUniqueSymbol("continue");
-		@Var ZVarBlockNode VarNode = Generator.TypeChecker.CreateVarNode(null, VarName, BType.BooleanType, new BunBooleanNode(true));
+		@Var BunVarBlockNode VarNode = Generator.TypeChecker.CreateVarNode(null, VarName, BType.BooleanType, new BunBooleanNode(true));
 		@Var BunWhileNode ContinueWhile = VarNode.SetNewWhileNode(BNode._AppendIndex, Typer);
 		ContinueWhile.SetNewGetNameNode(BunWhileNode._Cond, Typer, VarName, BType.BooleanType);
 		@Var BunBlockNode WhileBlockNode = ContinueWhile.SetNewBlockNode(BunWhileNode._Block, Typer);

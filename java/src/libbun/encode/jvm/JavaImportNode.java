@@ -1,13 +1,13 @@
 package libbun.encode.jvm;
 
 import libbun.ast.BNode;
-import libbun.ast.decl.ZTopLevelNode;
+import libbun.ast.decl.TopLevelNode;
 import libbun.parser.BLogger;
 import libbun.parser.BNameSpace;
 import libbun.type.BType;
 import libbun.util.Var;
 
-public class JavaImportNode extends ZTopLevelNode {
+public class JavaImportNode extends TopLevelNode {
 	public final static int _Path  = 0;
 
 	public JavaImportNode(BNode ParentNode) {

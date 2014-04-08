@@ -3,7 +3,7 @@ package libbun.lang.bun.shell;
 import java.util.ArrayList;
 
 import libbun.ast.BNode;
-import libbun.ast.ZEmptyNode;
+import libbun.ast.EmptyNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.literal.BunStringNode;
 import libbun.parser.BNameSpace;
@@ -108,6 +108,6 @@ public class ImportCommandPatternFunction extends BMatchFunction {
 			TokenContext.MoveNext();
 		}
 		this.SetCommandSymbol(ParentNode, TokenContext, TokenList);
-		return new ZEmptyNode(ParentNode, null);
+		return new EmptyNode(ParentNode, null);
 	}
 }

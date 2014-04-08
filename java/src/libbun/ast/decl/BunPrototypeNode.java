@@ -5,12 +5,12 @@ import libbun.type.BFuncType;
 import libbun.util.BField;
 import libbun.util.Var;
 
-public class ZPrototypeNode extends ZTopLevelNode {
+public class BunPrototypeNode extends TopLevelNode {
 	public final static int _FuncInfo = 0;
 	@BField BunFunctionNode FunctionNode;
-	public ZPrototypeNode(BunFunctionNode FunctionNode) {
+	public BunPrototypeNode(BunFunctionNode FunctionNode) {
 		super(FunctionNode.ParentNode, FunctionNode.SourceToken, 1);
-		this.SetNode(ZPrototypeNode._FuncInfo, FunctionNode);
+		this.SetNode(BunPrototypeNode._FuncInfo, FunctionNode);
 		this.FunctionNode = FunctionNode;
 	}
 

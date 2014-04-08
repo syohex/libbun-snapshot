@@ -1,11 +1,11 @@
 package libbun.parser.ssa;
 
 import libbun.ast.BNode;
-import libbun.ast.ZLocalDefinedNode;
+import libbun.ast.LocalDefinedNode;
 import libbun.util.Var;
 import libbun.util.BArray;
 
-public class JoinNode extends ZLocalDefinedNode {
+public class JoinNode extends LocalDefinedNode {
 	private final BArray<PHINode> PHIs;
 
 	public JoinNode(BNode Parent) {

@@ -27,14 +27,14 @@ package libbun.parser;
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
 import libbun.ast.SyntaxSugarNode;
-import libbun.ast.ZLocalDefinedNode;
+import libbun.ast.LocalDefinedNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.decl.ZTopLevelNode;
-import libbun.ast.decl.ZVarBlockNode;
+import libbun.ast.decl.TopLevelNode;
+import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.BunMacroNode;
 import libbun.ast.expression.FuncCallNode;
@@ -88,7 +88,7 @@ public abstract class BVisitor {
 	public abstract void VisitBinaryNode(BinaryOperatorNode Node);
 
 	public abstract void VisitBlockNode(BunBlockNode Node);
-	public abstract void VisitVarBlockNode(ZVarBlockNode Node);
+	public abstract void VisitVarBlockNode(BunVarBlockNode Node);
 	public abstract void VisitIfNode(BunIfNode Node);
 	public abstract void VisitReturnNode(BunReturnNode Node);
 	public abstract void VisitWhileNode(BunWhileNode Node);
@@ -102,9 +102,9 @@ public abstract class BVisitor {
 
 	public abstract void VisitErrorNode(ErrorNode Node);
 
-	public abstract void VisitTopLevelNode(ZTopLevelNode Node);
+	public abstract void VisitTopLevelNode(TopLevelNode Node);
 	public abstract void VisitSyntaxSugarNode(SyntaxSugarNode Node);
-	public abstract void VisitLocalDefinedNode(ZLocalDefinedNode Node);
+	public abstract void VisitLocalDefinedNode(LocalDefinedNode Node);
 
 	public abstract void EnableVisitor();
 	public abstract void StopVisitor();

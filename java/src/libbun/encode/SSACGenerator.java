@@ -26,7 +26,7 @@
 package libbun.encode;
 
 import libbun.ast.BNode;
-import libbun.ast.ZLocalDefinedNode;
+import libbun.ast.LocalDefinedNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
@@ -489,7 +489,7 @@ public class SSACGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.CloseIndent("}");
 	}
 
-	@Override public void VisitLocalDefinedNode(ZLocalDefinedNode Node) {
+	@Override public void VisitLocalDefinedNode(LocalDefinedNode Node) {
 		if(!(Node instanceof PHINode)) {
 			this.VisitUndefinedNode(Node);
 			return;
