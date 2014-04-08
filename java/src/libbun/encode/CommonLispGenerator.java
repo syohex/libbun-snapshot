@@ -362,8 +362,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 	}
 
 	@Override public void VisitLetNode(BLetVarNode Node) {
-		this.CurrentBuilder.AppendNewLine("(setf *", Node.GetUniqueName(this), "*");
-		this.GenerateTypeAnnotation(Node.DeclType());
+		this.CurrentBuilder.AppendNewLine("(setf ", Node.GetUniqueName(this), "");
 		this.CurrentBuilder.Append(" ");
 		this.GenerateCode(null, Node.InitValueNode());
 		this.CurrentBuilder.Append(")");
