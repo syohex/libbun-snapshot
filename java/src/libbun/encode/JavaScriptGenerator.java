@@ -82,7 +82,7 @@ public class JavaScriptGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitNewObjectNode(NewObjectNode Node) {
-		this.Source.Append(this.NameClass(Node.Type));
+		this.Source.Append("new ", this.NameClass(Node.Type));
 		this.VisitListNode("(", Node, ")");
 	}
 
