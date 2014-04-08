@@ -102,9 +102,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 	}
 
 	private String GetBinaryOperator(BToken Token) {
-		if(Token.EqualsText("!=")) {
-			return "!=";
-		} else if(Token.EqualsText("==")) {
+		if(Token.EqualsText("==")) {
 			return "equal";
 		} else if(Token.EqualsText("%")) {
 			return "mod";
@@ -116,21 +114,38 @@ public class CommonLispGenerator extends ZSourceGenerator {
 
 	@Override public void VisitBinaryNode(BBinaryNode Node) {
 		this.CurrentBuilder.Append("(");
-		this.CurrentBuilder.Append(Node.SourceToken.GetText());
+		String operator = GetBinaryOperator(Node.SourceToken);
+		if (operator.equals("/")) {
+			this.CurrentBuilder.Append("floor" + " ");
+			this.CurrentBuilder.Append("(");
+		}
+		this.CurrentBuilder.Append(operator);
 		this.CurrentBuilder.Append(" ");
 		this.GenerateCode(null, Node.LeftNode());
 		this.CurrentBuilder.Append(" ");
 		this.GenerateCode(null, Node.RightNode());
+		if (operator.equals("/")) {
+			this.CurrentBuilder.Append(")");
+		}
 		this.CurrentBuilder.Append(")");
 	}
 
 	@Override public void VisitComparatorNode(BComparatorNode Node) {
 		this.CurrentBuilder.Append("(");
-		this.CurrentBuilder.Append(this.GetBinaryOperator(Node.SourceToken));
+		String operator = this.GetBinaryOperator(Node.SourceToken);
+		if (operator.equals("!=")) {
+			this.CurrentBuilder.Append("not" + " ");
+			this.CurrentBuilder.Append("(equal");
+		} else {
+			this.CurrentBuilder.Append(operator);
+		}
 		this.CurrentBuilder.Append(" ");
 		this.GenerateCode(null, Node.LeftNode());
 		this.CurrentBuilder.Append(" ");
 		this.GenerateCode(null, Node.RightNode());
+		if (operator.equals("!=")) {
+			this.CurrentBuilder.Append(")");
+		}
 		this.CurrentBuilder.Append(")");
 	}
 
@@ -166,7 +181,6 @@ public class CommonLispGenerator extends ZSourceGenerator {
 	@Override
 	protected void VisitVarDeclNode(BLetVarNode Node) {
 		this.CurrentBuilder.Append("(", this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " ");
-		this.GenerateCode(null, Node.InitValueNode());
 		this.GenerateCode(null, Node.InitValueNode());
 		this.CurrentBuilder.Append(")");
 		if(Node.HasNextVarNode()) {
@@ -257,10 +271,24 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		return null;
 	}
 
+	private String ClFunctionName(BFunctionNode FuncNode) {
+		String FuncName = FuncNode.FuncName();
+		if (FuncName != null) {
+			if (FuncName.equals("main")) {
+				return "main";
+			} else {
+				return FuncNode.GetSignature();
+			}
+		} else {
+			/// XXX
+			return "";
+		}
+	}
+
 	@Override public void VisitReturnNode(BReturnNode Node) {
 		@Var BFunctionNode FuncNode = this.LookupFunctionNode(Node);
 		if(FuncNode != null) {
-			this.CurrentBuilder.Append("(return-from ", FuncNode.GetSignature(), " ");
+			this.CurrentBuilder.Append("(return-from ", ClFunctionName(FuncNode), " ");
 		}
 		else {
 			this.CurrentBuilder.Append("(return ");
@@ -288,7 +316,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		else {
 			@Var BFuncType FuncType = Node.GetFuncType();
 			this.CurrentBuilder.Append("(defun ");
-			this.CurrentBuilder.Append(Node.GetSignature());
+			this.CurrentBuilder.Append(ClFunctionName(Node));
 			this.VisitFuncParamNode(" (", Node, ")");
 			this.GenerateCode(null, Node.BlockNode());
 			this.CurrentBuilder.Append(")");
@@ -349,8 +377,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 	}
 
 	@Override public void VisitLetNode(BLetVarNode Node) {
-		this.CurrentBuilder.AppendNewLine("(setf *", Node.GetUniqueName(this), "*");
-		this.GenerateTypeAnnotation(Node.DeclType());
+		this.CurrentBuilder.AppendNewLine("(setf ", Node.GetUniqueName(this), "");
 		this.CurrentBuilder.Append(" ");
 		this.GenerateCode(null, Node.InitValueNode());
 		this.CurrentBuilder.Append(")");
@@ -367,22 +394,32 @@ public class CommonLispGenerator extends ZSourceGenerator {
 	}
 
 	@Override public void VisitArrayLiteralNode(BArrayLiteralNode Node) {
-		this.VisitListNode("#(", Node, ")");
+		this.VisitListNode("'(", Node, ")");
 	}
 
 	@Override public void VisitGetIndexNode(BGetIndexNode Node) {
-		this.CurrentBuilder.Append("(aref ");
-		this.GenerateCode(null, Node.RecvNode());
-		this.CurrentBuilder.Append(" ");
-		this.GenerateCode(null, Node.IndexNode());
+		this.CurrentBuilder.Append("(");
+		if (Node.RecvNode().Type == BType.StringType) {
+			this.CurrentBuilder.Append("string (");
+			this.CurrentBuilder.Append("aref ");
+			this.GenerateCode(null, Node.RecvNode());
+			this.CurrentBuilder.Append(" ");
+			this.GenerateCode(null, Node.IndexNode());
+			this.CurrentBuilder.Append(") ");
+		} else {
+			this.CurrentBuilder.Append("nth ");
+			this.GenerateCode(null, Node.IndexNode());
+			this.CurrentBuilder.Append(" ");
+			this.GenerateCode(null, Node.RecvNode());
+		}
 		this.CurrentBuilder.Append(")");
 	}
 
 	@Override public void VisitSetIndexNode(BSetIndexNode Node) {
-		this.CurrentBuilder.Append("(setf (aref ");
-		this.GenerateCode(null, Node.RecvNode());
-		this.CurrentBuilder.Append(" ");
+		this.CurrentBuilder.Append("(setf (nth ");
 		this.GenerateCode(null, Node.IndexNode());
+		this.CurrentBuilder.Append(" ");
+		this.GenerateCode(null, Node.RecvNode());
 		this.CurrentBuilder.Append(") ");
 		this.GenerateCode(null, Node.ExprNode());
 		this.CurrentBuilder.Append(")");
