@@ -254,7 +254,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 			this.GenerateFuncName(FuncNameNode);
 		}
 		else {
-			this.CurrentBuilder.Append("funccall ");
+			this.CurrentBuilder.Append("funcall ");
 			this.GenerateCode(null, Node.FunctorNode());
 		}
 		this.VisitListNode(" ", Node, " ");
