@@ -4,10 +4,13 @@ import java.util.ArrayList;
 
 import libbun.ast.BNode;
 import libbun.ast.ZEmptyNode;
+import libbun.ast.decl.BLetVarNode;
+import libbun.ast.literal.BStringNode;
 import libbun.parser.BNameSpace;
 import libbun.parser.BSyntax;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
+import libbun.type.BType;
 import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
@@ -38,13 +41,30 @@ public class ImportCommandPatternFunction extends BMatchFunction {
 		return CommandToken;
 	}
 
-	private void SetCommandSymbol(BNode ParentNode, ArrayList<BToken> TokenList) {
+	private boolean FoundDuplicatedSymbol(BNameSpace NameSpace, String Command) {
+		@Var BSyntax Syntax = NameSpace.GetSyntaxPattern(Command);
+		if(Syntax != null) {
+			if(BLib.DebugMode) {
+				System.err.println("found duplicated syntax pattern: " + Syntax);
+			}
+			return true;
+		}
+		if(NameSpace.GetSymbol(ShellUtils._ToCommandSymbol(Command)) != null) {
+			if(BLib.DebugMode) {
+				System.err.println("found duplicated symbol: " + Command);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	private void SetCommandSymbol(BNode ParentNode, BTokenContext TokenContext, ArrayList<BToken> TokenList) {	//TODO: command scope
 		@Var BToken CommandToken = this.ToCommandToken(TokenList);
 		if(CommandToken == null) {
 			return;
 		}
 		@Var String CommandPath = this.ResolveHome(CommandToken.GetText());
-		@Var BNameSpace NameSpace = ParentNode.GetNameSpace();
+		@Var BNameSpace NameSpace = TokenContext.NameSpace;
 		@Var int loc = CommandPath.lastIndexOf('/');
 		@Var String Command = CommandPath;
 		if(loc != -1) {
@@ -62,16 +82,12 @@ public class ImportCommandPatternFunction extends BMatchFunction {
 			}
 			CommandPath = FullPath;
 		}
-		@Var BSyntax Syntax = NameSpace.GetSyntaxPattern(Command);
-		if(Syntax != null && !(Syntax.MatchFunc instanceof CommandSymbolPatternFunction)) {
-			if(BLib.DebugMode) {
-				System.err.println("found duplicated syntax pattern: " + Syntax);
-			}
+		if(this.FoundDuplicatedSymbol(NameSpace, Command)) {
 			return;
 		}
-		// FIXME:: SetSymbol was changed to accept only BLetVarBode
-		throw new RuntimeException("// FIXME:: SetSymbol was changed to accept only BLetVarBode ");
-		//NameSpace.SetSymbol(ShellUtils._ToCommandSymbol(Command), new BStringNode(ParentNode, null, CommandPath));
+		BLetVarNode Node = new BLetVarNode(ParentNode, BLetVarNode._IsReadOnly, BType.StringType, Command);
+		Node.SetNode(BLetVarNode._InitValue, new BStringNode(ParentNode, null, CommandPath));
+		NameSpace.SetSymbol(ShellUtils._ToCommandSymbol(Command), Node);
 	}
 
 	@Override
@@ -87,11 +103,11 @@ public class ImportCommandPatternFunction extends BMatchFunction {
 				TokenList.add(Token);
 			}
 			if(Token.IsNextWhiteSpace()) {
-				this.SetCommandSymbol(ParentNode, TokenList);
+				this.SetCommandSymbol(ParentNode, TokenContext, TokenList);
 			}
 			TokenContext.MoveNext();
 		}
-		this.SetCommandSymbol(ParentNode, TokenList);
+		this.SetCommandSymbol(ParentNode, TokenContext, TokenList);
 		return new ZEmptyNode(ParentNode, null);
 	}
 }

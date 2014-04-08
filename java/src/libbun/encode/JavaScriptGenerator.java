@@ -32,9 +32,7 @@ import libbun.ast.decl.BFunctionNode;
 import libbun.ast.decl.BLetVarNode;
 import libbun.ast.error.BErrorNode;
 import libbun.ast.error.ZStupidCastErrorNode;
-import libbun.ast.expression.BFuncCallNode;
-import libbun.ast.expression.BFuncNameNode;
-import libbun.ast.expression.BMethodCallNode;
+import libbun.ast.expression.BNewObjectNode;
 import libbun.ast.literal.BNullNode;
 import libbun.ast.literal.ZMapLiteralNode;
 import libbun.ast.statement.BThrowNode;
@@ -42,13 +40,23 @@ import libbun.ast.statement.BTryNode;
 import libbun.ast.unary.BCastNode;
 import libbun.parser.BLogger;
 import libbun.type.BClassType;
-import libbun.type.BGenericType;
+import libbun.type.BFuncType;
 import libbun.type.BType;
+import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
+import libbun.util.ZenMethod;
 
 public class JavaScriptGenerator extends ZSourceGenerator {
-	private static boolean UseExtend;
+	@BField private boolean HasMainFunction;
+
+	private static String ExtendCode =
+			"var __extends = this.__extends || function (d, b) {\n"
+					+ "\tfor (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];\n"
+					+ "\tfunction __() { this.constructor = d; }"
+					+ "\t__.prototype = b.prototype;\n"
+					+ "\td.prototype = new __();\n"
+					+ "}";
 
 	public JavaScriptGenerator() {
 		super("js", "JavaScript-1.4");
@@ -60,24 +68,23 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.SetNativeType(BType.VarType, "Object");
 
 		this.SetReservedName("this", "self");
-
-		JavaScriptGenerator.UseExtend = false;
 	}
 
-	//	@Override public void VisitGlobalNameNode(ZFuncNameNode Node) {
-	//		//		if(Node.IsUntyped()) {
-	//		//			this.CurrentBuilder.Append(Node.GlobalName);
-	//		//		}
-	//		if(Node.IsFuncNameNode()) {
-	//			if(Node.GlobalName.startsWith("LibZen")){
-	//				this.CurrentBuilder.Append(Node.GlobalName.replace('_', '.'));
-	//			}else{
-	//				this.CurrentBuilder.Append(Node.Type.StringfySignature(Node.GlobalName));
-	//			}
-	//		}else{
-	//			this.CurrentBuilder.Append(Node.GlobalName);
-	//		}
-	//	}
+	@Override @ZenMethod protected void Finish(String FileName) {
+		if(this.HasMainFunction) {
+			this.CurrentBuilder.AppendNewLine("main();");
+			this.CurrentBuilder.AppendLineFeed();
+		}
+	}
+
+	@Override protected void GenerateImportLibrary(String LibName) {
+		this.HeaderBuilder.AppendNewLine(LibName);
+	}
+
+	@Override public void VisitNewObjectNode(BNewObjectNode Node) {
+		this.CurrentBuilder.Append(this.NameClass(Node.Type));
+		this.VisitListNode("(", Node, ")");
+	}
 
 	@Override public void VisitCastNode(BCastNode Node) {
 		this.GenerateCode(null, Node.ExprNode());
@@ -110,13 +117,6 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		}
 	}
 
-	//	@Override public void VisitCatchNode(ZCatchNode Node) {
-	//		this.CurrentBuilder.Append("catch");
-	//		this.CurrentBuilder.AppendWhiteSpace();
-	//		this.CurrentBuilder.Append(Node.GivenName);
-	//		this.GenerateCode(null, Node.AST[ZCatchNode._Block]);
-	//	}
-
 	@Override
 	protected void VisitVarDeclNode(BLetVarNode Node) {
 		this.CurrentBuilder.AppendToken("var");
@@ -132,139 +132,35 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 	}
 
-	private boolean IsUserDefinedType(BType SelfType){
-		return SelfType != BType.BooleanType &&
-				SelfType != BType.IntType &&
-				SelfType != BType.FloatType &&
-				SelfType != BType.StringType &&
-				SelfType != BType.VoidType &&
-				SelfType != BType.TypeType &&
-				//SelfType != ZType.VarType &&
-				SelfType.GetBaseType() != BGenericType._ArrayType &&
-				SelfType.GetBaseType() != BGenericType._MapType;
+	private void VisitAnonymousFunctionNode(BFunctionNode Node) {
+		this.VisitFuncParamNode("(function(", Node, ")");
+		this.GenerateCode(null, Node.BlockNode());
+		this.CurrentBuilder.Append(")");
 	}
 
 	@Override public void VisitFunctionNode(BFunctionNode Node) {
-		@Var boolean IsLambda = (Node.FuncName() == null);
-		@Var boolean IsInstanceMethod = (!IsLambda && Node.AST.length > 1 && Node.AST[1/*first param*/] instanceof BLetVarNode);
-		@Var BType SelfType = IsInstanceMethod ? Node.AST[1/*first param*/].Type : null;
-		@Var boolean IsConstructor = IsInstanceMethod && Node.FuncName().equals(SelfType.GetName());
-
-		if(IsConstructor){
-			@Var BNode Block = Node.BlockNode();
-			Block.AST[Block.AST.length - 1].AST[0] = Node.AST[1];
+		if(Node.FuncName() == null) {
+			this.VisitAnonymousFunctionNode(Node);
+			return;
 		}
-		if(IsLambda) {
-			this.CurrentBuilder.Append("(function");
-		}else{
-			this.CurrentBuilder.Append("function ");
-			if(!Node.Type.IsVoidType()) {
-				@Var String FuncName = Node.GetUniqueName(this);
-				this.CurrentBuilder.Append(FuncName);
-			}
-			else {
-				this.CurrentBuilder.Append(Node.GetSignature());
-			}
-		}
+		@Var BFuncType FuncType = Node.GetFuncType();
+		this.CurrentBuilder.Append("function ", Node.GetSignature());
 		this.VisitFuncParamNode("(", Node, ")");
 		this.GenerateCode(null, Node.BlockNode());
-		if(IsLambda) {
-			this.CurrentBuilder.Append(")");
-		}else{
-			this.CurrentBuilder.Append(this.SemiColon);
-			if(IsInstanceMethod) {
-				if(this.IsUserDefinedType(SelfType) && !IsConstructor){
-					this.CurrentBuilder.AppendLineFeed();
-					this.CurrentBuilder.Append(SelfType.ShortName); //FIXME must use typing in param
-					this.CurrentBuilder.Append(".prototype.");
-					this.CurrentBuilder.Append(Node.FuncName());
-					this.CurrentBuilder.Append("__ = ");
-					this.CurrentBuilder.Append(Node.GetSignature());
-
-					this.CurrentBuilder.AppendLineFeed();
-					this.CurrentBuilder.Append(SelfType.ShortName); //FIXME must use typing in param
-					this.CurrentBuilder.Append(".prototype.");
-					this.CurrentBuilder.Append(Node.FuncName());
-					this.CurrentBuilder.Append(" = (function(){ Array.prototype.unshift.call(arguments, this); return this.");
-					this.CurrentBuilder.Append(Node.FuncName());
-					this.CurrentBuilder.Append("__.apply(this, arguments); })");
-
-					this.CurrentBuilder.Append(this.SemiColon);
-					this.CurrentBuilder.AppendLineFeed();
-					this.CurrentBuilder.Append("function ");
-					this.CurrentBuilder.Append(SelfType.ShortName); //FIXME must use typing in param
-					this.CurrentBuilder.Append("_");
-					this.CurrentBuilder.Append(Node.FuncName());
-					this.VisitListNode("(", Node, ")");
-					this.CurrentBuilder.Append("{ return ");
-					this.CurrentBuilder.Append(Node.GetSignature());
-					this.VisitListNode("(", Node, "); ");
-					this.CurrentBuilder.Append("}");
-				}
+		if(Node.IsExport) {
+			this.CurrentBuilder.Append(";");
+			this.CurrentBuilder.AppendLineFeed();
+			this.CurrentBuilder.Append(Node.FuncName(), " = ", FuncType.StringfySignature(Node.FuncName()));
+			if(Node.FuncName().equals("main")) {
+				this.HasMainFunction = true;
 			}
+		}
+		if(this.IsMethod(Node.FuncName(), FuncType)) {
+			this.CurrentBuilder.Append(";");
 			this.CurrentBuilder.AppendLineFeed();
-			this.CurrentBuilder.AppendLineFeed();
+			this.CurrentBuilder.Append(this.NameClass(FuncType.GetRecvType()), ".prototype.", Node.FuncName());
+			this.CurrentBuilder.Append(" = ", FuncType.StringfySignature(Node.FuncName()));
 		}
-	}
-
-	//	@Override public void VisitFuncCallNode(ZFuncCallNode Node) {
-	//		//this.GenerateCode(null, Node.FuncNameNode());
-	//		@Var ZType FuncType = Node.GetFuncType();
-	//		if(FuncType != null){
-	//			@Var ZType RecvType = Node.GetFuncType().GetRecvType();
-	//			if(this.IsUserDefinedType(RecvType) && RecvType.ShortName != null && !RecvType.ShortName.equals(Node.GetStaticFuncName())){
-	//				this.CurrentBuilder.Append("(");
-	//				this.GenerateCode(null, Node.FunctionNode());
-	//				if(Node.FunctionNode() instanceof ZGetterNode){
-	//					this.CurrentBuilder.Append("__ || ");
-	//				}else{
-	//					this.CurrentBuilder.Append(" || ");
-	//				}
-	//				this.CurrentBuilder.Append(RecvType.ShortName);
-	//				this.CurrentBuilder.Append("_");
-	//				this.CurrentBuilder.Append(Node.GetStaticFuncName());
-	//				this.CurrentBuilder.Append(")");
-	//			}else{
-	//				this.GenerateCode(null, Node.FunctionNode());
-	//			}
-	//		}else{
-	//			this.GenerateCode(null, Node.FunctionNode());
-	//		}
-	//		this.VisitListNode("(", Node, ")");
-	//	}
-
-	@Override public void VisitFuncCallNode(BFuncCallNode Node) {
-		@Var BFuncNameNode FuncNameNode = Node.FuncNameNode();
-		if(FuncNameNode != null) {
-			this.GenerateFuncName(FuncNameNode);
-		}
-		else {
-			this.GenerateCode(null, Node.FunctorNode());
-		}
-		this.VisitListNode("(", Node, ")");
-	}
-
-	@Override public void VisitMethodCallNode(BMethodCallNode Node) {
-		// (recv.method || Type_method)(...)
-		@Var BNode RecvNode = Node.RecvNode();
-
-		if(this.IsUserDefinedType(RecvNode.Type)){
-			this.CurrentBuilder.Append("(");
-			this.GenerateSurroundCode(RecvNode);
-			this.CurrentBuilder.Append(".");
-			this.CurrentBuilder.Append(Node.MethodName());
-			this.CurrentBuilder.Append("__ || ");
-			this.CurrentBuilder.Append(RecvNode.Type.ShortName);
-			this.CurrentBuilder.Append("_");
-			this.CurrentBuilder.Append(Node.MethodName());
-			this.CurrentBuilder.Append(")");
-		}else{
-			this.GenerateSurroundCode(RecvNode);
-			this.CurrentBuilder.Append(".");
-			this.CurrentBuilder.Append(Node.MethodName());
-		}
-		//this.GenerateSurroundCode(Node.RecvNode());
-		this.VisitListNode("(", Node, ")");
 	}
 
 	@Override public void VisitMapLiteralNode(ZMapLiteralNode Node) {
@@ -301,28 +197,6 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 	@Override public void VisitLetNode(BLetVarNode Node) {
 		this.CurrentBuilder.AppendNewLine("var ", Node.GetUniqueName(this), " = ");
 		this.GenerateCode(null, Node.InitValueNode());
-		this.CurrentBuilder.Append(this.SemiColon);
-	}
-
-	private void GenerateExtendCode(BClassNode Node) {
-		this.CurrentBuilder.Append("var __extends = this.__extends || function (d, b) {");
-		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.Indent();
-		this.CurrentBuilder.AppendIndent();
-		this.CurrentBuilder.Append("for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];");
-		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.AppendIndent();
-		this.CurrentBuilder.Append("function __() { this.constructor = d; }");
-		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.AppendIndent();
-		this.CurrentBuilder.Append("__.prototype = b.prototype;");
-		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.AppendIndent();
-		this.CurrentBuilder.Append("d.prototype = new __();");
-		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.Append("};");
-		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.UnIndent();
 	}
 
 	@Override public void VisitClassNode(BClassNode Node) {
@@ -335,22 +209,23 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		 * 	return ClassName;
 		 * })(_super);
 		 */
-		if(!Node.SuperType().Equals(BClassType._ObjectType) && !JavaScriptGenerator.UseExtend) {
-			JavaScriptGenerator.UseExtend = true;
-			this.GenerateExtendCode(Node);
+		@Var boolean HasSuperType = Node.SuperType() != null && !Node.SuperType().Equals(BClassType._ObjectType);
+		@Var String ClassName = this.NameClass(Node.ClassType);
+		if(HasSuperType) {
+			this.ImportLibrary(JavaScriptGenerator.ExtendCode);
 		}
-		this.CurrentBuilder.AppendNewLine("var ", Node.ClassName(), " = ");
+		this.CurrentBuilder.AppendNewLine("var ", ClassName, " = ");
 		this.CurrentBuilder.Append("(function(");
-		if(!Node.SuperType().Equals(BClassType._ObjectType)) {
+		if(HasSuperType) {
 			this.CurrentBuilder.OpenIndent("_super) {");
-			this.CurrentBuilder.AppendNewLine("__extends(", Node.ClassName(), this.Camma);
+			this.CurrentBuilder.AppendNewLine("__extends(", ClassName, this.Camma);
 			this.CurrentBuilder.Append("_super)", this.SemiColon);
 		} else {
 			this.CurrentBuilder.OpenIndent(") {");
 		}
-		this.CurrentBuilder.AppendNewLine("function ", Node.ClassName());
+		this.CurrentBuilder.AppendNewLine("function ", ClassName);
 		this.CurrentBuilder.OpenIndent("() {");
-		if(!Node.SuperType().Equals(BClassType._ObjectType)) {
+		if(HasSuperType) {
 			this.CurrentBuilder.AppendNewLine("_super.call(this)", this.SemiColon);
 		}
 
@@ -369,12 +244,12 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		}
 		this.CurrentBuilder.CloseIndent("}");
 
-		this.CurrentBuilder.AppendNewLine("return ", Node.ClassName(), this.SemiColon);
+		this.CurrentBuilder.AppendNewLine("return ", ClassName, this.SemiColon);
 		this.CurrentBuilder.CloseIndent("})(");
-		if(Node.SuperType() != null) {
-			this.CurrentBuilder.Append(Node.SuperType().GetName());
+		if(HasSuperType) {
+			this.CurrentBuilder.Append(this.NameClass(Node.SuperType()));
 		}
-		this.CurrentBuilder.Append(")", this.SemiColon);
+		this.CurrentBuilder.Append(")");
 	}
 
 	@Override public void VisitErrorNode(BErrorNode Node) {
@@ -385,7 +260,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		else {
 			@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 			this.CurrentBuilder.AppendWhiteSpace();
-			this.CurrentBuilder.Append("LibZen.ThrowError(");
+			this.CurrentBuilder.Append("throw new Error(");
 			this.CurrentBuilder.Append(BLib._QuoteString(Message));
 			this.CurrentBuilder.Append(")");
 		}

@@ -166,7 +166,7 @@ public abstract class BGenerator extends BVisitor {
 	}
 
 	public final String NameUniqueSymbol(String Symbol, int NameIndex) {
-		return Symbol + "__B" + this.GetUniqueNumber();
+		return Symbol + "__B" + NameIndex;
 	}
 
 	public String NameGlobalNameClass(String Name) {

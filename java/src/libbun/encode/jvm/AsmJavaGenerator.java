@@ -35,6 +35,7 @@ import static org.objectweb.asm.Opcodes.ANEWARRAY;
 import static org.objectweb.asm.Opcodes.CHECKCAST;
 import static org.objectweb.asm.Opcodes.DUP;
 import static org.objectweb.asm.Opcodes.GETFIELD;
+import static org.objectweb.asm.Opcodes.GETSTATIC;
 import static org.objectweb.asm.Opcodes.GOTO;
 import static org.objectweb.asm.Opcodes.IFEQ;
 import static org.objectweb.asm.Opcodes.IFNE;
@@ -441,23 +442,27 @@ public class AsmJavaGenerator extends BGenerator {
 	@Override public void VisitNewObjectNode(BNewObjectNode Node) {
 		if(Node.IsUntyped()) {
 			this.VisitErrorNode(new BErrorNode(Node, "no class for new operator"));
+			return;
+		}
+		// check class existence
+		if(!Node.Type.Equals(JavaTypeTable.GetZenType(this.GetJavaClass(Node.Type)))) {
+			this.VisitErrorNode(new BErrorNode(Node, "undefined class: " + Node.Type));
+			return;
+		}
+		String ClassName = Type.getInternalName(this.GetJavaClass(Node.Type));
+		this.AsmBuilder.visitTypeInsn(NEW, ClassName);
+		this.AsmBuilder.visitInsn(DUP);
+		Constructor<?> jMethod = this.GetConstructor(Node.Type, Node);
+		if(jMethod != null) {
+			Class<?>[] P = jMethod.getParameterTypes();
+			for(int i = 0; i < P.length; i++) {
+				this.AsmBuilder.PushNode(P[i], Node.GetListAt(i));
+			}
+			this.AsmBuilder.SetLineNumber(Node);
+			this.AsmBuilder.visitMethodInsn(INVOKESPECIAL, ClassName, "<init>", Type.getConstructorDescriptor(jMethod));
 		}
 		else {
-			String ClassName = Type.getInternalName(this.GetJavaClass(Node.Type));
-			this.AsmBuilder.visitTypeInsn(NEW, ClassName);
-			this.AsmBuilder.visitInsn(DUP);
-			Constructor<?> jMethod = this.GetConstructor(Node.Type, Node);
-			if(jMethod != null) {
-				Class<?>[] P = jMethod.getParameterTypes();
-				for(int i = 0; i < P.length; i++) {
-					this.AsmBuilder.PushNode(P[i], Node.GetListAt(i));
-				}
-				this.AsmBuilder.SetLineNumber(Node);
-				this.AsmBuilder.visitMethodInsn(INVOKESPECIAL, ClassName, "<init>", Type.getConstructorDescriptor(jMethod));
-			}
-			else {
-				this.VisitErrorNode(new BErrorNode(Node, "no constructor: " + Node.Type));
-			}
+			this.VisitErrorNode(new BErrorNode(Node, "no constructor: " + Node.Type));
 		}
 	}
 
@@ -504,7 +509,26 @@ public class AsmJavaGenerator extends BGenerator {
 	//		}
 	//	}
 
+	protected void VisitGlobalNameNode(BGetNameNode Node) {
+		if(Node.ResolvedNode instanceof BLetVarNode) {
+			BLetVarNode LetNode = (BLetVarNode) Node.ResolvedNode;
+			Class<?> JavaClass = this.GetJavaClass(LetNode.GetAstType(BLetVarNode._NameInfo));
+			this.AsmBuilder.visitFieldInsn(GETSTATIC, this.NameGlobalNameClass(LetNode.GetUniqueName(this)), "_", JavaClass);
+		}
+		else {
+			this.VisitErrorNode(new BErrorNode(Node, "unimplemented ResolvedNode: " + Node.ResolvedNode.getClass().getName()));
+		}
+	}
+
 	@Override public void VisitGetNameNode(BGetNameNode Node) {
+		if(Node.ResolvedNode == null) {
+			this.VisitErrorNode(new BErrorNode(Node, "undefined symbol: " + Node.GivenName));
+			return;
+		}
+		if(Node.ResolvedNode.GetDefiningFunctionNode() == null) {
+			this.VisitGlobalNameNode(Node);
+			return;
+		}
 		this.AsmBuilder.LoadLocal(Node.GetUniqueName(this));
 		this.AsmBuilder.CheckReturnCast(Node, this.AsmBuilder.GetLocalType(Node.GetUniqueName(this)));
 	}

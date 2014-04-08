@@ -1,6 +1,7 @@
 package libbun.lang.bun.shell;
 
 import libbun.ast.BNode;
+import libbun.ast.decl.BLetVarNode;
 import libbun.ast.error.BErrorNode;
 import libbun.ast.literal.BStringNode;
 import libbun.util.Var;
@@ -13,11 +14,11 @@ public class CommandSymbolPatternFunction extends BMatchFunction {
 
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		@Var BToken CommandToken = TokenContext.GetToken(BTokenContext._MoveNext);
-		@Var BNode SymbolNode = ParentNode.GetNameSpace().GetSymbol(ShellUtils._ToCommandSymbol(CommandToken.GetText()));
-		if(SymbolNode == null || !(SymbolNode instanceof BStringNode)) {
+		@Var BLetVarNode SymbolNode = ParentNode.GetNameSpace().GetSymbol(ShellUtils._ToCommandSymbol(CommandToken.GetText()));
+		if(SymbolNode == null || !(SymbolNode.InitValueNode() instanceof BStringNode)) {
 			return new BErrorNode(ParentNode, CommandToken, "undefined command symbol");
 		}
-		@Var String Command = ((BStringNode)SymbolNode).StringValue;
+		@Var String Command = ((BStringNode)SymbolNode.InitValueNode()).StringValue;
 		@Var CommandNode CommandNode = new CommandNode(ParentNode, CommandToken, Command);
 		while(TokenContext.HasNext()) {
 			if(TokenContext.MatchToken("|")) {

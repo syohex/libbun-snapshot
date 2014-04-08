@@ -31,11 +31,11 @@ import libbun.type.BClassType;
 import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BLib;
-import libbun.util.Nullable;
-import libbun.util.Var;
 import libbun.util.BMap;
 import libbun.util.BMatchFunction;
 import libbun.util.BTokenFunction;
+import libbun.util.Nullable;
+import libbun.util.Var;
 
 public final class BNameSpace {
 	@BField public final BGenerator   Generator;
@@ -169,17 +169,16 @@ public final class BNameSpace {
 		}
 	}
 
-	public final void DefineRightExpression(String PatternName, int SyntaxFlag, BMatchFunction MatchFunc) {
+	public final void DefineRightExpression(String PatternName, BMatchFunction MatchFunc) {
 		@Var int Alias = PatternName.indexOf(" ");
 		@Var String Name = PatternName;
 		if(Alias != -1) {
 			Name = PatternName.substring(0, Alias);
 		}
 		@Var BSyntax Pattern = new BSyntax(this, Name, MatchFunc);
-		Pattern.SyntaxFlag = SyntaxFlag;
 		this.AppendSyntaxPattern(BNameSpace._RightPatternSymbol(Name), Pattern);
 		if(Alias != -1) {
-			this.DefineRightExpression(PatternName.substring(Alias+1), SyntaxFlag, MatchFunc);
+			this.DefineRightExpression(PatternName.substring(Alias+1), MatchFunc);
 		}
 	}
 

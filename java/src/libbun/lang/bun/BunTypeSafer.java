@@ -293,6 +293,9 @@ public class BunTypeSafer extends BTypeChecker {
 		if(FuncNode instanceof BFuncNameNode) {
 			BFuncNameNode FuncNameNode = (BFuncNameNode)FuncNode;
 			@Var BFunc Func = this.LookupFunc(NameSpace, FuncNameNode.FuncName, FuncNameNode.RecvType, FuncNameNode.FuncParamSize);
+			if(Func != null) {
+				this.VarScope.TypeNode(FuncNameNode, Func.GetFuncType());
+			}
 			if(Func instanceof BMacroFunc) {
 				@Var BMacroNode MacroNode = Node.ToMacroNode((BMacroFunc)Func);
 				this.ReturnNode(this.TypeListNodeAsFuncCall(MacroNode, Func.GetFuncType()));
@@ -705,6 +708,9 @@ public class BunTypeSafer extends BTypeChecker {
 			this.CheckTypeAt(Node, BLetVarNode._InitValue, DeclType);
 			@Var BType ConstType = Node.InitValueNode().Type;
 			Node.SetAstType(BLetVarNode._NameInfo, ConstType);
+			if(DeclType.IsVarType()) {
+				Node.SetDeclType(ConstType);
+			}
 			Node.NameIndex = this.Generator.GetUniqueNumber();
 			Node.GetNameSpace().SetSymbol(Node.GetGivenName(), Node);
 			this.ReturnTypeNode(Node, BType.VoidType);

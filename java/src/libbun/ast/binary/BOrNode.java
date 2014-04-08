@@ -25,12 +25,13 @@
 package libbun.ast.binary;
 
 import libbun.ast.BNode;
+import libbun.lang.bun.BunPrecedence;
 import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 
 public final class BOrNode extends BBinaryNode {
-	public BOrNode(BNode ParentNode, BToken Token, BNode Left, int Precedence) {
-		super(ParentNode, Token, Left, Precedence);
+	public BOrNode(BNode ParentNode, BToken Token, BNode Left) {
+		super(ParentNode, Token, Left, BunPrecedence._CStyleOR);
 	}
 	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitOrNode(this);

@@ -33,7 +33,7 @@ import libbun.util.Var;
 // E.g., $NativeName = $ValueNode
 public class BSetNameNode extends BNode {
 	public final static int _NameInfo = 0;
-	public final static int _Expr = 0;
+	public final static int _Expr = 1;
 
 	public BSetNameNode(BNode ParentNode, BToken Token, BGetNameNode NameNode) {
 		super(ParentNode, Token, 2);

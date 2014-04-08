@@ -173,7 +173,7 @@ public abstract class BNode {
 	// ParentNode
 
 	public final boolean IsTopLevel() {
-		@Var @Nullable BNode Cur = this;
+		@Var @Nullable BNode Cur = this.ParentNode;
 		while(Cur != null) {
 			if(Cur instanceof BFunctionNode) {
 				return false;

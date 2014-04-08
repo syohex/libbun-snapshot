@@ -13,8 +13,8 @@ import libbun.ast.expression.BGetNameNode;
 import libbun.ast.expression.BSetNameNode;
 import libbun.ast.statement.BIfNode;
 import libbun.ast.statement.BWhileNode;
-import libbun.lang.bun.BunPrecedence;
 import libbun.parser.BGenerator;
+import libbun.parser.BSyntax;
 import libbun.type.BType;
 import libbun.util.BArray;
 import libbun.util.BMap;
@@ -43,7 +43,7 @@ public class SSAConverter extends ZASTTransformer {
 	public SSAConverter(BGenerator Generator) {
 		this.Generator = Generator;
 		this.LocalVariables = null;
-		this.Replacer = new ValueReplacer();
+		this.Replacer = new ValueReplacer(Generator);
 		this.State = new SSAConverterState(null, -1);
 		this.ValueNumber = new BMap<Integer>(BType.IntType);
 		this.CurVariableTableBefore = new HashMap<BNode, BArray<Variable>>();
@@ -176,6 +176,9 @@ public class SSAConverter extends ZASTTransformer {
 	}
 
 	private void InsertPHI(JoinNode JNode, int BranchIndex, Variable OldVal, Variable NewVal) {
+		if(JNode == null) { // top-level statament.
+			return;
+		}
 		// 1. Find PHINode from JoinNode
 		@Var PHINode phi = JNode.FindPHINode(OldVal);
 
@@ -268,9 +271,10 @@ public class SSAConverter extends ZASTTransformer {
 			@Var BWhileNode WNode = (BWhileNode) TargetNode;
 			@Var BNode CondNode = WNode.CondNode();
 			@Var int i = JNode.size() - 1;
+			@Var BSyntax AndPattern = TargetNode.GetNameSpace().GetRightSyntaxPattern("&&");
 			while(i >= 0) {
 				@Var PHINode phi = JNode.ListAt(i);
-				@Var BAndNode And = new BAndNode(Parent, null, phi, BunPrecedence._CStyleAND);
+				@Var BAndNode And = new BAndNode(Parent, null, phi);
 				And.SetNode(BBinaryNode._Right, CondNode);
 				And.Type = BType.BooleanType;
 				CondNode = And;
@@ -284,7 +288,7 @@ public class SSAConverter extends ZASTTransformer {
 
 	@Override
 	public void VisitGetNameNode(BGetNameNode Node) {
-		@Var Variable V = this.FindVariable(Node.GivenName);  //FIXME
+		@Var Variable V = this.FindVariable(Node.GetUniqueName(this.Generator));
 		Node.VarIndex = V.Index;
 	}
 
@@ -299,7 +303,7 @@ public class SSAConverter extends ZASTTransformer {
 
 	@Override
 	public void VisitVarBlockNode(ZVarBlockNode Node) {
-		@Var Variable V = new Variable(Node.VarDeclNode().GetGivenName(), 0, Node);
+		@Var Variable V = new Variable(Node.VarDeclNode().GetUniqueName(this.Generator), 0, Node);
 		this.AddVariable(V);
 		@Var int i = 0;
 		while(i < Node.GetListSize()) {
@@ -318,11 +322,20 @@ public class SSAConverter extends ZASTTransformer {
 		this.RecordListOfVariablesBeforeVisit(Node.ThenNode());
 		Node.ThenNode().Accept(this);
 		this.RecordListOfVariablesAfterVisit(Node.ThenNode());
+		this.SetCurrentBranchIndex(IfElseBranchIndex);
 		if(Node.HasElseNode()) {
 			this.RecordListOfVariablesBeforeVisit(Node.ElseNode());
-			this.SetCurrentBranchIndex(IfElseBranchIndex);
 			Node.ElseNode().Accept(this);
 			this.RecordListOfVariablesAfterVisit(Node.ElseNode());
+		}
+		else {
+			@Var JoinNode JNode = this.GetCurrentJoinNode();
+			@Var int i = JNode.size() - 1;
+			while(i >= 0) {
+				PHINode phi = JNode.ListAt(i);
+				this.InsertPHI(JNode, IfElseBranchIndex, phi.BackupValue, phi.BackupValue);
+				i = i - 1;
+			}
 		}
 		this.RecordListOfVariablesAfterVisit(Node);
 		this.RemoveJoinNode(Node, this.GetCurrentJoinNode());
@@ -351,7 +364,7 @@ public class SSAConverter extends ZASTTransformer {
 		@Var int i = 0;
 		while(i < Node.GetListSize()) {
 			BLetVarNode ParamNode = Node.GetParamNode(i);
-			this.AddVariable(new Variable(ParamNode.GetGivenName(), 0, ParamNode));
+			this.AddVariable(new Variable(ParamNode.GetUniqueName(this.Generator), 0, ParamNode));
 			i = i + 1;
 		}
 		Node.BlockNode().Accept(this);
