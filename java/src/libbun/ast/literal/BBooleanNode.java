@@ -25,24 +25,28 @@
 package libbun.ast.literal;
 
 import libbun.ast.BNode;
+import libbun.parser.BOperatorVisitor;
 import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 import libbun.type.BType;
 import libbun.util.BField;
 
-public final class BBooleanNode extends BConstNode {
+public final class BBooleanNode extends LiteralNode {
 	@BField public boolean	BooleanValue;
 	public BBooleanNode(BNode ParentNode, BToken Token, boolean Value) {
 		super(ParentNode, Token);
 		this.Type = BType.BooleanType;
 		this.BooleanValue = Value;
 	}
-
 	public BBooleanNode(boolean Value) {
 		this(null, null, Value);
 	}
-
-	@Override public void Accept(BVisitor Visitor) {
-		Visitor.VisitBooleanNode(this);
+	@Override public final void Accept(BVisitor Visitor) {
+		if(Visitor instanceof BOperatorVisitor) {
+			((BOperatorVisitor)Visitor).VisitBooleanNode(this);
+		}
+		else {
+			Visitor.VisitLiteralNode(this);
+		}
 	}
 }

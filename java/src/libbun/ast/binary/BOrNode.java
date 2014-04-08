@@ -26,6 +26,7 @@ package libbun.ast.binary;
 
 import libbun.ast.BNode;
 import libbun.lang.bun.BunPrecedence;
+import libbun.parser.BOperatorVisitor;
 import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 
@@ -33,7 +34,15 @@ public final class BOrNode extends BBinaryNode {
 	public BOrNode(BNode ParentNode, BToken Token, BNode Left) {
 		super(ParentNode, Token, Left, BunPrecedence._CStyleOR);
 	}
+	@Override public final String GetOperator() {
+		return "||";
+	}
 	@Override public void Accept(BVisitor Visitor) {
-		Visitor.VisitOrNode(this);
+		if(Visitor instanceof BOperatorVisitor) {
+			((BOperatorVisitor)Visitor).VisitOrNode(this);
+		}
+		else {
+			Visitor.VisitBinaryNode(this);
+		}
 	}
 }

@@ -29,11 +29,28 @@ import libbun.ast.BGroupNode;
 import libbun.ast.BListNode;
 import libbun.ast.BNode;
 import libbun.ast.ZLocalDefinedNode;
+import libbun.ast.binary.BAndNode;
 import libbun.ast.binary.BBinaryNode;
+import libbun.ast.binary.BComparatorNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BOrNode;
-import libbun.ast.binary.BAndNode;
-import libbun.ast.binary.BComparatorNode;
+import libbun.ast.binary.BitwiseOperatorNode;
+import libbun.ast.binary.BunAddNode;
+import libbun.ast.binary.BunBitwiseAndNode;
+import libbun.ast.binary.BunBitwiseOrNode;
+import libbun.ast.binary.BunBitwiseXorNode;
+import libbun.ast.binary.BunDivNode;
+import libbun.ast.binary.BunEqualsNode;
+import libbun.ast.binary.BunGreaterThanEqualsNode;
+import libbun.ast.binary.BunGreaterThanNode;
+import libbun.ast.binary.BunLeftShiftNode;
+import libbun.ast.binary.BunLessThanEqualsNode;
+import libbun.ast.binary.BunLessThanNode;
+import libbun.ast.binary.BunModNode;
+import libbun.ast.binary.BunMulNode;
+import libbun.ast.binary.BunNotEqualsNode;
+import libbun.ast.binary.BunRightShiftNode;
+import libbun.ast.binary.BunSubNode;
 import libbun.ast.decl.BClassNode;
 import libbun.ast.decl.BFunctionNode;
 import libbun.ast.decl.BLetVarNode;
@@ -59,6 +76,7 @@ import libbun.ast.literal.BIntNode;
 import libbun.ast.literal.BNullNode;
 import libbun.ast.literal.BStringNode;
 import libbun.ast.literal.BTypeNode;
+import libbun.ast.literal.LiteralNode;
 import libbun.ast.literal.ZMapEntryNode;
 import libbun.ast.literal.ZMapLiteralNode;
 import libbun.ast.statement.BBreakNode;
@@ -70,6 +88,9 @@ import libbun.ast.statement.BWhileNode;
 import libbun.ast.unary.BCastNode;
 import libbun.ast.unary.BNotNode;
 import libbun.ast.unary.BUnaryNode;
+import libbun.ast.unary.BunComplementNode;
+import libbun.ast.unary.BunMinusNode;
+import libbun.ast.unary.BunPlusNode;
 import libbun.parser.BGenerator;
 import libbun.parser.BLogger;
 import libbun.parser.BNameSpace;
@@ -482,6 +503,22 @@ public class BunTypeSafer extends BTypeChecker {
 		this.ReturnTypeNode(Node, BType.BooleanType);
 	}
 
+	@Override public void VisitPlusNode(BunPlusNode Node) {
+		this.CheckTypeAt(Node, BUnaryNode._Recv, BType.VarType);
+		this.ReturnTypeNode(Node, Node.RecvNode().Type);
+	}
+
+	@Override public void VisitMinusNode(BunMinusNode Node) {
+		this.CheckTypeAt(Node, BUnaryNode._Recv, BType.VarType);
+		this.ReturnTypeNode(Node, Node.RecvNode().Type);
+	}
+
+	@Override public void VisitComplementNode(BunComplementNode Node) {
+		this.CheckTypeAt(Node, BUnaryNode._Recv, BType.IntType);
+		this.ReturnTypeNode(Node, BType.IntType);
+	}
+
+
 	@Override public void VisitCastNode(BCastNode Node) {
 		@Var BType ContextType = this.GetContextType();
 		if(Node.CastType().IsVarType()) {
@@ -531,7 +568,7 @@ public class BunTypeSafer extends BTypeChecker {
 		return BType.VarType;
 	}
 
-	private void UnifyBinaryNodeType(BBinaryNode Node, BType Type) {
+	private void TryUnifyBinaryType(BBinaryNode Node, BType Type) {
 		if(Node.GetAstType(BBinaryNode._Left).Equals(Type)) {
 			this.CheckTypeAt(Node, BBinaryNode._Right, Type);
 			return;
@@ -557,22 +594,14 @@ public class BunTypeSafer extends BTypeChecker {
 		@Var BType RightType = this.GuessBinaryLeftType(Node.SourceToken, ContextType);
 		this.CheckTypeAt(Node, BBinaryNode._Left, LeftType);
 		this.CheckTypeAt(Node, BBinaryNode._Right, RightType);
-		if(!Node.GetAstType(BBinaryNode._Left).Equals(Node.GetAstType(BBinaryNode._Right))) {
+		if(Node.IsDifferentlyTyped()) {
 			if(Node.SourceToken.EqualsText('+')) {
 				this.UnifyBinaryEnforcedType(Node, BType.StringType);
 			}
-			this.UnifyBinaryNodeType(Node, BType.FloatType);
+			this.TryUnifyBinaryType(Node, BType.FloatType);
 			this.CheckTypeAt(Node, BBinaryNode._Left, Node.GetAstType(BBinaryNode._Right));
 		}
-		this.ReturnTypeNode(Node.TryMacroNode(this.Generator), Node.GetAstType(BBinaryNode._Left));
-	}
-
-	@Override public void VisitComparatorNode(BComparatorNode Node) {
-		this.CheckTypeAt(Node, BBinaryNode._Left, BType.VarType);
-		this.TryTypeAt(Node, BBinaryNode._Right, Node.GetAstType(BBinaryNode._Left));
-		this.UnifyBinaryNodeType(Node, BType.FloatType);
-		//this.CheckTypeAt(Node, ZBinaryNode._Right, Node.GetAstType(ZBinaryNode._Left));
-		this.ReturnTypeNode(Node, BType.BooleanType);
+		this.ReturnBinaryTypeNode(Node, Node.GetAstType(BBinaryNode._Left));
 	}
 
 	@Override public void VisitAndNode(BAndNode Node) {
@@ -586,6 +615,122 @@ public class BunTypeSafer extends BTypeChecker {
 		this.CheckTypeAt(Node, BBinaryNode._Right, BType.BooleanType);
 		this.ReturnTypeNode(Node, BType.BooleanType);
 	}
+
+	@Override public void VisitAddNode(BunAddNode Node) {
+		this.CheckTypeAt(Node, BBinaryNode._Left, BType.VarType);
+		this.CheckTypeAt(Node, BBinaryNode._Right, BType.VarType);
+		if(Node.IsDifferentlyTyped()) {
+			this.UnifyBinaryEnforcedType(Node, BType.StringType);
+			this.TryUnifyBinaryType(Node, BType.FloatType);
+			this.CheckTypeAt(Node, BBinaryNode._Left, Node.GetAstType(BBinaryNode._Right));
+		}
+		this.ReturnBinaryTypeNode(Node, Node.GetAstType(BBinaryNode._Left));
+	}
+
+	@Override public void VisitSubNode(BunSubNode Node) {
+		this.CheckTypeAt(Node, BBinaryNode._Left, BType.VarType);
+		this.CheckTypeAt(Node, BBinaryNode._Right, BType.VarType);
+		if(Node.IsDifferentlyTyped()) {
+			this.TryUnifyBinaryType(Node, BType.FloatType);
+			this.CheckTypeAt(Node, BBinaryNode._Left, Node.GetAstType(BBinaryNode._Right));
+		}
+		this.ReturnBinaryTypeNode(Node, Node.GetAstType(BBinaryNode._Left));
+	}
+
+	@Override public void VisitMulNode(BunMulNode Node) {
+		this.CheckTypeAt(Node, BBinaryNode._Left, BType.VarType);
+		this.CheckTypeAt(Node, BBinaryNode._Right, BType.VarType);
+		if(Node.IsDifferentlyTyped()) {
+			this.TryUnifyBinaryType(Node, BType.FloatType);
+			this.CheckTypeAt(Node, BBinaryNode._Left, Node.GetAstType(BBinaryNode._Right));
+		}
+		this.ReturnBinaryTypeNode(Node, Node.GetAstType(BBinaryNode._Left));
+	}
+
+	@Override public void VisitDivNode(BunDivNode Node) {
+		this.CheckTypeAt(Node, BBinaryNode._Left, BType.VarType);
+		this.CheckTypeAt(Node, BBinaryNode._Right, BType.VarType);
+		if(Node.IsDifferentlyTyped()) {
+			this.TryUnifyBinaryType(Node, BType.FloatType);
+			this.CheckTypeAt(Node, BBinaryNode._Left, Node.GetAstType(BBinaryNode._Right));
+		}
+		this.ReturnBinaryTypeNode(Node, Node.GetAstType(BBinaryNode._Left));
+	}
+
+	@Override public void VisitModNode(BunModNode Node) {
+		this.CheckTypeAt(Node, BBinaryNode._Left, BType.VarType);
+		this.CheckTypeAt(Node, BBinaryNode._Right, BType.VarType);
+		if(Node.IsDifferentlyTyped()) {
+			this.TryUnifyBinaryType(Node, BType.FloatType);
+			this.CheckTypeAt(Node, BBinaryNode._Left, Node.GetAstType(BBinaryNode._Right));
+		}
+		this.ReturnBinaryTypeNode(Node, Node.GetAstType(BBinaryNode._Left));
+	}
+
+	private void VisitBitwiseOpreator(BitwiseOperatorNode Node) {
+		this.CheckTypeAt(Node, BBinaryNode._Left, BType.IntType);
+		this.CheckTypeAt(Node, BBinaryNode._Right, BType.IntType);
+		this.ReturnBinaryTypeNode(Node, BType.IntType);
+	}
+
+	@Override public void VisitLeftShiftNode(BunLeftShiftNode Node) {
+		this.VisitBitwiseOpreator(Node);
+	}
+
+	@Override public void VisitRightShiftNode(BunRightShiftNode Node) {
+		this.VisitBitwiseOpreator(Node);
+	}
+
+	@Override public void VisitBitwiseAndNode(BunBitwiseAndNode Node) {
+		this.VisitBitwiseOpreator(Node);
+	}
+
+	@Override public void VisitBitwiseOrNode(BunBitwiseOrNode Node) {
+		this.VisitBitwiseOpreator(Node);
+	}
+
+	@Override public void VisitBitwiseXorNode(BunBitwiseXorNode Node) {
+		this.VisitBitwiseOpreator(Node);
+	}
+
+	private void VisitComparatorNode(BComparatorNode Node) {
+		this.CheckTypeAt(Node, BBinaryNode._Left, BType.VarType);
+		this.TryTypeAt(Node, BBinaryNode._Right, Node.GetAstType(BBinaryNode._Left));
+		this.TryUnifyBinaryType(Node, BType.FloatType);
+		//this.CheckTypeAt(Node, ZBinaryNode._Right, Node.GetAstType(ZBinaryNode._Left));
+		this.ReturnBinaryTypeNode(Node, BType.BooleanType);
+	}
+
+	@Override public void VisitEqualsNode(BunEqualsNode Node) {
+		this.VisitComparatorNode(Node);
+	}
+
+	@Override public void VisitNotEqualsNode(BunNotEqualsNode Node) {
+		this.VisitComparatorNode(Node);
+	}
+
+	@Override public void VisitLessThanNode(BunLessThanNode Node) {
+		this.VisitComparatorNode(Node);
+	}
+
+	@Override public void VisitLessThanEqualsNode(BunLessThanEqualsNode Node) {
+		this.VisitComparatorNode(Node);
+	}
+
+	@Override public void VisitGreaterThanNode(BunGreaterThanNode Node) {
+		this.VisitComparatorNode(Node);
+	}
+
+	@Override public void VisitGreaterThanEqualsNode(BunGreaterThanEqualsNode Node) {
+		this.VisitComparatorNode(Node);
+	}
+
+	@Override public void VisitLiteralNode(LiteralNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+
 
 	protected void VisitVarDeclNode(BNameSpace NameSpace, BLetVarNode Node1) {
 		@Var @Nullable BLetVarNode CurNode = Node1;
@@ -889,6 +1034,7 @@ public class BunTypeSafer extends BTypeChecker {
 		//		}
 		return null;
 	}
+
 
 	//	private ZFunc LookupFunc2(ZNameSpace NameSpace, String FuncName, ZType RecvType, int FuncParamSize) {
 	//		@Var ZFunc Func = this.Generator.LookupFunc(FuncName, RecvType, FuncParamSize);

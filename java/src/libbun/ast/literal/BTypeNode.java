@@ -25,13 +25,16 @@
 package libbun.ast.literal;
 
 import libbun.ast.BNode;
-import libbun.ast.ZLocalDefinedNode;
 import libbun.parser.BToken;
+import libbun.parser.BVisitor;
 import libbun.type.BType;
 
-public final class BTypeNode extends ZLocalDefinedNode {
+public final class BTypeNode extends LiteralNode {
 	public BTypeNode(BNode ParentNode, BToken SourceToken, BType Type) {
-		super(ParentNode, SourceToken, 0);
+		super(ParentNode, SourceToken);
 		this.Type = Type;
+	}
+	@Override public final void Accept(BVisitor Visitor) {
+		Visitor.VisitLiteralNode(this);
 	}
 }

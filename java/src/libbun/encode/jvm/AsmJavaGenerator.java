@@ -61,11 +61,26 @@ import libbun.ast.BGroupNode;
 import libbun.ast.BListNode;
 import libbun.ast.BNode;
 import libbun.ast.ZLocalDefinedNode;
+import libbun.ast.binary.BAndNode;
 import libbun.ast.binary.BBinaryNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BOrNode;
-import libbun.ast.binary.BAndNode;
-import libbun.ast.binary.BComparatorNode;
+import libbun.ast.binary.BunAddNode;
+import libbun.ast.binary.BunBitwiseAndNode;
+import libbun.ast.binary.BunBitwiseOrNode;
+import libbun.ast.binary.BunBitwiseXorNode;
+import libbun.ast.binary.BunDivNode;
+import libbun.ast.binary.BunEqualsNode;
+import libbun.ast.binary.BunGreaterThanEqualsNode;
+import libbun.ast.binary.BunGreaterThanNode;
+import libbun.ast.binary.BunLeftShiftNode;
+import libbun.ast.binary.BunLessThanEqualsNode;
+import libbun.ast.binary.BunLessThanNode;
+import libbun.ast.binary.BunModNode;
+import libbun.ast.binary.BunMulNode;
+import libbun.ast.binary.BunNotEqualsNode;
+import libbun.ast.binary.BunRightShiftNode;
+import libbun.ast.binary.BunSubNode;
 import libbun.ast.decl.BClassNode;
 import libbun.ast.decl.BFunctionNode;
 import libbun.ast.decl.BLetVarNode;
@@ -91,6 +106,7 @@ import libbun.ast.literal.BIntNode;
 import libbun.ast.literal.BNullNode;
 import libbun.ast.literal.BStringNode;
 import libbun.ast.literal.BTypeNode;
+import libbun.ast.literal.LiteralNode;
 import libbun.ast.literal.ZMapEntryNode;
 import libbun.ast.literal.ZMapLiteralNode;
 import libbun.ast.statement.BBreakNode;
@@ -102,6 +118,9 @@ import libbun.ast.statement.BWhileNode;
 import libbun.ast.unary.BCastNode;
 import libbun.ast.unary.BNotNode;
 import libbun.ast.unary.BUnaryNode;
+import libbun.ast.unary.BunComplementNode;
+import libbun.ast.unary.BunMinusNode;
+import libbun.ast.unary.BunPlusNode;
 import libbun.parser.BGenerator;
 import libbun.parser.BLangInfo;
 import libbun.parser.BLogger;
@@ -113,15 +132,15 @@ import libbun.type.BClassType;
 import libbun.type.BFuncType;
 import libbun.type.BType;
 import libbun.type.BTypePool;
-import libbun.util.BLib;
-import libbun.util.Var;
 import libbun.util.BArray;
 import libbun.util.BFunction;
+import libbun.util.BLib;
 import libbun.util.BMap;
 import libbun.util.BMatchFunction;
 import libbun.util.BObject;
-import libbun.util.ZObjectMap;
 import libbun.util.BTokenFunction;
+import libbun.util.Var;
+import libbun.util.ZObjectMap;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -511,7 +530,7 @@ public class AsmJavaGenerator extends BGenerator {
 
 	protected void VisitGlobalNameNode(BGetNameNode Node) {
 		if(Node.ResolvedNode instanceof BLetVarNode) {
-			BLetVarNode LetNode = (BLetVarNode) Node.ResolvedNode;
+			BLetVarNode LetNode = Node.ResolvedNode;
 			Class<?> JavaClass = this.GetJavaClass(LetNode.GetAstType(BLetVarNode._NameInfo));
 			this.AsmBuilder.visitFieldInsn(GETSTATIC, this.NameGlobalNameClass(LetNode.GetUniqueName(this)), "_", JavaClass);
 		}
@@ -680,9 +699,22 @@ public class AsmJavaGenerator extends BGenerator {
 	}
 
 	@Override public void VisitNotNode(BNotNode Node) {
-		Method sMethod = JavaMethodTable.GetUnaryStaticMethod(Node.SourceToken.GetText(), Node.AST[BNotNode._Recv].Type);
-		this.AsmBuilder.ApplyStaticMethod(Node, sMethod, new BNode[] {Node.AST[BNotNode._Recv]});
+		this.VisitUnaryNode(Node);
 	}
+
+	@Override public void VisitPlusNode(BunPlusNode Node) {
+		this.VisitUnaryNode(Node);
+	}
+
+	@Override public void VisitMinusNode(BunMinusNode Node) {
+		this.VisitUnaryNode(Node);
+	}
+
+	@Override public void VisitComplementNode(BunComplementNode Node) {
+		this.VisitUnaryNode(Node);
+
+	}
+
 
 	@Override public void VisitCastNode(BCastNode Node) {
 		if(Node.Type.IsVoidType()) {
@@ -712,9 +744,84 @@ public class AsmJavaGenerator extends BGenerator {
 		this.AsmBuilder.ApplyStaticMethod(Node, sMethod, new BNode[] {Node.LeftNode(), Node.RightNode()});
 	}
 
-	@Override public void VisitComparatorNode(BComparatorNode Node) {
-		Method sMethod = JavaMethodTable.GetBinaryStaticMethod(Node.LeftNode().Type, Node.SourceToken.GetText(), Node.RightNode().Type);
-		this.AsmBuilder.ApplyStaticMethod(Node, sMethod, new BNode[] {Node.LeftNode(), Node.RightNode()});
+	@Override public void VisitAddNode(BunAddNode Node) {
+		this.VisitBinaryNode(Node);
+
+	}
+
+	@Override public void VisitSubNode(BunSubNode Node) {
+		this.VisitBinaryNode(Node);
+
+	}
+
+	@Override public void VisitMulNode(BunMulNode Node) {
+		this.VisitBinaryNode(Node);
+
+	}
+
+	@Override public void VisitDivNode(BunDivNode Node) {
+		this.VisitBinaryNode(Node);
+
+	}
+
+	@Override public void VisitModNode(BunModNode Node) {
+		this.VisitBinaryNode(Node);
+
+	}
+
+	@Override public void VisitLeftShiftNode(BunLeftShiftNode Node) {
+		this.VisitBinaryNode(Node);
+
+	}
+
+	@Override public void VisitRightShiftNode(BunRightShiftNode Node) {
+		this.VisitBinaryNode(Node);
+
+	}
+
+	@Override public void VisitBitwiseAndNode(BunBitwiseAndNode Node) {
+		this.VisitBinaryNode(Node);
+
+	}
+
+	@Override public void VisitBitwiseOrNode(BunBitwiseOrNode Node) {
+		this.VisitBinaryNode(Node);
+
+	}
+
+	@Override public void VisitBitwiseXorNode(BunBitwiseXorNode Node) {
+		this.VisitBinaryNode(Node);
+
+	}
+
+	@Override public void VisitEqualsNode(BunEqualsNode Node) {
+		this.VisitBinaryNode(Node);
+
+	}
+
+	@Override public void VisitNotEqualsNode(BunNotEqualsNode Node) {
+		this.VisitBinaryNode(Node);
+
+	}
+
+	@Override public void VisitLessThanNode(BunLessThanNode Node) {
+		this.VisitBinaryNode(Node);
+
+	}
+
+	@Override public void VisitLessThanEqualsNode(BunLessThanEqualsNode Node) {
+		this.VisitBinaryNode(Node);
+
+	}
+
+	@Override public void VisitGreaterThanNode(BunGreaterThanNode Node) {
+		this.VisitBinaryNode(Node);
+
+	}
+
+	@Override public void VisitGreaterThanEqualsNode(BunGreaterThanEqualsNode Node) {
+		this.VisitBinaryNode(Node);
+
 	}
 
 	@Override public void VisitAndNode(BAndNode Node) {
@@ -1244,6 +1351,10 @@ public class AsmJavaGenerator extends BGenerator {
 
 	public final void Debug(String Message) {
 		BLib._PrintDebug(Message);
+	}
+
+	@Override public void VisitLiteralNode(LiteralNode Node) {
+
 	}
 
 }

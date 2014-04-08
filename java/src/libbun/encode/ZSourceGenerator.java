@@ -25,17 +25,33 @@
 package libbun.encode;
 
 import libbun.ast.BBlockNode;
+import libbun.ast.BDesugarNode;
 import libbun.ast.BGroupNode;
 import libbun.ast.BListNode;
 import libbun.ast.BNode;
-import libbun.ast.BDesugarNode;
-import libbun.ast.ZLocalDefinedNode;
 import libbun.ast.BSugarNode;
+import libbun.ast.ZLocalDefinedNode;
+import libbun.ast.binary.BAndNode;
 import libbun.ast.binary.BBinaryNode;
+import libbun.ast.binary.BComparatorNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BOrNode;
-import libbun.ast.binary.BAndNode;
-import libbun.ast.binary.BComparatorNode;
+import libbun.ast.binary.BunAddNode;
+import libbun.ast.binary.BunBitwiseAndNode;
+import libbun.ast.binary.BunBitwiseOrNode;
+import libbun.ast.binary.BunBitwiseXorNode;
+import libbun.ast.binary.BunDivNode;
+import libbun.ast.binary.BunEqualsNode;
+import libbun.ast.binary.BunGreaterThanEqualsNode;
+import libbun.ast.binary.BunGreaterThanNode;
+import libbun.ast.binary.BunLeftShiftNode;
+import libbun.ast.binary.BunLessThanEqualsNode;
+import libbun.ast.binary.BunLessThanNode;
+import libbun.ast.binary.BunModNode;
+import libbun.ast.binary.BunMulNode;
+import libbun.ast.binary.BunNotEqualsNode;
+import libbun.ast.binary.BunRightShiftNode;
+import libbun.ast.binary.BunSubNode;
 import libbun.ast.decl.BClassNode;
 import libbun.ast.decl.BFunctionNode;
 import libbun.ast.decl.BLetVarNode;
@@ -60,6 +76,7 @@ import libbun.ast.literal.BFloatNode;
 import libbun.ast.literal.BIntNode;
 import libbun.ast.literal.BNullNode;
 import libbun.ast.literal.BStringNode;
+import libbun.ast.literal.LiteralNode;
 import libbun.ast.literal.ZMapEntryNode;
 import libbun.ast.literal.ZMapLiteralNode;
 import libbun.ast.statement.BBreakNode;
@@ -71,25 +88,26 @@ import libbun.ast.statement.BWhileNode;
 import libbun.ast.unary.BCastNode;
 import libbun.ast.unary.BNotNode;
 import libbun.ast.unary.BUnaryNode;
+import libbun.ast.unary.BunComplementNode;
+import libbun.ast.unary.BunMinusNode;
+import libbun.ast.unary.BunPlusNode;
 import libbun.lang.bun.BunTypeSafer;
 import libbun.parser.BGenerator;
 import libbun.parser.BLangInfo;
 import libbun.parser.BLogger;
 import libbun.parser.BNameSpace;
-import libbun.parser.BToken;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
 import libbun.type.BType;
+import libbun.util.BArray;
 import libbun.util.BField;
 import libbun.util.BLib;
+import libbun.util.BMap;
 import libbun.util.Nullable;
 import libbun.util.Var;
-import libbun.util.BArray;
-import libbun.util.BMap;
 import libbun.util.ZenMethod;
 
 public class ZSourceGenerator extends BGenerator {
-
 	@BField public BMap<String> NativeTypeMap = new BMap<String>(null);
 	@BField public BMap<String> ReservedNameMap = new BMap<String>(null);
 
@@ -495,19 +513,21 @@ public class ZSourceGenerator extends BGenerator {
 		this.VisitListNode("(", Node, ")");
 	}
 
-	@ZenMethod protected String GetUnaryOperator(BType Type, BToken Token) {
-		if(Token.EqualsText('-')) {
-			return "-";
-		}
-		if(Token.EqualsText('+')) {
-			return "+";
-		}
-		return Token.GetText();
+	@Override public void VisitUnaryNode(BUnaryNode Node) {
+		this.CurrentBuilder.Append(Node.GetOperator());
+		this.GenerateCode(null, Node.RecvNode());
 	}
 
-	@Override public void VisitUnaryNode(BUnaryNode Node) {
-		this.CurrentBuilder.Append(this.GetUnaryOperator(Node.Type, Node.SourceToken));
-		this.GenerateCode(null, Node.RecvNode());
+	@Override public void VisitPlusNode(BunPlusNode Node) {
+		this.VisitUnaryNode(Node);
+	}
+
+	@Override public void VisitMinusNode(BunMinusNode Node) {
+		this.VisitUnaryNode(Node);
+	}
+
+	@Override public void VisitComplementNode(BunComplementNode Node) {
+		this.VisitUnaryNode(Node);
 	}
 
 	@Override public void VisitNotNode(BNotNode Node) {
@@ -533,32 +553,90 @@ public class ZSourceGenerator extends BGenerator {
 		this.GenerateTypeName(Node.TargetType());
 	}
 
-	@ZenMethod protected String GetBinaryOperator(BType Type, BToken Token) {
-		if(Token.EqualsText('+')) {
-			return "+";
-		}
-		if(Token.EqualsText('-')) {
-			return "-";
-		}
-		return Token.GetText();
-	}
-
 	@Override public void VisitBinaryNode(BBinaryNode Node) {
 		if (Node.ParentNode instanceof BBinaryNode) {
 			this.CurrentBuilder.Append("(");
 		}
 		this.GenerateCode(null, Node.LeftNode());
-		this.CurrentBuilder.AppendToken(this.GetBinaryOperator(Node.Type, Node.SourceToken));
+		this.CurrentBuilder.AppendToken(Node.GetOperator());
 		this.GenerateCode(null, Node.RightNode());
 		if (Node.ParentNode instanceof BBinaryNode) {
 			this.CurrentBuilder.Append(")");
 		}
 	}
 
-	@Override public void VisitComparatorNode(BComparatorNode Node) {
+	@Override public void VisitAddNode(BunAddNode Node) {
+		this.VisitBinaryNode(Node);
+	}
+
+	@Override public void VisitSubNode(BunSubNode Node) {
+		this.VisitBinaryNode(Node);
+	}
+
+	@Override public void VisitMulNode(BunMulNode Node) {
+		this.VisitBinaryNode(Node);
+	}
+
+	@Override public void VisitDivNode(BunDivNode Node) {
+		this.VisitBinaryNode(Node);
+	}
+
+	@Override public void VisitModNode(BunModNode Node) {
+		this.VisitBinaryNode(Node);
+	}
+
+	@Override public void VisitLeftShiftNode(BunLeftShiftNode Node) {
+		this.VisitBinaryNode(Node);
+	}
+
+	@Override public void VisitRightShiftNode(BunRightShiftNode Node) {
+		this.VisitBinaryNode(Node);
+	}
+
+	@Override public void VisitBitwiseAndNode(BunBitwiseAndNode Node) {
+		this.VisitBinaryNode(Node);
+	}
+
+	@Override public void VisitBitwiseOrNode(BunBitwiseOrNode Node) {
+		this.VisitBinaryNode(Node);
+	}
+
+	@Override public void VisitBitwiseXorNode(BunBitwiseXorNode Node) {
+		this.VisitBinaryNode(Node);
+	}
+
+	protected void VisitComparatorNode(BComparatorNode Node) {
 		this.GenerateCode(null, Node.LeftNode());
-		this.CurrentBuilder.AppendToken(this.GetBinaryOperator(Node.Type, Node.SourceToken));
+		this.CurrentBuilder.AppendToken(Node.GetOperator());
 		this.GenerateCode(null, Node.RightNode());
+	}
+
+	@Override public void VisitEqualsNode(BunEqualsNode Node) {
+		this.VisitComparatorNode(Node);
+	}
+
+	@Override public void VisitNotEqualsNode(BunNotEqualsNode Node) {
+		this.VisitComparatorNode(Node);
+	}
+
+	@Override public void VisitLessThanNode(BunLessThanNode Node) {
+		this.VisitComparatorNode(Node);
+	}
+
+	@Override public void VisitLessThanEqualsNode(BunLessThanEqualsNode Node) {
+		this.VisitComparatorNode(Node);
+	}
+
+	@Override public void VisitGreaterThanNode(BunGreaterThanNode Node) {
+		this.VisitComparatorNode(Node);
+	}
+
+	@Override public void VisitGreaterThanEqualsNode(BunGreaterThanEqualsNode Node) {
+		this.VisitComparatorNode(Node);
+	}
+
+	@Override public void VisitLiteralNode(LiteralNode Node) {
+		// TODO Auto-generated method stub
 	}
 
 	@Override public void VisitAndNode(BAndNode Node) {
@@ -783,4 +861,7 @@ public class ZSourceGenerator extends BGenerator {
 		}
 		return false;
 	}
+
+
+
 }

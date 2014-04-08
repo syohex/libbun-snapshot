@@ -26,13 +26,9 @@ package libbun.ast.binary;
 
 import libbun.ast.BNode;
 import libbun.parser.BToken;
-import libbun.parser.BVisitor;
 
 public abstract class BComparatorNode extends BBinaryNode {
 	public BComparatorNode(BNode ParentNode, BToken SourceToken, BNode Left, int Precedence) {
 		super(ParentNode, SourceToken, Left, Precedence);
-	}
-	@Override public void Accept(BVisitor Visitor) {
-		Visitor.VisitComparatorNode(this);
 	}
 }

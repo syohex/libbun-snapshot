@@ -4,10 +4,10 @@ package libbun.encode.erlang;
 import libbun.ast.BBlockNode;
 import libbun.ast.BListNode;
 import libbun.ast.BNode;
-import libbun.ast.binary.BBinaryNode;
-import libbun.ast.binary.BOrNode;
 import libbun.ast.binary.BAndNode;
+import libbun.ast.binary.BBinaryNode;
 import libbun.ast.binary.BComparatorNode;
+import libbun.ast.binary.BOrNode;
 import libbun.ast.decl.BClassNode;
 import libbun.ast.decl.BFunctionNode;
 import libbun.ast.decl.BLetVarNode;
@@ -286,7 +286,7 @@ public class ErlangGenerator extends ZSourceGenerator {
 	// 	this.GenerateTypeName(Node.RightNode().Type);
 	// }
 
-	@Override protected String GetBinaryOperator(BType Type, BToken Token) {
+	protected String GetBinaryOperator(BType Type, BToken Token) {
 		if(Token.EqualsText("<=")) {
 			return "=<";
 		}

@@ -11,6 +11,9 @@ public class BunEqualsNode extends BComparatorNode {
 	public BunEqualsNode(BNode ParentNode, BToken SourceToken, BNode Left) {
 		super(ParentNode, SourceToken, Left, BunPrecedence._CStyleEquals);
 	}
+	@Override public final String GetOperator() {
+		return "==";
+	}
 	@Override public final void Accept(BVisitor Visitor) {
 		if(Visitor instanceof BOperatorVisitor) {
 			((BOperatorVisitor)Visitor).VisitEqualsNode(this);

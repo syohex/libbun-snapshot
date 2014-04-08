@@ -56,7 +56,7 @@ public class PerlGenerator extends ZSourceGenerator {
 
 	}
 
-	@Override protected String GetBinaryOperator(BType Type, BToken Token) {
+	protected String GetBinaryOperator(BType Type, BToken Token) {
 		if(Type.IsStringType()) {
 			if(Token.EqualsText('+')) {
 				return ".";

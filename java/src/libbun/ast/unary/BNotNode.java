@@ -25,6 +25,7 @@
 package libbun.ast.unary;
 
 import libbun.ast.BNode;
+import libbun.parser.BOperatorVisitor;
 import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 
@@ -32,7 +33,15 @@ public class BNotNode extends BUnaryNode {
 	public BNotNode(BNode ParentNode, BToken Token) {
 		super(ParentNode, Token);
 	}
+	@Override public final String GetOperator() {
+		return "!";
+	}
 	@Override public void Accept(BVisitor Visitor) {
-		Visitor.VisitNotNode(this);
+		if(Visitor instanceof BOperatorVisitor) {
+			((BOperatorVisitor)Visitor).VisitNotNode(this);
+		}
+		else {
+			Visitor.VisitUnaryNode(this);
+		}
 	}
 }

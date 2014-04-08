@@ -25,19 +25,14 @@
 package libbun.ast.binary;
 
 import libbun.ast.BNode;
-import libbun.ast.expression.BMacroNode;
-import libbun.parser.BGenerator;
 import libbun.parser.BSyntax;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
-import libbun.parser.BVisitor;
-import libbun.type.BFunc;
-import libbun.type.BMacroFunc;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
 
-public class BBinaryNode extends BNode {
+public abstract class BBinaryNode extends BNode {
 	public final static int _Left = 0;
 	public final static int _Right = 1;
 	//	@BField public BSyntax Pattern;
@@ -48,6 +43,8 @@ public class BBinaryNode extends BNode {
 		this.SetNode(BBinaryNode._Left, Left);
 		this.Precedence = Precedence;
 	}
+
+	public abstract String GetOperator();
 
 	public final BNode LeftNode() {
 		return this.AST[BBinaryNode._Left ];
@@ -92,23 +89,8 @@ public class BBinaryNode extends BNode {
 		return this;
 	}
 
-	public final BNode TryMacroNode(BGenerator Generator) {
-		if(!this.GetAstType(BBinaryNode._Left).IsVarType() && !this.GetAstType(BBinaryNode._Right).IsVarType()) {
-			@Var String Op = this.SourceToken.GetText();
-			@Var BFunc Func = Generator.GetDefinedFunc(Op, this.GetAstType(BBinaryNode._Left), 2);
-			if(Func instanceof BMacroFunc) {
-				@Var BMacroNode MacroNode = new BMacroNode(this.ParentNode, this.SourceToken, (BMacroFunc)Func);
-				MacroNode.Append(this.LeftNode());
-				MacroNode.Append(this.RightNode());
-				return MacroNode;
-			}
-		}
-		return this;
+	public final boolean IsDifferentlyTyped() {
+		return !(this.GetAstType(BBinaryNode._Left).Equals(this.GetAstType(BBinaryNode._Right)));
 	}
-
-	@Override public void Accept(BVisitor Visitor) {
-		Visitor.VisitBinaryNode(this);
-	}
-
 
 }

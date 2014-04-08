@@ -34,6 +34,9 @@ public abstract class BUnaryNode extends BNode {
 	public BUnaryNode(BNode ParentNode, BToken Token) {
 		super(ParentNode, Token, 1);
 	}
+
+	public abstract String GetOperator();
+
 	public final BNode RecvNode() {
 		return this.AST[BUnaryNode._Recv ];
 	}

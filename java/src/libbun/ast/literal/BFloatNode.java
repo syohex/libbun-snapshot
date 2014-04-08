@@ -25,19 +25,26 @@
 package libbun.ast.literal;
 
 import libbun.ast.BNode;
+import libbun.parser.BOperatorVisitor;
 import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 import libbun.type.BType;
 import libbun.util.BField;
 
-public final class BFloatNode extends BConstNode {
+public final class BFloatNode extends LiteralNode {
 	@BField public double	FloatValue;
 	public BFloatNode(BNode ParentNode, BToken Token, double Value) {
 		super(ParentNode, Token);
 		this.Type = BType.FloatType;
 		this.FloatValue = Value;
 	}
-	@Override public void Accept(BVisitor Visitor) {
-		Visitor.VisitFloatNode(this);
+	@Override public final void Accept(BVisitor Visitor) {
+		if(Visitor instanceof BOperatorVisitor) {
+			((BOperatorVisitor)Visitor).VisitFloatNode(this);
+		}
+		else {
+			Visitor.VisitLiteralNode(this);
+		}
 	}
+
 }

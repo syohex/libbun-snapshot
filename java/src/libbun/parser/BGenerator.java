@@ -26,9 +26,9 @@
 package libbun.parser;
 
 import libbun.ast.BBlockNode;
+import libbun.ast.BDesugarNode;
 import libbun.ast.BListNode;
 import libbun.ast.BNode;
-import libbun.ast.BDesugarNode;
 import libbun.ast.BSugarNode;
 import libbun.ast.decl.BClassNode;
 import libbun.ast.decl.BFunctionNode;
@@ -44,14 +44,14 @@ import libbun.type.BMacroFunc;
 import libbun.type.BPrototype;
 import libbun.type.BType;
 import libbun.util.BField;
+import libbun.util.BIgnored;
 import libbun.util.BLib;
+import libbun.util.BMap;
 import libbun.util.Nullable;
 import libbun.util.Var;
-import libbun.util.BMap;
-import libbun.util.BIgnored;
 import libbun.util.ZenMethod;
 
-public abstract class BGenerator extends BVisitor {
+public abstract class BGenerator extends BOperatorVisitor {
 	@BField public BMap<String>        ImportedLibraryMap = new BMap<String>(null);
 	@BField private final BMap<BFunc>  DefinedFuncMap = new BMap<BFunc>(null);
 

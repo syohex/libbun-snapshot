@@ -10,6 +10,9 @@ public class BunBitwiseAndNode extends BitwiseOperatorNode {
 	public BunBitwiseAndNode(BNode ParentNode, BToken SourceToken, BNode Left) {
 		super(ParentNode, SourceToken, Left, BunPrecedence._CStyleBITAND);
 	}
+	@Override public final String GetOperator() {
+		return "&";
+	}
 	@Override public final void Accept(BVisitor Visitor) {
 		if(Visitor instanceof BOperatorVisitor) {
 			((BOperatorVisitor)Visitor).VisitBitwiseAndNode(this);

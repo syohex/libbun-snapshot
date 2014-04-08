@@ -25,10 +25,11 @@
 package libbun.parser;
 
 import libbun.ast.BBlockNode;
+import libbun.ast.BDesugarNode;
 import libbun.ast.BListNode;
 import libbun.ast.BNode;
-import libbun.ast.BDesugarNode;
 import libbun.ast.BSugarNode;
+import libbun.ast.binary.BBinaryNode;
 import libbun.ast.decl.BFunctionNode;
 import libbun.ast.decl.BLetVarNode;
 import libbun.ast.decl.ZVarBlockNode;
@@ -51,7 +52,7 @@ import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
 
-public abstract class BTypeChecker extends BVisitor {
+public abstract class BTypeChecker extends BOperatorVisitor {
 	public final static int _DefaultTypeCheckPolicy			= 0;
 	public final static int _NoCheckPolicy                  = 1;
 
@@ -100,6 +101,21 @@ public abstract class BTypeChecker extends BVisitor {
 	public final void ReturnTypeNode(BNode Node, BType Type) {
 		this.VarScope.TypeNode(Node, Type);
 		this.ReturnNode(Node);
+	}
+
+	public final void ReturnBinaryTypeNode(BBinaryNode Node, BType Type) {
+		if(!Node.GetAstType(BBinaryNode._Left).IsVarType() && !Node.GetAstType(BBinaryNode._Right).IsVarType()) {
+			@Var String Op = Node.GetOperator();
+			@Var BFunc Func = this.Generator.GetDefinedFunc(Op, Node.GetAstType(BBinaryNode._Left), 2);
+			if(Func instanceof BMacroFunc) {
+				@Var BMacroNode MacroNode = new BMacroNode(Node.ParentNode, Node.SourceToken, (BMacroFunc)Func);
+				MacroNode.Append(Node.LeftNode());
+				MacroNode.Append(Node.RightNode());
+				this.ReturnTypeNode(MacroNode, Type);
+				return;
+			}
+		}
+		this.ReturnTypeNode(Node, Type);
 	}
 
 	public final void ReturnErrorNode(BNode Node, BToken ErrorToken, String Message) {

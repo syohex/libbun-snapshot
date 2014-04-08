@@ -9,6 +9,9 @@ public class BunMinusNode extends BUnaryNode {
 	public BunMinusNode(BNode ParentNode, BToken Token) {
 		super(ParentNode, Token);
 	}
+	@Override public final String GetOperator() {
+		return "-";
+	}
 	@Override public final void Accept(BVisitor Visitor) {
 		if(Visitor instanceof BOperatorVisitor) {
 			((BOperatorVisitor)Visitor).VisitMinusNode(this);

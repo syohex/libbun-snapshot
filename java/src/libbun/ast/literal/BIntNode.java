@@ -25,19 +25,25 @@
 package libbun.ast.literal;
 
 import libbun.ast.BNode;
+import libbun.parser.BOperatorVisitor;
 import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 import libbun.type.BType;
 import libbun.util.BField;
 
-public final class BIntNode extends BConstNode {
+public final class BIntNode extends LiteralNode {
 	@BField public long	IntValue;
 	public BIntNode(BNode ParentNode, BToken Token, long Value) {
 		super(ParentNode, Token);
 		this.Type = BType.IntType;
 		this.IntValue = Value;
 	}
-	@Override public void Accept(BVisitor Visitor) {
-		Visitor.VisitIntNode(this);
+	@Override public final void Accept(BVisitor Visitor) {
+		if(Visitor instanceof BOperatorVisitor) {
+			((BOperatorVisitor)Visitor).VisitIntNode(this);
+		}
+		else {
+			Visitor.VisitLiteralNode(this);
+		}
 	}
 }

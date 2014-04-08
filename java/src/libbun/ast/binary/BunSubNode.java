@@ -10,6 +10,9 @@ public class BunSubNode extends ArithmeticOperatorNode {
 	public BunSubNode(BNode ParentNode, BToken SourceToken, BNode Left) {
 		super(ParentNode, SourceToken, Left, BunPrecedence._CStyleADD);
 	}
+	@Override public final String GetOperator() {
+		return "-";
+	}
 	@Override public final void Accept(BVisitor Visitor) {
 		if(Visitor instanceof BOperatorVisitor) {
 			((BOperatorVisitor)Visitor).VisitSubNode(this);

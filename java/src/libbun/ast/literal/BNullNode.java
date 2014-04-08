@@ -25,14 +25,20 @@
 package libbun.ast.literal;
 
 import libbun.ast.BNode;
+import libbun.parser.BOperatorVisitor;
 import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 
-public final class BNullNode extends BConstNode {
+public final class BNullNode extends LiteralNode {
 	public BNullNode(BNode ParentNode, BToken SourceToken) {
 		super(ParentNode, SourceToken);
 	}
-	@Override public void Accept(BVisitor Visitor) {
-		Visitor.VisitNullNode(this);
+	@Override public final void Accept(BVisitor Visitor) {
+		if(Visitor instanceof BOperatorVisitor) {
+			((BOperatorVisitor)Visitor).VisitNullNode(this);
+		}
+		else {
+			Visitor.VisitLiteralNode(this);
+		}
 	}
 }

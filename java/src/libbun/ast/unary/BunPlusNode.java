@@ -9,6 +9,9 @@ public class BunPlusNode extends BUnaryNode {
 	public BunPlusNode(BNode ParentNode, BToken Token) {
 		super(ParentNode, Token);
 	}
+	@Override public final String GetOperator() {
+		return "+";
+	}
 	@Override public final void Accept(BVisitor Visitor) {
 		if(Visitor instanceof BOperatorVisitor) {
 			((BOperatorVisitor)Visitor).VisitPlusNode(this);
