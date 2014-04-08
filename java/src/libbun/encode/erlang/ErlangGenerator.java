@@ -70,8 +70,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 		@Var int size = BlockNode.GetListSize();
 		while (i < size) {
 			@Var BNode SubNode = BlockNode.GetListAt(i);
-			this.CurrentBuilder.AppendLineFeed();
-			this.CurrentBuilder.AppendIndent();
+			this.CurrentBuilder.AppendNewLine();
 			this.GenerateCode(null, SubNode);
 			if (i == size - 1) {
 				this.CurrentBuilder.Append(last);
@@ -84,18 +83,18 @@ public class ErlangGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitBlockNode(BunBlockNode Node) {
-		this.CurrentBuilder.Indent();
+		this.CurrentBuilder.OpenIndent();
 		this.VisitStmtList(Node, ".");
-		this.CurrentBuilder.UnIndent();
+		this.CurrentBuilder.CloseIndent();
 	}
 	public void VisitBlockNode(BunBlockNode Node, String last) {
 		this.VarMgr.PushScope();
-		this.CurrentBuilder.Indent();
+		this.CurrentBuilder.OpenIndent();
 		this.VisitBlockNode(Node);
 		this.CurrentBuilder.AppendLineFeed();
 		this.CurrentBuilder.AppendNewLine("__Arguments__ = " + this.VarMgr.GenVarTuple(VarFlag.Assigned | VarFlag.DefinedByParentScope, false));
 		this.CurrentBuilder.Append(last);
-		this.CurrentBuilder.UnIndent();
+		this.CurrentBuilder.CloseIndent();
 		this.VarMgr.PopScope();
 	}
 
@@ -210,8 +209,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 		this.CurrentBuilder.Append("#");
 		this.CurrentBuilder.Append(this.ToErlangTypeName(Node.RecvNode().Type.ShortName));
 		this.CurrentBuilder.Append("{");
-		this.CurrentBuilder.Append(Node.GetName());
-		this.CurrentBuilder.AppendToken("=");
+		this.CurrentBuilder.Append(Node.GetName(), " = ");
 		this.GenerateCode(null, Node.ExprNode());
 		this.CurrentBuilder.Append("}");
 		this.VarMgr.AssignVariable(GetNameNode.GetUniqueName(this));
@@ -219,7 +217,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 		SourceBuilder BodyBuilder = this.CurrentBuilder;
 		this.CurrentBuilder = LazyBuilder;
 		this.GenerateCode(null, Node.RecvNode());
-		this.CurrentBuilder.AppendToken("=");
+		this.CurrentBuilder.Append(" = ");
 		this.CurrentBuilder = BodyBuilder;
 		this.AppendLazy(mark, LazyBuilder.toString());
 	}
@@ -269,7 +267,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 	// }
 
 	@Override public void VisitNotNode(BunNotNode Node) {
-		this.CurrentBuilder.AppendToken(this.NotOperator);
+		this.CurrentBuilder.Append(this.NotOperator);
 		this.GenerateSurroundCode(Node.RecvNode());
 	}
 
@@ -319,7 +317,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 		this.GenerateCode(null, Node.LeftNode());
 		//		this.CurrentBuilder.AppendToken(Node.SourceToken.GetText());
 		@Var String Operator = this.GetBinaryOperator(Node.Type, Node.SourceToken);
-		this.CurrentBuilder.AppendToken(Operator);
+		this.CurrentBuilder.Append(Operator);
 		this.GenerateCode(null, Node.RightNode());
 		if (Node.ParentNode instanceof BinaryOperatorNode) {
 			this.CurrentBuilder.Append(")");
@@ -329,26 +327,26 @@ public class ErlangGenerator extends OldSourceGenerator {
 	@Override public void VisitComparatorNode(ComparatorNode Node) {
 		this.GenerateCode(null, Node.LeftNode());
 		@Var String Operator = this.GetBinaryOperator(Node.Type, Node.SourceToken);
-		this.CurrentBuilder.AppendToken(Operator);
+		this.CurrentBuilder.Append(" ", Operator, " ");
 		this.GenerateCode(null, Node.RightNode());
 	}
 
 	@Override public void VisitAndNode(BunAndNode Node) {
 		this.GenerateSurroundCode(Node.LeftNode());
-		this.CurrentBuilder.AppendToken(this.AndOperator);
+		this.CurrentBuilder.Append(" ", this.AndOperator, " ");
 		this.GenerateSurroundCode(Node.RightNode());
 	}
 
 	@Override public void VisitOrNode(BunOrNode Node) {
 		this.GenerateSurroundCode(Node.LeftNode());
-		this.CurrentBuilder.AppendToken(this.OrOperator);
+		this.CurrentBuilder.Append(" ", this.OrOperator, " ");
 		this.GenerateSurroundCode(Node.RightNode());
 	}
 
 	public void AppendGuardAndBlock(BNode Node) {
 		if (Node instanceof BunIfNode) {
 			BunIfNode IfNode = (BunIfNode)Node;
-			this.CurrentBuilder.AppendIndent();
+			this.CurrentBuilder.AppendNewLine();
 			this.GenerateSurroundCode(IfNode.CondNode());
 			this.CurrentBuilder.Append(" ->");
 			this.VisitBlockNode((BunBlockNode)IfNode.ThenNode(), ";");
@@ -363,10 +361,9 @@ public class ErlangGenerator extends OldSourceGenerator {
 			if (Node != null) {
 				this.VisitBlockNode((BunBlockNode)Node, "");
 			} else {
-				this.CurrentBuilder.Indent();
-				this.CurrentBuilder.AppendLineFeed();
+				this.CurrentBuilder.OpenIndent(null);
 				this.CurrentBuilder.AppendNewLine(this.VarMgr.GenVarTuple(VarFlag.AssignedByChildScope, false));
-				this.CurrentBuilder.UnIndent();
+				this.CurrentBuilder.CloseIndent(null);
 			}
 		}
 	}
@@ -404,17 +401,17 @@ public class ErlangGenerator extends OldSourceGenerator {
 		this.VarMgr.ChangeFilterFlag(VarFlag.None);
 		this.VisitBlockNode(Node.BlockNode(), ",");
 		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.Indent();
+		this.CurrentBuilder.OpenIndent();
 		this.CurrentBuilder.AppendNewLine(WhileNodeName + "(" + WhileNodeName + ", __Arguments__);");
-		this.CurrentBuilder.UnIndent();
+		this.CurrentBuilder.CloseIndent();
 
 		//Generate Else Guard and Block
 		this.CurrentBuilder.AppendLineFeed();
 		this.CurrentBuilder.AppendNewLine("(_, Args) ->");
-		this.CurrentBuilder.Indent();
+		this.CurrentBuilder.OpenIndent();
 		this.CurrentBuilder.AppendLineFeed();
 		this.CurrentBuilder.AppendNewLine("Args");
-		this.CurrentBuilder.UnIndent();
+		this.CurrentBuilder.CloseIndent();
 
 		this.CurrentBuilder.AppendLineFeed();
 		this.CurrentBuilder.AppendNewLine("end,");
@@ -438,7 +435,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 		this.VarMgr.ChangeFilterFlag(VarFlag.None);
 		this.VarMgr.FilterFinish();
 		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.AppendIndent();
+		this.CurrentBuilder.AppendNewLine();
 		int mark2 = this.GetLazyMark();
 		this.CurrentBuilder.Append(" = " + WhileNodeName + "(" + WhileNodeName + ", ");
 		this.CurrentBuilder.Append(this.VarMgr.GenVarTuple(VarFlag.AssignedByChildScope, false) + ")");
@@ -532,7 +529,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 		this.VisitFuncParamNode("(", Node, ")");
 		this.CurrentBuilder.Append("->");
 		if (Node.BlockNode() == null) {
-			this.CurrentBuilder.AppendIndent();
+			this.CurrentBuilder.AppendNewLine();
 			this.CurrentBuilder.Append("pass.");
 		} else {
 			this.GenerateCode(null, Node.BlockNode());
@@ -558,7 +555,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 		while (i < size) {
 			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
 			this.CurrentBuilder.Append(this.ToErlangTypeName(FieldNode.GetGivenName()));
-			this.CurrentBuilder.AppendToken("=");
+			this.CurrentBuilder.Append(" = ");
 			this.GenerateCode(null, FieldNode.InitValueNode());
 			if (i < size - 1) {
 				this.CurrentBuilder.AppendWhiteSpace();
@@ -669,28 +666,29 @@ public class ErlangGenerator extends OldSourceGenerator {
 		} else {
 			this.VisitListNode("(", Node, ")");
 		}
+
 		this.CurrentBuilder.Append(" ->");
 		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.Indent();
+		this.CurrentBuilder.OpenIndent();
 		this.CurrentBuilder.AppendNewLine("try "+ FuncName + "_inner");
 		this.VisitListNode("(", Node, ")");
 		this.CurrentBuilder.Append(" of");
 		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.Indent();
+		this.CurrentBuilder.OpenIndent();
 		this.CurrentBuilder.AppendNewLine("_ -> void");
 		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.UnIndent();
+		this.CurrentBuilder.CloseIndent();
 		this.CurrentBuilder.AppendNewLine("catch");
 		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.Indent();
+		this.CurrentBuilder.OpenIndent();
 		this.CurrentBuilder.AppendNewLine("throw:{return, Ret} -> Ret;");
 		this.CurrentBuilder.AppendLineFeed();
 		this.CurrentBuilder.AppendNewLine("throw:UnKnown -> throw(UnKnown)");
 		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.UnIndent();
+		this.CurrentBuilder.CloseIndent();
 		this.CurrentBuilder.AppendNewLine("end.");
 
-		this.CurrentBuilder.UnIndent();
+		this.CurrentBuilder.CloseIndent();
 	}
 
 

@@ -383,7 +383,7 @@ public class JavaGenerator extends OldSourceGenerator {
 	private void GenerateClass(String Qualifier, String ClassName, BType SuperType) {
 		if(Qualifier != null && Qualifier.length() > 0) {
 			this.CurrentBuilder.AppendNewLine(Qualifier);
-			this.CurrentBuilder.AppendToken("class");
+			this.CurrentBuilder.AppendWhiteSpace("class");
 			this.CurrentBuilder.Append(ClassName);
 		}
 		else {

@@ -390,8 +390,7 @@ public class CSharpGenerator extends OldSourceGenerator {
 	private void GenerateClass(String Qualifier, String ClassName, BType SuperType) {
 		if(Qualifier != null && Qualifier.length() > 0) {
 			this.CurrentBuilder.AppendNewLine(Qualifier);
-			this.CurrentBuilder.AppendToken("partial class");
-			this.CurrentBuilder.Append(ClassName);
+			this.CurrentBuilder.AppendWhiteSpace("partial class ", ClassName);
 		}
 		else {
 			this.CurrentBuilder.AppendNewLine("partial class ", ClassName);

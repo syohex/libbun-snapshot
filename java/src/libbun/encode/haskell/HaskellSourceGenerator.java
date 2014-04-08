@@ -87,12 +87,12 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 
 	private void Indent(SourceBuilder builder) {
 		IndentLevel = IndentLevel + 1;
-		builder.Indent();
+		builder.OpenIndent();
 	}
 
 	private void UnIndent(SourceBuilder builder) {
 		IndentLevel = IndentLevel - 1;
-		builder.UnIndent();
+		builder.CloseIndent();
 	}
 
 	@Override
@@ -100,14 +100,14 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 		@Var int count = 0;
 
 		this.Indent(this.CurrentBuilder);
-		this.CurrentBuilder.AppendIndent();
+		this.CurrentBuilder.AppendNewLine();
 		this.CurrentBuilder.Append("do ");
 
 		@Var int limit = Node.GetListSize();
 		for (@Var int i = 0; i < limit; i++) {
 			BNode SubNode = Node.GetListAt(i);
 			this.CurrentBuilder.AppendLineFeed();
-			this.CurrentBuilder.AppendIndent();
+			this.CurrentBuilder.AppendNewLine();
 
 			// Last Statement in function definition
 			if (IndentLevel == 1 && i == limit - 1) {
@@ -185,7 +185,7 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 			BunLetVarNode Param = Node.GetParamNode(i);
 			this.Variables.add(Param.GetGivenName());
 
-			this.CurrentBuilder.AppendIndent();
+			this.CurrentBuilder.AppendNewLine();
 			this.CurrentBuilder.Append(Param.GetGivenName()
 					+ "_ref <- newIORef "
 					+ Param.GetGivenName());
@@ -195,7 +195,7 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 		for (int i = 0; i < Node.GetListSize(); i++) {
 			BunLetVarNode node1 = Node.GetParamNode(i);
 
-			this.CurrentBuilder.AppendIndent();
+			this.CurrentBuilder.AppendNewLine();
 			this.CurrentBuilder.Append(node1.GetGivenName()
 					+ " <- readIORef "
 					+ node1.GetGivenName() + "_ref");
@@ -229,7 +229,7 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 		this.GenerateCode(null, Node.ExprNode());
 		this.CurrentBuilder.AppendLineFeed();
 
-		this.CurrentBuilder.AppendIndent();
+		this.CurrentBuilder.AppendNewLine();
 		this.CurrentBuilder.Append(Node.NameNode().GetUniqueName(this));
 		this.CurrentBuilder.Append(" <- readIORef ");
 		this.CurrentBuilder.Append(Node.NameNode().GetUniqueName(this) + "_ref");
@@ -285,17 +285,17 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 		this.Indent(this.CurrentBuilder);
 
 		for (String var : this.Variables) {
-			this.CurrentBuilder.AppendIndent();
+			this.CurrentBuilder.AppendNewLine();
 			this.CurrentBuilder.Append(var + " <- ");
 			this.CurrentBuilder.Append("readIORef " + var + "_ref");
 			this.CurrentBuilder.AppendLineFeed();
 		}
 
-		this.CurrentBuilder.AppendIndent();
+		this.CurrentBuilder.AppendNewLine();
 		this.CurrentBuilder.Append("if ");
 		Node.CondNode().Accept(this);
 		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.AppendIndent();
+		this.CurrentBuilder.AppendNewLine();
 		this.CurrentBuilder.Append("then");
 		this.CurrentBuilder.AppendLineFeed();
 
@@ -304,24 +304,24 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 		Node.BlockNode().SetNode(BNode._AppendIndex, LoopNode);
 		Node.BlockNode().Accept(this);
 
-		this.CurrentBuilder.AppendIndent();
+		this.CurrentBuilder.AppendNewLine();
 		this.CurrentBuilder.Append("else");
 
 		this.Indent(this.CurrentBuilder);
 		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.AppendIndent();
+		this.CurrentBuilder.AppendNewLine();
 		this.CurrentBuilder.Append("return ()");
 		this.CurrentBuilder.AppendLineFeed();
 		this.UnIndent(this.CurrentBuilder);
 
 		this.UnIndent(this.CurrentBuilder);
 
-		this.CurrentBuilder.AppendIndent();
+		this.CurrentBuilder.AppendNewLine();
 		this.CurrentBuilder.Append("__loop");
 		this.CurrentBuilder.AppendLineFeed();
 
 		for (String var : this.Variables) {
-			this.CurrentBuilder.AppendIndent();
+			this.CurrentBuilder.AppendNewLine();
 			this.CurrentBuilder.Append(var + " <- ");
 			this.CurrentBuilder.Append("readIORef " + var + "_ref");
 			this.CurrentBuilder.AppendLineFeed();

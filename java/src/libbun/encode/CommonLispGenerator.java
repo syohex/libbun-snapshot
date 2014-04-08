@@ -24,19 +24,19 @@
 
 package libbun.encode;
 
+import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
-import libbun.ast.BNode;
 import libbun.ast.binary.BinaryOperatorNode;
-import libbun.ast.binary.BunOrNode;
 import libbun.ast.binary.BunAndNode;
+import libbun.ast.binary.BunOrNode;
 import libbun.ast.binary.ComparatorNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
-import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.BunFuncNameNode;
+import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.SetIndexNode;
 import libbun.ast.expression.SetNameNode;
@@ -114,7 +114,7 @@ public class CommonLispGenerator extends OldSourceGenerator {
 
 	@Override public void VisitBinaryNode(BinaryOperatorNode Node) {
 		this.CurrentBuilder.Append("(");
-		String operator = GetBinaryOperator(Node.SourceToken);
+		String operator = this.GetBinaryOperator(Node.SourceToken);
 		if (operator.equals("/")) {
 			this.CurrentBuilder.Append("floor" + " ");
 			this.CurrentBuilder.Append("(");
@@ -288,7 +288,7 @@ public class CommonLispGenerator extends OldSourceGenerator {
 	@Override public void VisitReturnNode(BunReturnNode Node) {
 		@Var BunFunctionNode FuncNode = this.LookupFunctionNode(Node);
 		if(FuncNode != null) {
-			this.CurrentBuilder.Append("(return-from ", ClFunctionName(FuncNode), " ");
+			this.CurrentBuilder.Append("(return-from ", this.ClFunctionName(FuncNode), " ");
 		}
 		else {
 			this.CurrentBuilder.Append("(return ");
@@ -317,7 +317,7 @@ public class CommonLispGenerator extends OldSourceGenerator {
 		else {
 			@Var BFuncType FuncType = Node.GetFuncType();
 			this.CurrentBuilder.Append("(defun ");
-			this.CurrentBuilder.Append(ClFunctionName(Node));
+			this.CurrentBuilder.Append(this.ClFunctionName(Node));
 			this.VisitFuncParamNode(" (", Node, ")");
 			this.GenerateCode(null, Node.BlockNode());
 			this.CurrentBuilder.Append(")");
@@ -371,8 +371,7 @@ public class CommonLispGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitNotNode(BunNotNode Node) {
-		this.CurrentBuilder.Append("(");
-		this.CurrentBuilder.AppendToken(this.NotOperator);
+		this.CurrentBuilder.Append("(", this.NotOperator, " ");
 		this.GenerateSurroundCode(Node.RecvNode());
 		this.CurrentBuilder.Append(") ");
 	}

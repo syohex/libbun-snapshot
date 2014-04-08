@@ -25,8 +25,8 @@
 
 package libbun.encode;
 
-import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
@@ -266,11 +266,9 @@ public class PythonGenerator extends OldSourceGenerator {
 			this.CurrentBuilder.Append(this.NameClass(SuperType));
 			this.CurrentBuilder.Append(")");
 		}
-		this.CurrentBuilder.Append(":");
-		this.CurrentBuilder.Indent();
-		this.CurrentBuilder.AppendNewLine();
-		this.CurrentBuilder.Append("def __init__(self):");
-		this.CurrentBuilder.Indent();
+		this.CurrentBuilder.OpenIndent(":");
+		this.CurrentBuilder.AppendNewLine("def __init__(self)");
+		this.CurrentBuilder.OpenIndent(":");
 		if(!Node.SuperType().Equals(BClassType._ObjectType)) {
 			this.CurrentBuilder.AppendNewLine();
 			this.CurrentBuilder.Append(this.NameClass(SuperType));
@@ -298,9 +296,8 @@ public class PythonGenerator extends OldSourceGenerator {
 			}
 			i = i + 1;
 		}
-		this.CurrentBuilder.UnIndent();
-		this.CurrentBuilder.UnIndent();
-		this.CurrentBuilder.AppendLineFeed();
+		this.CurrentBuilder.CloseIndent(null);
+		this.CurrentBuilder.CloseIndent(null);
 		this.CurrentBuilder.AppendLineFeed();
 	}
 

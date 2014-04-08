@@ -33,8 +33,8 @@ import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.error.StupidCastErrorNode;
 import libbun.ast.expression.NewObjectNode;
-import libbun.ast.literal.BunNullNode;
 import libbun.ast.literal.BunMapLiteralNode;
+import libbun.ast.literal.BunNullNode;
 import libbun.ast.statement.BunThrowNode;
 import libbun.ast.statement.BunTryNode;
 import libbun.ast.unary.BunCastNode;
@@ -119,10 +119,9 @@ public class JavaScriptGenerator extends OldSourceGenerator {
 
 	@Override
 	protected void VisitVarDeclNode(BunLetVarNode Node) {
-		this.CurrentBuilder.AppendToken("var");
-		this.CurrentBuilder.AppendWhiteSpace();
+		this.CurrentBuilder.Append("var ");
 		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
-		this.CurrentBuilder.AppendToken("=");
+		this.CurrentBuilder.Append(" = ");
 		this.GenerateCode(null, Node.InitValueNode());
 		this.CurrentBuilder.Append(this.SemiColon);
 		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }

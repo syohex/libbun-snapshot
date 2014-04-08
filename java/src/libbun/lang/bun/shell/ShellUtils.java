@@ -38,7 +38,7 @@ public class ShellUtils {
 	}
 
 	public static BNode _ToNode(BNode ParentNode, BTokenContext TokenContext, BArray<BNode> NodeList) {
-		BToken Token = TokenContext.GetToken();
+		//BToken Token = TokenContext.GetToken();
 		BNode Node = new BunStringNode(ParentNode, null, "");
 		//		BSyntax Pattern = TokenContext.NameSpace.GetRightSyntaxPattern("+");
 		//		BToken PlusToken = new BToken(new BSource(Token.GetFileName(), Token.GetLineNumber(), "+", TokenContext), 0, "+".length());

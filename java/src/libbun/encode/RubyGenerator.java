@@ -58,17 +58,16 @@ public class RubyGenerator extends OldSourceGenerator {
 	@Override
 	public void VisitBlockNode(BunBlockNode Node) {
 		this.CurrentBuilder.Append("do");
-		this.CurrentBuilder.Indent();
 		throw new RuntimeException("FIXME: don't use for statement");
 		//		for(ZNode SubNode : Node.StmtList) {
 		//			this.CurrentBuilder.AppendLineFeed();
-		//			this.CurrentBuilder.AppendIndent();
+		//			this.CurrentBuilder.AppendNewLine();
 		//			this.GenerateCode(SubNode);
 		//			this.CurrentBuilder.Append(this.SemiColon);
 		//		}
 		//		this.CurrentBuilder.UnIndent();
 		//		this.CurrentBuilder.AppendLineFeed();
-		//		this.CurrentBuilder.AppendIndent();
+		//		this.CurrentBuilder.AppendNewLine();
 		//		this.CurrentBuilder.Append("end");
 	}
 

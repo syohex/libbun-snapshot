@@ -24,15 +24,15 @@
 
 //ifdef  JAVA
 package libbun.encode;
-import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.expression.GetNameNode;
 import libbun.ast.expression.GetFieldNode;
-import libbun.ast.expression.SetNameNode;
+import libbun.ast.expression.GetNameNode;
 import libbun.ast.expression.SetFieldNode;
+import libbun.ast.expression.SetNameNode;
 import libbun.ast.statement.BunBreakNode;
 import libbun.parser.BToken;
 import libbun.type.BClassField;
@@ -165,8 +165,7 @@ public class PerlGenerator extends OldSourceGenerator {
 			this.CurrentBuilder.AppendWhiteSpace();
 			this.CurrentBuilder.Append(Node.FuncName());
 		}
-		this.CurrentBuilder.Append(" {");
-		this.CurrentBuilder.Indent();
+		this.CurrentBuilder.OpenIndent(" {");
 		//		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 		this.CurrentBuilder.Append(this.SemiColon);
 		@Var BNode BlockNode = Node.BlockNode();
@@ -174,16 +173,13 @@ public class PerlGenerator extends OldSourceGenerator {
 			this.VisitStmtList((BunBlockNode)BlockNode);
 		}
 		this.CurrentBuilder.Append(this.SemiColon);
-		this.CurrentBuilder.UnIndent();
-		this.CurrentBuilder.AppendNewLine();
-		this.CurrentBuilder.Append("}");
-		this.CurrentBuilder.AppendNewLine();
-		this.CurrentBuilder.AppendNewLine();
+		this.CurrentBuilder.CloseIndent("}");
+		//this.CurrentBuilder.AppendNewLine();
 	}
 
 	//	private void GenerateCField(String CType, String FieldName) {
 	//		this.CurrentBuilder.AppendLineFeed();
-	//		this.CurrentBuilder.AppendIndent();
+	//		this.CurrentBuilder.AppendNewLine();
 	//		this.CurrentBuilder.Append(CType);
 	//		this.CurrentBuilder.AppendWhiteSpace();
 	//		this.CurrentBuilder.Append(FieldName);
@@ -204,8 +200,8 @@ public class PerlGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitClassNode(BunClassNode Node) {
-		this.CurrentBuilder.Append("sub _Init", this.NameClass(Node.ClassType), "{");
-		this.CurrentBuilder.Indent();
+		this.CurrentBuilder.Append("sub _Init", this.NameClass(Node.ClassType));
+		this.CurrentBuilder.OpenIndent(" {");
 		this.CurrentBuilder.AppendNewLine();
 		this.CurrentBuilder.Append("%o = shift", this.SemiColon);
 
@@ -233,36 +229,24 @@ public class PerlGenerator extends OldSourceGenerator {
 			@Var BClassField ClassField = Node.ClassType.GetFieldAt(i);
 			if(ClassField.FieldType.IsFuncType()) {
 				this.CurrentBuilder.AppendNewLine();
-				this.CurrentBuilder.Append("if (defined $", this.NameMethod(Node.ClassType, ClassField.FieldName), ") {");
-				this.CurrentBuilder.Indent();
+				this.CurrentBuilder.Append("if (defined $", this.NameMethod(Node.ClassType, ClassField.FieldName), ")");
+				this.CurrentBuilder.OpenIndent(" {");
 				this.CurrentBuilder.AppendNewLine();
 				this.CurrentBuilder.Append("$o{", BLib._QuoteString(ClassField.FieldName), "} = $");
 				this.CurrentBuilder.Append(this.NameMethod(Node.ClassType, ClassField.FieldName), this.SemiColon);
-				this.CurrentBuilder.UnIndent();
-				this.CurrentBuilder.AppendNewLine();
-				this.CurrentBuilder.Append("}");
+				this.CurrentBuilder.CloseIndent("}");
 			}
 			i = i + 1;
 		}
 		this.CurrentBuilder.AppendNewLine();
-		this.CurrentBuilder.UnIndent();
-		this.CurrentBuilder.AppendNewLine();
-		this.CurrentBuilder.Append("}");
-		this.CurrentBuilder.AppendLineFeed();
+		this.CurrentBuilder.CloseIndent("}");
 		this.CurrentBuilder.AppendLineFeed();
 
-		this.CurrentBuilder.Append("sub _New", this.NameClass(Node.ClassType), " {");
-		this.CurrentBuilder.Indent();
-		this.CurrentBuilder.AppendNewLine();
-		this.CurrentBuilder.Append("%o = {}", this.SemiColon);
-		this.CurrentBuilder.AppendNewLine();
-		this.CurrentBuilder.Append("_Init" + this.NameClass(Node.ClassType) + "(%o);");
-		this.CurrentBuilder.AppendNewLine();
-		this.CurrentBuilder.Append("return %o;");
-		this.CurrentBuilder.UnIndent();
-		this.CurrentBuilder.AppendNewLine();
-		this.CurrentBuilder.Append("}");
-		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.AppendLineFeed();
+		this.CurrentBuilder.Append("sub _New", this.NameClass(Node.ClassType));
+		this.CurrentBuilder.OpenIndent(" {");
+		this.CurrentBuilder.AppendNewLine("%o = {}", this.SemiColon);
+		this.CurrentBuilder.AppendNewLine("_Init" + this.NameClass(Node.ClassType) + "(%o);");
+		this.CurrentBuilder.AppendNewLine("return %o;");
+		this.CurrentBuilder.CloseIndent("}");
 	}
 }

@@ -30,14 +30,14 @@ import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.BunFuncNameNode;
-import libbun.ast.expression.GetIndexNode;
+import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetFieldNode;
+import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.MethodCallNode;
 import libbun.ast.expression.NewObjectNode;
-import libbun.ast.expression.SetIndexNode;
 import libbun.ast.expression.SetFieldNode;
+import libbun.ast.expression.SetIndexNode;
 import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.ast.literal.BunMapLiteralNode;
 import libbun.ast.statement.BunThrowNode;
@@ -160,7 +160,7 @@ public class CGenerator extends OldSourceGenerator {
 		this.GenerateSurroundCode(Node.RecvNode());
 		this.CurrentBuilder.Append("->");
 		this.CurrentBuilder.Append(Node.GetName());
-		this.CurrentBuilder.AppendToken("=");
+		this.CurrentBuilder.AppendWhiteSpace("= ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
@@ -314,7 +314,7 @@ public class CGenerator extends OldSourceGenerator {
 			this.CurrentBuilder.Append(" ", FuncName);
 			this.VisitFuncParamNode("(", Node, ")");
 			this.GenerateCode(null, Node.BlockNode());
-			this.CurrentBuilder.AppendLineFeed();
+			//			this.CurrentBuilder.AppendLineFeed();
 			this.CurrentBuilder = this.CurrentBuilder.Pop();
 			this.CurrentBuilder.Append(FuncName);
 		}
@@ -326,7 +326,7 @@ public class CGenerator extends OldSourceGenerator {
 			this.VisitFuncParamNode("(", Node, ")");
 			@Var String Prototype = this.CurrentBuilder.CopyString(StartIndex, this.CurrentBuilder.GetPosition());
 			this.GenerateCode(null, Node.BlockNode());
-			this.CurrentBuilder.AppendLineFeed();
+			//			this.CurrentBuilder.AppendLineFeed();
 
 			this.HeaderBuilder.Append(Prototype);
 			this.HeaderBuilder.Append(this.SemiColon);
@@ -443,12 +443,14 @@ public class CGenerator extends OldSourceGenerator {
 		while (i < Node.ClassType.GetFieldSize()) {
 			@Var BClassField ClassField = Node.ClassType.GetFieldAt(i);
 			if(ClassField.FieldType.IsFuncType()) {
-				this.CurrentBuilder.AppendLineFeed();
-				this.CurrentBuilder.Append("#ifdef ", this.NameMethod(Node.ClassType, ClassField.FieldName));
+				@Var int IndentLevel = this.CurrentBuilder.SetIndentLevel(0);
+				this.CurrentBuilder.AppendNewLine("#ifdef ", this.NameMethod(Node.ClassType, ClassField.FieldName));
+				this.CurrentBuilder.SetIndentLevel(IndentLevel);
 				this.CurrentBuilder.AppendNewLine("o->", ClassField.FieldName, " = ");
 				this.CurrentBuilder.Append(BFunc._StringfySignature(ClassField.FieldName, ClassField.FieldType.GetParamSize()-1, Node.ClassType));
-				this.CurrentBuilder.AppendLineFeed();
-				this.CurrentBuilder.Append("#endif");
+				IndentLevel = this.CurrentBuilder.SetIndentLevel(0);
+				this.CurrentBuilder.AppendNewLine("#endif");
+				this.CurrentBuilder.SetIndentLevel(IndentLevel);
 			}
 			i = i + 1;
 		}

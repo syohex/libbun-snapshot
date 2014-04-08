@@ -67,7 +67,6 @@ public abstract class SourceGenerator extends AbstractGenerator {
 			sb.Append(Builder.toString());
 			Builder.Clear();
 			sb.AppendLineFeed();
-			sb.AppendLineFeed();
 			i = i + 1;
 		}
 		this.InitBuilderList();

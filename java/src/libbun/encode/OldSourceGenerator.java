@@ -409,7 +409,7 @@ public class OldSourceGenerator extends SourceGenerator {
 			this.CurrentBuilder.Append("(");
 		}
 		this.GenerateCode(null, Node.LeftNode());
-		this.CurrentBuilder.AppendToken(Node.GetOperator());
+		this.CurrentBuilder.AppendWhiteSpace(Node.GetOperator(), " ");
 		this.GenerateCode(null, Node.RightNode());
 		if (Node.ParentNode instanceof BinaryOperatorNode) {
 			this.CurrentBuilder.Append(")");
@@ -458,7 +458,7 @@ public class OldSourceGenerator extends SourceGenerator {
 
 	protected void VisitComparatorNode(ComparatorNode Node) {
 		this.GenerateCode(null, Node.LeftNode());
-		this.CurrentBuilder.AppendToken(Node.GetOperator());
+		this.CurrentBuilder.AppendWhiteSpace(Node.GetOperator(), " ");
 		this.GenerateCode(null, Node.RightNode());
 	}
 
@@ -492,13 +492,13 @@ public class OldSourceGenerator extends SourceGenerator {
 
 	@Override public void VisitAndNode(BunAndNode Node) {
 		this.GenerateCode(null, Node.LeftNode());
-		this.CurrentBuilder.AppendToken(this.AndOperator);
+		this.CurrentBuilder.AppendWhiteSpace(this.AndOperator, " ");
 		this.GenerateCode(null, Node.RightNode());
 	}
 
 	@Override public void VisitOrNode(BunOrNode Node) {
 		this.GenerateCode(null, Node.LeftNode());
-		this.CurrentBuilder.AppendToken(this.OrOperator);
+		this.CurrentBuilder.AppendWhiteSpace(this.OrOperator, " ");
 		this.GenerateCode(null, Node.RightNode());
 	}
 
@@ -611,7 +611,7 @@ public class OldSourceGenerator extends SourceGenerator {
 			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
 			this.CurrentBuilder.AppendNewLine("var ", FieldNode.GetGivenName());
 			this.GenerateTypeAnnotation(FieldNode.DeclType());
-			this.CurrentBuilder.AppendToken("=");
+			this.CurrentBuilder.Append(" = ");
 			this.GenerateCode(null, FieldNode.InitValueNode());
 			this.CurrentBuilder.Append(this.SemiColon);
 			i = i + 1;
