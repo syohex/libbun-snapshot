@@ -167,7 +167,6 @@ public class CommonLispGenerator extends ZSourceGenerator {
 	protected void VisitVarDeclNode(BLetVarNode Node) {
 		this.CurrentBuilder.Append("(", this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " ");
 		this.GenerateCode(null, Node.InitValueNode());
-		this.GenerateCode(null, Node.InitValueNode());
 		this.CurrentBuilder.Append(")");
 		if(Node.HasNextVarNode()) {
 			this.VisitVarDeclNode(Node.NextVarNode());
