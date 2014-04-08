@@ -44,6 +44,11 @@ import libbun.ast.binary.BunMulNode;
 import libbun.ast.binary.BunNotEqualsNode;
 import libbun.ast.binary.BunRightShiftNode;
 import libbun.ast.binary.BunSubNode;
+import libbun.ast.unary.BNotNode;
+import libbun.ast.unary.BUnaryNode;
+import libbun.ast.unary.BunComplementNode;
+import libbun.ast.unary.BunMinusNode;
+import libbun.ast.unary.BunPlusNode;
 import libbun.parser.BNameSpace;
 import libbun.parser.BTokenContext;
 import libbun.type.BClassType;
@@ -53,6 +58,33 @@ import libbun.type.BType;
 import libbun.util.BMatchFunction;
 import libbun.util.Var;
 
+
+class BunNotPatternFunction extends BMatchFunction {
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		@Var BNode UnaryNode = new BNotNode(ParentNode, TokenContext.GetToken(BTokenContext._MoveNext));
+		UnaryNode = TokenContext.MatchPattern(UnaryNode, BUnaryNode._Recv, "$RightExpression$", BTokenContext._Required);
+		return UnaryNode;
+	}
+}
+
+class BunPlusPatternFunction extends BMatchFunction {
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		@Var BNode UnaryNode = new BunPlusNode(ParentNode, TokenContext.GetToken(BTokenContext._MoveNext));
+		return TokenContext.MatchPattern(UnaryNode, BUnaryNode._Recv, "$RightExpression$", BTokenContext._Required);
+	}
+}
+class BunMinusPatternFunction extends BMatchFunction {
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		@Var BNode UnaryNode = new BunMinusNode(ParentNode, TokenContext.GetToken(BTokenContext._MoveNext));
+		return TokenContext.MatchPattern(UnaryNode, BUnaryNode._Recv, "$RightExpression$", BTokenContext._Required);
+	}
+}
+class BunComplementPatternFunction extends BMatchFunction {
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		@Var BNode UnaryNode = new BunComplementNode(ParentNode, TokenContext.GetToken(BTokenContext._MoveNext));
+		return TokenContext.MatchPattern(UnaryNode, BUnaryNode._Recv, "$RightExpression$", BTokenContext._Required);
+	}
+}
 
 class BunAndPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
@@ -181,6 +213,11 @@ class BunGreaterThanEqualsPatternFunction extends BMatchFunction {
 }
 
 public class BunGrammar {
+	public final static BMatchFunction NotPattern = new BunNotPatternFunction();
+	public final static BMatchFunction PlusPattern = new BunPlusPatternFunction();
+	public final static BMatchFunction MinusPattern = new BunMinusPatternFunction();
+	public final static BMatchFunction ComplementPattern = new BunComplementPatternFunction();
+
 	public final static BMatchFunction EqualsPattern = new BunEqualsPatternFunction();
 	public final static BMatchFunction NotEqualsPattern = new BunNotEqualsPatternFunction();
 	public final static BMatchFunction LessThanPattern = new BunLessThanPatternFunction();
@@ -224,18 +261,14 @@ public class BunGrammar {
 		NameSpace.AppendTokenFunc("\"", new StringLiteralTokenFunction());
 		NameSpace.AppendTokenFunc("1",  new NumberLiteralTokenFunction());
 
-		@Var BMatchFunction MatchUnary = new UnaryPatternFunction();
-		@Var BMatchFunction MatchBinary = new BinaryPatternFunction();
-		//		@Var BMatchFunction MatchComparator = new ComparatorPatternFunction();
-
 		NameSpace.DefineExpression("null", new NullPatternFunction());
 		NameSpace.DefineExpression("true", new TruePatternFunction());
 		NameSpace.DefineExpression("false", new FalsePatternFunction());
 
-		NameSpace.DefineExpression("+", MatchUnary);
-		NameSpace.DefineExpression("-", MatchUnary);
-		NameSpace.DefineExpression("~", MatchUnary);
-		NameSpace.DefineExpression("!", new NotPatternFunction());
+		NameSpace.DefineExpression("+", PlusPattern);
+		NameSpace.DefineExpression("-", MinusPattern);
+		NameSpace.DefineExpression("~", ComplementPattern);
+		NameSpace.DefineExpression("!", NotPattern);
 		//		NameSpace.AppendSyntax("++ --", new Incl"));
 
 		NameSpace.DefineRightExpression("==", EqualsPattern);

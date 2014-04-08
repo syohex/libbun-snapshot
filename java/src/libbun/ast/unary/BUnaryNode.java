@@ -29,7 +29,7 @@ import libbun.ast.BNode;
 import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 
-public class BUnaryNode extends BNode {
+public abstract class BUnaryNode extends BNode {
 	public final static int _Recv = 0;
 	public BUnaryNode(BNode ParentNode, BToken Token) {
 		super(ParentNode, Token, 1);

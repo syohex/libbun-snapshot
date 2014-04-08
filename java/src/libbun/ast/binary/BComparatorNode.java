@@ -28,7 +28,7 @@ import libbun.ast.BNode;
 import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 
-public class BComparatorNode extends BBinaryNode {
+public abstract class BComparatorNode extends BBinaryNode {
 	public BComparatorNode(BNode ParentNode, BToken SourceToken, BNode Left, int Precedence) {
 		super(ParentNode, SourceToken, Left, Precedence);
 	}

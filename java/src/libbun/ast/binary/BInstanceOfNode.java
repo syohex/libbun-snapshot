@@ -30,6 +30,7 @@ import libbun.parser.BVisitor;
 import libbun.type.BType;
 
 //E.g., $ExprNode instanceof TypeInfo
+
 public final class BInstanceOfNode extends BNode {
 	public final static int _Left = 0;
 	public final static int _TypeInfo = 1;
