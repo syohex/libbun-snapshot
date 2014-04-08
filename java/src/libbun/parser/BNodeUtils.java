@@ -1,19 +1,19 @@
 package libbun.parser;
 
-import libbun.ast.BBlockNode;
-import libbun.ast.BListNode;
+import libbun.ast.BunBlockNode;
+import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
-import libbun.ast.decl.BFunctionNode;
-import libbun.ast.statement.BBreakNode;
-import libbun.ast.statement.BIfNode;
-import libbun.ast.statement.BReturnNode;
-import libbun.ast.statement.BThrowNode;
+import libbun.ast.decl.BunFunctionNode;
+import libbun.ast.statement.BunBreakNode;
+import libbun.ast.statement.BunIfNode;
+import libbun.ast.statement.BunReturnNode;
+import libbun.ast.statement.BunThrowNode;
 import libbun.util.Var;
 
 public class BNodeUtils {
 
 	public final static boolean _IsBlockBreak(BNode Node) {
-		if(Node instanceof BReturnNode || Node instanceof BThrowNode || Node instanceof BBreakNode) {
+		if(Node instanceof BunReturnNode || Node instanceof BunThrowNode || Node instanceof BunBreakNode) {
 			return true;
 		}
 		//System.out.println("@HasReturn"+ Node.getClass().getSimpleName());
@@ -21,18 +21,18 @@ public class BNodeUtils {
 	}
 
 	public final static boolean _HasFunctionBreak(BNode Node) {
-		if(Node instanceof BReturnNode || Node instanceof BThrowNode) {
+		if(Node instanceof BunReturnNode || Node instanceof BunThrowNode) {
 			return true;
 		}
-		if(Node instanceof BIfNode) {
-			@Var BIfNode IfNode = (BIfNode)Node;
+		if(Node instanceof BunIfNode) {
+			@Var BunIfNode IfNode = (BunIfNode)Node;
 			if(IfNode.HasElseNode()) {
 				return BNodeUtils._HasFunctionBreak(IfNode.ThenNode()) && BNodeUtils._HasFunctionBreak(IfNode.ElseNode());
 			}
 			return false;
 		}
-		if(Node instanceof BBlockNode) {
-			@Var BBlockNode BlockNode = (BBlockNode)Node;
+		if(Node instanceof BunBlockNode) {
+			@Var BunBlockNode BlockNode = (BunBlockNode)Node;
 			@Var int i = 0;
 			while(i < BlockNode.GetListSize()) {
 				@Var BNode StmtNode = BlockNode.GetListAt(i);
@@ -49,19 +49,19 @@ public class BNodeUtils {
 
 
 
-	public final static BReturnNode _CheckIfSingleReturnNode(BFunctionNode Node) {
-		@Var BBlockNode BlockNode = Node.BlockNode();
+	public final static BunReturnNode _CheckIfSingleReturnNode(BunFunctionNode Node) {
+		@Var BunBlockNode BlockNode = Node.BlockNode();
 		if(BlockNode.GetListSize() == 1) {
 			@Var BNode ReturnNode= BlockNode.AST[0];
-			if(ReturnNode instanceof BReturnNode) {
-				return (BReturnNode)ReturnNode;
+			if(ReturnNode instanceof BunReturnNode) {
+				return (BunReturnNode)ReturnNode;
 			}
 		}
 		return null;
 	}
 
 
-	public final static int _AstIndexOf(BListNode LNode, BNode ChildNode) {
+	public final static int _AstIndexOf(AbstractListNode LNode, BNode ChildNode) {
 		@Var int i = 0;
 		while(i < LNode.GetListSize()) {
 			if(LNode.AST[i] == ChildNode) {
@@ -72,7 +72,7 @@ public class BNodeUtils {
 		return -1;
 	}
 
-	public final static void _CopyAstList(BListNode SourceListNode, int FromIndex, BListNode DestListNode) {
+	public final static void _CopyAstList(AbstractListNode SourceListNode, int FromIndex, AbstractListNode DestListNode) {
 		@Var int i = FromIndex;
 		while(i < SourceListNode.GetAstSize()) {
 			DestListNode.Append(SourceListNode.AST[i]);
@@ -80,7 +80,7 @@ public class BNodeUtils {
 		}
 	}
 
-	public final static void _MoveAstList(BListNode SourceListNode, int FromIndex, BListNode DestListNode) {
+	public final static void _MoveAstList(AbstractListNode SourceListNode, int FromIndex, AbstractListNode DestListNode) {
 		BNodeUtils._CopyAstList(SourceListNode, FromIndex, DestListNode);
 		SourceListNode.ClearListToSize(FromIndex);
 	}

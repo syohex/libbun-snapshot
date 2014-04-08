@@ -1,7 +1,7 @@
 package libbun.ast;
 
-import libbun.ast.decl.BLetVarNode;
-import libbun.ast.literal.BDefaultValueNode;
+import libbun.ast.decl.BunLetVarNode;
+import libbun.ast.literal.DefaultValueNode;
 import libbun.type.BType;
 import libbun.util.BField;
 
@@ -20,8 +20,8 @@ public abstract class ZDefineNameNode extends BNode {
 
 	public final BType DeclType() {
 		if(this.GivenType == null) {
-			if(this.AST[BLetVarNode._TypeInfo] != null) {
-				this.GivenType = this.AST[BLetVarNode._TypeInfo].Type;
+			if(this.AST[BunLetVarNode._TypeInfo] != null) {
+				this.GivenType = this.AST[BunLetVarNode._TypeInfo].Type;
 			}
 			else {
 				this.GivenType = BType.VarType;
@@ -37,16 +37,16 @@ public abstract class ZDefineNameNode extends BNode {
 
 	public final String GetName() {
 		if(this.GivenName == null) {
-			this.GivenName = this.AST[BLetVarNode._NameInfo].SourceToken.GetTextAsName();
+			this.GivenName = this.AST[BunLetVarNode._NameInfo].SourceToken.GetTextAsName();
 		}
 		return this.GivenName;
 	}
 
 	public final BNode InitValueNode() {
-		if(this.AST[BLetVarNode._InitValue] == null) {
-			this.SetNode(BLetVarNode._InitValue, new BDefaultValueNode());
+		if(this.AST[BunLetVarNode._InitValue] == null) {
+			this.SetNode(BunLetVarNode._InitValue, new DefaultValueNode());
 		}
-		return this.AST[BLetVarNode._InitValue];
+		return this.AST[BunLetVarNode._InitValue];
 	}
 
 }

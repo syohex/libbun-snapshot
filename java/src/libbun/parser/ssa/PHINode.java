@@ -1,16 +1,16 @@
 package libbun.parser.ssa;
 
-import libbun.ast.BBlockNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
 import libbun.ast.ZLocalDefinedNode;
-import libbun.ast.expression.BGetNameNode;
+import libbun.ast.expression.GetNameNode;
 import libbun.parser.BGenerator;
 import libbun.util.BArray;
 import libbun.util.Var;
 
 public class PHINode extends ZLocalDefinedNode {
 	public BArray<BNode>      Args;
-	public BArray<BBlockNode> Blocks;
+	public BArray<BunBlockNode> Blocks;
 	public Variable VarRef;
 	public Variable BackupValue;
 	public String VariableName;
@@ -20,11 +20,11 @@ public class PHINode extends ZLocalDefinedNode {
 		this.BackupValue = BackupValue;
 		this.VariableName = VariableName;
 		this.Args = new BArray<BNode>(new BNode[0]);
-		this.Blocks = new BArray<BBlockNode>(new BBlockNode[0]);
+		this.Blocks = new BArray<BunBlockNode>(new BunBlockNode[0]);
 		this.Type = NodeLib.GetType(BackupValue.Node);
 	}
 
-	public void AddIncoming(int Index, BBlockNode block, BNode node) {
+	public void AddIncoming(int Index, BunBlockNode block, BNode node) {
 		while(Index + 1 > this.Args.size()) {
 			this.Args.add(this.BackupValue.Node);
 			this.Blocks.add(null);
@@ -65,7 +65,7 @@ public class PHINode extends ZLocalDefinedNode {
 		return BArray.GetIndex(this.Args, Index);
 	}
 
-	public boolean EqualsName(BGetNameNode Node, BGenerator Generator) {
+	public boolean EqualsName(GetNameNode Node, BGenerator Generator) {
 		return Node.GetUniqueName(Generator).equals(this.VariableName);
 	}
 }

@@ -24,18 +24,18 @@
 
 package libbun.encode;
 
-import libbun.ast.BBlockNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.BDesugarNode;
-import libbun.ast.BGroupNode;
-import libbun.ast.BListNode;
+import libbun.ast.GroupNode;
+import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
-import libbun.ast.BSugarNode;
+import libbun.ast.SyntaxSugarNode;
 import libbun.ast.ZLocalDefinedNode;
-import libbun.ast.binary.BAndNode;
-import libbun.ast.binary.BBinaryNode;
-import libbun.ast.binary.BComparatorNode;
+import libbun.ast.binary.BunAndNode;
+import libbun.ast.binary.BinaryOperatorNode;
+import libbun.ast.binary.ComparatorNode;
 import libbun.ast.binary.BInstanceOfNode;
-import libbun.ast.binary.BOrNode;
+import libbun.ast.binary.BunOrNode;
 import libbun.ast.binary.BunAddNode;
 import libbun.ast.binary.BunBitwiseAndNode;
 import libbun.ast.binary.BunBitwiseOrNode;
@@ -52,42 +52,42 @@ import libbun.ast.binary.BunMulNode;
 import libbun.ast.binary.BunNotEqualsNode;
 import libbun.ast.binary.BunRightShiftNode;
 import libbun.ast.binary.BunSubNode;
-import libbun.ast.decl.BClassNode;
-import libbun.ast.decl.BFunctionNode;
-import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.BunClassNode;
+import libbun.ast.decl.BunFunctionNode;
+import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.ZTopLevelNode;
 import libbun.ast.decl.ZVarBlockNode;
-import libbun.ast.error.BErrorNode;
-import libbun.ast.expression.BFuncCallNode;
-import libbun.ast.expression.BFuncNameNode;
-import libbun.ast.expression.BGetIndexNode;
-import libbun.ast.expression.BGetNameNode;
-import libbun.ast.expression.BGetterNode;
-import libbun.ast.expression.BMacroNode;
-import libbun.ast.expression.BMethodCallNode;
-import libbun.ast.expression.BNewObjectNode;
-import libbun.ast.expression.BSetIndexNode;
-import libbun.ast.expression.BSetNameNode;
-import libbun.ast.expression.BSetterNode;
-import libbun.ast.literal.BArrayLiteralNode;
-import libbun.ast.literal.BAsmNode;
-import libbun.ast.literal.BBooleanNode;
-import libbun.ast.literal.BFloatNode;
-import libbun.ast.literal.BIntNode;
-import libbun.ast.literal.BNullNode;
-import libbun.ast.literal.BStringNode;
+import libbun.ast.error.ErrorNode;
+import libbun.ast.expression.FuncCallNode;
+import libbun.ast.expression.BunFuncNameNode;
+import libbun.ast.expression.GetIndexNode;
+import libbun.ast.expression.GetNameNode;
+import libbun.ast.expression.GetFieldNode;
+import libbun.ast.expression.BunMacroNode;
+import libbun.ast.expression.MethodCallNode;
+import libbun.ast.expression.NewObjectNode;
+import libbun.ast.expression.SetIndexNode;
+import libbun.ast.expression.SetNameNode;
+import libbun.ast.expression.SetFieldNode;
+import libbun.ast.literal.BunArrayLiteralNode;
+import libbun.ast.literal.BunAsmNode;
+import libbun.ast.literal.BunBooleanNode;
+import libbun.ast.literal.BunFloatNode;
+import libbun.ast.literal.BunIntNode;
+import libbun.ast.literal.BunNullNode;
+import libbun.ast.literal.BunStringNode;
 import libbun.ast.literal.LiteralNode;
-import libbun.ast.literal.ZMapEntryNode;
-import libbun.ast.literal.ZMapLiteralNode;
-import libbun.ast.statement.BBreakNode;
-import libbun.ast.statement.BIfNode;
-import libbun.ast.statement.BReturnNode;
-import libbun.ast.statement.BThrowNode;
-import libbun.ast.statement.BTryNode;
-import libbun.ast.statement.BWhileNode;
-import libbun.ast.unary.BCastNode;
-import libbun.ast.unary.BNotNode;
-import libbun.ast.unary.BUnaryNode;
+import libbun.ast.literal.BunMapEntryNode;
+import libbun.ast.literal.BunMapLiteralNode;
+import libbun.ast.statement.BunBreakNode;
+import libbun.ast.statement.BunIfNode;
+import libbun.ast.statement.BunReturnNode;
+import libbun.ast.statement.BunThrowNode;
+import libbun.ast.statement.BunTryNode;
+import libbun.ast.statement.BunWhileNode;
+import libbun.ast.unary.BunCastNode;
+import libbun.ast.unary.BunNotNode;
+import libbun.ast.unary.UnaryOperatorNode;
 import libbun.ast.unary.BunComplementNode;
 import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunPlusNode;
@@ -310,7 +310,7 @@ public class ZSourceGenerator extends BGenerator {
 	}
 
 	final protected boolean IsNeededSurroud(BNode Node) {
-		if(Node instanceof BBinaryNode) {
+		if(Node instanceof BinaryOperatorNode) {
 			return true;
 		}
 		return false;
@@ -333,8 +333,8 @@ public class ZSourceGenerator extends BGenerator {
 
 	@Override public void GenerateStatement(BNode Node) {
 		this.CurrentBuilder.AppendNewLine();
-		if(Node instanceof BCastNode && Node.Type == BType.VoidType) {
-			Node.AST[BCastNode._Expr].Accept(this);
+		if(Node instanceof BunCastNode && Node.Type == BType.VoidType) {
+			Node.AST[BunCastNode._Expr].Accept(this);
 		}
 		else {
 			Node.Accept(this);
@@ -342,7 +342,7 @@ public class ZSourceGenerator extends BGenerator {
 		this.GenerateStatementEnd();
 	}
 
-	protected void VisitStmtList(BBlockNode Node) {
+	protected void VisitStmtList(BunBlockNode Node) {
 		@Var int i = 0;
 		while (i < Node.GetListSize()) {
 			@Var BNode SubNode = Node.GetListAt(i);
@@ -351,14 +351,14 @@ public class ZSourceGenerator extends BGenerator {
 		}
 	}
 
-	@Override public void VisitBlockNode(BBlockNode Node) {
+	@Override public void VisitBlockNode(BunBlockNode Node) {
 		this.CurrentBuilder.AppendWhiteSpace();
 		this.CurrentBuilder.OpenIndent("{");
 		this.VisitStmtList(Node);
 		this.CurrentBuilder.CloseIndent("}");
 	}
 
-	protected void VisitVarDeclNode(BLetVarNode Node) {
+	protected void VisitVarDeclNode(BunLetVarNode Node) {
 		this.CurrentBuilder.Append("var ", this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 		this.GenerateTypeAnnotation(Node.DeclType());
 		this.GenerateCode2(" = ", null, Node.InitValueNode(), this.SemiColon);
@@ -378,11 +378,11 @@ public class ZSourceGenerator extends BGenerator {
 
 
 
-	@Override public void VisitNullNode(BNullNode Node) {
+	@Override public void VisitNullNode(BunNullNode Node) {
 		this.CurrentBuilder.Append(this.NullLiteral);
 	}
 
-	@Override public void VisitBooleanNode(BBooleanNode Node) {
+	@Override public void VisitBooleanNode(BunBooleanNode Node) {
 		if (Node.BooleanValue) {
 			this.CurrentBuilder.Append(this.TrueLiteral);
 		} else {
@@ -390,55 +390,55 @@ public class ZSourceGenerator extends BGenerator {
 		}
 	}
 
-	@Override public void VisitIntNode(BIntNode Node) {
+	@Override public void VisitIntNode(BunIntNode Node) {
 		this.CurrentBuilder.Append(String.valueOf(Node.IntValue), this.IntLiteralSuffix);
 	}
 
-	@Override public void VisitFloatNode(BFloatNode Node) {
+	@Override public void VisitFloatNode(BunFloatNode Node) {
 		this.CurrentBuilder.Append(String.valueOf(Node.FloatValue));
 	}
 
-	@Override public void VisitStringNode(BStringNode Node) {
+	@Override public void VisitStringNode(BunStringNode Node) {
 		this.CurrentBuilder.Append(this.StringLiteralPrefix, BLib._QuoteString(Node.StringValue));
 	}
 
-	@Override public void VisitArrayLiteralNode(BArrayLiteralNode Node) {
+	@Override public void VisitArrayLiteralNode(BunArrayLiteralNode Node) {
 		this.VisitListNode("[", Node, "]");
 	}
 
-	@Override public void VisitMapLiteralNode(ZMapLiteralNode Node) {
+	@Override public void VisitMapLiteralNode(BunMapLiteralNode Node) {
 		this.CurrentBuilder.Append("{");
 		@Var int i = 0;
 		while(i < Node.GetListSize()) {
-			@Var ZMapEntryNode Entry = Node.GetMapEntryNode(i);
+			@Var BunMapEntryNode Entry = Node.GetMapEntryNode(i);
 			this.GenerateCode2("", Entry.KeyNode(), ": ", Entry.ValueNode(), ",");
 			i = i + 1;
 		}
 		this.CurrentBuilder.Append("} ");  // space is needed to distinguish block
 	}
 
-	@Override public void VisitNewObjectNode(BNewObjectNode Node) {
+	@Override public void VisitNewObjectNode(NewObjectNode Node) {
 		this.CurrentBuilder.Append("new ");
 		this.GenerateTypeName(Node.Type);
 		this.VisitListNode("(", Node, ")");
 	}
 
-	@Override public void VisitGroupNode(BGroupNode Node) {
+	@Override public void VisitGroupNode(GroupNode Node) {
 		this.GenerateCode2("(", null, Node.ExprNode(), ")");
 	}
 
-	@Override public void VisitGetIndexNode(BGetIndexNode Node) {
+	@Override public void VisitGetIndexNode(GetIndexNode Node) {
 		this.GenerateCode(null, Node.RecvNode());
 		this.GenerateCode2("[", null, Node.IndexNode(), "]");
 	}
 
-	@Override public void VisitSetIndexNode(BSetIndexNode Node) {
+	@Override public void VisitSetIndexNode(SetIndexNode Node) {
 		this.GenerateCode(null, Node.RecvNode());
 		this.GenerateCode2("[", null, Node.IndexNode(), "] = ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
-	@Override public void VisitGetNameNode(BGetNameNode Node) {
+	@Override public void VisitGetNameNode(GetNameNode Node) {
 		@Var BNode ResolvedNode = Node.ResolvedNode;
 		if(ResolvedNode == null && !this.LangInfo.AllowUndefinedSymbol) {
 			BLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GivenName);
@@ -446,30 +446,30 @@ public class ZSourceGenerator extends BGenerator {
 		this.CurrentBuilder.Append(Node.GetUniqueName(this));
 	}
 
-	@Override public void VisitSetNameNode(BSetNameNode Node) {
+	@Override public void VisitSetNameNode(SetNameNode Node) {
 		this.VisitGetNameNode(Node.NameNode());
 		this.CurrentBuilder.Append(" = ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
-	@Override public void VisitGetterNode(BGetterNode Node) {
+	@Override public void VisitGetFieldNode(GetFieldNode Node) {
 		this.GenerateSurroundCode(Node.RecvNode());
 		this.CurrentBuilder.Append(".", Node.GetName());
 	}
 
-	@Override public void VisitSetterNode(BSetterNode Node) {
+	@Override public void VisitSetFieldNode(SetFieldNode Node) {
 		this.GenerateSurroundCode(Node.RecvNode());
 		this.CurrentBuilder.Append(".", Node.GetName(), " = ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
-	@Override public void VisitMethodCallNode(BMethodCallNode Node) {
+	@Override public void VisitMethodCallNode(MethodCallNode Node) {
 		this.GenerateSurroundCode(Node.RecvNode());
 		this.CurrentBuilder.Append(".", Node.MethodName());
 		this.VisitListNode("(", Node, ")");
 	}
 
-	@Override public void VisitMacroNode(BMacroNode Node) {
+	@Override public void VisitMacroNode(BunMacroNode Node) {
 		@Var String Macro = Node.GetMacroText();
 		@Var BFuncType FuncType = Node.GetFuncType();
 		@Var int fromIndex = 0;
@@ -493,7 +493,7 @@ public class ZSourceGenerator extends BGenerator {
 		}
 	}
 
-	protected final void GenerateFuncName(BFuncNameNode Node) {
+	protected final void GenerateFuncName(BunFuncNameNode Node) {
 		if(this.LangInfo.AllowFunctionOverloading) {
 			this.CurrentBuilder.Append(Node.FuncName);
 		}
@@ -502,8 +502,8 @@ public class ZSourceGenerator extends BGenerator {
 		}
 	}
 
-	@Override public void VisitFuncCallNode(BFuncCallNode Node) {
-		@Var BFuncNameNode FuncNameNode = Node.FuncNameNode();
+	@Override public void VisitFuncCallNode(FuncCallNode Node) {
+		@Var BunFuncNameNode FuncNameNode = Node.FuncNameNode();
 		if(FuncNameNode != null) {
 			this.GenerateFuncName(FuncNameNode);
 		}
@@ -513,7 +513,7 @@ public class ZSourceGenerator extends BGenerator {
 		this.VisitListNode("(", Node, ")");
 	}
 
-	@Override public void VisitUnaryNode(BUnaryNode Node) {
+	@Override public void VisitUnaryNode(UnaryOperatorNode Node) {
 		this.CurrentBuilder.Append(Node.GetOperator());
 		this.GenerateCode(null, Node.RecvNode());
 	}
@@ -530,12 +530,12 @@ public class ZSourceGenerator extends BGenerator {
 		this.VisitUnaryNode(Node);
 	}
 
-	@Override public void VisitNotNode(BNotNode Node) {
+	@Override public void VisitNotNode(BunNotNode Node) {
 		this.CurrentBuilder.Append(this.NotOperator);
 		this.GenerateSurroundCode(Node.RecvNode());
 	}
 
-	@Override public void VisitCastNode(BCastNode Node) {
+	@Override public void VisitCastNode(BunCastNode Node) {
 		if(Node.Type.IsVoidType()) {
 			this.GenerateCode(null, Node.ExprNode());
 		}
@@ -553,14 +553,14 @@ public class ZSourceGenerator extends BGenerator {
 		this.GenerateTypeName(Node.TargetType());
 	}
 
-	@Override public void VisitBinaryNode(BBinaryNode Node) {
-		if (Node.ParentNode instanceof BBinaryNode) {
+	@Override public void VisitBinaryNode(BinaryOperatorNode Node) {
+		if (Node.ParentNode instanceof BinaryOperatorNode) {
 			this.CurrentBuilder.Append("(");
 		}
 		this.GenerateCode(null, Node.LeftNode());
 		this.CurrentBuilder.AppendToken(Node.GetOperator());
 		this.GenerateCode(null, Node.RightNode());
-		if (Node.ParentNode instanceof BBinaryNode) {
+		if (Node.ParentNode instanceof BinaryOperatorNode) {
 			this.CurrentBuilder.Append(")");
 		}
 	}
@@ -605,7 +605,7 @@ public class ZSourceGenerator extends BGenerator {
 		this.VisitBinaryNode(Node);
 	}
 
-	protected void VisitComparatorNode(BComparatorNode Node) {
+	protected void VisitComparatorNode(ComparatorNode Node) {
 		this.GenerateCode(null, Node.LeftNode());
 		this.CurrentBuilder.AppendToken(Node.GetOperator());
 		this.GenerateCode(null, Node.RightNode());
@@ -639,19 +639,19 @@ public class ZSourceGenerator extends BGenerator {
 		// TODO Auto-generated method stub
 	}
 
-	@Override public void VisitAndNode(BAndNode Node) {
+	@Override public void VisitAndNode(BunAndNode Node) {
 		this.GenerateCode(null, Node.LeftNode());
 		this.CurrentBuilder.AppendToken(this.AndOperator);
 		this.GenerateCode(null, Node.RightNode());
 	}
 
-	@Override public void VisitOrNode(BOrNode Node) {
+	@Override public void VisitOrNode(BunOrNode Node) {
 		this.GenerateCode(null, Node.LeftNode());
 		this.CurrentBuilder.AppendToken(this.OrOperator);
 		this.GenerateCode(null, Node.RightNode());
 	}
 
-	@Override public void VisitIfNode(BIfNode Node) {
+	@Override public void VisitIfNode(BunIfNode Node) {
 		this.GenerateCode2("if (", null, Node.CondNode(), ")");
 		this.GenerateCode(null, Node.ThenNode());
 		if (Node.HasElseNode()) {
@@ -661,7 +661,7 @@ public class ZSourceGenerator extends BGenerator {
 		}
 	}
 
-	@Override public void VisitReturnNode(BReturnNode Node) {
+	@Override public void VisitReturnNode(BunReturnNode Node) {
 		this.CurrentBuilder.Append("return");
 		if (Node.HasReturnExpr()) {
 			this.CurrentBuilder.Append(" ");
@@ -669,21 +669,21 @@ public class ZSourceGenerator extends BGenerator {
 		}
 	}
 
-	@Override public void VisitWhileNode(BWhileNode Node) {
+	@Override public void VisitWhileNode(BunWhileNode Node) {
 		this.GenerateCode2("while (", null, Node.CondNode(),")");
 		this.GenerateCode(null, Node.BlockNode());
 	}
 
-	@Override public void VisitBreakNode(BBreakNode Node) {
+	@Override public void VisitBreakNode(BunBreakNode Node) {
 		this.CurrentBuilder.Append("break");
 	}
 
-	@Override public void VisitThrowNode(BThrowNode Node) {
+	@Override public void VisitThrowNode(BunThrowNode Node) {
 		this.CurrentBuilder.Append("throw ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
-	@Override public void VisitTryNode(BTryNode Node) {
+	@Override public void VisitTryNode(BunTryNode Node) {
 		this.CurrentBuilder.Append("try");
 		this.GenerateCode(null, Node.TryBlockNode());
 		if(Node.HasCatchBlockNode()) {
@@ -704,7 +704,7 @@ public class ZSourceGenerator extends BGenerator {
 		}
 	}
 
-	@Override public void VisitLetNode(BLetVarNode Node) {
+	@Override public void VisitLetNode(BunLetVarNode Node) {
 		if(Node.IsParamNode()) {
 			this.VisitParamNode(Node);
 		}
@@ -716,16 +716,16 @@ public class ZSourceGenerator extends BGenerator {
 		}
 	}
 
-	protected void VisitParamNode(BLetVarNode Node) {
+	protected void VisitParamNode(BunLetVarNode Node) {
 		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 		this.GenerateTypeAnnotation(Node.Type);
 	}
 
-	protected void VisitFuncParamNode(String OpenToken, BFunctionNode VargNode, String CloseToken) {
+	protected void VisitFuncParamNode(String OpenToken, BunFunctionNode VargNode, String CloseToken) {
 		this.CurrentBuilder.Append(OpenToken);
 		@Var int i = 0;
 		while(i < VargNode.GetListSize()) {
-			@Var BLetVarNode ParamNode = VargNode.GetParamNode(i);
+			@Var BunLetVarNode ParamNode = VargNode.GetParamNode(i);
 			if (i > 0) {
 				this.CurrentBuilder.Append(this.Camma);
 			}
@@ -735,7 +735,7 @@ public class ZSourceGenerator extends BGenerator {
 		this.CurrentBuilder.Append(CloseToken);
 	}
 
-	@Override public void VisitFunctionNode(BFunctionNode Node) {
+	@Override public void VisitFunctionNode(BunFunctionNode Node) {
 		if(Node.IsExport) {
 			this.CurrentBuilder.Append("export ");
 		}
@@ -748,7 +748,7 @@ public class ZSourceGenerator extends BGenerator {
 		this.GenerateCode(null, Node.BlockNode());
 	}
 
-	@Override public void VisitClassNode(BClassNode Node) {
+	@Override public void VisitClassNode(BunClassNode Node) {
 		this.CurrentBuilder.AppendNewLine("class ", Node.ClassName());
 		if(Node.SuperType() != null) {
 			this.CurrentBuilder.Append(" extends ");
@@ -757,7 +757,7 @@ public class ZSourceGenerator extends BGenerator {
 		this.CurrentBuilder.OpenIndent(" {");
 		@Var int i = 0;
 		while (i < Node.GetListSize()) {
-			@Var BLetVarNode FieldNode = Node.GetFieldNode(i);
+			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
 			this.CurrentBuilder.AppendNewLine("var ", FieldNode.GetGivenName());
 			this.GenerateTypeAnnotation(FieldNode.DeclType());
 			this.CurrentBuilder.AppendToken("=");
@@ -768,14 +768,14 @@ public class ZSourceGenerator extends BGenerator {
 		this.CurrentBuilder.CloseIndent("}");
 	}
 
-	@Override public void VisitErrorNode(BErrorNode Node) {
+	@Override public void VisitErrorNode(ErrorNode Node) {
 		@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.CurrentBuilder.Append(this.ErrorFunc, "(");
 		this.CurrentBuilder.Append(BLib._QuoteString(Message));
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitAsmNode(BAsmNode Node) {
+	@Override public void VisitAsmNode(BunAsmNode Node) {
 		this.ImportLibrary(Node.RequiredLibrary);
 		this.CurrentBuilder.AppendCode(Node.GetMacroText());
 	}
@@ -788,7 +788,7 @@ public class ZSourceGenerator extends BGenerator {
 		this.VisitUndefinedNode(Node);
 	}
 
-	@Override public void VisitSugarNode(BSugarNode Node) {
+	@Override public void VisitSyntaxSugarNode(SyntaxSugarNode Node) {
 		@Var BDesugarNode DesugarNode = Node.DeSugar(this, this.TypeChecker);
 		this.GenerateCode(null, DesugarNode.AST[0]);
 		@Var int i = 1;
@@ -805,7 +805,7 @@ public class ZSourceGenerator extends BGenerator {
 		this.CurrentBuilder.Append(this.GetNativeTypeName(Type.GetRealType()));
 	}
 
-	protected void VisitListNode(String OpenToken, BListNode VargNode, String DelimToken, String CloseToken) {
+	protected void VisitListNode(String OpenToken, AbstractListNode VargNode, String DelimToken, String CloseToken) {
 		this.CurrentBuilder.Append(OpenToken);
 		@Var int i = 0;
 		while(i < VargNode.GetListSize()) {
@@ -819,15 +819,15 @@ public class ZSourceGenerator extends BGenerator {
 		this.CurrentBuilder.Append(CloseToken);
 	}
 
-	protected void VisitListNode(String OpenToken, BListNode VargNode, String CloseToken) {
+	protected void VisitListNode(String OpenToken, AbstractListNode VargNode, String CloseToken) {
 		this.VisitListNode(OpenToken, VargNode, this.Camma, CloseToken);
 	}
 
-	protected void GenerateWrapperCall(String OpenToken, BFunctionNode FuncNode, String CloseToken) {
+	protected void GenerateWrapperCall(String OpenToken, BunFunctionNode FuncNode, String CloseToken) {
 		this.CurrentBuilder.Append(OpenToken);
 		@Var int i = 0;
 		while(i < FuncNode.GetListSize()) {
-			@Var BLetVarNode ParamNode = FuncNode.GetParamNode(i);
+			@Var BunLetVarNode ParamNode = FuncNode.GetParamNode(i);
 			if (i > 0) {
 				this.CurrentBuilder.Append(this.Camma);
 			}

@@ -1,41 +1,41 @@
 package libbun.parser.ssa;
 
-import libbun.ast.BBlockNode;
-import libbun.ast.BGroupNode;
-import libbun.ast.BListNode;
+import libbun.ast.BunBlockNode;
+import libbun.ast.GroupNode;
+import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
-import libbun.ast.BSugarNode;
+import libbun.ast.SyntaxSugarNode;
 import libbun.ast.ZLocalDefinedNode;
-import libbun.ast.binary.BBinaryNode;
+import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BInstanceOfNode;
-import libbun.ast.decl.BClassNode;
-import libbun.ast.decl.BFunctionNode;
-import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.BunClassNode;
+import libbun.ast.decl.BunFunctionNode;
+import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.ZTopLevelNode;
 import libbun.ast.decl.ZVarBlockNode;
-import libbun.ast.error.BErrorNode;
-import libbun.ast.expression.BFuncCallNode;
-import libbun.ast.expression.BGetIndexNode;
-import libbun.ast.expression.BGetNameNode;
-import libbun.ast.expression.BGetterNode;
-import libbun.ast.expression.BMacroNode;
-import libbun.ast.expression.BMethodCallNode;
-import libbun.ast.expression.BNewObjectNode;
-import libbun.ast.expression.BSetIndexNode;
-import libbun.ast.expression.BSetNameNode;
-import libbun.ast.expression.BSetterNode;
-import libbun.ast.literal.BArrayLiteralNode;
-import libbun.ast.literal.BAsmNode;
+import libbun.ast.error.ErrorNode;
+import libbun.ast.expression.FuncCallNode;
+import libbun.ast.expression.GetIndexNode;
+import libbun.ast.expression.GetNameNode;
+import libbun.ast.expression.GetFieldNode;
+import libbun.ast.expression.BunMacroNode;
+import libbun.ast.expression.MethodCallNode;
+import libbun.ast.expression.NewObjectNode;
+import libbun.ast.expression.SetIndexNode;
+import libbun.ast.expression.SetNameNode;
+import libbun.ast.expression.SetFieldNode;
+import libbun.ast.literal.BunArrayLiteralNode;
+import libbun.ast.literal.BunAsmNode;
 import libbun.ast.literal.LiteralNode;
-import libbun.ast.literal.ZMapLiteralNode;
-import libbun.ast.statement.BBreakNode;
-import libbun.ast.statement.BIfNode;
-import libbun.ast.statement.BReturnNode;
-import libbun.ast.statement.BThrowNode;
-import libbun.ast.statement.BTryNode;
-import libbun.ast.statement.BWhileNode;
-import libbun.ast.unary.BCastNode;
-import libbun.ast.unary.BUnaryNode;
+import libbun.ast.literal.BunMapLiteralNode;
+import libbun.ast.statement.BunBreakNode;
+import libbun.ast.statement.BunIfNode;
+import libbun.ast.statement.BunReturnNode;
+import libbun.ast.statement.BunThrowNode;
+import libbun.ast.statement.BunTryNode;
+import libbun.ast.statement.BunWhileNode;
+import libbun.ast.unary.BunCastNode;
+import libbun.ast.unary.UnaryOperatorNode;
 import libbun.parser.BVisitor;
 import libbun.util.Var;
 
@@ -61,7 +61,7 @@ public class ZASTTransformer extends BVisitor {
 		this.TransformedValue = LastTransformed;
 	}
 
-	protected void VisitListNode(BListNode Node) {
+	protected void VisitListNode(AbstractListNode Node) {
 		@Var int i = 0;
 		while(i < Node.GetListSize()) {
 			this.Transform(Node, i);
@@ -75,12 +75,12 @@ public class ZASTTransformer extends BVisitor {
 	}
 
 	@Override
-	public void VisitArrayLiteralNode(BArrayLiteralNode Node) {
+	public void VisitArrayLiteralNode(BunArrayLiteralNode Node) {
 		this.VisitListNode(Node);
 	}
 
 	@Override
-	public void VisitMapLiteralNode(ZMapLiteralNode Node) {
+	public void VisitMapLiteralNode(BunMapLiteralNode Node) {
 		this.VisitListNode(Node);
 	}
 
@@ -90,69 +90,69 @@ public class ZASTTransformer extends BVisitor {
 	//	}
 
 	@Override
-	public void VisitNewObjectNode(BNewObjectNode Node) {
+	public void VisitNewObjectNode(NewObjectNode Node) {
 		this.VisitListNode(Node);
 	}
 
 	@Override
-	public void VisitGetNameNode(BGetNameNode Node) {
+	public void VisitGetNameNode(GetNameNode Node) {
 		/* do nothing */
 	}
 
 	@Override
-	public void VisitSetNameNode(BSetNameNode Node) {
-		this.Transform(Node, BSetNameNode._Expr);
+	public void VisitSetNameNode(SetNameNode Node) {
+		this.Transform(Node, SetNameNode._Expr);
 	}
 
 	@Override
-	public void VisitGroupNode(BGroupNode Node) {
-		this.Transform(Node, BGroupNode._Expr);
+	public void VisitGroupNode(GroupNode Node) {
+		this.Transform(Node, GroupNode._Expr);
 	}
 
 	@Override
-	public void VisitGetterNode(BGetterNode Node) {
-		this.Transform(Node, BGetterNode._Recv);
+	public void VisitGetFieldNode(GetFieldNode Node) {
+		this.Transform(Node, GetFieldNode._Recv);
 	}
 
 	@Override
-	public void VisitSetterNode(BSetterNode Node) {
-		this.Transform(Node, BSetterNode._Recv);
-		this.Transform(Node, BSetterNode._Expr);
+	public void VisitSetFieldNode(SetFieldNode Node) {
+		this.Transform(Node, SetFieldNode._Recv);
+		this.Transform(Node, SetFieldNode._Expr);
 	}
 
 	@Override
-	public void VisitGetIndexNode(BGetIndexNode Node) {
-		this.Transform(Node, BGetIndexNode._Recv);
-		this.Transform(Node, BGetIndexNode._Index);
+	public void VisitGetIndexNode(GetIndexNode Node) {
+		this.Transform(Node, GetIndexNode._Recv);
+		this.Transform(Node, GetIndexNode._Index);
 	}
 
 	@Override
-	public void VisitSetIndexNode(BSetIndexNode Node) {
-		this.Transform(Node, BSetIndexNode._Recv);
-		this.Transform(Node, BSetIndexNode._Index);
-		this.Transform(Node, BSetIndexNode._Expr);
+	public void VisitSetIndexNode(SetIndexNode Node) {
+		this.Transform(Node, SetIndexNode._Recv);
+		this.Transform(Node, SetIndexNode._Index);
+		this.Transform(Node, SetIndexNode._Expr);
 	}
 
 	@Override
-	public void VisitMethodCallNode(BMethodCallNode Node) {
-		this.Transform(Node, BMethodCallNode._Recv);
+	public void VisitMethodCallNode(MethodCallNode Node) {
+		this.Transform(Node, MethodCallNode._Recv);
 		this.VisitListNode(Node);
 	}
 
 	@Override
-	public void VisitFuncCallNode(BFuncCallNode Node) {
-		this.Transform(Node, BFuncCallNode._Functor);
+	public void VisitFuncCallNode(FuncCallNode Node) {
+		this.Transform(Node, FuncCallNode._Functor);
 		this.VisitListNode(Node);
 	}
 
 	@Override
-	public void VisitUnaryNode(BUnaryNode Node) {
-		this.Transform(Node, BUnaryNode._Recv);
+	public void VisitUnaryNode(UnaryOperatorNode Node) {
+		this.Transform(Node, UnaryOperatorNode._Recv);
 	}
 
 	@Override
-	public void VisitCastNode(BCastNode Node) {
-		this.Transform(Node, BCastNode._Expr);
+	public void VisitCastNode(BunCastNode Node) {
+		this.Transform(Node, BunCastNode._Expr);
 	}
 
 	@Override
@@ -161,59 +161,59 @@ public class ZASTTransformer extends BVisitor {
 	}
 
 	@Override
-	public void VisitBinaryNode(BBinaryNode Node) {
-		this.Transform(Node, BBinaryNode._Left);
-		this.Transform(Node, BBinaryNode._Right);
+	public void VisitBinaryNode(BinaryOperatorNode Node) {
+		this.Transform(Node, BinaryOperatorNode._Left);
+		this.Transform(Node, BinaryOperatorNode._Right);
 	}
 
 	@Override
-	public void VisitBlockNode(BBlockNode Node) {
+	public void VisitBlockNode(BunBlockNode Node) {
 		this.VisitListNode(Node);
 	}
 
 	@Override
 	public void VisitVarBlockNode(ZVarBlockNode Node) {
-		this.Transform(Node, BLetVarNode._InitValue);
+		this.Transform(Node, BunLetVarNode._InitValue);
 		this.VisitListNode(Node);
 	}
 
 	@Override
-	public void VisitIfNode(BIfNode Node) {
-		this.Transform(Node, BIfNode._Cond);
-		this.Transform(Node, BIfNode._Then);
+	public void VisitIfNode(BunIfNode Node) {
+		this.Transform(Node, BunIfNode._Cond);
+		this.Transform(Node, BunIfNode._Then);
 		if(Node.HasElseNode()) {
-			this.Transform(Node, BIfNode._Else);
+			this.Transform(Node, BunIfNode._Else);
 		}
 	}
 
 	@Override
-	public void VisitReturnNode(BReturnNode Node) {
+	public void VisitReturnNode(BunReturnNode Node) {
 		if(Node.ExprNode() != null) {
-			this.Transform(Node, BReturnNode._Expr);
+			this.Transform(Node, BunReturnNode._Expr);
 		}
 	}
 
 	@Override
-	public void VisitWhileNode(BWhileNode Node) {
-		this.Transform(Node, BWhileNode._Cond);
-		this.Transform(Node, BWhileNode._Block);
+	public void VisitWhileNode(BunWhileNode Node) {
+		this.Transform(Node, BunWhileNode._Cond);
+		this.Transform(Node, BunWhileNode._Block);
 	}
 
 	@Override
-	public void VisitBreakNode(BBreakNode Node) {
+	public void VisitBreakNode(BunBreakNode Node) {
 		/* do nothing */
 	}
 
 	@Override
-	public void VisitThrowNode(BThrowNode Node) {
-		this.Transform(Node, BThrowNode._Expr);
+	public void VisitThrowNode(BunThrowNode Node) {
+		this.Transform(Node, BunThrowNode._Expr);
 	}
 
 	@Override
-	public void VisitTryNode(BTryNode Node) {
-		this.Transform(Node, BTryNode._Try);
-		this.Transform(Node, BTryNode._Catch);
-		this.Transform(Node, BTryNode._Finally);
+	public void VisitTryNode(BunTryNode Node) {
+		this.Transform(Node, BunTryNode._Try);
+		this.Transform(Node, BunTryNode._Catch);
+		this.Transform(Node, BunTryNode._Finally);
 	}
 
 	//	public void VisitCatchNode(ZCatchNode Node) {
@@ -221,22 +221,22 @@ public class ZASTTransformer extends BVisitor {
 	//	}
 
 	@Override
-	public void VisitLetNode(BLetVarNode Node) {
-		this.Transform(Node, BLetVarNode._InitValue);
+	public void VisitLetNode(BunLetVarNode Node) {
+		this.Transform(Node, BunLetVarNode._InitValue);
 	}
 
 	@Override
-	public void VisitFunctionNode(BFunctionNode Node) {
-		this.Transform(Node, BFunctionNode._Block);
+	public void VisitFunctionNode(BunFunctionNode Node) {
+		this.Transform(Node, BunFunctionNode._Block);
 	}
 
 	@Override
-	public void VisitClassNode(BClassNode Node) {
+	public void VisitClassNode(BunClassNode Node) {
 		this.VisitListNode(Node);
 	}
 
 	@Override
-	public void VisitErrorNode(BErrorNode Node) {
+	public void VisitErrorNode(ErrorNode Node) {
 		/* do nothing */
 	}
 
@@ -256,12 +256,12 @@ public class ZASTTransformer extends BVisitor {
 	}
 
 	@Override
-	public void VisitMacroNode(BMacroNode Node) {
+	public void VisitMacroNode(BunMacroNode Node) {
 		this.VisitListNode(Node);
 	}
 
 	@Override
-	public void VisitAsmNode(BAsmNode Node) {
+	public void VisitAsmNode(BunAsmNode Node) {
 		// TODO Auto-generated method stub
 
 	}
@@ -273,7 +273,7 @@ public class ZASTTransformer extends BVisitor {
 	}
 
 	@Override
-	public void VisitSugarNode(BSugarNode Node) {
+	public void VisitSyntaxSugarNode(SyntaxSugarNode Node) {
 		// TODO Auto-generated method stub
 
 	}

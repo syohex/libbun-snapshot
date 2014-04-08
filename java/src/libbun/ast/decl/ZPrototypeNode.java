@@ -7,8 +7,8 @@ import libbun.util.Var;
 
 public class ZPrototypeNode extends ZTopLevelNode {
 	public final static int _FuncInfo = 0;
-	@BField BFunctionNode FunctionNode;
-	public ZPrototypeNode(BFunctionNode FunctionNode) {
+	@BField BunFunctionNode FunctionNode;
+	public ZPrototypeNode(BunFunctionNode FunctionNode) {
 		super(FunctionNode.ParentNode, FunctionNode.SourceToken, 1);
 		this.SetNode(ZPrototypeNode._FuncInfo, FunctionNode);
 		this.FunctionNode = FunctionNode;

@@ -5,7 +5,7 @@ import libbun.parser.BTypeChecker;
 import libbun.util.BField;
 import libbun.util.Var;
 
-public class BDesugarNode extends BSugarNode {
+public class BDesugarNode extends SyntaxSugarNode {
 	//	public final static int _NewNode = 0;
 	@BField BNode OriginalNode;
 

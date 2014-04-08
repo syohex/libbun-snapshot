@@ -27,20 +27,20 @@ package libbun.encode.haskell;
 
 import java.util.ArrayList;
 
-import libbun.ast.BBlockNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
-import libbun.ast.binary.BBinaryNode;
-import libbun.ast.binary.BComparatorNode;
-import libbun.ast.decl.BFunctionNode;
-import libbun.ast.decl.BLetVarNode;
-import libbun.ast.expression.BFuncCallNode;
-import libbun.ast.expression.BGetNameNode;
-import libbun.ast.expression.BSetNameNode;
-import libbun.ast.statement.BReturnNode;
-import libbun.ast.statement.BThrowNode;
-import libbun.ast.statement.BTryNode;
-import libbun.ast.statement.BWhileNode;
-import libbun.ast.unary.BCastNode;
+import libbun.ast.binary.BinaryOperatorNode;
+import libbun.ast.binary.ComparatorNode;
+import libbun.ast.decl.BunFunctionNode;
+import libbun.ast.decl.BunLetVarNode;
+import libbun.ast.expression.FuncCallNode;
+import libbun.ast.expression.GetNameNode;
+import libbun.ast.expression.SetNameNode;
+import libbun.ast.statement.BunReturnNode;
+import libbun.ast.statement.BunThrowNode;
+import libbun.ast.statement.BunTryNode;
+import libbun.ast.statement.BunWhileNode;
+import libbun.ast.unary.BunCastNode;
 import libbun.encode.ZSourceBuilder;
 import libbun.encode.ZSourceGenerator;
 import libbun.parser.BNodeUtils;
@@ -96,7 +96,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitBlockNode(BBlockNode Node) {
+	public void VisitBlockNode(BunBlockNode Node) {
 		@Var int count = 0;
 
 		this.Indent(this.CurrentBuilder);
@@ -132,17 +132,17 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitCastNode(BCastNode Node) {
+	public void VisitCastNode(BunCastNode Node) {
 	}
 
 	@Override
-	public void VisitThrowNode(BThrowNode Node) {
+	public void VisitThrowNode(BunThrowNode Node) {
 		this.CurrentBuilder.Append("raise ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
 	@Override
-	public void VisitTryNode(BTryNode Node) {
+	public void VisitTryNode(BunTryNode Node) {
 		// See: http://d.hatena.ne.jp/kazu-yamamoto/20090819/1250660658
 		this.GenerateCode(null, Node.TryBlockNode());
 		this.CurrentBuilder.Append(" `catch` ");
@@ -156,18 +156,18 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 
 
 	@Override
-	protected void VisitVarDeclNode(BLetVarNode Node) {
+	protected void VisitVarDeclNode(BunLetVarNode Node) {
 		this.CurrentBuilder.Append(Node.GetGivenName() + " <- readIORef ");
 		this.CurrentBuilder.Append(Node.GetGivenName() + "_ref");
 		this.GenerateCode(null, Node.InitValueNode());
 		this.CurrentBuilder.AppendLineFeed();
 	}
 
-	@Override protected void VisitParamNode(BLetVarNode Node) {
+	@Override protected void VisitParamNode(BunLetVarNode Node) {
 		this.CurrentBuilder.Append(Node.GetGivenName());
 	}
 
-	@Override public void VisitFunctionNode(BFunctionNode Node) {
+	@Override public void VisitFunctionNode(BunFunctionNode Node) {
 		this.Variables = new ArrayList<String>();
 		if(Node.FuncName().equals("main")){
 			this.CurrentBuilder.Append("main");
@@ -182,7 +182,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		this.Indent(this.CurrentBuilder);
 
 		for (int i = 0; i < Node.GetListSize(); i++) {
-			BLetVarNode Param = Node.GetParamNode(i);
+			BunLetVarNode Param = Node.GetParamNode(i);
 			this.Variables.add(Param.GetGivenName());
 
 			this.CurrentBuilder.AppendIndent();
@@ -193,7 +193,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		}
 
 		for (int i = 0; i < Node.GetListSize(); i++) {
-			BLetVarNode node1 = Node.GetParamNode(i);
+			BunLetVarNode node1 = Node.GetParamNode(i);
 
 			this.CurrentBuilder.AppendIndent();
 			this.CurrentBuilder.Append(node1.GetGivenName()
@@ -203,7 +203,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		}
 		this.UnIndent(this.CurrentBuilder);
 
-		BReturnNode ReturnNode = BNodeUtils._CheckIfSingleReturnNode(Node);
+		BunReturnNode ReturnNode = BNodeUtils._CheckIfSingleReturnNode(Node);
 		if(ReturnNode != null && ReturnNode.HasReturnExpr()) {
 			this.Indent(this.CurrentBuilder);
 
@@ -218,12 +218,12 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitGetNameNode(BGetNameNode Node) {
+	public void VisitGetNameNode(GetNameNode Node) {
 		this.CurrentBuilder.Append(Node.GetUniqueName(this));
 	}
 
 	@Override
-	public void VisitSetNameNode(BSetNameNode Node) {
+	public void VisitSetNameNode(SetNameNode Node) {
 		this.CurrentBuilder.Append("writeIORef ");
 		this.CurrentBuilder.Append(Node.NameNode().GetUniqueName(this) + "_ref ");
 		this.GenerateCode(null, Node.ExprNode());
@@ -237,7 +237,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitReturnNode(BReturnNode Node) {
+	public void VisitReturnNode(BunReturnNode Node) {
 		if (Node.HasReturnExpr()) {
 			this.GenerateCode(null, Node.ExprNode());
 		}
@@ -257,7 +257,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitBinaryNode(BBinaryNode Node) {
+	public void VisitBinaryNode(BinaryOperatorNode Node) {
 		String Op = this.ZenOpToHaskellOp(Node.SourceToken.GetText());
 
 		this.CurrentBuilder.Append("(");
@@ -267,7 +267,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitComparatorNode(BComparatorNode Node) {
+	@Override public void VisitComparatorNode(ComparatorNode Node) {
 		String Op = this.ZenOpToHaskellOp(Node.SourceToken.GetText());
 
 		this.CurrentBuilder.Append("(");
@@ -278,7 +278,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitWhileNode(BWhileNode Node) {
+	public void VisitWhileNode(BunWhileNode Node) {
 		this.CurrentBuilder.Append("let __loop = do");
 		this.CurrentBuilder.AppendLineFeed();
 
@@ -300,7 +300,7 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.AppendLineFeed();
 
 		// XXX Is this correct node type ?
-		BNode LoopNode = new BGetNameNode(Node, null, "__loop");
+		BNode LoopNode = new GetNameNode(Node, null, "__loop");
 		Node.BlockNode().SetNode(BNode._AppendIndex, LoopNode);
 		Node.BlockNode().Accept(this);
 
@@ -328,8 +328,8 @@ public class HaskellSourceGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitFuncCallNode(BFuncCallNode Node) {
-		if(Node.ParentNode instanceof BBlockNode){
+	@Override public void VisitFuncCallNode(FuncCallNode Node) {
+		if(Node.ParentNode instanceof BunBlockNode){
 			this.GenerateCode(null, Node.FunctorNode());
 			this.VisitListNode(" ", Node, " ", " ");
 		}else{

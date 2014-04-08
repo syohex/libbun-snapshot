@@ -25,18 +25,18 @@
 
 package libbun.parser;
 
-import libbun.ast.BBlockNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.BDesugarNode;
-import libbun.ast.BListNode;
+import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
-import libbun.ast.BSugarNode;
-import libbun.ast.decl.BClassNode;
-import libbun.ast.decl.BFunctionNode;
-import libbun.ast.decl.BLetVarNode;
+import libbun.ast.SyntaxSugarNode;
+import libbun.ast.decl.BunClassNode;
+import libbun.ast.decl.BunFunctionNode;
+import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.ZTopLevelNode;
-import libbun.ast.error.BErrorNode;
-import libbun.ast.literal.BDefaultValueNode;
-import libbun.ast.literal.BNullNode;
+import libbun.ast.error.ErrorNode;
+import libbun.ast.literal.DefaultValueNode;
+import libbun.ast.literal.BunNullNode;
 import libbun.type.BClassType;
 import libbun.type.BFunc;
 import libbun.type.BFuncType;
@@ -143,12 +143,12 @@ public abstract class BGenerator extends BOperatorVisitor {
 		return BType.VarType;     // undefined
 	}
 
-	@ZenMethod public BFuncType GetConstructorFuncType(BType ClassType, BListNode List) {
+	@ZenMethod public BFuncType GetConstructorFuncType(BType ClassType, AbstractListNode List) {
 		//return null;              // undefined and undefined error
 		return BFuncType._FuncType;    // undefined and no error
 	}
 
-	@ZenMethod public BFuncType GetMethodFuncType(BType RecvType, String MethodName, BListNode List) {
+	@ZenMethod public BFuncType GetMethodFuncType(BType RecvType, String MethodName, AbstractListNode List) {
 		//return null;              // undefined and undefined error
 		return BFuncType._FuncType;     // undefined and no error
 	}
@@ -269,15 +269,15 @@ public abstract class BGenerator extends BOperatorVisitor {
 	}
 
 	public final void VisitUndefinedNode(BNode Node) {
-		@Var BErrorNode ErrorNode = new BErrorNode(Node.ParentNode, Node.SourceToken, "undefined node:" + Node.toString());
+		@Var ErrorNode ErrorNode = new ErrorNode(Node.ParentNode, Node.SourceToken, "undefined node:" + Node.toString());
 		this.VisitErrorNode(ErrorNode);
 	}
 
-	@Override public final void VisitDefaultValueNode(BDefaultValueNode Node) {
-		this.VisitNullNode(new BNullNode(Node.ParentNode, null));
+	@Override public final void VisitDefaultValueNode(DefaultValueNode Node) {
+		this.VisitNullNode(new BunNullNode(Node.ParentNode, null));
 	}
 
-	@Override public void VisitSugarNode(BSugarNode Node) {
+	@Override public void VisitSyntaxSugarNode(SyntaxSugarNode Node) {
 		@Var BDesugarNode DeNode = Node.DeSugar(this, this.TypeChecker);
 		@Var int i = 0;
 		while(i < DeNode.GetAstSize()) {
@@ -306,7 +306,7 @@ public abstract class BGenerator extends BOperatorVisitor {
 				Node = this.TypeChecker.CheckType(Node, BType.VarType);
 			}
 			if(this.IsVisitable()) {
-				if(Node instanceof BFunctionNode || Node instanceof BClassNode || Node instanceof BLetVarNode) {
+				if(Node instanceof BunFunctionNode || Node instanceof BunClassNode || Node instanceof BunLetVarNode) {
 					Node.Type = BType.VoidType;
 					this.GenerateStatement(Node);
 				}
@@ -325,7 +325,7 @@ public abstract class BGenerator extends BOperatorVisitor {
 
 	public final boolean LoadScript(String ScriptText, String FileName, int LineNumber, boolean IsInteractive) {
 		@Var boolean Result = true;
-		@Var BBlockNode TopBlockNode = new BBlockNode(null, this.RootNameSpace);
+		@Var BunBlockNode TopBlockNode = new BunBlockNode(null, this.RootNameSpace);
 		@Var BTokenContext TokenContext = new BTokenContext(this, this.RootNameSpace, FileName, LineNumber, ScriptText);
 		TokenContext.SkipEmptyStatement();
 		@Var BToken SkipToken = TokenContext.GetToken();

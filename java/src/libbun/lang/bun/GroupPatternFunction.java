@@ -1,19 +1,17 @@
 package libbun.lang.bun;
 
-import libbun.ast.BGroupNode;
 import libbun.ast.BNode;
+import libbun.ast.GroupNode;
 import libbun.parser.BTokenContext;
-import libbun.util.Var;
 import libbun.util.BMatchFunction;
+import libbun.util.Var;
 
 public class GroupPatternFunction extends BMatchFunction {
-
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
-		@Var BNode GroupNode = new BGroupNode(ParentNode);
-		GroupNode = TokenContext.MatchToken(GroupNode, "(", BTokenContext._Required);
-		GroupNode = TokenContext.MatchPattern(GroupNode, BGroupNode._Expr, "$Expression$", BTokenContext._Required, BTokenContext._AllowSkipIndent);
-		GroupNode = TokenContext.MatchToken(GroupNode, ")", BTokenContext._Required);
-		return GroupNode;
+		@Var BNode Node = new GroupNode(ParentNode);
+		Node = TokenContext.MatchToken(Node, "(", BTokenContext._Required);
+		Node = TokenContext.MatchPattern(Node, GroupNode._Expr, "$Expression$", BTokenContext._Required, BTokenContext._AllowSkipIndent);
+		Node = TokenContext.MatchToken(Node, ")", BTokenContext._Required);
+		return Node;
 	}
-
 }

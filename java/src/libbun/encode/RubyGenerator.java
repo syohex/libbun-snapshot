@@ -3,13 +3,13 @@ package libbun.encode;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
-import libbun.ast.BBlockNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.binary.BInstanceOfNode;
-import libbun.ast.decl.BFunctionNode;
-import libbun.ast.decl.BLetVarNode;
-import libbun.ast.statement.BThrowNode;
-import libbun.ast.statement.BTryNode;
-import libbun.ast.unary.BCastNode;
+import libbun.ast.decl.BunFunctionNode;
+import libbun.ast.decl.BunLetVarNode;
+import libbun.ast.statement.BunThrowNode;
+import libbun.ast.statement.BunTryNode;
+import libbun.ast.unary.BunCastNode;
 import libbun.type.BType;
 
 
@@ -56,7 +56,7 @@ public class RubyGenerator extends ZSourceGenerator {
 	//	}
 
 	@Override
-	public void VisitBlockNode(BBlockNode Node) {
+	public void VisitBlockNode(BunBlockNode Node) {
 		this.CurrentBuilder.Append("do");
 		this.CurrentBuilder.Indent();
 		throw new RuntimeException("FIXME: don't use for statement");
@@ -72,7 +72,7 @@ public class RubyGenerator extends ZSourceGenerator {
 		//		this.CurrentBuilder.Append("end");
 	}
 
-	@Override public void VisitCastNode(BCastNode Node) {
+	@Override public void VisitCastNode(BunCastNode Node) {
 		// Use method (like 1.to_s) in Ruby.
 	}
 
@@ -81,13 +81,13 @@ public class RubyGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	public void VisitThrowNode(BThrowNode Node) {
+	public void VisitThrowNode(BunThrowNode Node) {
 		this.CurrentBuilder.Append("raise ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
 	@Override
-	public void VisitTryNode(BTryNode Node) {
+	public void VisitTryNode(BunTryNode Node) {
 		this.CurrentBuilder.Append("begin");
 		this.GenerateCode(null, Node.TryBlockNode());
 		if (Node.CatchBlockNode() != null) {
@@ -115,11 +115,11 @@ public class RubyGenerator extends ZSourceGenerator {
 	//	}
 
 	@Override
-	protected void VisitParamNode(BLetVarNode Node) {
+	protected void VisitParamNode(BunLetVarNode Node) {
 		this.CurrentBuilder.Append(Node.GetGivenName());
 	}
 
-	@Override public void VisitFunctionNode(BFunctionNode Node) {
+	@Override public void VisitFunctionNode(BunFunctionNode Node) {
 		this.CurrentBuilder.Append("->");
 		this.VisitFuncParamNode("(", Node, ")");
 		this.GenerateCode(null, Node.BlockNode());

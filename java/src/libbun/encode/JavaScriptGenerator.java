@@ -27,17 +27,17 @@ package libbun.encode;
 
 import libbun.ast.BNode;
 import libbun.ast.binary.BInstanceOfNode;
-import libbun.ast.decl.BClassNode;
-import libbun.ast.decl.BFunctionNode;
-import libbun.ast.decl.BLetVarNode;
-import libbun.ast.error.BErrorNode;
-import libbun.ast.error.ZStupidCastErrorNode;
-import libbun.ast.expression.BNewObjectNode;
-import libbun.ast.literal.BNullNode;
-import libbun.ast.literal.ZMapLiteralNode;
-import libbun.ast.statement.BThrowNode;
-import libbun.ast.statement.BTryNode;
-import libbun.ast.unary.BCastNode;
+import libbun.ast.decl.BunClassNode;
+import libbun.ast.decl.BunFunctionNode;
+import libbun.ast.decl.BunLetVarNode;
+import libbun.ast.error.ErrorNode;
+import libbun.ast.error.StupidCastErrorNode;
+import libbun.ast.expression.NewObjectNode;
+import libbun.ast.literal.BunNullNode;
+import libbun.ast.literal.BunMapLiteralNode;
+import libbun.ast.statement.BunThrowNode;
+import libbun.ast.statement.BunTryNode;
+import libbun.ast.unary.BunCastNode;
 import libbun.parser.BLogger;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
@@ -81,12 +81,12 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.HeaderBuilder.AppendNewLine(LibName);
 	}
 
-	@Override public void VisitNewObjectNode(BNewObjectNode Node) {
+	@Override public void VisitNewObjectNode(NewObjectNode Node) {
 		this.CurrentBuilder.Append(this.NameClass(Node.Type));
 		this.VisitListNode("(", Node, ")");
 	}
 
-	@Override public void VisitCastNode(BCastNode Node) {
+	@Override public void VisitCastNode(BunCastNode Node) {
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
@@ -98,12 +98,12 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(".name");
 	}
 
-	@Override public void VisitThrowNode(BThrowNode Node) {
+	@Override public void VisitThrowNode(BunThrowNode Node) {
 		this.CurrentBuilder.Append("throw ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
-	@Override public void VisitTryNode(BTryNode Node) {
+	@Override public void VisitTryNode(BunTryNode Node) {
 		this.CurrentBuilder.Append("try");
 		this.GenerateCode(null, Node.TryBlockNode());
 		if(Node.HasCatchBlockNode()){
@@ -118,7 +118,7 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	protected void VisitVarDeclNode(BLetVarNode Node) {
+	protected void VisitVarDeclNode(BunLetVarNode Node) {
 		this.CurrentBuilder.AppendToken("var");
 		this.CurrentBuilder.AppendWhiteSpace();
 		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
@@ -128,17 +128,17 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 	}
 
-	@Override protected void VisitParamNode(BLetVarNode Node) {
+	@Override protected void VisitParamNode(BunLetVarNode Node) {
 		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 	}
 
-	private void VisitAnonymousFunctionNode(BFunctionNode Node) {
+	private void VisitAnonymousFunctionNode(BunFunctionNode Node) {
 		this.VisitFuncParamNode("(function(", Node, ")");
 		this.GenerateCode(null, Node.BlockNode());
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitFunctionNode(BFunctionNode Node) {
+	@Override public void VisitFunctionNode(BunFunctionNode Node) {
 		if(Node.FuncName() == null) {
 			this.VisitAnonymousFunctionNode(Node);
 			return;
@@ -163,12 +163,12 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitMapLiteralNode(ZMapLiteralNode Node) {
+	@Override public void VisitMapLiteralNode(BunMapLiteralNode Node) {
 		@Var int ListSize =  Node.GetListSize();
 		@Var int i = 0;
 		while(i < ListSize) {
 			@Var BNode KeyNode = Node.GetListAt(i);
-			if(KeyNode instanceof BErrorNode){
+			if(KeyNode instanceof ErrorNode){
 				this.GenerateCode(null, KeyNode);
 				return;
 			}
@@ -194,12 +194,12 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append("}");
 	}
 
-	@Override public void VisitLetNode(BLetVarNode Node) {
+	@Override public void VisitLetNode(BunLetVarNode Node) {
 		this.CurrentBuilder.AppendNewLine("var ", Node.GetUniqueName(this), " = ");
 		this.GenerateCode(null, Node.InitValueNode());
 	}
 
-	@Override public void VisitClassNode(BClassNode Node) {
+	@Override public void VisitClassNode(BunClassNode Node) {
 		/* var ClassName = (function(_super) {
 		 *  __extends(ClassName, _super);
 		 * 	function ClassName(params) {
@@ -231,9 +231,9 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 
 		@Var int i = 0;
 		while (i < Node.GetListSize()) {
-			@Var BLetVarNode FieldNode = Node.GetFieldNode(i);
+			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
 			@Var BNode ValueNode = FieldNode.InitValueNode();
-			if(!(ValueNode instanceof BNullNode)) {
+			if(!(ValueNode instanceof BunNullNode)) {
 				this.CurrentBuilder.AppendNewLine("this.");
 				this.CurrentBuilder.Append(FieldNode.GetGivenName());
 				this.CurrentBuilder.Append(" = ");
@@ -252,9 +252,9 @@ public class JavaScriptGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitErrorNode(BErrorNode Node) {
-		if(Node instanceof ZStupidCastErrorNode) {
-			@Var ZStupidCastErrorNode ErrorNode = (ZStupidCastErrorNode)Node;
+	@Override public void VisitErrorNode(ErrorNode Node) {
+		if(Node instanceof StupidCastErrorNode) {
+			@Var StupidCastErrorNode ErrorNode = (StupidCastErrorNode)Node;
 			this.GenerateCode(null, ErrorNode.ErrorNode);
 		}
 		else {

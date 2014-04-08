@@ -23,21 +23,21 @@
 // **************************************************************************
 
 package libbun.ast.decl;
-import libbun.ast.BBlockNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
 import libbun.parser.BNodeUtils;
 import libbun.parser.BVisitor;
 import libbun.util.Var;
 
-public class ZVarBlockNode extends BBlockNode {
+public class ZVarBlockNode extends BunBlockNode {
 	public static final int _VarDecl = 0;
 
-	public ZVarBlockNode(BNode ParentNode, BLetVarNode VarNode) {
+	public ZVarBlockNode(BNode ParentNode, BunLetVarNode VarNode) {
 		super(ParentNode, null, 1);
 		this.SetNode(ZVarBlockNode._VarDecl, VarNode);
 	}
 
-	public ZVarBlockNode(BNode ParentNode, BLetVarNode VarNode, BBlockNode ParentBlockNode) {
+	public ZVarBlockNode(BNode ParentNode, BunLetVarNode VarNode, BunBlockNode ParentBlockNode) {
 		super(ParentNode, null, 1);
 		this.SetNode(ZVarBlockNode._VarDecl, VarNode);
 		@Var int Index = BNodeUtils._AstIndexOf(ParentBlockNode, VarNode);
@@ -46,10 +46,10 @@ public class ZVarBlockNode extends BBlockNode {
 
 
 
-	public final BLetVarNode VarDeclNode() {
+	public final BunLetVarNode VarDeclNode() {
 		@Var BNode VarNode = this.AST[ZVarBlockNode._VarDecl];
-		if(VarNode instanceof BLetVarNode) {
-			return (BLetVarNode)VarNode;
+		if(VarNode instanceof BunLetVarNode) {
+			return (BunLetVarNode)VarNode;
 		}
 		return null;
 	}

@@ -56,15 +56,15 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Stack;
 
-import libbun.ast.BBlockNode;
-import libbun.ast.BGroupNode;
-import libbun.ast.BListNode;
+import libbun.ast.BunBlockNode;
+import libbun.ast.GroupNode;
+import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
 import libbun.ast.ZLocalDefinedNode;
-import libbun.ast.binary.BAndNode;
-import libbun.ast.binary.BBinaryNode;
+import libbun.ast.binary.BunAndNode;
+import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BInstanceOfNode;
-import libbun.ast.binary.BOrNode;
+import libbun.ast.binary.BunOrNode;
 import libbun.ast.binary.BunAddNode;
 import libbun.ast.binary.BunBitwiseAndNode;
 import libbun.ast.binary.BunBitwiseOrNode;
@@ -81,43 +81,43 @@ import libbun.ast.binary.BunMulNode;
 import libbun.ast.binary.BunNotEqualsNode;
 import libbun.ast.binary.BunRightShiftNode;
 import libbun.ast.binary.BunSubNode;
-import libbun.ast.decl.BClassNode;
-import libbun.ast.decl.BFunctionNode;
-import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.BunClassNode;
+import libbun.ast.decl.BunFunctionNode;
+import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.ZTopLevelNode;
 import libbun.ast.decl.ZVarBlockNode;
-import libbun.ast.error.BErrorNode;
-import libbun.ast.expression.BFuncCallNode;
-import libbun.ast.expression.BFuncNameNode;
-import libbun.ast.expression.BGetIndexNode;
-import libbun.ast.expression.BGetNameNode;
-import libbun.ast.expression.BGetterNode;
-import libbun.ast.expression.BMacroNode;
-import libbun.ast.expression.BMethodCallNode;
-import libbun.ast.expression.BNewObjectNode;
-import libbun.ast.expression.BSetIndexNode;
-import libbun.ast.expression.BSetNameNode;
-import libbun.ast.expression.BSetterNode;
-import libbun.ast.literal.BArrayLiteralNode;
-import libbun.ast.literal.BAsmNode;
-import libbun.ast.literal.BBooleanNode;
-import libbun.ast.literal.BFloatNode;
-import libbun.ast.literal.BIntNode;
-import libbun.ast.literal.BNullNode;
-import libbun.ast.literal.BStringNode;
-import libbun.ast.literal.BTypeNode;
+import libbun.ast.error.ErrorNode;
+import libbun.ast.expression.FuncCallNode;
+import libbun.ast.expression.BunFuncNameNode;
+import libbun.ast.expression.GetIndexNode;
+import libbun.ast.expression.GetNameNode;
+import libbun.ast.expression.GetFieldNode;
+import libbun.ast.expression.BunMacroNode;
+import libbun.ast.expression.MethodCallNode;
+import libbun.ast.expression.NewObjectNode;
+import libbun.ast.expression.SetIndexNode;
+import libbun.ast.expression.SetNameNode;
+import libbun.ast.expression.SetFieldNode;
+import libbun.ast.literal.BunArrayLiteralNode;
+import libbun.ast.literal.BunAsmNode;
+import libbun.ast.literal.BunBooleanNode;
+import libbun.ast.literal.BunFloatNode;
+import libbun.ast.literal.BunIntNode;
+import libbun.ast.literal.BunNullNode;
+import libbun.ast.literal.BunStringNode;
+import libbun.ast.literal.BunTypeNode;
 import libbun.ast.literal.LiteralNode;
-import libbun.ast.literal.ZMapEntryNode;
-import libbun.ast.literal.ZMapLiteralNode;
-import libbun.ast.statement.BBreakNode;
-import libbun.ast.statement.BIfNode;
-import libbun.ast.statement.BReturnNode;
-import libbun.ast.statement.BThrowNode;
-import libbun.ast.statement.BTryNode;
-import libbun.ast.statement.BWhileNode;
-import libbun.ast.unary.BCastNode;
-import libbun.ast.unary.BNotNode;
-import libbun.ast.unary.BUnaryNode;
+import libbun.ast.literal.BunMapEntryNode;
+import libbun.ast.literal.BunMapLiteralNode;
+import libbun.ast.statement.BunBreakNode;
+import libbun.ast.statement.BunIfNode;
+import libbun.ast.statement.BunReturnNode;
+import libbun.ast.statement.BunThrowNode;
+import libbun.ast.statement.BunTryNode;
+import libbun.ast.statement.BunWhileNode;
+import libbun.ast.unary.BunCastNode;
+import libbun.ast.unary.BunNotNode;
+import libbun.ast.unary.UnaryOperatorNode;
 import libbun.ast.unary.BunComplementNode;
 import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunPlusNode;
@@ -196,7 +196,7 @@ public class AsmJavaGenerator extends BGenerator {
 	}
 
 	private final BMap<BNode> LazyNodeMap = new BMap<BNode>(null);
-	protected void LazyBuild(BFunctionNode Node) {
+	protected void LazyBuild(BunFunctionNode Node) {
 		this.LazyNodeMap.put(Node.GetSignature(), Node);
 	}
 
@@ -291,7 +291,7 @@ public class AsmJavaGenerator extends BGenerator {
 		return BType.VarType;     // undefined
 	}
 
-	private boolean MatchParam(Class<?>[] jParams, BListNode ParamList) {
+	private boolean MatchParam(Class<?>[] jParams, AbstractListNode ParamList) {
 		if(jParams.length != ParamList.GetListSize()) {
 			return false;
 		}
@@ -315,7 +315,7 @@ public class AsmJavaGenerator extends BGenerator {
 		return true;
 	}
 
-	protected Constructor<?> GetConstructor(BType RecvType, BListNode ParamList) {
+	protected Constructor<?> GetConstructor(BType RecvType, AbstractListNode ParamList) {
 		Class<?> NativeClass = this.GetJavaClass(RecvType);
 		if(NativeClass != null) {
 			try {
@@ -335,7 +335,7 @@ public class AsmJavaGenerator extends BGenerator {
 		return null;
 	}
 
-	protected Method GetMethod(BType RecvType, String MethodName, BListNode ParamList) {
+	protected Method GetMethod(BType RecvType, String MethodName, AbstractListNode ParamList) {
 		Class<?> NativeClass = this.GetJavaClass(RecvType);
 		if(NativeClass != null) {
 			try {
@@ -358,7 +358,7 @@ public class AsmJavaGenerator extends BGenerator {
 		return null;
 	}
 
-	@Override public BFuncType GetMethodFuncType(BType RecvType, String MethodName, BListNode ParamList) {
+	@Override public BFuncType GetMethodFuncType(BType RecvType, String MethodName, AbstractListNode ParamList) {
 		if(MethodName == null) {
 			Constructor<?> jMethod = this.GetConstructor(RecvType, ParamList);
 			if(jMethod != null) {
@@ -386,29 +386,29 @@ public class AsmJavaGenerator extends BGenerator {
 
 
 
-	@Override public void VisitNullNode(BNullNode Node) {
+	@Override public void VisitNullNode(BunNullNode Node) {
 		this.AsmBuilder.visitInsn(Opcodes.ACONST_NULL);
 	}
 
-	@Override public void VisitBooleanNode(BBooleanNode Node) {
+	@Override public void VisitBooleanNode(BunBooleanNode Node) {
 		this.AsmBuilder.PushBoolean(Node.BooleanValue);
 	}
 
-	@Override public void VisitIntNode(BIntNode Node) {
+	@Override public void VisitIntNode(BunIntNode Node) {
 		this.AsmBuilder.PushLong(Node.IntValue);
 	}
 
-	@Override public void VisitFloatNode(BFloatNode Node) {
+	@Override public void VisitFloatNode(BunFloatNode Node) {
 		this.AsmBuilder.PushDouble(Node.FloatValue);
 	}
 
-	@Override public void VisitStringNode(BStringNode Node) {
+	@Override public void VisitStringNode(BunStringNode Node) {
 		this.AsmBuilder.visitLdcInsn(Node.StringValue);
 	}
 
-	@Override public void VisitArrayLiteralNode(BArrayLiteralNode Node) {
+	@Override public void VisitArrayLiteralNode(BunArrayLiteralNode Node) {
 		if(Node.IsUntyped()) {
-			this.VisitErrorNode(new BErrorNode(Node, "ambigious array"));
+			this.VisitErrorNode(new ErrorNode(Node, "ambigious array"));
 		}
 		else {
 			Class<?> ArrayClass = LibAsm.AsArrayClass(Node.Type);
@@ -422,9 +422,9 @@ public class AsmJavaGenerator extends BGenerator {
 		}
 	}
 
-	@Override public void VisitMapLiteralNode(ZMapLiteralNode Node) {
+	@Override public void VisitMapLiteralNode(BunMapLiteralNode Node) {
 		if(Node.IsUntyped()) {
-			this.VisitErrorNode(new BErrorNode(Node, "ambigious map"));
+			this.VisitErrorNode(new ErrorNode(Node, "ambigious map"));
 		}
 		else {
 			String Owner = Type.getInternalName(ZObjectMap.class);
@@ -434,7 +434,7 @@ public class AsmJavaGenerator extends BGenerator {
 			this.AsmBuilder.PushInt(Node.GetListSize() * 2);
 			this.AsmBuilder.visitTypeInsn(ANEWARRAY, Type.getInternalName(Object.class));
 			for(int i = 0; i < Node.GetListSize() ; i++) {
-				ZMapEntryNode EntryNode = Node.GetMapEntryNode(i);
+				BunMapEntryNode EntryNode = Node.GetMapEntryNode(i);
 				this.AsmBuilder.visitInsn(DUP);
 				this.AsmBuilder.PushInt(i * 2);
 				this.AsmBuilder.PushNode(String.class, EntryNode.KeyNode());
@@ -458,14 +458,14 @@ public class AsmJavaGenerator extends BGenerator {
 	//		//		this.CurrentBuilder.InvokeMethodCall(Node.Type, JLib.NewArray);
 	//	}
 
-	@Override public void VisitNewObjectNode(BNewObjectNode Node) {
+	@Override public void VisitNewObjectNode(NewObjectNode Node) {
 		if(Node.IsUntyped()) {
-			this.VisitErrorNode(new BErrorNode(Node, "no class for new operator"));
+			this.VisitErrorNode(new ErrorNode(Node, "no class for new operator"));
 			return;
 		}
 		// check class existence
 		if(!Node.Type.Equals(JavaTypeTable.GetZenType(this.GetJavaClass(Node.Type)))) {
-			this.VisitErrorNode(new BErrorNode(Node, "undefined class: " + Node.Type));
+			this.VisitErrorNode(new ErrorNode(Node, "undefined class: " + Node.Type));
 			return;
 		}
 		String ClassName = Type.getInternalName(this.GetJavaClass(Node.Type));
@@ -481,11 +481,11 @@ public class AsmJavaGenerator extends BGenerator {
 			this.AsmBuilder.visitMethodInsn(INVOKESPECIAL, ClassName, "<init>", Type.getConstructorDescriptor(jMethod));
 		}
 		else {
-			this.VisitErrorNode(new BErrorNode(Node, "no constructor: " + Node.Type));
+			this.VisitErrorNode(new ErrorNode(Node, "no constructor: " + Node.Type));
 		}
 	}
 
-	protected void VisitVarDeclNode(BLetVarNode Node) {
+	protected void VisitVarDeclNode(BunLetVarNode Node) {
 		Class<?> DeclClass = this.GetJavaClass(Node.DeclType());
 		this.AsmBuilder.AddLocal(DeclClass, Node.GetGivenName());
 		this.AsmBuilder.PushNode(DeclClass, Node.InitValueNode());
@@ -497,7 +497,7 @@ public class AsmJavaGenerator extends BGenerator {
 		//		this.AsmBuilder.RemoveLocal(DeclClass, Node.GetName());
 	}
 
-	protected void VisitVarDeclNode2(BLetVarNode Node) {
+	protected void VisitVarDeclNode2(BunLetVarNode Node) {
 		if(Node.HasNextVarNode()) {
 			this.VisitVarDeclNode(Node.NextVarNode());
 		}
@@ -528,20 +528,20 @@ public class AsmJavaGenerator extends BGenerator {
 	//		}
 	//	}
 
-	protected void VisitGlobalNameNode(BGetNameNode Node) {
-		if(Node.ResolvedNode instanceof BLetVarNode) {
-			BLetVarNode LetNode = Node.ResolvedNode;
-			Class<?> JavaClass = this.GetJavaClass(LetNode.GetAstType(BLetVarNode._NameInfo));
+	protected void VisitGlobalNameNode(GetNameNode Node) {
+		if(Node.ResolvedNode instanceof BunLetVarNode) {
+			BunLetVarNode LetNode = Node.ResolvedNode;
+			Class<?> JavaClass = this.GetJavaClass(LetNode.GetAstType(BunLetVarNode._NameInfo));
 			this.AsmBuilder.visitFieldInsn(GETSTATIC, this.NameGlobalNameClass(LetNode.GetUniqueName(this)), "_", JavaClass);
 		}
 		else {
-			this.VisitErrorNode(new BErrorNode(Node, "unimplemented ResolvedNode: " + Node.ResolvedNode.getClass().getName()));
+			this.VisitErrorNode(new ErrorNode(Node, "unimplemented ResolvedNode: " + Node.ResolvedNode.getClass().getName()));
 		}
 	}
 
-	@Override public void VisitGetNameNode(BGetNameNode Node) {
+	@Override public void VisitGetNameNode(GetNameNode Node) {
 		if(Node.ResolvedNode == null) {
-			this.VisitErrorNode(new BErrorNode(Node, "undefined symbol: " + Node.GivenName));
+			this.VisitErrorNode(new ErrorNode(Node, "undefined symbol: " + Node.GivenName));
 			return;
 		}
 		if(Node.ResolvedNode.GetDefiningFunctionNode() == null) {
@@ -552,13 +552,13 @@ public class AsmJavaGenerator extends BGenerator {
 		this.AsmBuilder.CheckReturnCast(Node, this.AsmBuilder.GetLocalType(Node.GetUniqueName(this)));
 	}
 
-	@Override public void VisitSetNameNode(BSetNameNode Node) {
+	@Override public void VisitSetNameNode(SetNameNode Node) {
 		@Var String Name = Node.NameNode().GetUniqueName(this);
 		this.AsmBuilder.PushNode(this.AsmBuilder.GetLocalType(Name), Node.ExprNode());
 		this.AsmBuilder.StoreLocal(Name);
 	}
 
-	@Override public void VisitGroupNode(BGroupNode Node) {
+	@Override public void VisitGroupNode(GroupNode Node) {
 		Node.ExprNode().Accept(this);
 	}
 
@@ -571,10 +571,10 @@ public class AsmJavaGenerator extends BGenerator {
 		return null;  // type checker guarantees field exists
 	}
 
-	@Override public void VisitGetterNode(BGetterNode Node) {
+	@Override public void VisitGetFieldNode(GetFieldNode Node) {
 		if(Node.IsUntyped()) {
 			Method sMethod = JavaMethodTable.GetStaticMethod("GetField");
-			BNode NameNode = new BStringNode(Node, null, Node.GetName());
+			BNode NameNode = new BunStringNode(Node, null, Node.GetName());
 			this.AsmBuilder.ApplyStaticMethod(Node, sMethod, new BNode[] {Node.RecvNode(), NameNode});
 		}
 		else {
@@ -593,10 +593,10 @@ public class AsmJavaGenerator extends BGenerator {
 		}
 	}
 
-	@Override public void VisitSetterNode(BSetterNode Node) {
+	@Override public void VisitSetFieldNode(SetFieldNode Node) {
 		if(Node.IsUntyped()) {
 			Method sMethod = JavaMethodTable.GetStaticMethod("SetField");
-			BNode NameNode = new BStringNode(Node, null, Node.GetName());
+			BNode NameNode = new BunStringNode(Node, null, Node.GetName());
 			this.AsmBuilder.ApplyStaticMethod(Node, sMethod, new BNode[] {Node.RecvNode(), NameNode, Node.ExprNode()});
 		}
 		else {
@@ -616,12 +616,12 @@ public class AsmJavaGenerator extends BGenerator {
 		}
 	}
 
-	@Override public void VisitGetIndexNode(BGetIndexNode Node) {
+	@Override public void VisitGetIndexNode(GetIndexNode Node) {
 		Method sMethod = JavaMethodTable.GetBinaryStaticMethod(Node.RecvNode().Type, "[]", Node.IndexNode().Type);
 		this.AsmBuilder.ApplyStaticMethod(Node, sMethod, new BNode[] {Node.RecvNode(), Node.IndexNode()});
 	}
 
-	@Override public void VisitSetIndexNode(BSetIndexNode Node) {
+	@Override public void VisitSetIndexNode(SetIndexNode Node) {
 		Method sMethod = JavaMethodTable.GetBinaryStaticMethod(Node.RecvNode().Type, "[]=", Node.IndexNode().Type);
 		this.AsmBuilder.ApplyStaticMethod(Node, sMethod, new BNode[] {Node.RecvNode(), Node.IndexNode(), Node.ExprNode()});
 	}
@@ -636,7 +636,7 @@ public class AsmJavaGenerator extends BGenerator {
 		return INVOKEVIRTUAL;
 	}
 
-	@Override public void VisitMethodCallNode(BMethodCallNode Node) {
+	@Override public void VisitMethodCallNode(MethodCallNode Node) {
 		this.AsmBuilder.SetLineNumber(Node);
 		Method jMethod = this.GetMethod(Node.RecvNode().Type, Node.MethodName(), Node);
 		if(jMethod != null) {
@@ -661,7 +661,7 @@ public class AsmJavaGenerator extends BGenerator {
 		}
 	}
 
-	@Override public void VisitMacroNode(BMacroNode Node) {
+	@Override public void VisitMacroNode(BunMacroNode Node) {
 		for(int i = 0; i < Node.GetListSize(); i++) {
 			this.AsmBuilder.PushNode(null, Node.GetListAt(i));
 		}
@@ -676,10 +676,10 @@ public class AsmJavaGenerator extends BGenerator {
 		this.AsmBuilder.visitMethodInsn(INVOKESTATIC, ClassName, MethodName, Node.MacroFunc.FuncType);
 	}
 
-	@Override public void VisitFuncCallNode(BFuncCallNode Node) {
+	@Override public void VisitFuncCallNode(FuncCallNode Node) {
 		BType FuncType = Node.FunctorNode().Type;
 		if(FuncType instanceof BFuncType) {
-			@Var BFuncNameNode FuncNameNode = Node.FuncNameNode();
+			@Var BunFuncNameNode FuncNameNode = Node.FuncNameNode();
 			if(FuncNameNode != null) {
 				this.AsmBuilder.ApplyFuncName(FuncNameNode, FuncNameNode.FuncName, (BFuncType)FuncType, Node);
 			}
@@ -689,16 +689,16 @@ public class AsmJavaGenerator extends BGenerator {
 			}
 		}
 		else {
-			this.VisitErrorNode(new BErrorNode(Node, "not function"));
+			this.VisitErrorNode(new ErrorNode(Node, "not function"));
 		}
 	}
 
-	@Override public void VisitUnaryNode(BUnaryNode Node) {
+	@Override public void VisitUnaryNode(UnaryOperatorNode Node) {
 		Method sMethod = JavaMethodTable.GetUnaryStaticMethod(Node.SourceToken.GetText(), Node.RecvNode().Type);
 		this.AsmBuilder.ApplyStaticMethod(Node, sMethod, new BNode[] {Node.RecvNode()});
 	}
 
-	@Override public void VisitNotNode(BNotNode Node) {
+	@Override public void VisitNotNode(BunNotNode Node) {
 		this.VisitUnaryNode(Node);
 	}
 
@@ -716,7 +716,7 @@ public class AsmJavaGenerator extends BGenerator {
 	}
 
 
-	@Override public void VisitCastNode(BCastNode Node) {
+	@Override public void VisitCastNode(BunCastNode Node) {
 		if(Node.Type.IsVoidType()) {
 			Node.ExprNode().Accept(this);
 			this.AsmBuilder.Pop(Node.ExprNode().Type);
@@ -739,7 +739,7 @@ public class AsmJavaGenerator extends BGenerator {
 
 	}
 
-	@Override public void VisitBinaryNode(BBinaryNode Node) {
+	@Override public void VisitBinaryNode(BinaryOperatorNode Node) {
 		Method sMethod = JavaMethodTable.GetBinaryStaticMethod(Node.LeftNode().Type, Node.SourceToken.GetText(), Node.RightNode().Type);
 		this.AsmBuilder.ApplyStaticMethod(Node, sMethod, new BNode[] {Node.LeftNode(), Node.RightNode()});
 	}
@@ -824,7 +824,7 @@ public class AsmJavaGenerator extends BGenerator {
 
 	}
 
-	@Override public void VisitAndNode(BAndNode Node) {
+	@Override public void VisitAndNode(BunAndNode Node) {
 		Label elseLabel = new Label();
 		Label mergeLabel = new Label();
 		this.AsmBuilder.PushNode(boolean.class, Node.LeftNode());
@@ -843,7 +843,7 @@ public class AsmJavaGenerator extends BGenerator {
 		this.AsmBuilder.visitLabel(mergeLabel);
 	}
 
-	@Override public void VisitOrNode(BOrNode Node) {
+	@Override public void VisitOrNode(BunOrNode Node) {
 		Label thenLabel = new Label();
 		Label mergeLabel = new Label();
 		this.AsmBuilder.PushNode(boolean.class, Node.LeftNode());
@@ -862,13 +862,13 @@ public class AsmJavaGenerator extends BGenerator {
 		this.AsmBuilder.visitLabel(mergeLabel);
 	}
 
-	@Override public void VisitBlockNode(BBlockNode Node) {
+	@Override public void VisitBlockNode(BunBlockNode Node) {
 		for (int i = 0; i < Node.GetListSize(); i++) {
 			Node.GetListAt(i).Accept(this);
 		}
 	}
 
-	@Override public void VisitIfNode(BIfNode Node) {
+	@Override public void VisitIfNode(BunIfNode Node) {
 		Label ElseLabel = new Label();
 		Label EndLabel = new Label();
 		this.AsmBuilder.PushNode(boolean.class, Node.CondNode());
@@ -886,7 +886,7 @@ public class AsmJavaGenerator extends BGenerator {
 		this.AsmBuilder.visitLabel(EndLabel);
 	}
 
-	@Override public void VisitReturnNode(BReturnNode Node) {
+	@Override public void VisitReturnNode(BunReturnNode Node) {
 		if(Node.HasReturnExpr()) {
 			Node.ExprNode().Accept(this);
 			Type type = this.AsmType(Node.ExprNode().Type);
@@ -897,7 +897,7 @@ public class AsmJavaGenerator extends BGenerator {
 		}
 	}
 
-	@Override public void VisitWhileNode(BWhileNode Node) {
+	@Override public void VisitWhileNode(BunWhileNode Node) {
 		Label continueLabel = new Label();
 		Label breakLabel = new Label();
 		this.AsmBuilder.BreakLabelStack.push(breakLabel);
@@ -914,12 +914,12 @@ public class AsmJavaGenerator extends BGenerator {
 		this.AsmBuilder.ContinueLabelStack.pop();
 	}
 
-	@Override public void VisitBreakNode(BBreakNode Node) {
+	@Override public void VisitBreakNode(BunBreakNode Node) {
 		Label l = this.AsmBuilder.BreakLabelStack.peek();
 		this.AsmBuilder.visitJumpInsn(GOTO, l);
 	}
 
-	@Override public void VisitThrowNode(BThrowNode Node) {
+	@Override public void VisitThrowNode(BunThrowNode Node) {
 		// use wrapper
 		//String name = Type.getInternalName(ZenThrowableWrapper.class);
 		//this.CurrentVisitor.MethodVisitor.visitTypeInsn(NEW, name);
@@ -931,7 +931,7 @@ public class AsmJavaGenerator extends BGenerator {
 		//this.CurrentVisitor.MethodVisitor.visitInsn(ATHROW);
 	}
 
-	@Override public void VisitTryNode(BTryNode Node) {
+	@Override public void VisitTryNode(BunTryNode Node) {
 		MethodVisitor mv = this.AsmBuilder;
 		AsmTryCatchLabel TryCatchLabel = new AsmTryCatchLabel();
 		this.TryCatchLabel.push(TryCatchLabel); // push
@@ -973,14 +973,14 @@ public class AsmJavaGenerator extends BGenerator {
 	//		this.AsmBuilder.RemoveLocal(this.GetJavaClass(Node.GivenType), Node.GivenName);
 	//	}
 
-	@Override public void VisitLetNode(BLetVarNode Node) {
+	@Override public void VisitLetNode(BunLetVarNode Node) {
 		//		if(Node.InitValueNode().HasUntypedNode()) {
 		//			ZLogger._LogWarning(Node.InitValueNode().SourceToken, "type is ambigiou: " + Node.InitValueNode());
 		//			return;
 		//		}
 		String ClassName = this.NameGlobalNameClass(Node.GetUniqueName(this));
 		@Var AsmClassBuilder ClassBuilder = this.AsmLoader.NewClass(ACC_PUBLIC|ACC_FINAL, Node, ClassName, "java/lang/Object");
-		Class<?> ValueClass = this.GetJavaClass(Node.GetAstType(BLetVarNode._InitValue));
+		Class<?> ValueClass = this.GetJavaClass(Node.GetAstType(BunLetVarNode._InitValue));
 		ClassBuilder.AddField(ACC_PUBLIC|ACC_STATIC, "_", ValueClass, null);
 
 		AsmMethodBuilder StaticInitMethod = ClassBuilder.NewMethod(ACC_PUBLIC | ACC_STATIC, "<clinit>", "()V");
@@ -1016,7 +1016,7 @@ public class AsmJavaGenerator extends BGenerator {
 		return FuncClass;
 	}
 
-	@Override public void VisitFunctionNode(BFunctionNode Node) {
+	@Override public void VisitFunctionNode(BunFunctionNode Node) {
 		if(Node.IsTopLevelDefineFunction()) {
 			assert(Node.FuncName() != null);
 			assert(Node.IsTopLevel());  // otherwise, transformed to var f = function ()..
@@ -1036,7 +1036,7 @@ public class AsmJavaGenerator extends BGenerator {
 		}
 	}
 
-	private JavaStaticFieldNode GenerateFunctionAsSymbolField(String FuncName, BFunctionNode Node) {
+	private JavaStaticFieldNode GenerateFunctionAsSymbolField(String FuncName, BunFunctionNode Node) {
 		@Var BFuncType FuncType = Node.GetFuncType();
 		String ClassName = this.NameFunctionClass(FuncName, FuncType);
 		Class<?> FuncClass = this.LoadFuncClass(FuncType);
@@ -1074,7 +1074,7 @@ public class AsmJavaGenerator extends BGenerator {
 
 		AsmMethodBuilder StaticFuncMethod = ClassBuilder.NewMethod(ACC_PUBLIC | ACC_STATIC, "f", FuncType);
 		for(int i = 0; i < Node.GetListSize(); i++) {
-			BLetVarNode ParamNode = Node.GetParamNode(i);
+			BunLetVarNode ParamNode = Node.GetParamNode(i);
 			Class<?> DeclClass = this.GetJavaClass(ParamNode.DeclType());
 			StaticFuncMethod.AddLocal(DeclClass, ParamNode.GetGivenName());
 		}
@@ -1211,33 +1211,33 @@ public class AsmJavaGenerator extends BGenerator {
 	}
 
 	private Object GetConstValue(BNode Node) {
-		if(Node instanceof BNullNode) {
+		if(Node instanceof BunNullNode) {
 			return null;
 		}
-		if(Node instanceof BBooleanNode) {
-			return ((BBooleanNode)Node).BooleanValue;
+		if(Node instanceof BunBooleanNode) {
+			return ((BunBooleanNode)Node).BooleanValue;
 		}
-		if(Node instanceof BIntNode) {
-			return ((BIntNode)Node).IntValue;
+		if(Node instanceof BunIntNode) {
+			return ((BunIntNode)Node).IntValue;
 		}
-		if(Node instanceof BFloatNode) {
-			return ((BFloatNode)Node).FloatValue;
+		if(Node instanceof BunFloatNode) {
+			return ((BunFloatNode)Node).FloatValue;
 		}
-		if(Node instanceof BStringNode) {
-			return ((BStringNode)Node).StringValue;
+		if(Node instanceof BunStringNode) {
+			return ((BunStringNode)Node).StringValue;
 		}
-		if(Node instanceof BTypeNode) {
+		if(Node instanceof BunTypeNode) {
 			return Node.Type;
 		}
 		return null;
 	}
 
-	@Override public void VisitClassNode(BClassNode Node) {
+	@Override public void VisitClassNode(BunClassNode Node) {
 		@Var Class<?> SuperClass = this.GetSuperClass(Node.SuperType());
 		@Var AsmClassBuilder ClassBuilder = this.AsmLoader.NewClass(ACC_PUBLIC, Node, Node.ClassName(), SuperClass);
 		// add class field (not function)
 		for(int i = 0; i < Node.GetListSize(); i++) {
-			@Var BLetVarNode FieldNode = Node.GetFieldNode(i);
+			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
 			ClassBuilder.AddField(ACC_PUBLIC, FieldNode.GetGivenName(), FieldNode.DeclType(), this.GetConstValue(FieldNode.InitValueNode()));
 		}
 		// add class field (function)
@@ -1261,7 +1261,7 @@ public class AsmJavaGenerator extends BGenerator {
 		//		InitMethod.visitMethodInsn(INVOKESPECIAL, Type.getInternalName(SuperClass), "<init>", "(I)V");
 		InitMethod.visitMethodInsn(INVOKESPECIAL, Type.getInternalName(SuperClass), "<init>", "()V");	// FIXME: ZObject?
 		for(int i = 0; i < Node.GetListSize(); i++) {
-			@Var BLetVarNode FieldNode = Node.GetFieldNode(i);
+			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
 			if(!FieldNode.DeclType().IsFuncType()) {
 				InitMethod.visitVarInsn(Opcodes.ALOAD, 0);
 				InitMethod.PushNode(this.GetJavaClass(FieldNode.DeclType()), FieldNode.InitValueNode());
@@ -1289,14 +1289,14 @@ public class AsmJavaGenerator extends BGenerator {
 		JavaTypeTable.SetTypeTable(Node.ClassType, this.AsmLoader.LoadGeneratedClass(Node.ClassName()));
 	}
 
-	@Override public void VisitErrorNode(BErrorNode Node) {
+	@Override public void VisitErrorNode(ErrorNode Node) {
 		@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.AsmBuilder.PushConst(Message);
 		@Var Method sMethod = JavaMethodTable.GetStaticMethod("ThrowError");
 		this.AsmBuilder.ApplyStaticMethod(Node, sMethod);
 	}
 
-	@Override public void VisitAsmNode(BAsmNode Node) {
+	@Override public void VisitAsmNode(BunAsmNode Node) {
 		// TODO Auto-generated method stub
 	}
 

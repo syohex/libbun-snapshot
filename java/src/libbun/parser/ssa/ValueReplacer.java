@@ -1,7 +1,7 @@
 package libbun.parser.ssa;
 
 import libbun.ast.BNode;
-import libbun.ast.expression.BGetNameNode;
+import libbun.ast.expression.GetNameNode;
 import libbun.parser.BGenerator;
 
 public class ValueReplacer extends ZASTTransformer {
@@ -20,8 +20,8 @@ public class ValueReplacer extends ZASTTransformer {
 
 	@Override
 	protected void VisitAfter(BNode Node, int Index) {
-		if(Node.AST[Index] instanceof BGetNameNode) {
-			BGetNameNode GNode = (BGetNameNode) Node.AST[Index];
+		if(Node.AST[Index] instanceof GetNameNode) {
+			GetNameNode GNode = (GetNameNode) Node.AST[Index];
 			PHINode phi = (PHINode) this.NewNode;
 			if(phi.EqualsName(GNode, this.Generator)) {
 				GNode.VarIndex = phi.GetVarIndex();

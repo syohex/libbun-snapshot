@@ -26,8 +26,8 @@ package libbun.lang.konoha;
 
 import libbun.ast.BNode;
 import libbun.ast.ZLocalDefinedNode;
-import libbun.ast.decl.BFunctionNode;
-import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.BunFunctionNode;
+import libbun.ast.decl.BunLetVarNode;
 import libbun.util.BField;
 
 public final class ClassMemberNode extends ZLocalDefinedNode {
@@ -35,9 +35,9 @@ public final class ClassMemberNode extends ZLocalDefinedNode {
 	@BField public boolean IsStatic   = false;
 	@BField public boolean IsFinal    = false;
 	@BField public boolean IsAbstract = false;
-	@BField public BLetVarNode    FieldNode = null;
-	@BField public BFunctionNode MethodNode = null;
-	@BField public BFunctionNode ConstructorNode = null;
+	@BField public BunLetVarNode    FieldNode = null;
+	@BField public BunFunctionNode MethodNode = null;
+	@BField public BunFunctionNode ConstructorNode = null;
 
 	public ClassMemberNode(BNode ParentNode) {
 		super(ParentNode, null, 0);

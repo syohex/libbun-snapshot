@@ -1,7 +1,7 @@
 package libbun.lang.bun;
 
 import libbun.ast.BNode;
-import libbun.ast.literal.BTypeNode;
+import libbun.ast.literal.BunTypeNode;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
 import libbun.type.BGenericType;
@@ -22,20 +22,20 @@ public class RightTypePatternFunction extends BMatchFunction {
 					if(TypeList.size() > 0 && !TokenContext.MatchToken(",")) {
 						return null;
 					}
-					@Var BTypeNode ParamTypeNode = (BTypeNode) TokenContext.ParsePattern(ParentNode, "$OpenType$", BTokenContext._Optional);
+					@Var BunTypeNode ParamTypeNode = (BunTypeNode) TokenContext.ParsePattern(ParentNode, "$OpenType$", BTokenContext._Optional);
 					if(ParamTypeNode == null) {
 						return LeftTypeNode;
 					}
 					TypeList.add(ParamTypeNode.Type);
 				}
-				LeftTypeNode = new BTypeNode(ParentNode, SourceToken, BTypePool._GetGenericType(LeftTypeNode.Type, TypeList, true));
+				LeftTypeNode = new BunTypeNode(ParentNode, SourceToken, BTypePool._GetGenericType(LeftTypeNode.Type, TypeList, true));
 			}
 		}
 		while(TokenContext.MatchToken("[")) {  // Array
 			if(!TokenContext.MatchToken("]")) {
 				return null;
 			}
-			LeftTypeNode = new BTypeNode(ParentNode, SourceToken, BTypePool._GetGenericType1(BGenericType._ArrayType, LeftTypeNode.Type));
+			LeftTypeNode = new BunTypeNode(ParentNode, SourceToken, BTypePool._GetGenericType1(BGenericType._ArrayType, LeftTypeNode.Type));
 		}
 		return LeftTypeNode;
 	}

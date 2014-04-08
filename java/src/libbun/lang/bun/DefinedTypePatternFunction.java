@@ -1,7 +1,7 @@
 package libbun.lang.bun;
 
 import libbun.ast.BNode;
-import libbun.ast.literal.BTypeNode;
+import libbun.ast.literal.BunTypeNode;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
 import libbun.type.BType;
@@ -14,7 +14,7 @@ public class DefinedTypePatternFunction extends BMatchFunction {
 		@Var BToken Token = TokenContext.GetToken(BTokenContext._MoveNext);
 		@Var BType Type = ParentNode.GetNameSpace().GetType(Token.GetText(), Token, false/*IsCreation*/);
 		if(Type != null) {
-			@Var BTypeNode TypeNode = new BTypeNode(ParentNode, Token, Type);
+			@Var BunTypeNode TypeNode = new BunTypeNode(ParentNode, Token, Type);
 			return TokenContext.ParsePatternAfter(ParentNode, TypeNode, "$TypeRight$", BTokenContext._Optional);
 		}
 		return null;

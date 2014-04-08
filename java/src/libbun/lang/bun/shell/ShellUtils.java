@@ -3,9 +3,9 @@ package libbun.lang.bun.shell;
 import java.io.File;
 
 import libbun.ast.BNode;
-import libbun.ast.binary.BBinaryNode;
+import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAddNode;
-import libbun.ast.literal.BStringNode;
+import libbun.ast.literal.BunStringNode;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
 import libbun.util.BArray;
@@ -39,12 +39,12 @@ public class ShellUtils {
 
 	public static BNode _ToNode(BNode ParentNode, BTokenContext TokenContext, BArray<BNode> NodeList) {
 		BToken Token = TokenContext.GetToken();
-		BNode Node = new BStringNode(ParentNode, null, "");
+		BNode Node = new BunStringNode(ParentNode, null, "");
 		//		BSyntax Pattern = TokenContext.NameSpace.GetRightSyntaxPattern("+");
 		//		BToken PlusToken = new BToken(new BSource(Token.GetFileName(), Token.GetLineNumber(), "+", TokenContext), 0, "+".length());
 		for(BNode CurrentNode : NodeList.ArrayValues) {
 			BunAddNode BinaryNode = new BunAddNode(ParentNode, null, Node);
-			BinaryNode.SetNode(BBinaryNode._Right, CurrentNode);
+			BinaryNode.SetNode(BinaryOperatorNode._Right, CurrentNode);
 			Node = BinaryNode;
 		}
 		return Node;

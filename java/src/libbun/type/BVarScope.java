@@ -1,7 +1,7 @@
 package libbun.type;
 
 import libbun.ast.BNode;
-import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BunFunctionNode;
 import libbun.parser.BLogger;
 import libbun.parser.BToken;
 import libbun.parser.BTypeChecker;
@@ -86,14 +86,14 @@ public final class BVarScope {
 	//		return false;
 	//	}
 
-	public final void TypeCheckFuncBlock(BTypeChecker TypeSafer, BFunctionNode FunctionNode) {
+	public final void TypeCheckFuncBlock(BTypeChecker TypeSafer, BunFunctionNode FunctionNode) {
 		@Var int PrevCount = -1;
 		while(true) {
 			this.VarNodeCount = 0;
 			this.UnresolvedSymbolCount = 0;
 			this.TypedNodeCount = 0;
 			TypeSafer.DefineFunction(FunctionNode, false/*Enforced*/);
-			TypeSafer.CheckTypeAt(FunctionNode, BFunctionNode._Block, BType.VoidType);
+			TypeSafer.CheckTypeAt(FunctionNode, BunFunctionNode._Block, BType.VoidType);
 			if(!FunctionNode.BlockNode().IsUntyped() || this.TypedNodeCount == 0) {
 				break;
 			}

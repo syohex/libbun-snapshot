@@ -1,7 +1,7 @@
 package libbun.lang.bun.shell;
 
 import libbun.ast.BNode;
-import libbun.ast.literal.BStringNode;
+import libbun.ast.literal.BunStringNode;
 import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.BArray;
@@ -25,7 +25,7 @@ public class SimpleArgumentPatternFunction extends BMatchFunction {	// subset of
 			@Var BToken Token = TokenContext.GetToken(BTokenContext._MoveNext);
 			if(Token instanceof BPatternToken && ((BPatternToken)Token).PresetPattern.equals("$StringLiteral$")) {
 				this.Flush(TokenContext, NodeList, TokenList);
-				NodeList.add(new BStringNode(ParentNode, null, BLib._UnquoteString(Token.GetText())));
+				NodeList.add(new BunStringNode(ParentNode, null, BLib._UnquoteString(Token.GetText())));
 			}
 			else {
 				TokenList.add(Token);
@@ -64,7 +64,7 @@ public class SimpleArgumentPatternFunction extends BMatchFunction {	// subset of
 			}
 		}
 		@Var BToken Token = new BToken(TokenContext.Source, StartIndex, EndIndex);
-		NodeList.add(new BStringNode(null, Token, BLib._UnquoteString(this.ResolveHome(Token.GetText()))));
+		NodeList.add(new BunStringNode(null, Token, BLib._UnquoteString(this.ResolveHome(Token.GetText()))));
 		TokenList.clear(0);
 	}
 

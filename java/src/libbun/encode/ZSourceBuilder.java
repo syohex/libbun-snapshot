@@ -25,7 +25,7 @@
 
 package libbun.encode;
 
-import libbun.ast.BListNode;
+import libbun.ast.AbstractListNode;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
@@ -261,7 +261,7 @@ public final class ZSourceBuilder {
 		this.SourceList.add(Text);
 	}
 
-	public final void AppendParamList(BListNode ParamList, int BeginIdx, int EndIdx) {
+	public final void AppendParamList(AbstractListNode ParamList, int BeginIdx, int EndIdx) {
 		@Var int i = BeginIdx;
 		while(i < EndIdx) {
 			if (i > BeginIdx) {

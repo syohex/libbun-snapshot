@@ -5,7 +5,7 @@ import libbun.parser.BOperatorVisitor;
 import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 
-public class BunMinusNode extends BUnaryNode {
+public class BunMinusNode extends UnaryOperatorNode {
 	public BunMinusNode(BNode ParentNode, BToken Token) {
 		super(ParentNode, Token);
 	}

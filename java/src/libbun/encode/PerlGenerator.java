@@ -24,16 +24,16 @@
 
 //ifdef  JAVA
 package libbun.encode;
-import libbun.ast.BBlockNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
-import libbun.ast.decl.BClassNode;
-import libbun.ast.decl.BFunctionNode;
-import libbun.ast.decl.BLetVarNode;
-import libbun.ast.expression.BGetNameNode;
-import libbun.ast.expression.BGetterNode;
-import libbun.ast.expression.BSetNameNode;
-import libbun.ast.expression.BSetterNode;
-import libbun.ast.statement.BBreakNode;
+import libbun.ast.decl.BunClassNode;
+import libbun.ast.decl.BunFunctionNode;
+import libbun.ast.decl.BunLetVarNode;
+import libbun.ast.expression.GetNameNode;
+import libbun.ast.expression.GetFieldNode;
+import libbun.ast.expression.SetNameNode;
+import libbun.ast.expression.SetFieldNode;
+import libbun.ast.statement.BunBreakNode;
 import libbun.parser.BToken;
 import libbun.type.BClassField;
 import libbun.type.BClassType;
@@ -95,30 +95,30 @@ public class PerlGenerator extends ZSourceGenerator {
 		return "$";
 	}
 
-	@Override public void VisitGetNameNode(BGetNameNode Node) {
+	@Override public void VisitGetNameNode(GetNameNode Node) {
 		this.CurrentBuilder.Append(this.VariablePrefix(Node.Type), this.NameLocalVariable(Node.GetNameSpace(), Node.GetUniqueName(this)));
 	}
 
-	@Override public void VisitSetNameNode(BSetNameNode Node) {
-		this.CurrentBuilder.Append(this.VariablePrefix(Node.GetAstType(BSetNameNode._Expr)));
+	@Override public void VisitSetNameNode(SetNameNode Node) {
+		this.CurrentBuilder.Append(this.VariablePrefix(Node.GetAstType(SetNameNode._Expr)));
 		this.VisitGetNameNode(Node.NameNode());
 		this.CurrentBuilder.Append(" = ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
-	@Override public void VisitGetterNode(BGetterNode Node) {
+	@Override public void VisitGetFieldNode(GetFieldNode Node) {
 		this.GenerateCode(null, Node.RecvNode());
 		this.CurrentBuilder.Append("->{\'", Node.GetName(), "\'} = ");
 	}
 
-	@Override public void VisitSetterNode(BSetterNode Node) {
+	@Override public void VisitSetFieldNode(SetFieldNode Node) {
 		this.GenerateCode(null, Node.RecvNode());
 		this.CurrentBuilder.Append("->{\'", Node.GetName(), "\'}");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
 	@Override
-	protected void VisitVarDeclNode(BLetVarNode Node) {
+	protected void VisitVarDeclNode(BunLetVarNode Node) {
 		this.CurrentBuilder.Append("my ", this.VariablePrefix(Node.DeclType().GetRealType()));
 		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = ");
 		this.GenerateCode(null, Node.InitValueNode());
@@ -126,7 +126,7 @@ public class PerlGenerator extends ZSourceGenerator {
 		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 	}
 
-	@Override public void VisitLetNode(BLetVarNode Node) {
+	@Override public void VisitLetNode(BunLetVarNode Node) {
 		this.CurrentBuilder.Append(this.VariablePrefix(Node.DeclType().GetRealType()), Node.GetUniqueName(this), " = ");
 		this.GenerateCode(null, Node.InitValueNode());
 	}
@@ -150,16 +150,16 @@ public class PerlGenerator extends ZSourceGenerator {
 	//	}
 
 
-	@Override public void VisitBreakNode(BBreakNode Node) {
+	@Override public void VisitBreakNode(BunBreakNode Node) {
 		this.CurrentBuilder.Append("last");
 	}
 
-	@Override protected void VisitParamNode(BLetVarNode Node) {
+	@Override protected void VisitParamNode(BunLetVarNode Node) {
 		this.CurrentBuilder.Append("my ", this.VariablePrefix(Node.Type));
 		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = shift");
 	}
 
-	@Override public void VisitFunctionNode(BFunctionNode Node) {
+	@Override public void VisitFunctionNode(BunFunctionNode Node) {
 		this.CurrentBuilder.Append("sub");
 		if(Node.FuncName() != null) {
 			this.CurrentBuilder.AppendWhiteSpace();
@@ -170,8 +170,8 @@ public class PerlGenerator extends ZSourceGenerator {
 		//		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 		this.CurrentBuilder.Append(this.SemiColon);
 		@Var BNode BlockNode = Node.BlockNode();
-		if(BlockNode instanceof BBlockNode) {
-			this.VisitStmtList((BBlockNode)BlockNode);
+		if(BlockNode instanceof BunBlockNode) {
+			this.VisitStmtList((BunBlockNode)BlockNode);
 		}
 		this.CurrentBuilder.Append(this.SemiColon);
 		this.CurrentBuilder.UnIndent();
@@ -203,7 +203,7 @@ public class PerlGenerator extends ZSourceGenerator {
 		return BLib._QuoteString(this.NameClass(ClassType));
 	}
 
-	@Override public void VisitClassNode(BClassNode Node) {
+	@Override public void VisitClassNode(BunClassNode Node) {
 		this.CurrentBuilder.Append("sub _Init", this.NameClass(Node.ClassType), "{");
 		this.CurrentBuilder.Indent();
 		this.CurrentBuilder.AppendNewLine();
@@ -220,7 +220,7 @@ public class PerlGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(this.SemiColon);
 		@Var int i = 0;
 		while (i < Node.GetListSize()) {
-			@Var BLetVarNode FieldNode = Node.GetFieldNode(i);
+			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
 			this.CurrentBuilder.AppendNewLine();
 			this.CurrentBuilder.Append("$o{", BLib._QuoteString(FieldNode.GetGivenName()), "} = ");
 			this.GenerateCode(null, FieldNode.InitValueNode());

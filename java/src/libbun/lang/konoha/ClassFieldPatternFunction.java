@@ -1,7 +1,7 @@
 package libbun.lang.konoha;
 
 import libbun.ast.BNode;
-import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.BunLetVarNode;
 import libbun.parser.BTokenContext;
 import libbun.util.BMatchFunction;
 
@@ -34,12 +34,12 @@ public class ClassFieldPatternFunction extends BMatchFunction {
 				FoundQualifer = true;
 			}
 		}
-		BLetVarNode Node = new BLetVarNode(ParentNode, 0, null, null);
+		BunLetVarNode Node = new BunLetVarNode(ParentNode, 0, null, null);
 		BNode FieldNode = MemberNode;
-		FieldNode = TokenContext.MatchPattern(FieldNode, BLetVarNode._TypeInfo, "$OpenType$", BTokenContext._Required);
-		FieldNode = TokenContext.MatchPattern(FieldNode, BLetVarNode._NameInfo, "$Name$", BTokenContext._Required);
+		FieldNode = TokenContext.MatchPattern(FieldNode, BunLetVarNode._TypeInfo, "$OpenType$", BTokenContext._Required);
+		FieldNode = TokenContext.MatchPattern(FieldNode, BunLetVarNode._NameInfo, "$Name$", BTokenContext._Required);
 		if(TokenContext.MatchToken("=")) {
-			FieldNode = TokenContext.MatchPattern(FieldNode, BLetVarNode._InitValue, "$Expr$", BTokenContext._Required);
+			FieldNode = TokenContext.MatchPattern(FieldNode, BunLetVarNode._InitValue, "$Expr$", BTokenContext._Required);
 		}
 		if(!FieldNode.IsErrorNode()) {
 			MemberNode.FieldNode = Node;

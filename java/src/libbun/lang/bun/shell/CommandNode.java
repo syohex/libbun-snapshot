@@ -1,12 +1,12 @@
 package libbun.lang.bun.shell;
 
-import libbun.ast.BBlockNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
 import libbun.ast.BDesugarNode;
-import libbun.ast.BSugarNode;
-import libbun.ast.expression.BFuncCallNode;
-import libbun.ast.expression.BGetNameNode;
-import libbun.ast.literal.BArrayLiteralNode;
+import libbun.ast.SyntaxSugarNode;
+import libbun.ast.expression.FuncCallNode;
+import libbun.ast.expression.GetNameNode;
+import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.parser.BGenerator;
 import libbun.parser.BToken;
 import libbun.parser.BTypeChecker;
@@ -15,7 +15,7 @@ import libbun.util.BField;
 import libbun.util.Var;
 import libbun.util.BArray;
 
-public class CommandNode extends BSugarNode {
+public class CommandNode extends SyntaxSugarNode {
 	@BField private final BArray<BNode> ArgList;
 	@BField private BType RetType = BType.VarType;
 	@BField public CommandNode PipedNextNode;
@@ -67,7 +67,7 @@ public class CommandNode extends BSugarNode {
 			if(ContextType.IsBooleanType() || ContextType.IsIntType() || ContextType.IsStringType()) {
 				this.SetType(ContextType);
 			}
-			else if(ContextType.IsVarType() && !(this.ParentNode instanceof BBlockNode)) {
+			else if(ContextType.IsVarType() && !(this.ParentNode instanceof BunBlockNode)) {
 				this.SetType(BType.StringType);
 			}
 			else {
@@ -80,10 +80,10 @@ public class CommandNode extends BSugarNode {
 		else if(this.RetType().IsStringType()) {
 			FuncName = "ExecCommandString";
 		}
-		@Var BArrayLiteralNode ArrayNode = new BArrayLiteralNode(this.ParentNode);
+		@Var BunArrayLiteralNode ArrayNode = new BunArrayLiteralNode(this.ParentNode);
 		@Var CommandNode CurrentNode = this;
 		while(CurrentNode != null) {
-			@Var BArrayLiteralNode SubArrayNode = new BArrayLiteralNode(ArrayNode);
+			@Var BunArrayLiteralNode SubArrayNode = new BunArrayLiteralNode(ArrayNode);
 			@Var int size = CurrentNode.GetArgSize();
 			@Var int i = 0;
 			while(i < size) {
@@ -93,7 +93,7 @@ public class CommandNode extends BSugarNode {
 			ArrayNode.Append(SubArrayNode);
 			CurrentNode = CurrentNode.PipedNextNode;
 		}
-		@Var BFuncCallNode Node = new BFuncCallNode(this.ParentNode, new BGetNameNode(this.ParentNode, null, FuncName));
+		@Var FuncCallNode Node = new FuncCallNode(this.ParentNode, new GetNameNode(this.ParentNode, null, FuncName));
 		Node.Append(ArrayNode);
 		return new BDesugarNode(this, Node);
 	}

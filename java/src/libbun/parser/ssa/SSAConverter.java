@@ -2,17 +2,17 @@ package libbun.parser.ssa;
 
 import java.util.HashMap;
 
-import libbun.ast.BBlockNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
-import libbun.ast.binary.BAndNode;
-import libbun.ast.binary.BBinaryNode;
-import libbun.ast.decl.BFunctionNode;
-import libbun.ast.decl.BLetVarNode;
+import libbun.ast.binary.BunAndNode;
+import libbun.ast.binary.BinaryOperatorNode;
+import libbun.ast.decl.BunFunctionNode;
+import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.ZVarBlockNode;
-import libbun.ast.expression.BGetNameNode;
-import libbun.ast.expression.BSetNameNode;
-import libbun.ast.statement.BIfNode;
-import libbun.ast.statement.BWhileNode;
+import libbun.ast.expression.GetNameNode;
+import libbun.ast.expression.SetNameNode;
+import libbun.ast.statement.BunIfNode;
+import libbun.ast.statement.BunWhileNode;
 import libbun.parser.BGenerator;
 import libbun.parser.BSyntax;
 import libbun.type.BType;
@@ -187,8 +187,8 @@ public class SSAConverter extends ZASTTransformer {
 			phi = new PHINode(OldVal, NewVal.Name);
 			phi.VarRef = new Variable(OldVal.Name, this.GetRefreshNumber(OldVal), phi);
 			JNode.Append(phi);
-			if(this.GetCurrentJoinNode().ParentNode instanceof BWhileNode) {
-				BWhileNode WNode = (BWhileNode) this.GetCurrentJoinNode().ParentNode;
+			if(this.GetCurrentJoinNode().ParentNode instanceof BunWhileNode) {
+				BunWhileNode WNode = (BunWhileNode) this.GetCurrentJoinNode().ParentNode;
 				this.ReplaceNodeWith(WNode, OldVal, phi);
 			}
 		}
@@ -244,7 +244,7 @@ public class SSAConverter extends ZASTTransformer {
 	 * }              | }
 	 */
 	private void RemoveJoinNode(BNode TargetNode, JoinNode JNode) {
-		@Var BBlockNode Parent = TargetNode.GetScopeBlockNode();
+		@Var BunBlockNode Parent = TargetNode.GetScopeBlockNode();
 		@Var int Index = 0;
 		assert(Parent != null);
 		while(Index < Parent.GetListSize()) {
@@ -256,7 +256,7 @@ public class SSAConverter extends ZASTTransformer {
 		}
 		assert(Index < Parent.GetListSize());
 
-		if(TargetNode instanceof BIfNode) {
+		if(TargetNode instanceof BunIfNode) {
 			// JoinNode for ZIfNode is placed after if-statement.
 			@Var int i = JNode.size() - 1;
 			while(i >= 0) {
@@ -265,35 +265,35 @@ public class SSAConverter extends ZASTTransformer {
 				this.UpdateVariable(phi.VarRef);
 				i = i - 1;
 			}
-		} else if (TargetNode instanceof BWhileNode) {
+		} else if (TargetNode instanceof BunWhileNode) {
 			// JoinNode for WhileNode is placed at a header of loop.
 			// ... while((x1 = phi() && i1 = phi()) && x1 == true) {...}
-			@Var BWhileNode WNode = (BWhileNode) TargetNode;
+			@Var BunWhileNode WNode = (BunWhileNode) TargetNode;
 			@Var BNode CondNode = WNode.CondNode();
 			@Var int i = JNode.size() - 1;
 			@Var BSyntax AndPattern = TargetNode.GetNameSpace().GetRightSyntaxPattern("&&");
 			while(i >= 0) {
 				@Var PHINode phi = JNode.ListAt(i);
-				@Var BAndNode And = new BAndNode(Parent, null, phi);
-				And.SetNode(BBinaryNode._Right, CondNode);
+				@Var BunAndNode And = new BunAndNode(Parent, null, phi);
+				And.SetNode(BinaryOperatorNode._Right, CondNode);
 				And.Type = BType.BooleanType;
 				CondNode = And;
 				this.ReplaceNodeWith(TargetNode, phi.VarRef, phi);
 				this.UpdateVariable(phi.VarRef);
 				i = i - 1;
 			}
-			WNode.SetNode(BWhileNode._Cond, CondNode);
+			WNode.SetNode(BunWhileNode._Cond, CondNode);
 		}
 	}
 
 	@Override
-	public void VisitGetNameNode(BGetNameNode Node) {
+	public void VisitGetNameNode(GetNameNode Node) {
 		@Var Variable V = this.FindVariable(Node.GetUniqueName(this.Generator));
 		Node.VarIndex = V.Index;
 	}
 
 	@Override
-	public void VisitSetNameNode(BSetNameNode Node) {
+	public void VisitSetNameNode(SetNameNode Node) {
 		@Var Variable OldVal = this.FindVariable(Node.NameNode().GetUniqueName(this.Generator));
 		@Var Variable NewVal = new Variable(OldVal.Name, this.GetRefreshNumber(OldVal), Node);
 		this.UpdateVariable(NewVal);
@@ -314,7 +314,7 @@ public class SSAConverter extends ZASTTransformer {
 	}
 
 	@Override
-	public void VisitIfNode(BIfNode Node) {
+	public void VisitIfNode(BunIfNode Node) {
 		this.PushState(new SSAConverterState(new JoinNode(Node), 0));
 		this.RecordListOfVariablesBeforeVisit(Node);
 		Node.CondNode().Accept(this);
@@ -344,7 +344,7 @@ public class SSAConverter extends ZASTTransformer {
 	}
 
 	@Override
-	public void VisitWhileNode(BWhileNode Node) {
+	public void VisitWhileNode(BunWhileNode Node) {
 		this.PushState(new SSAConverterState(new JoinNode(Node), 0));
 		this.RecordListOfVariablesBeforeVisit(Node);
 		Node.CondNode().Accept(this);
@@ -359,11 +359,11 @@ public class SSAConverter extends ZASTTransformer {
 	}
 
 	@Override
-	public void VisitFunctionNode(BFunctionNode Node) {
+	public void VisitFunctionNode(BunFunctionNode Node) {
 		this.LocalVariables = new BArray<Variable>(new Variable[0]);
 		@Var int i = 0;
 		while(i < Node.GetListSize()) {
-			BLetVarNode ParamNode = Node.GetParamNode(i);
+			BunLetVarNode ParamNode = Node.GetParamNode(i);
 			this.AddVariable(new Variable(ParamNode.GetUniqueName(this.Generator), 0, ParamNode));
 			i = i + 1;
 		}

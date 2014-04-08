@@ -25,10 +25,10 @@
 
 package libbun.ast;
 
-import libbun.ast.decl.BFunctionNode;
-import libbun.ast.error.BErrorNode;
-import libbun.ast.expression.BGetNameNode;
-import libbun.ast.statement.BWhileNode;
+import libbun.ast.decl.BunFunctionNode;
+import libbun.ast.error.ErrorNode;
+import libbun.ast.expression.GetNameNode;
+import libbun.ast.statement.BunWhileNode;
 import libbun.parser.BNameSpace;
 import libbun.parser.BToken;
 import libbun.parser.BTypeChecker;
@@ -136,11 +136,11 @@ public abstract class BNode {
 		}
 		else if(Index == BNode._AppendIndex) {
 			@Var BNode ListNode = this;
-			if(ListNode instanceof BListNode) {
-				((BListNode)ListNode).Append(Node);
+			if(ListNode instanceof AbstractListNode) {
+				((AbstractListNode)ListNode).Append(Node);
 			}
 			else {
-				assert(ListNode instanceof BListNode);
+				assert(ListNode instanceof AbstractListNode);
 			}
 		}
 		return Node;
@@ -175,7 +175,7 @@ public abstract class BNode {
 	public final boolean IsTopLevel() {
 		@Var @Nullable BNode Cur = this.ParentNode;
 		while(Cur != null) {
-			if(Cur instanceof BFunctionNode) {
+			if(Cur instanceof BunFunctionNode) {
 				return false;
 			}
 			Cur = Cur.ParentNode;
@@ -183,23 +183,23 @@ public abstract class BNode {
 		return true;
 	}
 
-	@Nullable public final BFunctionNode GetDefiningFunctionNode() {
+	@Nullable public final BunFunctionNode GetDefiningFunctionNode() {
 		@Var @Nullable BNode Cur = this;
 		while(Cur != null) {
-			if(Cur instanceof BFunctionNode) {
-				return (BFunctionNode)Cur;
+			if(Cur instanceof BunFunctionNode) {
+				return (BunFunctionNode)Cur;
 			}
 			Cur = Cur.ParentNode;
 		}
 		return null;
 	}
 
-	@Nullable public final BBlockNode GetScopeBlockNode() {
+	@Nullable public final BunBlockNode GetScopeBlockNode() {
 		@Var int SafeCount = 0;
 		@Var BNode Node = this;
 		while(Node != null) {
-			if(Node instanceof BBlockNode) {
-				return (BBlockNode)Node;
+			if(Node instanceof BunBlockNode) {
+				return (BunBlockNode)Node;
 			}
 			assert(!(Node == Node.ParentNode));
 			//System.out.println("node: " + Node.getClass() + ", " + Node.hashCode() + ", " + SafeCount);
@@ -214,9 +214,9 @@ public abstract class BNode {
 
 	public final BNameSpace GetNameSpace() {
 		@Var int SafeCount = 0;
-		@Var BBlockNode BlockNode = this.GetScopeBlockNode();
+		@Var BunBlockNode BlockNode = this.GetScopeBlockNode();
 		while(BlockNode.NullableNameSpace == null) {
-			@Var BBlockNode ParentBlockNode = BlockNode.ParentNode.GetScopeBlockNode();
+			@Var BunBlockNode ParentBlockNode = BlockNode.ParentNode.GetScopeBlockNode();
 			BlockNode = ParentBlockNode;
 			if(BLib.DebugMode) {
 				SafeCount = SafeCount + 1;
@@ -227,7 +227,7 @@ public abstract class BNode {
 	}
 
 	public final boolean IsErrorNode() {
-		return (this instanceof BErrorNode);
+		return (this instanceof ErrorNode);
 	}
 
 	public abstract void Accept(BVisitor Visitor);
@@ -254,20 +254,20 @@ public abstract class BNode {
 	}
 
 	// Convenient short cut interface
-	public final BGetNameNode SetNewGetNameNode(int Index, BTypeChecker Typer, String Name, BType Type) {
-		@Var BGetNameNode Node = Typer.CreateGetNameNode(null, Name, Type);
+	public final GetNameNode SetNewGetNameNode(int Index, BTypeChecker Typer, String Name, BType Type) {
+		@Var GetNameNode Node = Typer.CreateGetNameNode(null, Name, Type);
 		this.SetNode(Index, Node);
 		return Node;
 	}
 
-	public final BBlockNode SetNewBlockNode(int Index, BTypeChecker Typer) {
-		@Var BBlockNode Node = Typer.CreateBlockNode(null);
+	public final BunBlockNode SetNewBlockNode(int Index, BTypeChecker Typer) {
+		@Var BunBlockNode Node = Typer.CreateBlockNode(null);
 		this.SetNode(Index, Node);
 		return Node;
 	}
 
-	public final BWhileNode SetNewWhileNode(int Index, BTypeChecker Typer) {
-		@Var BWhileNode Node = new BWhileNode(null);
+	public final BunWhileNode SetNewWhileNode(int Index, BTypeChecker Typer) {
+		@Var BunWhileNode Node = new BunWhileNode(null);
 		this.SetNode(Index, Node);
 		return Node;
 

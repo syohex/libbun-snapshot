@@ -24,9 +24,9 @@
 
 
 package libbun.parser;
-import libbun.ast.BBlockNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
-import libbun.ast.decl.BLetVarNode;
+import libbun.ast.decl.BunLetVarNode;
 import libbun.type.BClassType;
 import libbun.type.BType;
 import libbun.util.BField;
@@ -39,12 +39,12 @@ import libbun.util.Var;
 
 public final class BNameSpace {
 	@BField public final BGenerator   Generator;
-	@BField public final BBlockNode   BlockNode;
+	@BField public final BunBlockNode   BlockNode;
 	@BField BTokenFuncChain[]       TokenMatrix = null;
 	@BField BMap<BSyntax>      SyntaxTable = null;
-	@BField BMap<BLetVarNode>  SymbolTable2 = null;
+	@BField BMap<BunLetVarNode>  SymbolTable2 = null;
 
-	public BNameSpace(BGenerator Generator, BBlockNode BlockNode) {
+	public BNameSpace(BGenerator Generator, BunBlockNode BlockNode) {
 		this.BlockNode = BlockNode;   // rootname is null
 		this.Generator = Generator;
 		assert(this.Generator != null);
@@ -54,8 +54,8 @@ public final class BNameSpace {
 		if(this.BlockNode != null) {
 			@Var BNode Node = this.BlockNode.ParentNode;
 			while(Node != null) {
-				if(Node instanceof BBlockNode) {
-					@Var BBlockNode blockNode = (BBlockNode)Node;
+				if(Node instanceof BunBlockNode) {
+					@Var BunBlockNode blockNode = (BunBlockNode)Node;
 					if(blockNode.NullableNameSpace != null) {
 						return blockNode.NullableNameSpace;
 					}
@@ -182,18 +182,18 @@ public final class BNameSpace {
 		}
 	}
 
-	public final void SetSymbol(String Symbol, BLetVarNode EntryNode) {
+	public final void SetSymbol(String Symbol, BunLetVarNode EntryNode) {
 		if(this.SymbolTable2 == null) {
-			this.SymbolTable2 = new BMap<BLetVarNode>(null);
+			this.SymbolTable2 = new BMap<BunLetVarNode>(null);
 		}
 		this.SymbolTable2.put(Symbol, EntryNode);
 	}
 
-	public final BLetVarNode GetSymbol(String Symbol) {
+	public final BunLetVarNode GetSymbol(String Symbol) {
 		@Var BNameSpace NameSpace = this;
 		while(NameSpace != null) {
 			if(NameSpace.SymbolTable2 != null) {
-				@Var BLetVarNode EntryNode = NameSpace.SymbolTable2.GetOrNull(Symbol);
+				@Var BunLetVarNode EntryNode = NameSpace.SymbolTable2.GetOrNull(Symbol);
 				if(EntryNode != null) {
 					return EntryNode;
 				}
@@ -241,15 +241,15 @@ public final class BNameSpace {
 		return NameIndex;
 	}
 
-	public final void SetRootSymbol(String Symbol, BLetVarNode EntryNode) {
+	public final void SetRootSymbol(String Symbol, BunLetVarNode EntryNode) {
 		this.GetRootNameSpace().SetSymbol(Symbol, EntryNode);
 	}
 
-	public final BLetVarNode GetLocalVariable(String Name) {
+	public final BunLetVarNode GetLocalVariable(String Name) {
 		@Var BNode EntryNode = this.GetSymbol(Name);
 		//System.out.println("var " + VarName + ", entry=" + Entry + ", NameSpace=" + this);
-		if(EntryNode instanceof BLetVarNode) {
-			return (BLetVarNode)EntryNode;
+		if(EntryNode instanceof BunLetVarNode) {
+			return (BunLetVarNode)EntryNode;
 		}
 		return null;
 	}
@@ -257,7 +257,7 @@ public final class BNameSpace {
 	// Type
 	public final void SetTypeName(String Name, BType Type, @Nullable BToken SourceToken) {
 		//@Var ZTypeNode Node = new ZTypeNode(null, SourceToken, Type);
-		@Var BLetVarNode Node = new BLetVarNode(null, BLetVarNode._IsReadOnly, Type, Name);
+		@Var BunLetVarNode Node = new BunLetVarNode(null, BunLetVarNode._IsReadOnly, Type, Name);
 		Node.SourceToken = SourceToken;
 		this.SetSymbol(Name, Node);
 	}
@@ -267,7 +267,7 @@ public final class BNameSpace {
 	}
 
 	public final BType GetType(String TypeName, BToken SourceToken, boolean IsCreation) {
-		@Var BLetVarNode Node = this.GetSymbol(TypeName);
+		@Var BunLetVarNode Node = this.GetSymbol(TypeName);
 		if(Node != null) {
 			return Node.DeclType();
 		}

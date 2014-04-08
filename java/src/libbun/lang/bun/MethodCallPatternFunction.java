@@ -1,19 +1,17 @@
 package libbun.lang.bun;
 
 import libbun.ast.BNode;
-import libbun.ast.expression.BMethodCallNode;
+import libbun.ast.expression.MethodCallNode;
 import libbun.parser.BTokenContext;
-import libbun.util.Var;
 import libbun.util.BMatchFunction;
+import libbun.util.Var;
 
 public class MethodCallPatternFunction extends BMatchFunction {
-
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
-		@Var BNode MethodCallNode = new BMethodCallNode(ParentNode, LeftNode);
-		MethodCallNode = TokenContext.MatchToken(MethodCallNode, ".", BTokenContext._Required);
-		MethodCallNode = TokenContext.MatchPattern(MethodCallNode, BMethodCallNode._NameInfo, "$Name$", BTokenContext._Required);
-		MethodCallNode = TokenContext.MatchNtimes(MethodCallNode, "(", "$Expression$", ",", ")");
-		return MethodCallNode;
+		@Var BNode Node = new MethodCallNode(ParentNode, LeftNode);
+		Node = TokenContext.MatchToken(Node, ".", BTokenContext._Required);
+		Node = TokenContext.MatchPattern(Node, MethodCallNode._NameInfo, "$Name$", BTokenContext._Required);
+		Node = TokenContext.MatchNtimes(Node, "(", "$Expression$", ",", ")");
+		return Node;
 	}
-
 }

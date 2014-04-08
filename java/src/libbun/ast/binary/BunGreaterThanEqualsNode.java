@@ -6,7 +6,7 @@ import libbun.parser.BOperatorVisitor;
 import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 
-public class BunGreaterThanEqualsNode extends BComparatorNode {
+public class BunGreaterThanEqualsNode extends ComparatorNode {
 
 	public BunGreaterThanEqualsNode(BNode ParentNode, BToken SourceToken, BNode Left) {
 		super(ParentNode, SourceToken, Left, BunPrecedence._CStyleCOMPARE);

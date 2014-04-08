@@ -1,7 +1,7 @@
 package libbun.lang.konoha;
 
 import libbun.ast.BNode;
-import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BunFunctionNode;
 import libbun.parser.BTokenContext;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
@@ -38,12 +38,12 @@ public class ClassMethodPatternFunction extends BMatchFunction {
 				FoundQualifer = true;
 			}
 		}
-		@Var BFunctionNode FunctionNode = new BFunctionNode(ParentNode);
+		@Var BunFunctionNode FunctionNode = new BunFunctionNode(ParentNode);
 		@Var BNode FuncNode = FunctionNode;
-		FuncNode = TokenContext.MatchPattern(FuncNode, BFunctionNode._TypeInfo, "$OpenType$", BTokenContext._Required);
-		FuncNode = TokenContext.MatchPattern(FuncNode, BFunctionNode._NameInfo, "$Name$", BTokenContext._Required);
+		FuncNode = TokenContext.MatchPattern(FuncNode, BunFunctionNode._TypeInfo, "$OpenType$", BTokenContext._Required);
+		FuncNode = TokenContext.MatchPattern(FuncNode, BunFunctionNode._NameInfo, "$Name$", BTokenContext._Required);
 		FuncNode = TokenContext.MatchNtimes(FuncNode, "(", "$Param$", ",", ")");
-		FuncNode = TokenContext.MatchPattern(FuncNode, BFunctionNode._Block, "$Block$", BTokenContext._Required);
+		FuncNode = TokenContext.MatchPattern(FuncNode, BunFunctionNode._Block, "$Block$", BTokenContext._Required);
 		if(!FuncNode.IsErrorNode()) {
 			MemberNode.MethodNode = FunctionNode;
 			return MemberNode;

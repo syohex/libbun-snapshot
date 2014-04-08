@@ -24,10 +24,10 @@
 
 
 package libbun.parser;
-import libbun.ast.BBlockNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
 import libbun.ast.ZEmptyNode;
-import libbun.ast.error.BErrorNode;
+import libbun.ast.error.ErrorNode;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
@@ -79,9 +79,9 @@ public final class BTokenContext {
 		if(SourceToken == null || SourceToken.IsNull()) {
 			SourceToken = this.GetBeforeToken();
 			SourceToken = new BToken(SourceToken.Source, SourceToken.EndIndex, SourceToken.EndIndex);
-			return new BErrorNode(null, SourceToken, ExpectedTokenText + " is expected");
+			return new ErrorNode(null, SourceToken, ExpectedTokenText + " is expected");
 		}
-		return new BErrorNode(null, SourceToken, ExpectedTokenText + " is expected");
+		return new ErrorNode(null, SourceToken, ExpectedTokenText + " is expected");
 	}
 
 	public void Vacume() {
@@ -292,7 +292,7 @@ public final class BTokenContext {
 					if(!(ParsedNode instanceof ZEmptyNode)) {
 						ParentNode.SetNode(BNode._AppendIndex, ParsedNode);
 					}
-					if(ParsedNode instanceof BBlockNode || ParsedNode.IsErrorNode()) {
+					if(ParsedNode instanceof BunBlockNode || ParsedNode.IsErrorNode()) {
 						return ParsedNode;
 					}
 				}

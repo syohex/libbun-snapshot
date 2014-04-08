@@ -2,21 +2,21 @@ package libbun.encode;
 
 import libbun.ast.BNode;
 import libbun.ast.binary.BInstanceOfNode;
-import libbun.ast.decl.BClassNode;
-import libbun.ast.decl.BFunctionNode;
-import libbun.ast.decl.BLetVarNode;
-import libbun.ast.error.BErrorNode;
-import libbun.ast.expression.BFuncCallNode;
-import libbun.ast.expression.BFuncNameNode;
-import libbun.ast.expression.BGetIndexNode;
-import libbun.ast.expression.BMethodCallNode;
-import libbun.ast.expression.BNewObjectNode;
-import libbun.ast.expression.BSetIndexNode;
-import libbun.ast.literal.BArrayLiteralNode;
-import libbun.ast.literal.ZMapEntryNode;
-import libbun.ast.literal.ZMapLiteralNode;
-import libbun.ast.statement.BThrowNode;
-import libbun.ast.statement.BTryNode;
+import libbun.ast.decl.BunClassNode;
+import libbun.ast.decl.BunFunctionNode;
+import libbun.ast.decl.BunLetVarNode;
+import libbun.ast.error.ErrorNode;
+import libbun.ast.expression.FuncCallNode;
+import libbun.ast.expression.BunFuncNameNode;
+import libbun.ast.expression.GetIndexNode;
+import libbun.ast.expression.MethodCallNode;
+import libbun.ast.expression.NewObjectNode;
+import libbun.ast.expression.SetIndexNode;
+import libbun.ast.literal.BunArrayLiteralNode;
+import libbun.ast.literal.BunMapEntryNode;
+import libbun.ast.literal.BunMapLiteralNode;
+import libbun.ast.statement.BunThrowNode;
+import libbun.ast.statement.BunTryNode;
 import libbun.parser.BLogger;
 import libbun.type.BClassField;
 import libbun.type.BClassType;
@@ -31,8 +31,8 @@ import libbun.util.ZenMethod;
 
 public class JavaGenerator extends ZSourceGenerator {
 
-	@BField private BFunctionNode MainFuncNode = null;
-	@BField private final BArray<BFunctionNode> ExportFunctionList = new BArray<BFunctionNode>(new BFunctionNode[4]);
+	@BField private BunFunctionNode MainFuncNode = null;
+	@BField private final BArray<BunFunctionNode> ExportFunctionList = new BArray<BunFunctionNode>(new BunFunctionNode[4]);
 
 	public JavaGenerator() {
 		super("java", "1.6");
@@ -78,7 +78,7 @@ public class JavaGenerator extends ZSourceGenerator {
 
 
 	@Override protected void GenerateCode(BType ContextType, BNode Node) {
-		if(Node.IsUntyped() && !Node.IsErrorNode() && !(Node instanceof BFuncNameNode)) {
+		if(Node.IsUntyped() && !Node.IsErrorNode() && !(Node instanceof BunFuncNameNode)) {
 			BLogger._LogError(Node.SourceToken, "untyped error: " + Node);
 			Node.Accept(this);
 			this.CurrentBuilder.Append("/*untyped*/");
@@ -93,7 +93,7 @@ public class JavaGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitArrayLiteralNode(BArrayLiteralNode Node) {
+	@Override public void VisitArrayLiteralNode(BunArrayLiteralNode Node) {
 		if(Node.GetListSize() == 0) {
 			this.CurrentBuilder.Append("new ", this.GetJavaTypeName(Node.Type, false), "()");
 		}
@@ -106,13 +106,13 @@ public class JavaGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitMapLiteralNode(ZMapLiteralNode Node) {
+	@Override public void VisitMapLiteralNode(BunMapLiteralNode Node) {
 		this.CurrentBuilder.Append("new ", this.GetJavaTypeName(Node.Type, false), "()");
 		if(Node.GetListSize() > 0) {
 			@Var int i = 0;
 			this.CurrentBuilder.OpenIndent(" {{");
 			while(i < Node.GetListSize()) {
-				@Var ZMapEntryNode Entry = Node.GetMapEntryNode(i);
+				@Var BunMapEntryNode Entry = Node.GetMapEntryNode(i);
 				this.CurrentBuilder.AppendNewLine("put");
 				this.GenerateCode2("(", Entry.KeyNode(), this.Camma, Entry.ValueNode(), ");");
 				i = i + 1;
@@ -121,13 +121,13 @@ public class JavaGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitNewObjectNode(BNewObjectNode Node) {
+	@Override public void VisitNewObjectNode(NewObjectNode Node) {
 		this.CurrentBuilder.Append("new " + this.NameClass(Node.Type));
 		this.VisitListNode("(", Node, ")");
 	}
 
-	@Override public void VisitGetIndexNode(BGetIndexNode Node) {
-		@Var BType RecvType = Node.GetAstType(BGetIndexNode._Recv);
+	@Override public void VisitGetIndexNode(GetIndexNode Node) {
+		@Var BType RecvType = Node.GetAstType(GetIndexNode._Recv);
 		if(RecvType.IsStringType()) {
 			this.GenerateCode2("String.valueOf((", null, Node.RecvNode(), ")");
 			this.GenerateCode2(".charAt(", null, Node.IndexNode(), "))");
@@ -138,8 +138,8 @@ public class JavaGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitSetIndexNode(BSetIndexNode Node) {
-		@Var BType RecvType = Node.GetAstType(BGetIndexNode._Recv);
+	@Override public void VisitSetIndexNode(SetIndexNode Node) {
+		@Var BType RecvType = Node.GetAstType(GetIndexNode._Recv);
 		this.GenerateCode(null, Node.RecvNode());
 		if(RecvType.IsMapType()) {
 			this.CurrentBuilder.Append(".put(");
@@ -153,15 +153,15 @@ public class JavaGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.Append(")");
 	}
 
-	@Override public void VisitMethodCallNode(BMethodCallNode Node) {
+	@Override public void VisitMethodCallNode(MethodCallNode Node) {
 		this.GenerateSurroundCode(Node.RecvNode());
 		this.CurrentBuilder.Append(".");
 		this.CurrentBuilder.Append(Node.MethodName());
 		this.VisitListNode("(", Node, ")");
 	}
 
-	@Override public void VisitFuncCallNode(BFuncCallNode Node) {
-		@Var BFuncNameNode FuncNameNode = Node.FuncNameNode();
+	@Override public void VisitFuncCallNode(FuncCallNode Node) {
+		@Var BunFuncNameNode FuncNameNode = Node.FuncNameNode();
 		if(FuncNameNode != null) {
 			this.CurrentBuilder.Append(this.NameFunctionClass(FuncNameNode.FuncName, FuncNameNode.RecvType, FuncNameNode.FuncParamSize), ".f");
 		}
@@ -179,12 +179,12 @@ public class JavaGenerator extends ZSourceGenerator {
 	//		this.GenerateSurroundCode(Node.ExprNode());
 	//	}
 
-	@Override public void VisitThrowNode(BThrowNode Node) {
+	@Override public void VisitThrowNode(BunThrowNode Node) {
 		this.CurrentBuilder.Append("throw ");
 		this.GenerateCode2("new RuntimeException((", null, Node.ExprNode(),").toString())");
 	}
 
-	@Override public void VisitTryNode(BTryNode Node) {
+	@Override public void VisitTryNode(BunTryNode Node) {
 		this.CurrentBuilder.Append("try ");
 		this.GenerateCode(null, Node.TryBlockNode());
 		if(Node.HasCatchBlockNode()) {
@@ -279,7 +279,7 @@ public class JavaGenerator extends ZSourceGenerator {
 	}
 
 	@Override
-	protected void VisitVarDeclNode(BLetVarNode Node) {
+	protected void VisitVarDeclNode(BunLetVarNode Node) {
 		this.GenerateTypeName(Node.DeclType());
 		this.CurrentBuilder.Append(" ");
 		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
@@ -289,12 +289,12 @@ public class JavaGenerator extends ZSourceGenerator {
 		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 	}
 
-	@Override public void VisitLetNode(BLetVarNode Node) {
+	@Override public void VisitLetNode(BunLetVarNode Node) {
 		@Var String ClassName = this.NameGlobalNameClass(Node.GetUniqueName(this));
 		//		this.CurrentBuilder = this.InsertNewSourceBuilder();
 		this.CurrentBuilder.AppendNewLine("final class ", ClassName, "");
 		this.CurrentBuilder.OpenIndent(" {");
-		this.GenerateClassField("static", Node.GetAstType(BLetVarNode._InitValue), "_", null);
+		this.GenerateClassField("static", Node.GetAstType(BunLetVarNode._InitValue), "_", null);
 		this.GenerateCode2(" = ", null, Node.InitValueNode(), this.SemiColon);
 		this.CurrentBuilder.CloseIndent("}");
 		//		this.CurrentBuilder = this.CurrentBuilder.Pop();
@@ -302,13 +302,13 @@ public class JavaGenerator extends ZSourceGenerator {
 		//			Node.GetNameSpace().SetLocalSymbol(Node.GetName(), Node.ToGlobalNameNode());
 	}
 
-	@Override protected void VisitParamNode(BLetVarNode Node) {
+	@Override protected void VisitParamNode(BunLetVarNode Node) {
 		this.GenerateTypeName(Node.Type);
 		this.CurrentBuilder.Append(" ");
 		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 	}
 
-	@Override public void VisitFunctionNode(BFunctionNode Node) {
+	@Override public void VisitFunctionNode(BunFunctionNode Node) {
 		if(!Node.Type.IsVoidType()) {
 			@Var String FuncName = Node.GetUniqueName(this);
 			this.CurrentBuilder = this.InsertNewSourceBuilder();
@@ -335,7 +335,7 @@ public class JavaGenerator extends ZSourceGenerator {
 		}
 	}
 
-	private String GenerateFunctionAsClass(String FuncName, BFunctionNode Node) {
+	private String GenerateFunctionAsClass(String FuncName, BunFunctionNode Node) {
 		@Var BFuncType FuncType = Node.GetFuncType();
 		@Var String ClassName = this.NameFunctionClass(FuncName, FuncType);
 		this.GenerateClass("final", ClassName, FuncType);
@@ -405,14 +405,14 @@ public class JavaGenerator extends ZSourceGenerator {
 		}
 	}
 
-	@Override public void VisitClassNode(BClassNode Node) {
+	@Override public void VisitClassNode(BunClassNode Node) {
 		@Var BType SuperType = Node.ClassType.GetSuperType();
 		@Var String ClassName = this.NameClass(Node.ClassType);
 		this.GenerateClass("", ClassName, SuperType);
 		this.CurrentBuilder.OpenIndent(" {");
 		@Var int i = 0;
 		while (i < Node.GetListSize()) {
-			@Var BLetVarNode FieldNode = Node.GetFieldNode(i);
+			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
 			this.GenerateClassField("", FieldNode.DeclType(), FieldNode.GetGivenName(), null);
 			this.CurrentBuilder.Append(this.SemiColon);
 			i = i + 1;
@@ -433,7 +433,7 @@ public class JavaGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.OpenIndent(" {");
 		this.CurrentBuilder.AppendNewLine("super();");
 		while (i < Node.GetListSize()) {
-			@Var BLetVarNode FieldNode = Node.GetFieldNode(i);
+			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
 			this.CurrentBuilder.AppendNewLine("this.", FieldNode.GetGivenName(), "=");
 			this.GenerateCode(null, FieldNode.InitValueNode());
 			this.CurrentBuilder.Append(this.SemiColon);
@@ -457,7 +457,7 @@ public class JavaGenerator extends ZSourceGenerator {
 		this.CurrentBuilder.AppendLineFeed();
 	}
 
-	@Override public void VisitErrorNode(BErrorNode Node) {
+	@Override public void VisitErrorNode(ErrorNode Node) {
 		BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.CurrentBuilder.Append("ThrowError(");
 		this.CurrentBuilder.Append(BLib._QuoteString(Node.ErrorMessage));

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import libbun.ast.BNode;
 import libbun.ast.ZEmptyNode;
-import libbun.ast.decl.BLetVarNode;
-import libbun.ast.literal.BStringNode;
+import libbun.ast.decl.BunLetVarNode;
+import libbun.ast.literal.BunStringNode;
 import libbun.parser.BNameSpace;
 import libbun.parser.BSyntax;
 import libbun.parser.BToken;
@@ -85,8 +85,8 @@ public class ImportCommandPatternFunction extends BMatchFunction {
 		if(this.FoundDuplicatedSymbol(NameSpace, Command)) {
 			return;
 		}
-		BLetVarNode Node = new BLetVarNode(ParentNode, BLetVarNode._IsReadOnly, BType.StringType, Command);
-		Node.SetNode(BLetVarNode._InitValue, new BStringNode(ParentNode, null, CommandPath));
+		BunLetVarNode Node = new BunLetVarNode(ParentNode, BunLetVarNode._IsReadOnly, BType.StringType, Command);
+		Node.SetNode(BunLetVarNode._InitValue, new BunStringNode(ParentNode, null, CommandPath));
 		NameSpace.SetSymbol(ShellUtils._ToCommandSymbol(Command), Node);
 	}
 

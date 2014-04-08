@@ -1,8 +1,8 @@
 package libbun.lang.konoha;
 
 import libbun.ast.BNode;
-import libbun.ast.decl.BClassNode;
-import libbun.ast.decl.BFunctionNode;
+import libbun.ast.decl.BunClassNode;
+import libbun.ast.decl.BunFunctionNode;
 import libbun.parser.BTokenContext;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
@@ -10,8 +10,8 @@ import libbun.util.BMatchFunction;
 public class ClassConstructorPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		String Name = "constructor";
-		if(ParentNode instanceof BClassNode) {
-			Name = ((BClassNode)ParentNode).ClassName();
+		if(ParentNode instanceof BunClassNode) {
+			Name = ((BunClassNode)ParentNode).ClassName();
 		}
 		ClassMemberNode MemberNode = new ClassMemberNode(ParentNode);
 		boolean FoundQualifer = true;
@@ -28,12 +28,12 @@ public class ClassConstructorPatternFunction extends BMatchFunction {
 				FoundQualifer = true;
 			}
 		}
-		@Var BFunctionNode FunctionNode = new BFunctionNode(ParentNode);
+		@Var BunFunctionNode FunctionNode = new BunFunctionNode(ParentNode);
 		FunctionNode.GivenName = Name;
 		@Var BNode FuncNode = FunctionNode;
 		FuncNode = TokenContext.MatchToken(ParentNode, Name, BTokenContext._Required);
 		FuncNode = TokenContext.MatchNtimes(FuncNode, "(", "$Param$", ",", ")");
-		FuncNode = TokenContext.MatchPattern(FuncNode, BFunctionNode._Block, "$Block$", BTokenContext._Required);
+		FuncNode = TokenContext.MatchPattern(FuncNode, BunFunctionNode._Block, "$Block$", BTokenContext._Required);
 		if(!FuncNode.IsErrorNode()) {
 			MemberNode.ConstructorNode = FunctionNode;
 			return MemberNode;

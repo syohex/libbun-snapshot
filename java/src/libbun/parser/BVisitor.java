@@ -24,95 +24,86 @@
 
 package libbun.parser;
 
-import libbun.ast.BBlockNode;
-import libbun.ast.BGroupNode;
-import libbun.ast.BSugarNode;
+import libbun.ast.BunBlockNode;
+import libbun.ast.GroupNode;
+import libbun.ast.SyntaxSugarNode;
 import libbun.ast.ZLocalDefinedNode;
-import libbun.ast.binary.BBinaryNode;
 import libbun.ast.binary.BInstanceOfNode;
-import libbun.ast.decl.BClassNode;
-import libbun.ast.decl.BFunctionNode;
-import libbun.ast.decl.BLetVarNode;
+import libbun.ast.binary.BinaryOperatorNode;
+import libbun.ast.decl.BunClassNode;
+import libbun.ast.decl.BunFunctionNode;
+import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.ZTopLevelNode;
 import libbun.ast.decl.ZVarBlockNode;
-import libbun.ast.error.BErrorNode;
-import libbun.ast.expression.BFuncCallNode;
-import libbun.ast.expression.BGetIndexNode;
-import libbun.ast.expression.BGetNameNode;
-import libbun.ast.expression.BGetterNode;
-import libbun.ast.expression.BMacroNode;
-import libbun.ast.expression.BMethodCallNode;
-import libbun.ast.expression.BNewObjectNode;
-import libbun.ast.expression.BSetIndexNode;
-import libbun.ast.expression.BSetNameNode;
-import libbun.ast.expression.BSetterNode;
-import libbun.ast.literal.BArrayLiteralNode;
-import libbun.ast.literal.BAsmNode;
+import libbun.ast.error.ErrorNode;
+import libbun.ast.expression.BunMacroNode;
+import libbun.ast.expression.FuncCallNode;
+import libbun.ast.expression.GetFieldNode;
+import libbun.ast.expression.GetIndexNode;
+import libbun.ast.expression.GetNameNode;
+import libbun.ast.expression.MethodCallNode;
+import libbun.ast.expression.NewObjectNode;
+import libbun.ast.expression.SetFieldNode;
+import libbun.ast.expression.SetIndexNode;
+import libbun.ast.expression.SetNameNode;
+import libbun.ast.literal.BunArrayLiteralNode;
+import libbun.ast.literal.BunAsmNode;
+import libbun.ast.literal.BunMapLiteralNode;
 import libbun.ast.literal.LiteralNode;
-import libbun.ast.literal.ZMapLiteralNode;
-import libbun.ast.statement.BBreakNode;
-import libbun.ast.statement.BIfNode;
-import libbun.ast.statement.BReturnNode;
-import libbun.ast.statement.BThrowNode;
-import libbun.ast.statement.BTryNode;
-import libbun.ast.statement.BWhileNode;
-import libbun.ast.unary.BCastNode;
-import libbun.ast.unary.BUnaryNode;
+import libbun.ast.statement.BunBreakNode;
+import libbun.ast.statement.BunIfNode;
+import libbun.ast.statement.BunReturnNode;
+import libbun.ast.statement.BunThrowNode;
+import libbun.ast.statement.BunTryNode;
+import libbun.ast.statement.BunWhileNode;
+import libbun.ast.unary.BunCastNode;
+import libbun.ast.unary.UnaryOperatorNode;
 
 public abstract class BVisitor {
-	public abstract void VisitGroupNode(BGroupNode Node);
-	public abstract void VisitAsmNode(BAsmNode Node);
+
+	public abstract void VisitGroupNode(GroupNode Node);
+	public abstract void VisitAsmNode(BunAsmNode Node);
 
 	public abstract void VisitLiteralNode(LiteralNode Node);
-	//
-	//	public abstract void VisitDefaultValueNode(BDefaultValueNode Node);
-	//	public abstract void VisitNullNode(BNullNode Node);
-	//	public abstract void VisitBooleanNode(BBooleanNode Node);
-	//	public abstract void VisitIntNode(BIntNode Node);
-	//	public abstract void VisitFloatNode(BFloatNode Node);
-	//	public abstract void VisitStringNode(BStringNode Node);
 
-	public abstract void VisitArrayLiteralNode(BArrayLiteralNode Node);
-	public abstract void VisitMapLiteralNode(ZMapLiteralNode Node);
-	public abstract void VisitNewObjectNode(BNewObjectNode Node);
+	public abstract void VisitArrayLiteralNode(BunArrayLiteralNode Node);
+	public abstract void VisitMapLiteralNode(BunMapLiteralNode Node);
+	public abstract void VisitNewObjectNode(NewObjectNode Node);
 	//	public abstract void VisitNewArrayNode(ZNewArrayNode Node);
 
-	public abstract void VisitGetNameNode(BGetNameNode Node);
-	public abstract void VisitSetNameNode(BSetNameNode Node);
-	public abstract void VisitGetterNode(BGetterNode Node);
-	public abstract void VisitSetterNode(BSetterNode Node);
-	public abstract void VisitGetIndexNode(BGetIndexNode Node);
-	public abstract void VisitSetIndexNode(BSetIndexNode Node);
-	public abstract void VisitMethodCallNode(BMethodCallNode Node);
-	public abstract void VisitFuncCallNode(BFuncCallNode Node);
-	public abstract void VisitMacroNode(BMacroNode FuncNode);
+	public abstract void VisitFuncCallNode(FuncCallNode Node);
+	public abstract void VisitMacroNode(BunMacroNode FuncNode);
 
-	public abstract void VisitUnaryNode(BUnaryNode Node);
-	//	public abstract void VisitNotNode(BNotNode Node);
-	public abstract void VisitCastNode(BCastNode Node);
+	public abstract void VisitGetNameNode(GetNameNode Node);
+	public abstract void VisitSetNameNode(SetNameNode Node);
+	public abstract void VisitGetFieldNode(GetFieldNode Node);
+	public abstract void VisitSetFieldNode(SetFieldNode Node);
+	public abstract void VisitGetIndexNode(GetIndexNode Node);
+	public abstract void VisitSetIndexNode(SetIndexNode Node);
+	public abstract void VisitMethodCallNode(MethodCallNode Node);
+
+	public abstract void VisitUnaryNode(UnaryOperatorNode Node);
+	public abstract void VisitCastNode(BunCastNode Node);
 	public abstract void VisitInstanceOfNode(BInstanceOfNode Node);
-	public abstract void VisitBinaryNode(BBinaryNode Node);
-	//	public abstract void VisitComparatorNode(BComparatorNode Node);
-	//	public abstract void VisitAndNode(BAndNode Node);
-	//	public abstract void VisitOrNode(BOrNode Node);
+	public abstract void VisitBinaryNode(BinaryOperatorNode Node);
 
-	public abstract void VisitBlockNode(BBlockNode Node);
+	public abstract void VisitBlockNode(BunBlockNode Node);
 	public abstract void VisitVarBlockNode(ZVarBlockNode Node);
-	public abstract void VisitIfNode(BIfNode Node);
-	public abstract void VisitReturnNode(BReturnNode Node);
-	public abstract void VisitWhileNode(BWhileNode Node);
-	public abstract void VisitBreakNode(BBreakNode Node);
-	public abstract void VisitThrowNode(BThrowNode Node);
-	public abstract void VisitTryNode(BTryNode Node);
+	public abstract void VisitIfNode(BunIfNode Node);
+	public abstract void VisitReturnNode(BunReturnNode Node);
+	public abstract void VisitWhileNode(BunWhileNode Node);
+	public abstract void VisitBreakNode(BunBreakNode Node);
+	public abstract void VisitThrowNode(BunThrowNode Node);
+	public abstract void VisitTryNode(BunTryNode Node);
 
-	public abstract void VisitLetNode(BLetVarNode Node);
-	public abstract void VisitFunctionNode(BFunctionNode Node);
-	public abstract void VisitClassNode(BClassNode Node);
+	public abstract void VisitLetNode(BunLetVarNode Node);
+	public abstract void VisitFunctionNode(BunFunctionNode Node);
+	public abstract void VisitClassNode(BunClassNode Node);
 
-	public abstract void VisitErrorNode(BErrorNode Node);
+	public abstract void VisitErrorNode(ErrorNode Node);
 
 	public abstract void VisitTopLevelNode(ZTopLevelNode Node);
-	public abstract void VisitSugarNode(BSugarNode Node);
+	public abstract void VisitSyntaxSugarNode(SyntaxSugarNode Node);
 	public abstract void VisitLocalDefinedNode(ZLocalDefinedNode Node);
 
 	public abstract void EnableVisitor();
