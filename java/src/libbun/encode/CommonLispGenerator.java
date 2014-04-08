@@ -102,9 +102,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 	}
 
 	private String GetBinaryOperator(BToken Token) {
-		if(Token.EqualsText("!=")) {
-			return "!=";
-		} else if(Token.EqualsText("==")) {
+		if(Token.EqualsText("==")) {
 			return "equal";
 		} else if(Token.EqualsText("%")) {
 			return "mod";
@@ -116,21 +114,38 @@ public class CommonLispGenerator extends ZSourceGenerator {
 
 	@Override public void VisitBinaryNode(BBinaryNode Node) {
 		this.CurrentBuilder.Append("(");
-		this.CurrentBuilder.Append(Node.SourceToken.GetText());
+		String operator = GetBinaryOperator(Node.SourceToken);
+		if (operator.equals("/")) {
+			this.CurrentBuilder.Append("floor" + " ");
+			this.CurrentBuilder.Append("(");
+		}
+		this.CurrentBuilder.Append(operator);
 		this.CurrentBuilder.Append(" ");
 		this.GenerateCode(null, Node.LeftNode());
 		this.CurrentBuilder.Append(" ");
 		this.GenerateCode(null, Node.RightNode());
+		if (operator.equals("/")) {
+			this.CurrentBuilder.Append(")");
+		}
 		this.CurrentBuilder.Append(")");
 	}
 
 	@Override public void VisitComparatorNode(BComparatorNode Node) {
 		this.CurrentBuilder.Append("(");
-		this.CurrentBuilder.Append(this.GetBinaryOperator(Node.SourceToken));
+		String operator = this.GetBinaryOperator(Node.SourceToken);
+		if (operator.equals("!=")) {
+			this.CurrentBuilder.Append("not" + " ");
+			this.CurrentBuilder.Append("(equal");
+		} else {
+			this.CurrentBuilder.Append(operator);
+		}
 		this.CurrentBuilder.Append(" ");
 		this.GenerateCode(null, Node.LeftNode());
 		this.CurrentBuilder.Append(" ");
 		this.GenerateCode(null, Node.RightNode());
+		if (operator.equals("!=")) {
+			this.CurrentBuilder.Append(")");
+		}
 		this.CurrentBuilder.Append(")");
 	}
 
