@@ -10,7 +10,7 @@ import org.objectweb.asm.Type;
 
 
 class AsmClassLoader extends ClassLoader {
-	private final HashMap<String,AsmClassBuilder> ClassBuilderMap = new HashMap<String, AsmClassBuilder>();
+	protected final HashMap<String,AsmClassBuilder> ClassBuilderMap = new HashMap<String, AsmClassBuilder>();
 	private final AsmJavaGenerator Generator;
 
 	public AsmClassLoader(AsmJavaGenerator Generator) {

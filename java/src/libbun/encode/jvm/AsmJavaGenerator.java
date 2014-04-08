@@ -1332,7 +1332,7 @@ public class AsmJavaGenerator extends AbstractGenerator {
 		}
 	}
 
-	@Override public final void ExecMain() {
+	@Override public void ExecMain() {
 		this.Logger.OutputErrorsToStdErr();
 		if(this.MainFuncNode != null) {
 			@Var JavaStaticFieldNode MainFunc = this.MainFuncNode;
