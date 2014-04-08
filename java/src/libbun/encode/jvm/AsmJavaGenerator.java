@@ -442,23 +442,27 @@ public class AsmJavaGenerator extends BGenerator {
 	@Override public void VisitNewObjectNode(BNewObjectNode Node) {
 		if(Node.IsUntyped()) {
 			this.VisitErrorNode(new BErrorNode(Node, "no class for new operator"));
+			return;
+		}
+		// check class existence
+		if(!Node.Type.Equals(JavaTypeTable.GetZenType(this.GetJavaClass(Node.Type)))) {
+			this.VisitErrorNode(new BErrorNode(Node, "undefined class: " + Node.Type));
+			return;
+		}
+		String ClassName = Type.getInternalName(this.GetJavaClass(Node.Type));
+		this.AsmBuilder.visitTypeInsn(NEW, ClassName);
+		this.AsmBuilder.visitInsn(DUP);
+		Constructor<?> jMethod = this.GetConstructor(Node.Type, Node);
+		if(jMethod != null) {
+			Class<?>[] P = jMethod.getParameterTypes();
+			for(int i = 0; i < P.length; i++) {
+				this.AsmBuilder.PushNode(P[i], Node.GetListAt(i));
+			}
+			this.AsmBuilder.SetLineNumber(Node);
+			this.AsmBuilder.visitMethodInsn(INVOKESPECIAL, ClassName, "<init>", Type.getConstructorDescriptor(jMethod));
 		}
 		else {
-			String ClassName = Type.getInternalName(this.GetJavaClass(Node.Type));
-			this.AsmBuilder.visitTypeInsn(NEW, ClassName);
-			this.AsmBuilder.visitInsn(DUP);
-			Constructor<?> jMethod = this.GetConstructor(Node.Type, Node);
-			if(jMethod != null) {
-				Class<?>[] P = jMethod.getParameterTypes();
-				for(int i = 0; i < P.length; i++) {
-					this.AsmBuilder.PushNode(P[i], Node.GetListAt(i));
-				}
-				this.AsmBuilder.SetLineNumber(Node);
-				this.AsmBuilder.visitMethodInsn(INVOKESPECIAL, ClassName, "<init>", Type.getConstructorDescriptor(jMethod));
-			}
-			else {
-				this.VisitErrorNode(new BErrorNode(Node, "no constructor: " + Node.Type));
-			}
+			this.VisitErrorNode(new BErrorNode(Node, "no constructor: " + Node.Type));
 		}
 	}
 
