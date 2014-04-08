@@ -2,18 +2,19 @@ define assert  "console.assert($[0], $[1])": Func<boolean,String,void>;
 define print   "console.log($[0])" : Func<String,void>;
 define println "console.log($[0])" : Func<String,void>;
 
-define / "($[0] / $[1]) | 0" : Func<int,int,int>;
+define / "Math.floor($[0] / $[1])" : Func<int,int,int>;
 
 // converter
 define _ "$[0]" : Func<int,float>;
 define _ "($[0]|0)" : Func<float,int>;
-define _ "$[0].toString()" : Func<boolean,String>;
-define _ "($[0]).toString()" : Func<int,String>;
-define _ "($[0]).toString()" : Func<float,String>;
+define _ "String($[0])" : Func<boolean,String>;
+define _ "String($[0])" : Func<int,String>;
+define _ "String($[0])" : Func<float,String>;
+define _ "String($[0])" : Func<α[],String>;
+define _ "String($[0])" : Func<Object,String>;
 define _ "parseInt($[0])" : Func<String,int>;
 define _ "parseFloat($[0])" : Func<String,float>;
-define _ "$[0].toString()" : Func<α[],String>;
-define _ "$[0].toString()" : Func<Object,String>;
+
 
 // String
 //define + "zstr($[0]) + zstr($[1])" : Func<String,String,String>;
@@ -31,3 +32,6 @@ define size "$[0].length" : Func<α[],int>;
 define clear "$[0].splice(0, $[0].length)" : Func<α[],int,void>;
 define add "$[0].push($[1])" : Func<α[],α,void>;
 define add "$[0].splice($[1], 0, $[2])" : Func<α[],int,α,void>;
+
+// Map
+define containsKey "($[1] in $[0])" : Func<Object, boolean>;
