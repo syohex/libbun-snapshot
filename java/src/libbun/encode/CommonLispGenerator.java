@@ -254,7 +254,7 @@ public class CommonLispGenerator extends ZSourceGenerator {
 			this.GenerateFuncName(FuncNameNode);
 		}
 		else {
-			this.CurrentBuilder.Append("funccall ");
+			this.CurrentBuilder.Append("funcall ");
 			this.GenerateCode(null, Node.FunctorNode());
 		}
 		this.VisitListNode(" ", Node, " ");
@@ -280,8 +280,8 @@ public class CommonLispGenerator extends ZSourceGenerator {
 				return FuncNode.GetSignature();
 			}
 		} else {
-			/// XXX
-			return "";
+			// wrapped nil block
+			return "nil";
 		}
 	}
 
@@ -310,8 +310,9 @@ public class CommonLispGenerator extends ZSourceGenerator {
 		if(!Node.IsTopLevelDefineFunction()) {
 			this.CurrentBuilder.Append("#'(lambda ");
 			this.VisitFuncParamNode("(", Node, ")");
+			this.CurrentBuilder.Append("(block nil ");
 			this.GenerateCode(null, Node.BlockNode());
-			this.CurrentBuilder.Append(")");
+			this.CurrentBuilder.Append("))");
 		}
 		else {
 			@Var BFuncType FuncType = Node.GetFuncType();
