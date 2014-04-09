@@ -93,9 +93,7 @@ public class JavaScriptGenerator extends OldSourceGenerator {
 	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
 		this.Source.Append("(");
 		this.GenerateCode(null, Node.LeftNode());
-		this.Source.Append(").constructor.name === ");
-		this.GenerateTypeName(Node.TargetType());
-		this.Source.Append(".name");
+		this.Source.Append(").constructor.name === ", this.NameClass(Node.TargetType()), ".name");
 	}
 
 	@Override public void VisitThrowNode(BunThrowNode Node) {
