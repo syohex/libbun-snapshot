@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#CLANG=`which clang`
+#LLC=`which llc-3.0`
+#BOEHMDIR="/opt/boehmgc" #FIXME change boehmgc library's directory to yours
+#if [ -x $CLANG -a -x $LLC -a -f $BOEHMDIR/lib/libgc.so ]; then
+#	OUTDIR=test/w TARGET=ll CHECK="bash test/bin/exec_ll $BOEHMDIR" test/bin/buntest test/bun/*.bun
+#else
+	OUTDIR=test/w TARGET=ll test/bin/buntest test/bun/*.bun
+#fi

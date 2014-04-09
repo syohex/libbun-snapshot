@@ -28,40 +28,40 @@ package libbun.encode.llvm;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import libbun.ast.BunBlockNode;
-import libbun.ast.GroupNode;
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
+import libbun.ast.BunBlockNode;
+import libbun.ast.GroupNode;
 import libbun.ast.LocalDefinedNode;
-import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BInstanceOfNode;
-import libbun.ast.binary.BunOrNode;
+import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAndNode;
+import libbun.ast.binary.BunOrNode;
 import libbun.ast.binary.ComparatorNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
-import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.BunFuncNameNode;
+import libbun.ast.expression.BunMacroNode;
+import libbun.ast.expression.FuncCallNode;
+import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.GetNameNode;
-import libbun.ast.expression.GetFieldNode;
-import libbun.ast.expression.BunMacroNode;
 import libbun.ast.expression.MethodCallNode;
 import libbun.ast.expression.NewObjectNode;
+import libbun.ast.expression.SetFieldNode;
 import libbun.ast.expression.SetIndexNode;
 import libbun.ast.expression.SetNameNode;
-import libbun.ast.expression.SetFieldNode;
 import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.ast.literal.BunBooleanNode;
-import libbun.ast.literal.ConstNode;
 import libbun.ast.literal.BunFloatNode;
 import libbun.ast.literal.BunIntNode;
+import libbun.ast.literal.BunMapLiteralNode;
 import libbun.ast.literal.BunNullNode;
 import libbun.ast.literal.BunStringNode;
-import libbun.ast.literal.BunMapLiteralNode;
+import libbun.ast.literal.ConstNode;
 import libbun.ast.statement.BunBreakNode;
 import libbun.ast.statement.BunIfNode;
 import libbun.ast.statement.BunReturnNode;
@@ -71,13 +71,14 @@ import libbun.ast.statement.BunWhileNode;
 import libbun.ast.unary.BunCastNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.encode.SourceBuilder;
 import libbun.encode.OldSourceGenerator;
+import libbun.encode.SourceBuilder;
 import libbun.parser.BLogger;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
 import libbun.type.BGenericType;
 import libbun.type.BType;
+import libbun.type.BVarType;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
@@ -273,7 +274,10 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		return false;
 	}
 	private String GetTypeExpr(BType Type) {
-		if(Type.IsVarType()) {
+		if(Type instanceof BVarType) {
+			return this.GetTypeExpr(Type.RefType);
+		}
+		else if(Type.IsVarType()) {
 			return "opaque";
 		}
 		else if(Type instanceof BFuncType) {
@@ -281,11 +285,13 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 			return this.GetTypeExpr(FuncType.GetReturnType())+ " " + this.GetFuncParamTypeExpr(FuncType) + "*";
 		}
 		else if(Type.IsArrayType()) {
-			return this.GetNativeTypeName(((BGenericType)Type).ParamType.GetRealType()) + "*";
+			//return this.GetNativeTypeName(((BGenericType)Type).ParamType.GetRealType()) + "*";
+			this.DefineExternalStruct("BArray");
+			return "%BArray*";
 		}
 		else if(Type.IsStringType()) {
-			this.DefineExternalStruct("ZString");
-			return "%ZString*";
+			this.DefineExternalStruct("BString");
+			return "%BString*";
 		}
 		else if(Type instanceof BClassType) {
 			return this.ToClassSymbol(Type.ShortName) + "*";
@@ -513,8 +519,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		return Len;
 	}
 
-	@Override
-	public void VisitAndNode(BunAndNode Node) {
+	@Override public void VisitAndNode(BunAndNode Node) {
 		@Var int LabelNum = this.CurrentScope.GetTempLabelNumber();
 		@Var String RightLabel = "And__" + LabelNum + ".Right";
 		@Var String EndLabel = "And__" + LabelNum + ".End";
@@ -549,38 +554,56 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		this.CurrentScope.PushValue(AllResult);
 	}
 
-	@Override
-	public void VisitArrayLiteralNode(BunArrayLiteralNode Node) {
-		@Var StringBuilder sb = new StringBuilder();
-		@Var String GlobalConst = this.CreateTempGlobalSymbol();
-		sb.append(GlobalConst);
-		sb.append(" = private constant ");
-		int ArraySize = Node.GetListSize();
-		@Var String ElementType = this.GetTypeExpr(((BGenericType)Node.Type).ParamType);
-		@Var String ArrayType = "[" + ArraySize + " x " + ElementType + "]";
-		sb.append(ArrayType);
-
-		sb.append(" [");
-		@Var int i = 0;
-		while(i < ArraySize) {
-			if (i > 0) {
-				sb.append(", ");
-			}
-			@Var BNode SubNode = Node.GetListAt(i);
-			sb.append(this.GetTypeExpr(SubNode.Type));
-			sb.append(" ");
-			this.GenerateCode(null, SubNode);
-			sb.append(this.CurrentScope.PopValue());
-			i = i + 1;
+	@Override public void VisitArrayLiteralNode(BunArrayLiteralNode Node) {
+		@Var int ArraySize = Node.GetListSize();
+		@Var BType ElementType = ((BGenericType)Node.Type).ParamType;
+		@Var String ExtFuncName;
+		if(ElementType.IsIntType()) {
+			ExtFuncName = "BIntArray_Construct";
 		}
-		sb.append("]");
-		this.Header.AppendNewLine(sb.toString());
+		else if(ElementType.IsFloatType()) {
+			ExtFuncName = "BFloatArray_Construct";
+		}
+		else if(ElementType.IsBooleanType()) {
+			ExtFuncName = "BBooleanArray_Construct";
+		}
+		else {
+			ExtFuncName = "BObjArray_Construct";
+		}
+		this.DeclareExtrnalFunction(ExtFuncName, "%BArray*", "(i8*, i64)");
 
-		this.CurrentScope.PushValue("bitcast (" + ArrayType + "* " + GlobalConst + " to " + this.GetTypeExpr(Node.Type) + ")");
+		if(ArraySize > 0) {
+			@Var StringBuilder sb = new StringBuilder();
+			@Var String GlobalConst = this.CreateTempGlobalSymbol();
+			sb.append(GlobalConst);
+			sb.append(" = private constant ");
+			@Var String ArrayType = "[" + ArraySize + " x " + this.GetTypeExpr(ElementType) + "]";
+			sb.append(ArrayType);
+
+			sb.append(" [");
+			@Var int i = 0;
+			while(i < ArraySize) {
+				if (i > 0) {
+					sb.append(", ");
+				}
+				@Var BNode SubNode = Node.GetListAt(i);
+				sb.append(this.GetTypeExpr(SubNode.Type));
+				sb.append(" ");
+				this.GenerateCode(null, SubNode);
+				sb.append(this.CurrentScope.PopValue());
+				i = i + 1;
+			}
+			sb.append("]");
+			this.Header.AppendNewLine(sb.toString());
+
+			this.CallExternalFunction(ExtFuncName, "(i8* bitcast (" + ArrayType + "* " + GlobalConst + " to i8*), i64 " + ArraySize + ")");
+		}
+		else {
+			this.CallExternalFunction(ExtFuncName, "(i8* null, i64 " + ArraySize + ")");
+		}
 	}
 
-	@Override
-	public void VisitBinaryNode(BinaryOperatorNode Node) {
+	@Override public void VisitBinaryNode(BinaryOperatorNode Node) {
 		this.GenerateCode(null, Node.LeftNode());
 		@Var String Left = this.CurrentScope.PopValue();
 		this.GenerateCode(null, Node.RightNode());
@@ -602,8 +625,8 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		}
 		else if(Node.LeftNode().Type.IsStringType()) {
 			if(Node.SourceToken.EqualsText('+') && Node.RightNode().Type.IsStringType()) {
-				this.DeclareExtrnalFunction("ZString_StrCat", "%ZString*", "(%ZString*, %ZString*)");
-				this.CallExternalFunction("ZString_StrCat", "(" + this.GetTypeExpr(Node.LeftNode().Type) + " " + Left + ", " + this.GetTypeExpr(Node.RightNode().Type) + " " + Right + ")");
+				this.DeclareExtrnalFunction("BString_StrCat", "%BString*", "(%BString*, %BString*)");
+				this.CallExternalFunction("BString_StrCat", "(" + this.GetTypeExpr(Node.LeftNode().Type) + " " + Left + ", " + this.GetTypeExpr(Node.RightNode().Type) + " " + Right + ")");
 			}
 		}
 		else {
@@ -611,19 +634,16 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		}
 	}
 
-	@Override
-	public void VisitBreakNode(BunBreakNode Node) {
+	@Override public void VisitBreakNode(BunBreakNode Node) {
 		this.Source.AppendNewLine("br label %" + this.CurrentScope.PeekBreakLabel());
 		this.CurrentScope.TerminateBlock();
 	}
 
-	@Override
-	public void VisitBlockNode(BunBlockNode Node) {
+	@Override public void VisitBlockNode(BunBlockNode Node) {
 		this.VisitStmtList(Node);
 	}
 
-	@Override
-	public void VisitBooleanNode(BunBooleanNode Node) {
+	@Override public void VisitBooleanNode(BunBooleanNode Node) {
 		if (Node.BooleanValue) {
 			this.CurrentScope.PushValue(this.TrueLiteral);
 		} else {
@@ -675,11 +695,11 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 
 		@Var String ProtoSymbol = "@" + Node.ClassName() + ".Proto";
 		this.Source.AppendNewLine(ProtoSymbol);
-		this.Header.Append(" = ");
+		this.Source.Append(" = ");
 		if(!Node.IsExport) {
-			this.Header.Append("private ");
+			this.Source.Append("private ");
 		}
-		this.Header.Append("constant ");
+		this.Source.Append("constant ");
 		this.Source.Append(ClassSymbol);
 		this.Source.OpenIndent(" {");
 		if(!Node.SuperType().Equals(BClassType._ObjectType)) {
@@ -697,16 +717,15 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		this.CurrentScope = PushedScope;
 	}
 
-	@Override
-	public void VisitComparatorNode(ComparatorNode Node) {
+	@Override public void VisitComparatorNode(ComparatorNode Node) {
 		this.GenerateCode(null, Node.LeftNode());
 		@Var String Left = this.CurrentScope.PopValue();
 		this.GenerateCode(null, Node.RightNode());
 		@Var String Right = this.CurrentScope.PopValue();
 
-		@Var String TempVar = this.CurrentScope.CreateTempLocalSymbol();
 		if(this.IsPrimitiveType(Node.LeftNode().Type)) {
-			this.Source.AppendNewLine(TempVar);
+			@Var String Result = this.CurrentScope.CreateTempLocalSymbol();
+			this.Source.AppendNewLine(Result);
 			this.Source.Append(" = ");
 			this.Source.Append(this.GetCompareOpCodeAndCondition(Node));
 			this.Source.Append(" ");
@@ -715,6 +734,13 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 			this.Source.Append(Left);
 			this.Source.Append(", ");
 			this.Source.Append(Right);
+			this.CurrentScope.PushValue(Result);
+		}
+		else if(Node.LeftNode().Type.IsStringType()) {
+			if(Node.SourceToken.EqualsText("==") && Node.RightNode().Type.IsStringType()) {
+				this.DeclareExtrnalFunction("BString_EqualString", "i1", "(%BString*, %BString*)");
+				this.CallExternalFunction("BString_EqualString", "(" + this.GetTypeExpr(Node.LeftNode().Type) + " " + Left + ", " + this.GetTypeExpr(Node.RightNode().Type) + " " + Right + ")");
+			}
 		}
 		else {
 			@Var String LeftAddress = this.CurrentScope.CreateTempLocalSymbol();
@@ -733,7 +759,8 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 			this.Source.Append(Right);
 			this.Source.Append(" to i64");
 
-			this.Source.AppendNewLine(TempVar);
+			@Var String Result = this.CurrentScope.CreateTempLocalSymbol();
+			this.Source.AppendNewLine(Result);
 			this.Source.Append(" = ");
 			this.Source.Append(this.GetCompareOpCodeAndCondition(Node));
 			this.Source.Append(" ");
@@ -742,21 +769,18 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 			this.Source.Append(LeftAddress);
 			this.Source.Append(", ");
 			this.Source.Append(RightAddress);
+			this.CurrentScope.PushValue(Result);
 		}
-		this.CurrentScope.PushValue(TempVar);
 	}
 
-	@Override
-	public void VisitErrorNode(ErrorNode Node) {
+	@Override public void VisitErrorNode(ErrorNode Node) {
 	}
 
-	@Override
-	public void VisitFloatNode(BunFloatNode Node) {
+	@Override public void VisitFloatNode(BunFloatNode Node) {
 		this.CurrentScope.PushValue("" + Node.FloatValue);
 	}
 
-	@Override
-	public void VisitFuncCallNode(FuncCallNode Node) {
+	@Override public void VisitFuncCallNode(FuncCallNode Node) {
 		@Var BFuncType FuncType = Node.GetFuncType();
 		if(FuncType == null) {
 			BLogger._LogError(Node.SourceToken, "Can't interpret this function call");
@@ -798,7 +822,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		@Var LLVMScope PushedScope = this.CurrentScope;
 		this.CurrentScope = new LLVMScope();
 
-		this.Source = this.InsertNewSourceBuilder();
+		this.Source = this.AppendNewSourceBuilder();
 
 		this.Source.AppendNewLine("define private ");
 		this.Source.Append(this.GetTypeExpr(Node.ReturnType()));
@@ -813,15 +837,15 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		}
 		this.Source.Append(" " + FuncName + " ");
 		this.VisitFuncParamNode("(", Node, ")");
-		@Var String Args = this.CurrentScope.PopValue();
-		this.Source.Append(Args);
+		//@Var String Args = this.CurrentScope.PopValue();
+		//this.Source.Append(Args);
 		this.Source.OpenIndent(" {");
 		this.Source.AppendLineFeed();
 		this.Source.Append("Entry:");
 		this.CurrentScope.SetLabel("Entry");
 
-		//this.CurrentBuilder = this.AppendNewSourceBuilder();
-		//this.CurrentBuilder.Indent();
+		//this.Source = this.AppendNewSourceBuilder();
+		//this.Source.Indent();
 		this.GenerateCode(null, Node.BlockNode());
 		if(!this.CurrentScope.IsBlockTerminated()) {
 			this.AppendDefaultReturn(Node.ReturnType());
@@ -829,32 +853,36 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		this.Source.CloseIndent("}");
 
 		if(Node.IsExport) {
-			if(!Node.FuncName().equals("main")) {
+			if(Node.FuncName().equals("main")) {
+				this.Source.AppendNewLine("define i32 @main (i32 %argc, i8** %argv)");
+				this.Source.OpenIndent(" {");
+				if(Node.ResolvedFuncType.GetFuncParamSize() != 0) {
+					this.Source.AppendNewLine("%_argc = zext i32 %argc to i64");
+				}
+				this.Source.AppendNewLine("call ");
+				this.Source.Append(this.GetTypeExpr(Node.ResolvedFuncType));
+				this.Source.Append(" ");
+				this.Source.Append(FuncName);
+				this.Source.Append(" (");
+				if(Node.ResolvedFuncType.GetFuncParamSize() != 0) {
+					this.Source.Append("i64 %_argc, i8** %argv");
+				}
+				this.Source.Append(")");
+				this.Source.AppendNewLine("ret i32 0");
+				this.Source.CloseIndent("}");
+			}
+			else {
 				this.Header.AppendNewLine("@" + Node.FuncName());
 				this.Header.Append(" = constant ");
 				this.Header.Append(this.GetTypeExpr(Node.ResolvedFuncType));
 				this.Header.Append(" ");
 				this.Header.Append(FuncName);
 			}
-			else {
-				this.Source.AppendNewLine("define i64 @main (i64 %argc, i8** %argv)");
-				this.Source.OpenIndent(" {");
-				this.Source.AppendNewLine("call ");
-				this.Source.Append(this.GetTypeExpr(Node.ResolvedFuncType));
-				this.Source.Append(" ");
-				this.Source.Append(FuncName);
-				if(Node.ResolvedFuncType.GetFuncParamSize() == 0) {
-					this.Source.Append(" ()");
-				}
-				else {
-					this.Source.Append(" (i64 %argc, i8** %argv)");
-				}
-				this.Source.AppendNewLine("ret i64 0");
-				this.Source.CloseIndent("}");
-			}
 		}
 
-		this.Source = this.Source.Pop();
+		if(Node.ParentFunctionNode != null || Node.ParentNode instanceof BunLetVarNode) {
+			this.Source = this.Source.Pop();
+		}
 		this.CurrentScope = PushedScope;
 		//Node.ParentFunctionNode != null
 		if(Node.FuncName() == null) {
@@ -862,43 +890,72 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		}
 	}
 
-	@Override
-	public void VisitGetIndexNode(GetIndexNode Node) {
-		this.GetArrayElementPointer(Node.RecvNode(), Node.IndexNode());
-		@Var String Element = this.CurrentScope.PopValue();
+	@Override public void VisitGetIndexNode(GetIndexNode Node) {
+		this.GenerateCode(null, Node.RecvNode());
+		@Var String Recv = this.CurrentScope.PopValue();
+		this.GenerateCode(null, Node.IndexNode());
+		@Var String Index = this.CurrentScope.PopValue();
 
-		@Var String TempVar = this.CurrentScope.CreateTempLocalSymbol();
-		this.Source.AppendNewLine(TempVar);
-		this.Source.Append(" = load ");
-		this.Source.Append(this.GetTypeExpr(Node.Type) + "*");
-		this.Source.Append(" ");
-		this.Source.Append(Element);
-		//@llvm.gcread
-
-		this.CurrentScope.PushValue(TempVar);
+		if(Node.RecvNode().Type.IsArrayType()) {
+			@Var BType ElementType = ((BGenericType)Node.RecvNode().Type).ParamType;
+			if(ElementType.IsIntType()) {
+				this.DeclareExtrnalFunction("BIntArray_Get", "i64", "(%BArray*, i64)");
+				this.CallExternalFunction("BIntArray_Get", "(" + this.GetTypeExpr(Node.RecvNode().Type) + " " + Recv + ", " + this.GetTypeExpr(Node.IndexNode().Type) + " " + Index + ")");
+			}
+			else if(ElementType.IsFloatType()) {
+				this.DeclareExtrnalFunction("BFloatArray_Get", "double", "(%BArray*, i64)");
+				this.CallExternalFunction("BFloatArray_Get", "(" + this.GetTypeExpr(Node.RecvNode().Type) + " " + Recv + ", " + this.GetTypeExpr(Node.IndexNode().Type) + " " + Index + ")");
+			}
+			else if(ElementType.IsBooleanType()) {
+				this.DeclareExtrnalFunction("BBooleanArray_Get", "i1", "(%BArray*, i64)");
+				this.CallExternalFunction("BBooleanArray_Get", "(" + this.GetTypeExpr(Node.RecvNode().Type) + " " + Recv + ", " + this.GetTypeExpr(Node.IndexNode().Type) + " " + Index + ")");
+			}
+			else {
+				this.DeclareExtrnalFunction("BObjArray_Get", "i8*", "(%BArray*, i64)");
+				this.CallExternalFunction("BObjArray_Get", "(" + this.GetTypeExpr(Node.RecvNode().Type) + " " + Recv + ", " + this.GetTypeExpr(Node.IndexNode().Type) + " " + Index + ")");
+			}
+		}
+		else if(Node.RecvNode().Type.IsStringType()) {
+			this.DeclareExtrnalFunction("BString_Get", "%BString*", "(%BString*, i64)");
+			this.CallExternalFunction("BString_Get", "(" + this.GetTypeExpr(Node.RecvNode().Type) + " " + Recv + ", " + this.GetTypeExpr(Node.IndexNode().Type) + " " + Index + ")");
+		}
 	}
 
-	@Override
-	public void VisitGetNameNode(GetNameNode Node) {
-		@Var String VarName = this.NameLocalVariable(Node.GetNameSpace(), Node.GetUniqueName(this));
-		if(this.CurrentScope.IsUserDefinedVar(VarName)) {
+	@Override public void VisitGetNameNode(GetNameNode Node) {
+		if(Node.ResolvedNode.IsTopLevel()/* global Let */) {
+			if(this.IsUserDefinedGlobalSymbol(Node.GetUniqueName(this))) {
+				@Var String TempVar = this.CurrentScope.CreateTempLocalSymbol();
+				this.Source.AppendNewLine(TempVar);
+				this.Source.Append(" = load ");
+				this.Source.Append(this.GetTypeExpr(Node.Type) + "*");
+				this.Source.Append(" " + this.ToGlobalSymbol(Node.GetUniqueName(this)));
+				this.CurrentScope.PushValue(TempVar);
+			}
+			else {
+				this.GenerateCode(null, Node.ResolvedNode.InitValueNode());
+			}
+		}
+		else if(Node.ResolvedNode.IsReadOnly()) {
+			//if() /* local Let */{
+			//}
+			//else /* Argument */{
+			this.CurrentScope.PushValue(this.ToLocalSymbol(Node.GetUniqueName(this)));
+			//}
+		}
+		else /* Var */{
 			@Var String TempVar = this.CurrentScope.CreateTempLocalSymbol();
 			this.Source.AppendNewLine(TempVar);
 			this.Source.Append(" = load ");
 			this.Source.Append(this.GetTypeExpr(Node.Type) + "*");
-			this.Source.Append(" " + this.ToLocalSymbol(VarName));
+			this.Source.Append(" " + this.ToLocalSymbol(Node.GetUniqueName(this)));
 			//if(!this.IsPrimitiveType(Node.Type)) {
 			//@llvm.gcread
 			//}
 			this.CurrentScope.PushValue(TempVar);
 		}
-		else {
-			this.CurrentScope.PushValue(this.ToLocalSymbol(Node.GetUniqueName(this)));
-		}
 	}
 
-	@Override
-	public void VisitGetFieldNode(GetFieldNode Node) {
+	@Override public void VisitGetFieldNode(GetFieldNode Node) {
 		this.GetObjectElementPointer(Node.RecvNode(), Node.GetName());
 		@Var String Element = this.CurrentScope.PopValue();
 
@@ -912,37 +969,11 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		this.CurrentScope.PushValue(TempVar);
 	}
 
-	//	@Override
-	//	public void VisitGlobalNameNode(ZFuncNameNode Node) {
-	//		if(Node.IsUntyped()) {
-	//			ZLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GlobalName);
-	//		}
-	//		if(Node.IsFuncNameNode()) {
-	//			@Var String FuncName = Node.FuncType.StringfySignature(Node.GlobalName);
-	//			this.DefineGlobalSymbol(FuncName);
-	//			this.CurrentScope.PushValue(this.ToGlobalSymbol(FuncName));
-	//		}
-	//		//else if(!this.IsPrimitiveType(Node.Type)) {
-	//		//	this.Writer.PushValue(this.ToGlobalSymbol(Node.GlobalName));
-	//		//}
-	//		else {
-	//			@Var String TempVar = this.CurrentScope.CreateTempLocalSymbol();
-	//			this.CurrentBuilder.AppendNewLine(TempVar);
-	//			this.CurrentBuilder.Append(" = load ");
-	//			this.CurrentBuilder.Append(this.GetTypeExpr(Node.Type) + "*");
-	//			this.CurrentBuilder.Append(" " + this.ToGlobalSymbol(Node.GlobalName));
-	//
-	//			this.CurrentScope.PushValue(TempVar);
-	//		}
-	//	}
-
-	@Override
-	public void VisitGroupNode(GroupNode Node) {
+	@Override public void VisitGroupNode(GroupNode Node) {
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
-	@Override
-	public void VisitIfNode(BunIfNode Node) {
+	@Override public void VisitIfNode(BunIfNode Node) {
 		@Var int LabelNum = this.CurrentScope.GetTempLabelNumber();
 		@Var String ThenLabel = "If__" + LabelNum + ".Then";
 		@Var String ElseLabel = "If__" + LabelNum + ".Else";
@@ -990,37 +1021,51 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		}
 	}
 
-	@Override
-	public void VisitInstanceOfNode(BInstanceOfNode Node) {
+	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
 		// TODO
 	}
 
-	@Override
-	public void VisitIntNode(BunIntNode Node) {
+	@Override public void VisitIntNode(BunIntNode Node) {
 		this.CurrentScope.PushValue("" + Node.IntValue);
 	}
 
-	@Override
-	public void VisitLetNode(BunLetVarNode Node) {
-		@Var LLVMScope PushedScope = this.CurrentScope;
-		this.CurrentScope = new LLVMScope();
-
-		this.GenerateCode(null, Node.InitValueNode());
-		@Var String Init = this.CurrentScope.PopValue();
-
-		this.DefineGlobalSymbol(Node.GetUniqueName(this));
-		this.Header.AppendNewLine(this.ToGlobalSymbol(Node.GetUniqueName(this)));
-		this.Header.Append(" = ");
-		if(!Node.IsExport()) {
-			this.Header.Append("private ");
+	@Override public void VisitLetNode(BunLetVarNode Node) {
+		if(Node.IsParamNode()) {
+			this.VisitParamNode(Node);
 		}
-		this.Header.Append("constant ");
-		this.Header.Append(this.GetTypeExpr(Node.DeclType()));
-		this.Header.Append(" ");
-		this.Header.Append(Init);
+		else {
+			@Var LLVMScope PushedScope = this.CurrentScope;
+			this.CurrentScope = new LLVMScope();
 
-		this.CurrentScope = PushedScope;
-		//this.Writer.PushValue(this.ToGlobalSymbol(Node.GlobalName));
+			@Var BNode InitNode = Node.InitValueNode();
+			if((InitNode instanceof BunFunctionNode)) {
+			}
+			else if((InitNode instanceof BunArrayLiteralNode) || (InitNode instanceof BunMapLiteralNode) || (InitNode instanceof BunStringNode)) {
+				/*FIXME*/
+				return;
+			}
+			else if(!(InitNode instanceof ConstNode)) {
+				BLogger._LogError(Node.SourceToken, "Init value is not a constant");
+				return;
+			}
+
+			this.GenerateCode(null, InitNode);
+			@Var String Init = this.CurrentScope.PopValue();
+
+			this.DefineGlobalSymbol(Node.GetUniqueName(this));
+			this.Header.AppendNewLine(this.ToGlobalSymbol(Node.GetUniqueName(this)));
+			this.Header.Append(" = ");
+			if(!Node.IsExport()) {
+				this.Header.Append("private ");
+			}
+			this.Header.Append("constant ");
+			this.Header.Append(this.GetTypeExpr(Node.DeclType()));
+			this.Header.Append(" ");
+			this.Header.Append(Init);
+
+			this.CurrentScope = PushedScope;
+			//this.CurrentScope.PushValue(this.ToGlobalSymbol(Node.GetUniqueName(this)));
+		}
 	}
 
 	@Override public void VisitMacroNode(BunMacroNode Node) {
@@ -1088,18 +1133,15 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		}
 	}
 
-	@Override
-	public void VisitMapLiteralNode(BunMapLiteralNode Node) {
+	@Override public void VisitMapLiteralNode(BunMapLiteralNode Node) {
 		// TODO
 	}
 
-	@Override
-	public void VisitMethodCallNode(MethodCallNode Node) {
+	@Override public void VisitMethodCallNode(MethodCallNode Node) {
 		// TODO
 	}
 
-	@Override
-	public void VisitNewObjectNode(NewObjectNode Node) {
+	@Override public void VisitNewObjectNode(NewObjectNode Node) {
 		if(Node.Type instanceof BClassType) {
 			this.DeclareExtrnalFunction("GC_malloc", "i8*", "(i64)");
 			//this.DeclareExtrnalFunction("free", "void", "(i8*)");
@@ -1132,7 +1174,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 				else {
 					sb.append(")");
 				}
-				this.CurrentBuilder.AppendNewLine(sb.toString());
+				this.Source.AppendNewLine(sb.toString());
 			} */
 			this.CurrentScope.PushValue(TempVar);
 		}
@@ -1141,8 +1183,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		}
 	}
 
-	@Override
-	public void VisitNotNode(BunNotNode Node) {
+	@Override public void VisitNotNode(BunNotNode Node) {
 		this.GenerateSurroundCode(Node.AST[BunNotNode._Recv]);
 		@Var String Recv = this.CurrentScope.PopValue();
 
@@ -1158,13 +1199,11 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		this.CurrentScope.PushValue(TempVar);
 	}
 
-	@Override
-	public void VisitNullNode(BunNullNode Node) {
+	@Override public void VisitNullNode(BunNullNode Node) {
 		this.CurrentScope.PushValue(this.NullLiteral);
 	}
 
-	@Override
-	public void VisitOrNode(BunOrNode Node) {
+	@Override public void VisitOrNode(BunOrNode Node) {
 		@Var int LabelNum = this.CurrentScope.GetTempLabelNumber();
 		@Var String RightLabel = "Or__" + LabelNum + ".Right";
 		@Var String EndLabel = "Or__" + LabelNum + ".End";
@@ -1199,12 +1238,6 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		this.CurrentScope.PushValue(AllResult);
 	}
 
-	@Override protected void VisitParamNode(BunLetVarNode Node) {
-		@Var String SymbolName = Node.GetGivenName();
-		this.CurrentScope.DefineLocalSymbol(SymbolName);
-		this.CurrentScope.PushValue(this.ToLocalSymbol(SymbolName));
-	}
-
 	@Override public void VisitReturnNode(BunReturnNode Node) {
 		if (Node.HasReturnExpr()) {
 			this.GenerateCode(null, Node.ExprNode());
@@ -1221,26 +1254,36 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		this.CurrentScope.TerminateBlock();
 	}
 
-	@Override
-	public void VisitSetIndexNode(SetIndexNode Node) {
+	@Override public void VisitSetIndexNode(SetIndexNode Node) {
+		this.GenerateCode(null, Node.RecvNode());
+		@Var String Recv = this.CurrentScope.PopValue();
+		this.GenerateCode(null, Node.IndexNode());
+		@Var String Index = this.CurrentScope.PopValue();
 		this.GenerateCode(null, Node.ExprNode());
 		@Var String Expr = this.CurrentScope.PopValue();
-		this.GetArrayElementPointer(Node.RecvNode(), Node.IndexNode());
-		@Var String Element = this.CurrentScope.PopValue();
 
-		this.Source.AppendNewLine("store ");
-		this.Source.Append(this.GetTypeExpr(Node.ExprNode().Type));
-		this.Source.Append(" ");
-		this.Source.Append(Expr);
-		this.Source.Append(", ");
-		this.Source.Append(this.GetTypeExpr(Node.ExprNode().Type) + "*");
-		this.Source.Append(" ");
-		this.Source.Append(Element);
-		//@llvm.gcwrite
+		if(Node.RecvNode().Type.IsArrayType()) {
+			@Var BType ElementType = ((BGenericType)Node.RecvNode().Type).ParamType;
+			if(ElementType.IsIntType()) {
+				this.DeclareExtrnalFunction("BIntArray_Set", "void", "(%BArray*, i64, i64)");
+				this.CallExternalFunction("BIntArray_Set", "(" + this.GetTypeExpr(Node.RecvNode().Type) + " " + Recv + ", " + this.GetTypeExpr(Node.IndexNode().Type) + " " + Index + ", " + this.GetTypeExpr(Node.ExprNode().Type) + " " + Expr + ")");
+			}
+			else if(ElementType.IsFloatType()) {
+				this.DeclareExtrnalFunction("BFloatArray_Set", "void", "(%BArray*, i64, double)");
+				this.CallExternalFunction("BFloatArray_Set", "(" + this.GetTypeExpr(Node.RecvNode().Type) + " " + Recv + ", " + this.GetTypeExpr(Node.IndexNode().Type) + " " + Index + ", " + this.GetTypeExpr(Node.ExprNode().Type) + " " + Expr + ")");
+			}
+			else if(ElementType.IsBooleanType()) {
+				this.DeclareExtrnalFunction("BBooleanArray_Set", "void", "(%BArray*, i64, i1)");
+				this.CallExternalFunction("BBooleanArray_Set", "(" + this.GetTypeExpr(Node.RecvNode().Type) + " " + Recv + ", " + this.GetTypeExpr(Node.IndexNode().Type) + " " + Index + ", " + this.GetTypeExpr(Node.ExprNode().Type) + " " + Expr + ")");
+			}
+			else {
+				this.DeclareExtrnalFunction("BObjArray_Set", "void", "(%BArray*, i64, i8*)");
+				this.CallExternalFunction("BObjArray_Set", "(" + this.GetTypeExpr(Node.RecvNode().Type) + " " + Recv + ", " + this.GetTypeExpr(Node.IndexNode().Type) + " " + Index + ", i8* bitcast (" + this.GetTypeExpr(Node.ExprNode().Type) + " " + Expr + " to i8*))");
+			}
+		}
 	}
 
-	@Override
-	public void VisitSetNameNode(SetNameNode Node) {
+	@Override public void VisitSetNameNode(SetNameNode Node) {
 		this.GenerateCode(null, Node.ExprNode());
 		@Var String Expr = this.CurrentScope.PopValue();
 
@@ -1251,14 +1294,14 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		this.Source.Append(", ");
 		this.Source.Append(this.GetTypeExpr(Node.ExprNode().Type) + "*");
 		this.Source.Append(" ");
-		this.VisitGetNameNode(Node.NameNode());
+		//this.VisitGetNameNode(Node.NameNode());
+		this.Source.Append(this.ToLocalSymbol(Node.NameNode().GetUniqueName(this)));
 		//if(!this.IsPrimitiveType(Node.ExprNode().Type)) {
 		//@llvm.gcwrite
 		//}
 	}
 
-	@Override
-	public void VisitStringNode(BunStringNode Node) {
+	@Override public void VisitStringNode(BunStringNode Node) {
 		@Var String StringConst = this.CreateTempGlobalSymbol();
 		this.Header.AppendNewLine(StringConst);
 		this.Header.Append(" = private constant ");
@@ -1268,12 +1311,11 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		this.Header.Append(StringType);
 		this.Header.Append(" c\"" + StringValue + "\"");
 
-		this.DeclareExtrnalFunction("ZString_Create", "%ZString*", "(i8*, i64)");
-		this.CallExternalFunction("ZString_Create", "(i8* bitcast (" + StringType + "* " + StringConst + " to i8*), i64 " + (StrLen-1) + ")");
+		this.DeclareExtrnalFunction("BString_Construct", "%BString*", "(i8*, i64)");
+		this.CallExternalFunction("BString_Construct", "(i8* bitcast (" + StringType + "* " + StringConst + " to i8*), i64 " + (StrLen-1) + ")");
 	}
 
-	@Override
-	public void VisitSetFieldNode(SetFieldNode Node) {
+	@Override public void VisitSetFieldNode(SetFieldNode Node) {
 		this.GenerateCode(null, Node.ExprNode());
 		@Var String Expr = this.CurrentScope.PopValue();
 		this.GetObjectElementPointer(Node.RecvNode(), Node.GetName());
@@ -1290,18 +1332,15 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		//@llvm.gcwrite
 	}
 
-	@Override
-	public void VisitThrowNode(BunThrowNode Node) {
+	@Override public void VisitThrowNode(BunThrowNode Node) {
 		// TODO
 	}
 
-	@Override
-	public void VisitTryNode(BunTryNode Node) {
+	@Override public void VisitTryNode(BunTryNode Node) {
 		// TODO
 	}
 
-	@Override
-	public void VisitUnaryNode(UnaryOperatorNode Node) {
+	@Override public void VisitUnaryNode(UnaryOperatorNode Node) {
 		this.GenerateCode(null, Node.RecvNode());
 		@Var String Recv = this.CurrentScope.PopValue();
 
@@ -1359,43 +1398,12 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		}
 	}
 
-	@Override protected void VisitVarDeclNode(BunLetVarNode Node) {
-		//@Var ZSourceBuilder EntryBlockBuilder = this.CurrentBuilder.Pop();
-		@Var SourceBuilder VarDeclBuilder = this.Source; //FIXME
-
-		@Var String VarName = this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName());
-		this.CurrentScope.DefineLocalVar(VarName);
-		@Var String VarSymbol = this.ToLocalSymbol(VarName);
-		VarDeclBuilder.AppendNewLine(VarSymbol);
-		VarDeclBuilder.Append(" = alloca ");
-		VarDeclBuilder.Append(this.GetTypeExpr(Node.DeclType()));
-		//if(!this.IsPrimitiveType(Node.DeclType())) {
-		//@llvm.gcroot
-		//}
-
-		this.GenerateCode(null, Node.InitValueNode());
-		@Var String Init = this.CurrentScope.PopValue();
-
-		this.Source.AppendNewLine("store ");
-		this.Source.Append(this.GetTypeExpr(Node.InitValueNode().Type));
-		this.Source.Append(" ");
-		this.Source.Append(Init);
-		this.Source.Append(", ");
-		this.Source.Append(this.GetTypeExpr(Node.DeclType()) + "*");
-		this.Source.Append(" ");
-		this.Source.Append(VarSymbol);
-		if(Node.HasNextVarNode()) {
-			this.VisitVarDeclNode(Node.NextVarNode());
-		}
-	}
-
 	@Override public void VisitVarBlockNode(BunVarBlockNode Node) {
 		this.VisitVarDeclNode(Node.VarDeclNode());
 		this.VisitStmtList(Node);
 	}
 
-	@Override
-	public void VisitWhileNode(BunWhileNode Node) {
+	@Override public void VisitWhileNode(BunWhileNode Node) {
 		@Var int LabelNum = this.CurrentScope.GetTempLabelNumber();
 		@Var String CondLabel = "While__" + LabelNum + ".Cond";
 		@Var String BodyLabel = "While__" + LabelNum + ".Body";
@@ -1434,15 +1442,116 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		this.VisitUndefinedNode(Node);
 	}
 
-	@Override
-	protected void GenerateSurroundCode(BNode Node) {
+	@Override protected void GenerateSurroundCode(BNode Node) {
 		if(this.IsNeededSurroud(Node)) {
-			//this.CurrentBuilder.Append("(");
+			//this.Source.Append("(");
 			this.GenerateCode(null, Node);
-			//this.CurrentBuilder.Append(")");
+			//this.Source.Append(")");
 		}
 		else {
 			this.GenerateCode(null, Node);
+		}
+	}
+
+	@Override public void VisitStmtList(BunBlockNode BlockNode) {
+		@Var int i = 0;
+		while (i < BlockNode.GetListSize()) {
+			@Var BNode SubNode = BlockNode.GetListAt(i);
+			this.GenerateCode(null, SubNode);
+			i = i + 1;
+		}
+	}
+
+	@Override protected void VisitParamNode(BunLetVarNode Node) {
+		@Var String SymbolName = Node.GetGivenName();
+		this.CurrentScope.DefineLocalSymbol(SymbolName);
+		this.CurrentScope.PushValue(this.ToLocalSymbol(SymbolName));
+	}
+
+	@Override protected void VisitFuncParamNode(String OpenToken, BunFunctionNode VargNode, String CloseToken) {
+		@Var StringBuilder sb = new StringBuilder();
+		sb.append(OpenToken);
+		@Var int i = 0;
+		while(i < VargNode.GetListSize()) {
+			@Var BunLetVarNode ParamNode = VargNode.GetParamNode(i);
+			if (i > 0) {
+				sb.append(this.Camma);
+			}
+			sb.append(this.GetTypeExpr(ParamNode.DeclType()));
+			sb.append(" ");
+			this.VisitParamNode(ParamNode);
+			sb.append(this.CurrentScope.PopValue());
+			i = i + 1;
+		}
+		sb.append(CloseToken);
+		this.Source.Append(sb.toString());
+	}
+
+	@Override protected void VisitVarDeclNode(BunLetVarNode Node) {
+		//@Var SourceBuilder EntryBlockBuilder = this.Source.Pop();
+		@Var SourceBuilder VarDeclBuilder = this.Source; //FIXME
+
+		@Var String VarName = this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName());
+		this.CurrentScope.DefineLocalVar(VarName);
+		@Var String VarSymbol = this.ToLocalSymbol(VarName);
+		VarDeclBuilder.AppendNewLine(VarSymbol);
+		VarDeclBuilder.Append(" = alloca ");
+		VarDeclBuilder.Append(this.GetTypeExpr(Node.DeclType()));
+		//if(!this.IsPrimitiveType(Node.DeclType())) {
+		//@llvm.gcroot
+		//}
+
+		this.GenerateCode(null, Node.InitValueNode());
+		@Var String Init = this.CurrentScope.PopValue();
+
+		this.Source.AppendNewLine("store ");
+		this.Source.Append(this.GetTypeExpr(Node.InitValueNode().Type));
+		this.Source.Append(" ");
+		this.Source.Append(Init);
+		this.Source.Append(", ");
+		this.Source.Append(this.GetTypeExpr(Node.DeclType()) + "*");
+		this.Source.Append(" ");
+		this.Source.Append(VarSymbol);
+		if(Node.HasNextVarNode()) {
+			this.VisitVarDeclNode(Node.NextVarNode());
+		}
+	}
+
+	@Override protected void VisitListNode(String OpenToken, AbstractListNode VargNode, String DelimToken, String CloseToken) {
+		@Var StringBuilder sb = new StringBuilder();
+		sb.append(OpenToken);
+		@Var int i = 0;
+		while(i < VargNode.GetListSize()) {
+			@Var BNode ParamNode = VargNode.GetListAt(i);
+			if (i > 0) {
+				sb.append(DelimToken);
+			}
+			sb.append(this.GetTypeExpr(ParamNode.Type));
+			sb.append(" ");
+			this.GenerateCode(null, ParamNode);
+			sb.append(this.CurrentScope.PopValue());
+			i = i + 1;
+		}
+		sb.append(CloseToken);
+		this.CurrentScope.PushValue(sb.toString());
+	}
+
+	private void VisitFieldList(BunClassNode ClassNode, boolean WithInitValue) {
+		if(ClassNode.SuperType() != BClassType._ObjectType) {
+			BunClassNode SuperClassNode = this.ClassFieldMap.get(ClassNode.SuperType().ShortName);
+			this.VisitFieldList(SuperClassNode, WithInitValue);
+		}
+		@Var int i = 0;
+		while(i < ClassNode.GetListSize()) {
+			@Var BunLetVarNode FieldNode = ClassNode.GetFieldNode(i);
+			this.Source.Append(",");
+			this.Source.AppendNewLine(this.GetTypeExpr(FieldNode.DeclType()));
+			if(WithInitValue) {
+				this.Source.Append(" ");
+				this.GenerateCode(null, FieldNode.InitValueNode());
+				this.Source.Append(this.CurrentScope.PopValue());
+			}
+			i = i + 1;
 		}
 	}
 
@@ -1484,74 +1593,6 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		}
 	}
 
-	@Override
-	public void VisitStmtList(BunBlockNode BlockNode) {
-		@Var int i = 0;
-		while (i < BlockNode.GetListSize()) {
-			@Var BNode SubNode = BlockNode.GetListAt(i);
-			this.GenerateCode(null, SubNode);
-			i = i + 1;
-		}
-	}
-
-	private void VisitFieldList(BunClassNode ClassNode, boolean WithInitValue) {
-		if(ClassNode.SuperType() != BClassType._ObjectType) {
-			BunClassNode SuperClassNode = this.ClassFieldMap.get(ClassNode.SuperType().ShortName);
-			this.VisitFieldList(SuperClassNode, WithInitValue);
-		}
-		@Var int i = 0;
-		while(i < ClassNode.GetListSize()) {
-			@Var BunLetVarNode FieldNode = ClassNode.GetFieldNode(i);
-			this.Source.Append(",");
-			this.Source.AppendNewLine(this.GetTypeExpr(FieldNode.DeclType()));
-			if(WithInitValue) {
-				this.Source.Append(" ");
-				this.GenerateCode(null, FieldNode.InitValueNode());
-				this.Source.Append(this.CurrentScope.PopValue());
-			}
-			i = i + 1;
-		}
-	}
-
-	@Override
-	protected void VisitListNode(String OpenToken, AbstractListNode VargNode, String DelimToken, String CloseToken) {
-		@Var StringBuilder sb = new StringBuilder();
-		sb.append(OpenToken);
-		@Var int i = 0;
-		while(i < VargNode.GetListSize()) {
-			@Var BNode ParamNode = VargNode.GetListAt(i);
-			if (i > 0) {
-				sb.append(DelimToken);
-			}
-			sb.append(this.GetTypeExpr(ParamNode.Type));
-			sb.append(" ");
-			this.GenerateCode(null, ParamNode);
-			sb.append(this.CurrentScope.PopValue());
-			i = i + 1;
-		}
-		sb.append(CloseToken);
-		this.CurrentScope.PushValue(sb.toString());
-	}
-
-	private void GetArrayElementPointer(BNode RecvNode, BNode IndexNode) {
-		this.GenerateCode(null, RecvNode);
-		@Var String Recv = this.CurrentScope.PopValue();
-		this.GenerateCode(null, IndexNode);
-		@Var String Index = this.CurrentScope.PopValue();
-
-		@Var String TempVar = this.CurrentScope.CreateTempLocalSymbol();
-		this.Source.AppendNewLine(TempVar);
-		this.Source.Append(" = getelementptr ");
-		this.Source.Append(this.GetTypeExpr(RecvNode.Type));
-		this.Source.Append(" ");
-		this.Source.Append(Recv);
-		this.Source.Append(", ");
-		this.Source.Append(this.GetTypeExpr(IndexNode.Type));
-		this.Source.Append(" ");
-		this.Source.Append(Index);
-
-		this.CurrentScope.PushValue(TempVar);
-	}
 	private void GetObjectElementPointer(BNode RecvNode, String FieldName) {
 		this.GenerateCode(null, RecvNode);
 		@Var String Recv = this.CurrentScope.PopValue();
