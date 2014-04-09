@@ -448,6 +448,57 @@ public class BLib {
 		return buffer;
 	}
 
+	public static void _LoadInlineLibrary(String Path, BMap<String> SymbolMap, String Delim) {
+		try {
+			InputStream Stream = BLib.class.getResourceAsStream("/" + Path);
+			if (Stream == null) {
+				File f = new File(BLib.FormatFilePath(Path));
+				Stream = new FileInputStream(f);
+			}
+			BufferedReader reader = new BufferedReader(new InputStreamReader(Stream));
+			String line;
+			String Key = null;
+			String Required = null;
+			StringBuilder sb = null;
+			while((line = reader.readLine()) != null) {
+				if(line.startsWith(Delim)) {
+					if(Key != null && sb != null) {
+						//System.out.println("'"+Key+"': \n" + sb.toString());
+						SymbolMap.put(Key, sb.toString());
+						if(Required != null) {
+							SymbolMap.put(Key+";", Required);
+						}
+					}
+					Key = line.substring(Delim.length()).trim();
+					Required = null;
+					int loc = Key.indexOf(';');
+					if(loc > 0) {
+						Required = Key.substring(loc+1);
+						Key = Key.substring(0, loc);
+					}
+					sb = new StringBuilder();
+					continue;
+				}
+				if(sb != null) {
+					sb.append(line);
+					sb.append("\n");
+				}
+			}
+			if(Key != null && sb != null) {
+				//System.out.println("'"+Key+"': \n" + sb.toString());
+				SymbolMap.put(Key, sb.toString());
+				if(Required != null) {
+					SymbolMap.put(Key+";", Required);
+				}
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			BLib._Exit(1, " Cannot load inline library: " + Path);
+		}
+	}
+
+
 	public static String _SourceBuilderToString(SourceBuilder Builder) {
 		return BLib._SourceBuilderToString(Builder, 0, Builder.SourceList.size());
 	}
@@ -499,7 +550,6 @@ public class BLib {
 		ParserMap.put("py", libbun.lang.python.PythonGrammar.class);
 	}
 
-
 	public final static boolean _ImportGrammar(BNameSpace NameSpace, String ClassName) {
 		try {
 			@Var Class<?> NativeClass =  ParserMap.GetOrNull(ClassName.toLowerCase());
@@ -534,7 +584,7 @@ public class BLib {
 		GenMap.put("js", libbun.encode.JavaScriptGenerator.class);
 
 		GenMap.put("pl", libbun.encode.PerlGenerator.class);
-		GenMap.put("py", libbun.encode.PythonGenerator.class);
+		GenMap.put("py", libbun.encode.OldPythonGenerator.class);
 		GenMap.put("rb", libbun.encode.RubyGenerator.class);
 
 		GenMap.put("zen", libbun.encode.BunGenerator.class);
@@ -551,7 +601,7 @@ public class BLib {
 		GenMap.put(".bun", libbun.lang.bun.BunGrammar.class);
 	}
 
-	public final static AbstractGenerator _LoadGenerator(@Nullable String ClassName, String OutputFile) {
+	public final static AbstractGenerator _LoadGenerator(String ClassName, String OutputFile) {
 		if (ClassName != null) {
 			try {
 				Class<?> GeneratorClass = GenMap.GetOrNull(ClassName.toLowerCase());
@@ -560,9 +610,10 @@ public class BLib {
 				}
 				return (AbstractGenerator) GeneratorClass.newInstance();
 			} catch (Exception e) {
-				BLib._FixMe(e);
+				e.printStackTrace();
 			}
 		}
+		BLib._PrintLine("unknown target: " + ClassName);
 		return new BunGenerator();
 	}
 
@@ -603,5 +654,6 @@ public class BLib {
 	public final static void _ArrayCopy(Object src, int sIndex, Object dst, int dIndex, int length) {
 		System.arraycopy(src, sIndex, dst, dIndex, length);
 	}
+
 
 }

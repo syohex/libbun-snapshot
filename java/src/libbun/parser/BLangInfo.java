@@ -37,4 +37,8 @@ public class BLangInfo {
 		return "lib/" + this.Extension + "/" + LibName + ".bun";
 	}
 
+	public final String GetLibPath2(String FileName) {
+		return "lib/" + this.Extension + "/" + FileName;
+	}
+
 }

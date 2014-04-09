@@ -81,22 +81,6 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 		this.TypeChecker = TypeChecker;
 	}
 
-	protected abstract void GenerateImportLibrary(String LibName);
-	//
-	//	// library
-	//	@ZenMethod protected void GenerateImportLibrary(String LibName) {
-	//		//	this.HeaderBuilder.AppendNewLine("require ", LibName, this.LineFeed);
-	//	}
-
-	public final void ImportLibrary(@Nullable String LibName) {
-		if(LibName != null) {
-			@Var String Imported = this.ImportedLibraryMap.GetOrNull(LibName);
-			if(Imported == null) {
-				this.GenerateImportLibrary(LibName);
-				this.ImportedLibraryMap.put(LibName, LibName);
-			}
-		}
-	}
 
 	// symbol map
 

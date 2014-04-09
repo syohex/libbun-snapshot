@@ -11,7 +11,7 @@ define _ "str($[0])" : Func<int,String>;
 define _ "(\"%.5f\" % ($[0]))" : Func<float,String>;
 
 // String
-define + "zstr($[0]) + zstr($[1])" : Func<String,String,String>;
+define + "@zstr~zstr($[0]) + zstr($[1])" : Func<String,String,String>;
 define size "len($[0])" : Func<String,int>;
 define substring "$[0][$[1]:]" : Func<String,int,String>;
 define substring "$[0][$[1]:$[2]]" : Func<String,int,int,String>;

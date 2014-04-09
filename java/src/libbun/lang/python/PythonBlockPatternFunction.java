@@ -9,8 +9,7 @@ import libbun.util.Var;
 
 public class PythonBlockPatternFunction extends BMatchFunction {
 
-	@Override
-	public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		@Var BNode BlockNode = new BunBlockNode(ParentNode, ParentNode.GetNameSpace());
 		@Var BToken SkipToken = TokenContext.GetToken();
 		BlockNode = TokenContext.MatchToken(BlockNode, ":", BTokenContext._Required);

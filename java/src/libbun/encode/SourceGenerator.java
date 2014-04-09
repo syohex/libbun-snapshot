@@ -47,6 +47,42 @@ public abstract class SourceGenerator extends AbstractGenerator {
 		return Builder;
 	}
 
+	protected abstract void GenerateImportLibrary(String LibName);
+	//
+	//	// library
+	//	@ZenMethod protected void GenerateImportLibrary(String LibName) {
+	//		//	this.HeaderBuilder.AppendNewLine("require ", LibName, this.LineFeed);
+	//	}
+
+	protected final void LoadInlineLibrary(String FileName, String Delim) {
+		@Var String Path = this.LangInfo.GetLibPath2(FileName);
+		BLib._LoadInlineLibrary(Path, this.SymbolMap, Delim);
+	}
+
+	public final void ImportLibrary(@Nullable String LibNames) {
+		if(LibNames != null) {
+			@Var String LibName = LibNames;
+			@Var int loc = LibNames.indexOf(";");
+			if(loc > 0) {
+				LibName = LibNames.substring(0, loc);
+			}
+			@Var String Imported = this.ImportedLibraryMap.GetOrNull(LibName);
+			if(Imported == null) {
+				if(LibName.startsWith("@")) {
+					this.ImportLibrary(this.SymbolMap.GetValue(LibName+";", null));
+					this.Header.AppendNewLine(this.SymbolMap.GetValue(LibName, LibName));
+				}
+				else {
+					this.GenerateImportLibrary(LibName);
+				}
+				this.ImportedLibraryMap.put(LibName, LibName);
+			}
+			if(loc > 0) {
+				this.ImportLibrary(LibNames.substring(loc+1));
+			}
+		}
+	}
+
 	@ZenMethod protected void Finish(String FileName) {
 
 	}

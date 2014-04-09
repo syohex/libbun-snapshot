@@ -1357,11 +1357,6 @@ public class AsmJavaGenerator extends AbstractGenerator {
 
 	}
 
-	@Override protected void GenerateImportLibrary(String LibName) {
-		// TODO Auto-generated method stub
-
-	}
-
 }
 
 

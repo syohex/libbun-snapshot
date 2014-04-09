@@ -68,6 +68,14 @@ public final class BMap <T> extends BObject {
 		return this.Map.get(Key);
 	}
 
+	public final T GetValue(String Key, T DefaultValue) {
+		T Value = this.Map.get(Key);
+		if(Value == null) {
+			return DefaultValue;
+		}
+		return Value;
+	}
+
 	public final void remove(String Key) {
 		this.Map.remove(Key);
 	}

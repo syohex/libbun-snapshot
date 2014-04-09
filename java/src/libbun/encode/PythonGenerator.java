@@ -1,340 +1,438 @@
-// ***************************************************************************
-// Copyright (c) 2013, JST/CREST DEOS project authors. All rights reserved.
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-//
-// *  Redistributions of source code must retain the above copyright notice,
-//    this list of conditions and the following disclaimer.
-// *  Redistributions in binary form must reproduce the above copyright
-//    notice, this list of conditions and the following disclaimer in the
-//    documentation and/or other materials provided with the distribution.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
-// TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-// PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
-// OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-// WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
-// OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-// ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// **************************************************************************
-
-
 package libbun.encode;
 
-import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
+import libbun.ast.GroupNode;
+import libbun.ast.LocalDefinedNode;
 import libbun.ast.binary.BInstanceOfNode;
+import libbun.ast.binary.BinaryOperatorNode;
+import libbun.ast.binary.BunAddNode;
+import libbun.ast.binary.BunAndNode;
+import libbun.ast.binary.BunBitwiseAndNode;
+import libbun.ast.binary.BunBitwiseOrNode;
+import libbun.ast.binary.BunBitwiseXorNode;
+import libbun.ast.binary.BunDivNode;
+import libbun.ast.binary.BunEqualsNode;
+import libbun.ast.binary.BunGreaterThanEqualsNode;
+import libbun.ast.binary.BunGreaterThanNode;
+import libbun.ast.binary.BunLeftShiftNode;
+import libbun.ast.binary.BunLessThanEqualsNode;
+import libbun.ast.binary.BunLessThanNode;
+import libbun.ast.binary.BunModNode;
+import libbun.ast.binary.BunMulNode;
+import libbun.ast.binary.BunNotEqualsNode;
+import libbun.ast.binary.BunOrNode;
+import libbun.ast.binary.BunRightShiftNode;
+import libbun.ast.binary.BunSubNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
+import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
-import libbun.ast.error.StupidCastErrorNode;
+import libbun.ast.expression.BunMacroNode;
+import libbun.ast.expression.FuncCallNode;
+import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
+import libbun.ast.expression.GetNameNode;
+import libbun.ast.expression.MethodCallNode;
 import libbun.ast.expression.NewObjectNode;
+import libbun.ast.expression.SetFieldNode;
+import libbun.ast.expression.SetIndexNode;
+import libbun.ast.expression.SetNameNode;
+import libbun.ast.literal.BunArrayLiteralNode;
+import libbun.ast.literal.BunAsmNode;
+import libbun.ast.literal.BunBooleanNode;
+import libbun.ast.literal.BunFloatNode;
+import libbun.ast.literal.BunIntNode;
+import libbun.ast.literal.BunMapLiteralNode;
+import libbun.ast.literal.BunNullNode;
+import libbun.ast.literal.BunStringNode;
+import libbun.ast.literal.LiteralNode;
+import libbun.ast.statement.BunBreakNode;
 import libbun.ast.statement.BunIfNode;
+import libbun.ast.statement.BunReturnNode;
 import libbun.ast.statement.BunThrowNode;
 import libbun.ast.statement.BunTryNode;
+import libbun.ast.statement.BunWhileNode;
 import libbun.ast.unary.BunCastNode;
-import libbun.parser.BLogger;
-import libbun.type.BClassField;
-import libbun.type.BClassType;
-import libbun.type.BFuncType;
-import libbun.type.BType;
-import libbun.util.BField;
-import libbun.util.BLib;
-import libbun.util.Var;
-import libbun.util.ZenMethod;
+import libbun.ast.unary.BunComplementNode;
+import libbun.ast.unary.BunMinusNode;
+import libbun.ast.unary.BunNotNode;
+import libbun.ast.unary.BunPlusNode;
+import libbun.ast.unary.UnaryOperatorNode;
+import libbun.parser.BLangInfo;
 
-//Zen Generator should be written in each language.
-
-public class PythonGenerator extends OldSourceGenerator {
-
-	@BField boolean HasMainFunction = false;
+public class PythonGenerator extends SourceGenerator {
 
 	public PythonGenerator() {
-		super("py", "Python-2.7.1");
-		this.LineComment = "#"; // if not, set null
-		this.BeginComment = null; //"'''";
-		this.EndComment = null; //"'''";
-		this.Camma = ", ";
-		this.SemiColon = "";
-		this.StringLiteralPrefix = "";
-
-		this.TrueLiteral = "True";
-		this.FalseLiteral = "False";
-		this.NullLiteral = "None";
-
-		this.AndOperator = "and";
-		this.OrOperator = "or";
-		this.NotOperator = "not ";
-
-		this.TopType = "object";
-		this.SetNativeType(BType.BooleanType, "bool");
-		this.SetNativeType(BType.IntType, "int");
-		this.SetNativeType(BType.FloatType, "float");
-		this.SetNativeType(BType.StringType, "str");
-
-		this.Header.Append("#! /usr/bin/env python");
-		this.Header.AppendNewLine("# -*- coding: utf-8 -*-");
-		this.Header.AppendNewLine("def zstr(s) : return str(s) if s != None else \'null\'");
-		this.Source.AppendNewLine("## end of header", this.LineFeed);
-
-	}
-
-	@Override protected void GenerateImportLibrary(String LibName) {
-		if(LibName.startsWith("def ")) {
-			this.Header.AppendNewLine(LibName);
-		}
-		else {
-			this.Header.AppendNewLine("import ", LibName);
-		}
-	}
-
-	@Override @ZenMethod protected void Finish(String FileName) {
-		if(this.HasMainFunction) {
-			this.Source.AppendNewLine("if __name__ == \"__main__\":\n\tmain()");
-			this.Source.AppendLineFeed();
-		}
+		super(new BLangInfo("Python-2.7", "py"));
+		this.LoadInlineLibrary("inline.py", "##");
 	}
 
 	@Override
-	public void VisitStmtList(BunBlockNode BlockNode) {
-		@Var int i = 0;
-		while (i < BlockNode.GetListSize()) {
-			BNode SubNode = BlockNode.GetListAt(i);
-			this.GenerateStatement(SubNode);
-			i = i + 1;
-		}
-		if (i == 0) {
-			this.Source.AppendNewLine("pass");
-		}
+	protected void GenerateImportLibrary(String LibName) {
+		// TODO Auto-generated method stub
+
 	}
 
-	@Override public void VisitBlockNode(BunBlockNode Node) {
-		this.Source.OpenIndent(":");
-		this.VisitStmtList(Node);
-		this.Source.CloseIndent("");
+	@Override
+	public void VisitNullNode(BunNullNode Node) {
+		// TODO Auto-generated method stub
+
 	}
 
-	@Override protected void VisitVarDeclNode(BunLetVarNode Node) {
-		this.Source.AppendNewLine(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = ");
-		this.GenerateCode(null, Node.InitValueNode());
-		if(Node.HasNextVarNode()) {
-			this.VisitVarDeclNode(Node.NextVarNode());
-		}
+	@Override
+	public void VisitBooleanNode(BunBooleanNode Node) {
+		// TODO Auto-generated method stub
+
 	}
 
-	@Override public void VisitVarBlockNode(BunVarBlockNode Node) {
-		this.VisitVarDeclNode(Node.VarDeclNode());
-		this.VisitStmtList(Node);
+	@Override
+	public void VisitIntNode(BunIntNode Node) {
+		// TODO Auto-generated method stub
+
 	}
 
-	@Override public void VisitNewObjectNode(NewObjectNode Node) {
-		this.Source.Append(this.NameClass(Node.Type));
-		this.VisitListNode("(", Node, ")");
+	@Override
+	public void VisitFloatNode(BunFloatNode Node) {
+		// TODO Auto-generated method stub
+
 	}
 
-	@Override public void VisitCastNode(BunCastNode Node) {
-		this.GenerateCode(null, Node.ExprNode());
+	@Override
+	public void VisitStringNode(BunStringNode Node) {
+		// TODO Auto-generated method stub
+
 	}
 
-	@Override public void VisitGetIndexNode(GetIndexNode Node) {
-		@Var BType RecvType = Node.GetAstType(GetIndexNode._Recv);
-		if(RecvType.IsMapType()) {
-			this.ImportLibrary("def zGetMap(m,k): return m[k] if m.has_key(k) else None");
-			this.GenerateCode2("zGetMap(", null, Node.RecvNode(), ", ");
-			this.GenerateCode2("", null, Node.IndexNode(), ")");
-		}
-		else {
-			this.GenerateCode(null, Node.RecvNode());
-			this.GenerateCode2("[", null, Node.IndexNode(), "]");
-		}
+	@Override
+	public void VisitNotNode(BunNotNode Node) {
+		// TODO Auto-generated method stub
+
 	}
 
-	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
-		this.Source.Append("isinstance(");
-		this.GenerateCode(null, Node.LeftNode());
-		if(Node.TargetType() instanceof BClassType) {
-			this.Source.Append(this.Camma, this.NameClass(Node.TargetType()), ")");
-		}
-		else {
-			this.Source.Append(this.Camma);
-			this.GenerateTypeName(Node.TargetType());
-			this.Source.Append(")");
-		}
+	@Override
+	public void VisitPlusNode(BunPlusNode Node) {
+		// TODO Auto-generated method stub
+
 	}
 
-	@Override public void VisitIfNode(BunIfNode Node) {
-		this.Source.Append("if ");
-		this.GenerateCode(null, Node.CondNode());
-		this.GenerateCode(null, Node.ThenNode());
-		if (Node.HasElseNode()) {
-			BNode ElseNode = Node.ElseNode();
-			if(ElseNode instanceof BunIfNode) {
-				this.Source.AppendNewLine("el");
-			}
-			else {
-				this.Source.AppendNewLine("else");
-			}
-			this.GenerateCode(null, Node.ElseNode());
-		}
+	@Override
+	public void VisitMinusNode(BunMinusNode Node) {
+		// TODO Auto-generated method stub
+
 	}
 
-	@Override public void VisitLetNode(BunLetVarNode Node) {
-		if(this.ReadableCode || !Node.IsConstValue()) {
-			this.Source.Append(Node.GetUniqueName(this));
-			this.Source.Append(" = ");
-			this.GenerateCode(null, Node.InitValueNode());
-		}
+	@Override
+	public void VisitComplementNode(BunComplementNode Node) {
+		// TODO Auto-generated method stub
+
 	}
 
-	@Override protected void VisitParamNode(BunLetVarNode Node) {
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+	@Override
+	public void VisitAndNode(BunAndNode Node) {
+		// TODO Auto-generated method stub
+
 	}
 
-	/**
-	>>> def f(x):
-		...   def g(y):
-		...     return x + y
-		...   return g
-		...
-		>>> f(1)(3)
-		4
-	 **/
+	@Override
+	public void VisitOrNode(BunOrNode Node) {
+		// TODO Auto-generated method stub
 
-	@Override public void VisitFunctionNode(BunFunctionNode Node) {
-		if(!Node.IsTopLevelDefineFunction()) {
-			@Var String FuncName = Node.GetUniqueName(this);
-			this.Source = this.InsertNewSourceBuilder();
-			this.Source.Append("def ");
-			this.Source.Append(FuncName);
-			this.VisitFuncParamNode("(", Node, ")");
-			this.GenerateCode(null, Node.BlockNode());
-			this.Source.AppendLineFeed();
-			this.Source.AppendLineFeed();
-			this.Source = this.Source.Pop();
-			this.Source.Append(FuncName);
-		}
-		else {
-			@Var BFuncType FuncType = Node.GetFuncType();
-			this.Source.Append("def ");
-			this.Source.Append(Node.GetSignature());
-			this.VisitFuncParamNode("(", Node, ")");
-			this.GenerateCode(null, Node.BlockNode());
-			this.Source.AppendLineFeed();
-			if(Node.IsExport) {
-				this.Source.Append(Node.FuncName(), " = ", FuncType.StringfySignature(Node.FuncName()));
-				this.Source.AppendLineFeed();
-				if(Node.FuncName().equals("main")) {
-					this.HasMainFunction = true;
-				}
-			}
-			if(this.IsMethod(Node.FuncName(), FuncType)) {
-				this.Source.Append(this.NameMethod(FuncType.GetRecvType(), Node.FuncName()));
-				this.Source.Append(" = ", FuncType.StringfySignature(Node.FuncName()));
-				this.Source.AppendLineFeed();
-			}
-		}
 	}
 
-	private void GenerateMethodVariables(BunClassNode Node) {
-		@Var int i = 0;
-		while (i < Node.ClassType.GetFieldSize()) {
-			@Var BClassField ClassField = Node.ClassType.GetFieldAt(i);
-			if(ClassField.FieldType.IsFuncType()) {
-				this.Source.AppendNewLine();
-				this.Source.Append(this.NameMethod(Node.ClassType, ClassField.FieldName));
-				this.Source.Append(" = ", this.NullLiteral);
-			}
-			i = i + 1;
-		}
-		this.Source.AppendNewLine();
+	@Override
+	public void VisitAddNode(BunAddNode Node) {
+		// TODO Auto-generated method stub
+
 	}
 
-	@Override public void VisitClassNode(BunClassNode Node) {
-		@Var BType SuperType = Node.ClassType.GetSuperType();
-		this.GenerateMethodVariables(Node);
-		this.Source.Append("class ");
-		this.Source.Append(this.NameClass(Node.ClassType));
-		if(!SuperType.Equals(BClassType._ObjectType)) {
-			this.Source.Append("(");
-			this.Source.Append(this.NameClass(SuperType));
-			this.Source.Append(")");
-		}
-		this.Source.OpenIndent(":");
-		this.Source.AppendNewLine("def __init__(self)");
-		this.Source.OpenIndent(":");
-		if(!Node.SuperType().Equals(BClassType._ObjectType)) {
-			this.Source.AppendNewLine();
-			this.Source.Append(this.NameClass(SuperType));
-			this.Source.Append(".__init__(self)");
-		}
-		@Var int i = 0;
-		while (i < Node.GetListSize()) {
-			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
-			if(!FieldNode.DeclType().IsFuncType()) {
-				this.Source.AppendNewLine();
-				this.Source.Append("self." + FieldNode.GetGivenName() + " = ");
-				this.GenerateCode(null, FieldNode.InitValueNode());
-			}
-			this.Source.Append(this.SemiColon);
-			i = i + 1;
-		}
+	@Override
+	public void VisitSubNode(BunSubNode Node) {
+		// TODO Auto-generated method stub
 
-		i = 0;
-		while (i < Node.ClassType.GetFieldSize()) {
-			@Var BClassField ClassField = Node.ClassType.GetFieldAt(i);
-			if(ClassField.FieldType.IsFuncType()) {
-				this.Source.AppendNewLine();
-				this.Source.Append("self." + ClassField.FieldName);
-				this.Source.Append(" = _" + this.NameClass(Node.ClassType) + "_" + ClassField.FieldName);
-			}
-			i = i + 1;
-		}
-		this.Source.CloseIndent(null);
-		this.Source.CloseIndent(null);
-		this.Source.AppendLineFeed();
 	}
 
-	@Override public void VisitErrorNode(ErrorNode Node) {
-		if(Node instanceof StupidCastErrorNode) {
-			@Var StupidCastErrorNode ErrorNode = (StupidCastErrorNode)Node;
-			this.GenerateCode(null, ErrorNode.ErrorNode);
-		}
-		else {
-			@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
-			this.Source.AppendWhiteSpace();
-			this.Source.Append("LibZen.ThrowError(");
-			this.Source.Append(BLib._QuoteString(Message));
-			this.Source.Append(")");
-		}
+	@Override
+	public void VisitMulNode(BunMulNode Node) {
+		// TODO Auto-generated method stub
+
 	}
 
-	@Override public void VisitThrowNode(BunThrowNode Node) {
-		this.Source.Append("raise ");
-		this.GenerateCode(null, Node.ExprNode());
+	@Override
+	public void VisitDivNode(BunDivNode Node) {
+		// TODO Auto-generated method stub
+
 	}
 
-	@Override public void VisitTryNode(BunTryNode Node) {
-		this.Source.Append("try");
-		this.GenerateCode(null, Node.TryBlockNode());
-		if(Node.HasCatchBlockNode()) {
-			@Var String VarName = this.NameUniqueSymbol("e");
-			this.Source.AppendNewLine("except Exception as ", VarName);
-			this.Source.OpenIndent(":");
-			this.Source.AppendNewLine(Node.ExceptionName(), " = ", VarName);
-			this.VisitStmtList(Node.CatchBlockNode());
-			this.Source.CloseIndent("");
-		}
-		if(Node.HasFinallyBlockNode()) {
-			this.Source.AppendNewLine("finally");
-			this.GenerateCode(null, Node.FinallyBlockNode());
-		}
+	@Override
+	public void VisitModNode(BunModNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitLeftShiftNode(BunLeftShiftNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitRightShiftNode(BunRightShiftNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitBitwiseAndNode(BunBitwiseAndNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitBitwiseOrNode(BunBitwiseOrNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitBitwiseXorNode(BunBitwiseXorNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitEqualsNode(BunEqualsNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitNotEqualsNode(BunNotEqualsNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitLessThanNode(BunLessThanNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitLessThanEqualsNode(BunLessThanEqualsNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitGreaterThanNode(BunGreaterThanNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitGreaterThanEqualsNode(BunGreaterThanEqualsNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitGroupNode(GroupNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitAsmNode(BunAsmNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitLiteralNode(LiteralNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitArrayLiteralNode(BunArrayLiteralNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitMapLiteralNode(BunMapLiteralNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitNewObjectNode(NewObjectNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitFuncCallNode(FuncCallNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitMacroNode(BunMacroNode FuncNode) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitGetNameNode(GetNameNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitSetNameNode(SetNameNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitGetFieldNode(GetFieldNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitSetFieldNode(SetFieldNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitGetIndexNode(GetIndexNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitSetIndexNode(SetIndexNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitMethodCallNode(MethodCallNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitUnaryNode(UnaryOperatorNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitCastNode(BunCastNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitInstanceOfNode(BInstanceOfNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitBinaryNode(BinaryOperatorNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitBlockNode(BunBlockNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitVarBlockNode(BunVarBlockNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitIfNode(BunIfNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitReturnNode(BunReturnNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitWhileNode(BunWhileNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitBreakNode(BunBreakNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitThrowNode(BunThrowNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitTryNode(BunTryNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitLetNode(BunLetVarNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitFunctionNode(BunFunctionNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitClassNode(BunClassNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitErrorNode(ErrorNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitTopLevelNode(TopLevelNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void VisitLocalDefinedNode(LocalDefinedNode Node) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
