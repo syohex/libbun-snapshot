@@ -545,6 +545,7 @@ public class BLib {
 		// engine
 		GenMap.put("jvm", libbun.encode.jvm.AsmJavaGenerator.class);
 		GenMap.put("debug-jvm", libbun.encode.jvm.DebugAsmGenerator.class);
+		GenMap.put("dump-jvm", libbun.encode.jvm.ByteCodePrinter.class);
 		GenMap.put("ll", libbun.encode.llvm.LLVMSourceGenerator.class);
 
 		GenMap.put(".bun", libbun.lang.bun.BunGrammar.class);

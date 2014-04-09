@@ -18,7 +18,7 @@ export function main() {
 	assert(succ(1) == 2);
 	assert(apply(succ,1) == 2);
 	inc = 0;
-	assert(succ(1) == 0);
-	assert(apply(succ,1) == 0);
+	assert(succ(1) == 1);
+	assert(apply(succ,1) == 1);
 }
 

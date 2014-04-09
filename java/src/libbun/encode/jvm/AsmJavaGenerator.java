@@ -740,7 +740,7 @@ public class AsmJavaGenerator extends AbstractGenerator {
 	}
 
 	@Override public void VisitBinaryNode(BinaryOperatorNode Node) {
-		Method sMethod = JavaMethodTable.GetBinaryStaticMethod(Node.LeftNode().Type, Node.SourceToken.GetText(), Node.RightNode().Type);
+		Method sMethod = JavaMethodTable.GetBinaryStaticMethod(Node.LeftNode().Type, Node.GetOperator(), Node.RightNode().Type);
 		this.AsmBuilder.ApplyStaticMethod(Node, sMethod, new BNode[] {Node.LeftNode(), Node.RightNode()});
 	}
 
@@ -1332,7 +1332,7 @@ public class AsmJavaGenerator extends AbstractGenerator {
 		}
 	}
 
-	@Override public final void ExecMain() {
+	@Override public void ExecMain() {
 		this.Logger.OutputErrorsToStdErr();
 		if(this.MainFuncNode != null) {
 			@Var JavaStaticFieldNode MainFunc = this.MainFuncNode;

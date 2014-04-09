@@ -54,6 +54,7 @@ class AsmMethodBuilder extends MethodNode {
 	void SetLineNumber(int Line) {
 		if(Line != 0 && Line != this.PreviousLine) {
 			Label LineLabel = new Label();
+			this.visitLabel(LineLabel);
 			this.visitLineNumber(Line, LineLabel);
 			this.PreviousLine = Line;
 		}
