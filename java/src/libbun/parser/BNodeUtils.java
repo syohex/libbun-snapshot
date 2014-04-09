@@ -1,8 +1,8 @@
 package libbun.parser;
 
-import libbun.ast.BunBlockNode;
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.statement.BunBreakNode;
 import libbun.ast.statement.BunIfNode;
@@ -61,10 +61,10 @@ public class BNodeUtils {
 	}
 
 
-	public final static int _AstIndexOf(AbstractListNode LNode, BNode ChildNode) {
+	public final static int _AstListIndexOf(AbstractListNode LNode, BNode ChildNode) {
 		@Var int i = 0;
 		while(i < LNode.GetListSize()) {
-			if(LNode.AST[i] == ChildNode) {
+			if(LNode.GetListAt(i) == ChildNode) {
 				return i;
 			}
 			i = i + 1;
@@ -74,8 +74,8 @@ public class BNodeUtils {
 
 	public final static void _CopyAstList(AbstractListNode SourceListNode, int FromIndex, AbstractListNode DestListNode) {
 		@Var int i = FromIndex;
-		while(i < SourceListNode.GetAstSize()) {
-			DestListNode.Append(SourceListNode.AST[i]);
+		while(i < SourceListNode.GetListSize()) {
+			DestListNode.Append(SourceListNode.GetListAt(i));
 			i = i + 1;
 		}
 	}
