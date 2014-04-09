@@ -82,53 +82,53 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 	}
 
 	@Override protected void GenerateImportLibrary(String LibName) {
-		this.HeaderBuilder.AppendNewLine("import ", LibName, this.SemiColon);
+		this.Header.AppendNewLine("import ", LibName, this.SemiColon);
 	}
 
 	private void Indent(SourceBuilder builder) {
 		IndentLevel = IndentLevel + 1;
-		builder.Indent();
+		builder.OpenIndent();
 	}
 
 	private void UnIndent(SourceBuilder builder) {
 		IndentLevel = IndentLevel - 1;
-		builder.UnIndent();
+		builder.CloseIndent();
 	}
 
 	@Override
 	public void VisitBlockNode(BunBlockNode Node) {
 		@Var int count = 0;
 
-		this.Indent(this.CurrentBuilder);
-		this.CurrentBuilder.AppendIndent();
-		this.CurrentBuilder.Append("do ");
+		this.Indent(this.Source);
+		this.Source.AppendNewLine();
+		this.Source.Append("do ");
 
 		@Var int limit = Node.GetListSize();
 		for (@Var int i = 0; i < limit; i++) {
 			BNode SubNode = Node.GetListAt(i);
-			this.CurrentBuilder.AppendLineFeed();
-			this.CurrentBuilder.AppendIndent();
+			this.Source.AppendLineFeed();
+			this.Source.AppendNewLine();
 
 			// Last Statement in function definition
 			if (IndentLevel == 1 && i == limit - 1) {
-				this.CurrentBuilder.Append("return (");
+				this.Source.Append("return (");
 			}
 
 			this.GenerateCode(null, SubNode);
-			this.CurrentBuilder.Append(this.SemiColon);
+			this.Source.Append(this.SemiColon);
 
 			if (IndentLevel == 1 && i == limit - 1) {
-				this.CurrentBuilder.Append(")");
+				this.Source.Append(")");
 			}
 
 			count = count + 1;
 		}
 		if (count == 0) {
-			this.CurrentBuilder.Append("return ()");
+			this.Source.Append("return ()");
 		}
 
-		this.UnIndent(this.CurrentBuilder);
-		this.CurrentBuilder.AppendLineFeed();
+		this.UnIndent(this.Source);
+		this.Source.AppendLineFeed();
 	}
 
 	@Override
@@ -137,7 +137,7 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 
 	@Override
 	public void VisitThrowNode(BunThrowNode Node) {
-		this.CurrentBuilder.Append("raise ");
+		this.Source.Append("raise ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
@@ -145,7 +145,7 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 	public void VisitTryNode(BunTryNode Node) {
 		// See: http://d.hatena.ne.jp/kazu-yamamoto/20090819/1250660658
 		this.GenerateCode(null, Node.TryBlockNode());
-		this.CurrentBuilder.Append(" `catch` ");
+		this.Source.Append(" `catch` ");
 		if (Node.CatchBlockNode() != null) {
 			this.GenerateCode(null, Node.CatchBlockNode());
 		}
@@ -157,61 +157,61 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 
 	@Override
 	protected void VisitVarDeclNode(BunLetVarNode Node) {
-		this.CurrentBuilder.Append(Node.GetGivenName() + " <- readIORef ");
-		this.CurrentBuilder.Append(Node.GetGivenName() + "_ref");
+		this.Source.Append(Node.GetGivenName() + " <- readIORef ");
+		this.Source.Append(Node.GetGivenName() + "_ref");
 		this.GenerateCode(null, Node.InitValueNode());
-		this.CurrentBuilder.AppendLineFeed();
+		this.Source.AppendLineFeed();
 	}
 
 	@Override protected void VisitParamNode(BunLetVarNode Node) {
-		this.CurrentBuilder.Append(Node.GetGivenName());
+		this.Source.Append(Node.GetGivenName());
 	}
 
 	@Override public void VisitFunctionNode(BunFunctionNode Node) {
 		this.Variables = new ArrayList<String>();
 		if(Node.FuncName().equals("main")){
-			this.CurrentBuilder.Append("main");
+			this.Source.Append("main");
 		}else{
-			this.CurrentBuilder.Append(Node.GetSignature());
+			this.Source.Append(Node.GetSignature());
 		}
 		this.VisitFuncParamNode(" ", Node, " ");
 
-		this.CurrentBuilder.Append(" = do");
-		this.CurrentBuilder.AppendLineFeed();
+		this.Source.Append(" = do");
+		this.Source.AppendLineFeed();
 
-		this.Indent(this.CurrentBuilder);
+		this.Indent(this.Source);
 
 		for (int i = 0; i < Node.GetListSize(); i++) {
 			BunLetVarNode Param = Node.GetParamNode(i);
 			this.Variables.add(Param.GetGivenName());
 
-			this.CurrentBuilder.AppendIndent();
-			this.CurrentBuilder.Append(Param.GetGivenName()
+			this.Source.AppendNewLine();
+			this.Source.Append(Param.GetGivenName()
 					+ "_ref <- newIORef "
 					+ Param.GetGivenName());
-			this.CurrentBuilder.AppendLineFeed();
+			this.Source.AppendLineFeed();
 		}
 
 		for (int i = 0; i < Node.GetListSize(); i++) {
 			BunLetVarNode node1 = Node.GetParamNode(i);
 
-			this.CurrentBuilder.AppendIndent();
-			this.CurrentBuilder.Append(node1.GetGivenName()
+			this.Source.AppendNewLine();
+			this.Source.Append(node1.GetGivenName()
 					+ " <- readIORef "
 					+ node1.GetGivenName() + "_ref");
-			this.CurrentBuilder.AppendLineFeed();
+			this.Source.AppendLineFeed();
 		}
-		this.UnIndent(this.CurrentBuilder);
+		this.UnIndent(this.Source);
 
 		BunReturnNode ReturnNode = BNodeUtils._CheckIfSingleReturnNode(Node);
 		if(ReturnNode != null && ReturnNode.HasReturnExpr()) {
-			this.Indent(this.CurrentBuilder);
+			this.Indent(this.Source);
 
 			String Indentation = BLib._JoinStrings("\t", IndentLevel);
-			this.CurrentBuilder.Append(Indentation);
-			this.CurrentBuilder.Append("return ");
+			this.Source.Append(Indentation);
+			this.Source.Append("return ");
 			this.GenerateCode(null, ReturnNode.ExprNode());
-			this.UnIndent(this.CurrentBuilder);
+			this.UnIndent(this.Source);
 		} else {
 			this.GenerateCode(null, Node.BlockNode());
 		}
@@ -219,21 +219,21 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 
 	@Override
 	public void VisitGetNameNode(GetNameNode Node) {
-		this.CurrentBuilder.Append(Node.GetUniqueName(this));
+		this.Source.Append(Node.GetUniqueName(this));
 	}
 
 	@Override
 	public void VisitSetNameNode(SetNameNode Node) {
-		this.CurrentBuilder.Append("writeIORef ");
-		this.CurrentBuilder.Append(Node.NameNode().GetUniqueName(this) + "_ref ");
+		this.Source.Append("writeIORef ");
+		this.Source.Append(Node.NameNode().GetUniqueName(this) + "_ref ");
 		this.GenerateCode(null, Node.ExprNode());
-		this.CurrentBuilder.AppendLineFeed();
+		this.Source.AppendLineFeed();
 
-		this.CurrentBuilder.AppendIndent();
-		this.CurrentBuilder.Append(Node.NameNode().GetUniqueName(this));
-		this.CurrentBuilder.Append(" <- readIORef ");
-		this.CurrentBuilder.Append(Node.NameNode().GetUniqueName(this) + "_ref");
-		this.CurrentBuilder.AppendLineFeed();
+		this.Source.AppendNewLine();
+		this.Source.Append(Node.NameNode().GetUniqueName(this));
+		this.Source.Append(" <- readIORef ");
+		this.Source.Append(Node.NameNode().GetUniqueName(this) + "_ref");
+		this.Source.AppendLineFeed();
 	}
 
 	@Override
@@ -260,71 +260,71 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 	public void VisitBinaryNode(BinaryOperatorNode Node) {
 		String Op = this.ZenOpToHaskellOp(Node.SourceToken.GetText());
 
-		this.CurrentBuilder.Append("(");
+		this.Source.Append("(");
 		Node.LeftNode().Accept(this);
-		this.CurrentBuilder.Append(" " + Op + " ");
+		this.Source.Append(" " + Op + " ");
 		Node.RightNode().Accept(this);
-		this.CurrentBuilder.Append(")");
+		this.Source.Append(")");
 	}
 
 	@Override public void VisitComparatorNode(ComparatorNode Node) {
 		String Op = this.ZenOpToHaskellOp(Node.SourceToken.GetText());
 
-		this.CurrentBuilder.Append("(");
+		this.Source.Append("(");
 		Node.LeftNode().Accept(this);
-		this.CurrentBuilder.Append(" " + Op + " ");
+		this.Source.Append(" " + Op + " ");
 		Node.RightNode().Accept(this);
-		this.CurrentBuilder.Append(")");
+		this.Source.Append(")");
 	}
 
 	@Override
 	public void VisitWhileNode(BunWhileNode Node) {
-		this.CurrentBuilder.Append("let __loop = do");
-		this.CurrentBuilder.AppendLineFeed();
+		this.Source.Append("let __loop = do");
+		this.Source.AppendLineFeed();
 
-		this.Indent(this.CurrentBuilder);
+		this.Indent(this.Source);
 
 		for (String var : this.Variables) {
-			this.CurrentBuilder.AppendIndent();
-			this.CurrentBuilder.Append(var + " <- ");
-			this.CurrentBuilder.Append("readIORef " + var + "_ref");
-			this.CurrentBuilder.AppendLineFeed();
+			this.Source.AppendNewLine();
+			this.Source.Append(var + " <- ");
+			this.Source.Append("readIORef " + var + "_ref");
+			this.Source.AppendLineFeed();
 		}
 
-		this.CurrentBuilder.AppendIndent();
-		this.CurrentBuilder.Append("if ");
+		this.Source.AppendNewLine();
+		this.Source.Append("if ");
 		Node.CondNode().Accept(this);
-		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.AppendIndent();
-		this.CurrentBuilder.Append("then");
-		this.CurrentBuilder.AppendLineFeed();
+		this.Source.AppendLineFeed();
+		this.Source.AppendNewLine();
+		this.Source.Append("then");
+		this.Source.AppendLineFeed();
 
 		// XXX Is this correct node type ?
 		BNode LoopNode = new GetNameNode(Node, null, "__loop");
 		Node.BlockNode().SetNode(BNode._AppendIndex, LoopNode);
 		Node.BlockNode().Accept(this);
 
-		this.CurrentBuilder.AppendIndent();
-		this.CurrentBuilder.Append("else");
+		this.Source.AppendNewLine();
+		this.Source.Append("else");
 
-		this.Indent(this.CurrentBuilder);
-		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.AppendIndent();
-		this.CurrentBuilder.Append("return ()");
-		this.CurrentBuilder.AppendLineFeed();
-		this.UnIndent(this.CurrentBuilder);
+		this.Indent(this.Source);
+		this.Source.AppendLineFeed();
+		this.Source.AppendNewLine();
+		this.Source.Append("return ()");
+		this.Source.AppendLineFeed();
+		this.UnIndent(this.Source);
 
-		this.UnIndent(this.CurrentBuilder);
+		this.UnIndent(this.Source);
 
-		this.CurrentBuilder.AppendIndent();
-		this.CurrentBuilder.Append("__loop");
-		this.CurrentBuilder.AppendLineFeed();
+		this.Source.AppendNewLine();
+		this.Source.Append("__loop");
+		this.Source.AppendLineFeed();
 
 		for (String var : this.Variables) {
-			this.CurrentBuilder.AppendIndent();
-			this.CurrentBuilder.Append(var + " <- ");
-			this.CurrentBuilder.Append("readIORef " + var + "_ref");
-			this.CurrentBuilder.AppendLineFeed();
+			this.Source.AppendNewLine();
+			this.Source.Append(var + " <- ");
+			this.Source.Append("readIORef " + var + "_ref");
+			this.Source.AppendLineFeed();
 		}
 	}
 
@@ -334,10 +334,10 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 			this.VisitListNode(" ", Node, " ", " ");
 		}else{
 			this.ImportLibrary("System.IO.Unsafe");
-			this.CurrentBuilder.Append("(unsafePerformIO (");
+			this.Source.Append("(unsafePerformIO (");
 			this.GenerateCode(null, Node.FunctorNode());
 			this.VisitListNode(" ", Node, " ", " ");
-			this.CurrentBuilder.Append("))");
+			this.Source.Append("))");
 		}
 	}
 }

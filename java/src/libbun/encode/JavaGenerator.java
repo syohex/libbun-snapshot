@@ -47,11 +47,11 @@ public class JavaGenerator extends OldSourceGenerator {
 		this.SetReservedName("this", "self");
 
 		//this.HeaderBuilder.AppendNewLine("import zen.util.*;");
-		this.CurrentBuilder.AppendNewLine("/* end of header */", this.LineFeed);
+		this.Source.AppendNewLine("/* end of header */", this.LineFeed);
 	}
 
 	@Override protected void GenerateImportLibrary(String LibName) {
-		this.HeaderBuilder.AppendNewLine("import ", LibName, this.SemiColon);
+		this.Header.AppendNewLine("import ", LibName, this.SemiColon);
 	}
 
 	@Override @ZenMethod protected void Finish(String FileName) {
@@ -65,15 +65,15 @@ public class JavaGenerator extends OldSourceGenerator {
 			}
 		}
 		this.GenerateClass("public final", FileName, BClassType._ObjectType);
-		this.CurrentBuilder.OpenIndent(" {");
+		this.Source.OpenIndent(" {");
 		if(this.MainFuncNode != null) {
-			this.CurrentBuilder.AppendNewLine("public final static void main(String[] a)");
-			this.CurrentBuilder.OpenIndent(" {");
-			this.CurrentBuilder.AppendNewLine(this.NameFunctionClass(this.MainFuncNode.FuncName(), BType.VoidType, 0), ".f();");
-			this.CurrentBuilder.CloseIndent("}");
+			this.Source.AppendNewLine("public final static void main(String[] a)");
+			this.Source.OpenIndent(" {");
+			this.Source.AppendNewLine(this.NameFunctionClass(this.MainFuncNode.FuncName(), BType.VoidType, 0), ".f();");
+			this.Source.CloseIndent("}");
 		}
-		this.CurrentBuilder.CloseIndent("}");
-		this.CurrentBuilder.AppendLineFeed();
+		this.Source.CloseIndent("}");
+		this.Source.AppendLineFeed();
 	}
 
 
@@ -81,13 +81,13 @@ public class JavaGenerator extends OldSourceGenerator {
 		if(Node.IsUntyped() && !Node.IsErrorNode() && !(Node instanceof BunFuncNameNode)) {
 			BLogger._LogError(Node.SourceToken, "untyped error: " + Node);
 			Node.Accept(this);
-			this.CurrentBuilder.Append("/*untyped*/");
+			this.Source.Append("/*untyped*/");
 		}
 		else {
 			if(ContextType != null && Node.Type != ContextType && !ContextType.IsGreekType()) {
-				this.CurrentBuilder.Append("(");
+				this.Source.Append("(");
 				this.GenerateTypeName(ContextType);
-				this.CurrentBuilder.Append(")");
+				this.Source.Append(")");
 			}
 			Node.Accept(this);
 		}
@@ -95,34 +95,34 @@ public class JavaGenerator extends OldSourceGenerator {
 
 	@Override public void VisitArrayLiteralNode(BunArrayLiteralNode Node) {
 		if(Node.GetListSize() == 0) {
-			this.CurrentBuilder.Append("new ", this.GetJavaTypeName(Node.Type, false), "()");
+			this.Source.Append("new ", this.GetJavaTypeName(Node.Type, false), "()");
 		}
 		else {
 			@Var BType ParamType = Node.Type.GetParamType(0);
 			this.ImportLibrary("java.util.Arrays");
-			this.CurrentBuilder.Append("new ", this.GetJavaTypeName(Node.Type, false), "(");
-			this.CurrentBuilder.Append("Arrays.asList(new ", this.GetJavaTypeName(ParamType, true), "[]");
+			this.Source.Append("new ", this.GetJavaTypeName(Node.Type, false), "(");
+			this.Source.Append("Arrays.asList(new ", this.GetJavaTypeName(ParamType, true), "[]");
 			this.VisitListNode("{", Node, "}))");
 		}
 	}
 
 	@Override public void VisitMapLiteralNode(BunMapLiteralNode Node) {
-		this.CurrentBuilder.Append("new ", this.GetJavaTypeName(Node.Type, false), "()");
+		this.Source.Append("new ", this.GetJavaTypeName(Node.Type, false), "()");
 		if(Node.GetListSize() > 0) {
 			@Var int i = 0;
-			this.CurrentBuilder.OpenIndent(" {{");
+			this.Source.OpenIndent(" {{");
 			while(i < Node.GetListSize()) {
 				@Var BunMapEntryNode Entry = Node.GetMapEntryNode(i);
-				this.CurrentBuilder.AppendNewLine("put");
+				this.Source.AppendNewLine("put");
 				this.GenerateCode2("(", Entry.KeyNode(), this.Camma, Entry.ValueNode(), ");");
 				i = i + 1;
 			}
-			this.CurrentBuilder.CloseIndent("}}");
+			this.Source.CloseIndent("}}");
 		}
 	}
 
 	@Override public void VisitNewObjectNode(NewObjectNode Node) {
-		this.CurrentBuilder.Append("new " + this.NameClass(Node.Type));
+		this.Source.Append("new " + this.NameClass(Node.Type));
 		this.VisitListNode("(", Node, ")");
 	}
 
@@ -142,32 +142,32 @@ public class JavaGenerator extends OldSourceGenerator {
 		@Var BType RecvType = Node.GetAstType(GetIndexNode._Recv);
 		this.GenerateCode(null, Node.RecvNode());
 		if(RecvType.IsMapType()) {
-			this.CurrentBuilder.Append(".put(");
+			this.Source.Append(".put(");
 		}
 		else {
-			this.CurrentBuilder.Append(".set(");
+			this.Source.Append(".set(");
 		}
 		this.GenerateCode(null, Node.IndexNode());
-		this.CurrentBuilder.Append(this.Camma);
+		this.Source.Append(this.Camma);
 		this.GenerateCode(null, Node.ExprNode());
-		this.CurrentBuilder.Append(")");
+		this.Source.Append(")");
 	}
 
 	@Override public void VisitMethodCallNode(MethodCallNode Node) {
 		this.GenerateSurroundCode(Node.RecvNode());
-		this.CurrentBuilder.Append(".");
-		this.CurrentBuilder.Append(Node.MethodName());
+		this.Source.Append(".");
+		this.Source.Append(Node.MethodName());
 		this.VisitListNode("(", Node, ")");
 	}
 
 	@Override public void VisitFuncCallNode(FuncCallNode Node) {
 		@Var BunFuncNameNode FuncNameNode = Node.FuncNameNode();
 		if(FuncNameNode != null) {
-			this.CurrentBuilder.Append(this.NameFunctionClass(FuncNameNode.FuncName, FuncNameNode.RecvType, FuncNameNode.FuncParamSize), ".f");
+			this.Source.Append(this.NameFunctionClass(FuncNameNode.FuncName, FuncNameNode.RecvType, FuncNameNode.FuncParamSize), ".f");
 		}
 		else {
 			this.GenerateCode(null, Node.FunctorNode());
-			this.CurrentBuilder.Append(".Invoke");
+			this.Source.Append(".Invoke");
 		}
 		this.VisitListNode("(", Node, ")");
 	}
@@ -180,25 +180,25 @@ public class JavaGenerator extends OldSourceGenerator {
 	//	}
 
 	@Override public void VisitThrowNode(BunThrowNode Node) {
-		this.CurrentBuilder.Append("throw ");
+		this.Source.Append("throw ");
 		this.GenerateCode2("new RuntimeException((", null, Node.ExprNode(),").toString())");
 	}
 
 	@Override public void VisitTryNode(BunTryNode Node) {
-		this.CurrentBuilder.Append("try ");
+		this.Source.Append("try ");
 		this.GenerateCode(null, Node.TryBlockNode());
 		if(Node.HasCatchBlockNode()) {
 			@Var String VarName = this.NameUniqueSymbol("e");
-			this.CurrentBuilder.AppendNewLine("catch (Exception ", VarName, ")");
-			this.CurrentBuilder.OpenIndent(" {");
-			this.CurrentBuilder.AppendNewLine("Object ", Node.ExceptionName(), " = ");
-			this.CurrentBuilder.Append("/*FIXME*/", VarName, this.SemiColon);
+			this.Source.AppendNewLine("catch (Exception ", VarName, ")");
+			this.Source.OpenIndent(" {");
+			this.Source.AppendNewLine("Object ", Node.ExceptionName(), " = ");
+			this.Source.Append("/*FIXME*/", VarName, this.SemiColon);
 			this.VisitStmtList(Node.CatchBlockNode());
-			this.CurrentBuilder.Append(this.SemiColon);
-			this.CurrentBuilder.CloseIndent("}");
+			this.Source.Append(this.SemiColon);
+			this.Source.CloseIndent("}");
 		}
 		if(Node.HasFinallyBlockNode()) {
-			this.CurrentBuilder.AppendNewLine("finally ");
+			this.Source.AppendNewLine("finally ");
 			this.GenerateCode(null, Node.FinallyBlockNode());
 		}
 	}
@@ -241,62 +241,62 @@ public class JavaGenerator extends OldSourceGenerator {
 			ClassName = this.NameType(FuncType);
 			this.FuncNameMap.put(FuncType.GetUniqueName(), ClassName);
 
-			this.CurrentBuilder = this.InsertNewSourceBuilder();
-			this.CurrentBuilder.AppendNewLine("abstract class ", ClassName, "");
-			this.CurrentBuilder.OpenIndent(" {");
-			this.CurrentBuilder.AppendNewLine("abstract ");
+			this.Source = this.InsertNewSourceBuilder();
+			this.Source.AppendNewLine("abstract class ", ClassName, "");
+			this.Source.OpenIndent(" {");
+			this.Source.AppendNewLine("abstract ");
 			this.GenerateTypeName(FuncType.GetReturnType());
-			this.CurrentBuilder.Append(" Invoke(");
+			this.Source.Append(" Invoke(");
 			@Var int i = 0;
 			while(i < FuncType.GetFuncParamSize()) {
 				if(i > 0) {
-					this.CurrentBuilder.Append(this.Camma);
+					this.Source.Append(this.Camma);
 				}
 				this.GenerateTypeName(FuncType.GetFuncParamType(i));
-				this.CurrentBuilder.Append(" x"+i);
+				this.Source.Append(" x"+i);
 				i = i + 1;
 			}
-			this.CurrentBuilder.Append(");");
+			this.Source.Append(");");
 
-			this.CurrentBuilder.AppendNewLine(ClassName, "(int TypeId, String Name)");
-			this.CurrentBuilder.OpenIndent(" {");
-			this.CurrentBuilder.AppendNewLine("//super(TypeId, Name);");
-			this.CurrentBuilder.CloseIndent("}");
-			this.CurrentBuilder.CloseIndent("}");
-			this.CurrentBuilder.AppendNewLine();
-			this.CurrentBuilder = this.CurrentBuilder.Pop();
+			this.Source.AppendNewLine(ClassName, "(int TypeId, String Name)");
+			this.Source.OpenIndent(" {");
+			this.Source.AppendNewLine("//super(TypeId, Name);");
+			this.Source.CloseIndent("}");
+			this.Source.CloseIndent("}");
+			this.Source.AppendNewLine();
+			this.Source = this.Source.Pop();
 		}
 		return ClassName;
 	}
 
 	@Override protected void GenerateTypeName(BType Type) {
 		if(Type instanceof BFuncType) {
-			this.CurrentBuilder.Append(this.GetFuncTypeClass((BFuncType)Type));
+			this.Source.Append(this.GetFuncTypeClass((BFuncType)Type));
 		}
 		else {
-			this.CurrentBuilder.Append(this.GetJavaTypeName(Type.GetRealType(), false));
+			this.Source.Append(this.GetJavaTypeName(Type.GetRealType(), false));
 		}
 	}
 
 	@Override
 	protected void VisitVarDeclNode(BunLetVarNode Node) {
 		this.GenerateTypeName(Node.DeclType());
-		this.CurrentBuilder.Append(" ");
-		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
-		this.CurrentBuilder.Append(" = ");
+		this.Source.Append(" ");
+		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+		this.Source.Append(" = ");
 		this.GenerateCode(null, Node.InitValueNode());
-		this.CurrentBuilder.Append(this.SemiColon);
+		this.Source.Append(this.SemiColon);
 		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 	}
 
 	@Override public void VisitLetNode(BunLetVarNode Node) {
 		@Var String ClassName = this.NameGlobalNameClass(Node.GetUniqueName(this));
 		//		this.CurrentBuilder = this.InsertNewSourceBuilder();
-		this.CurrentBuilder.AppendNewLine("final class ", ClassName, "");
-		this.CurrentBuilder.OpenIndent(" {");
+		this.Source.AppendNewLine("final class ", ClassName, "");
+		this.Source.OpenIndent(" {");
 		this.GenerateClassField("static", Node.GetAstType(BunLetVarNode._InitValue), "_", null);
 		this.GenerateCode2(" = ", null, Node.InitValueNode(), this.SemiColon);
-		this.CurrentBuilder.CloseIndent("}");
+		this.Source.CloseIndent("}");
 		//		this.CurrentBuilder = this.CurrentBuilder.Pop();
 		//			Node.GlobalName = ClassName + "._";
 		//			Node.GetNameSpace().SetLocalSymbol(Node.GetName(), Node.ToGlobalNameNode());
@@ -304,18 +304,18 @@ public class JavaGenerator extends OldSourceGenerator {
 
 	@Override protected void VisitParamNode(BunLetVarNode Node) {
 		this.GenerateTypeName(Node.Type);
-		this.CurrentBuilder.Append(" ");
-		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+		this.Source.Append(" ");
+		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 	}
 
 	@Override public void VisitFunctionNode(BunFunctionNode Node) {
 		if(!Node.Type.IsVoidType()) {
 			@Var String FuncName = Node.GetUniqueName(this);
-			this.CurrentBuilder = this.InsertNewSourceBuilder();
+			this.Source = this.InsertNewSourceBuilder();
 			FuncName = this.GenerateFunctionAsClass(FuncName, Node);
-			this.CurrentBuilder.AppendLineFeed();
-			this.CurrentBuilder = this.CurrentBuilder.Pop();
-			this.CurrentBuilder.Append(FuncName);
+			this.Source.AppendLineFeed();
+			this.Source = this.Source.Pop();
+			this.Source.Append(FuncName);
 		}
 		else {
 			this.GenerateFunctionAsClass(Node.FuncName(), Node);
@@ -339,70 +339,70 @@ public class JavaGenerator extends OldSourceGenerator {
 		@Var BFuncType FuncType = Node.GetFuncType();
 		@Var String ClassName = this.NameFunctionClass(FuncName, FuncType);
 		this.GenerateClass("final", ClassName, FuncType);
-		this.CurrentBuilder.OpenIndent(" {");
-		this.CurrentBuilder.AppendNewLine("static ");
+		this.Source.OpenIndent(" {");
+		this.Source.AppendNewLine("static ");
 		this.GenerateTypeName(Node.ReturnType());
-		this.CurrentBuilder.Append(" f");
+		this.Source.Append(" f");
 		this.VisitFuncParamNode("(", Node, ")");
 		this.GenerateCode(null, Node.BlockNode());
 
 		this.GenerateClassField("static ", FuncType, "function", "new " + ClassName + "();");
-		this.CurrentBuilder.AppendNewLine(ClassName, "()");
-		this.CurrentBuilder.OpenIndent(" {");
+		this.Source.AppendNewLine(ClassName, "()");
+		this.Source.OpenIndent(" {");
 
-		this.CurrentBuilder.AppendNewLine("super(", ""+FuncType.TypeId, this.Camma);
-		this.CurrentBuilder.Append(BLib._QuoteString(FuncName), ");");
-		this.CurrentBuilder.CloseIndent("}");
+		this.Source.AppendNewLine("super(", ""+FuncType.TypeId, this.Camma);
+		this.Source.Append(BLib._QuoteString(FuncName), ");");
+		this.Source.CloseIndent("}");
 
-		this.CurrentBuilder.AppendNewLine("");
+		this.Source.AppendNewLine("");
 		this.GenerateTypeName(Node.ReturnType());
-		this.CurrentBuilder.Append(" Invoke");
+		this.Source.Append(" Invoke");
 		this.VisitListNode("(", Node, ")");
-		this.CurrentBuilder.OpenIndent(" {");
+		this.Source.OpenIndent(" {");
 		if(!FuncType.GetReturnType().IsVoidType()) {
-			this.CurrentBuilder.AppendNewLine("return ", ClassName, ".f");
+			this.Source.AppendNewLine("return ", ClassName, ".f");
 		}
 		else {
-			this.CurrentBuilder.AppendNewLine(ClassName, ".f");
+			this.Source.AppendNewLine(ClassName, ".f");
 		}
 		this.GenerateWrapperCall("(", Node, ");");
-		this.CurrentBuilder.CloseIndent("}");
+		this.Source.CloseIndent("}");
 
-		this.CurrentBuilder.CloseIndent("}");
-		this.CurrentBuilder.AppendNewLine();
+		this.Source.CloseIndent("}");
+		this.Source.AppendNewLine();
 		return ClassName + ".function";
 	}
 
 	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
 		this.GenerateCode(null, Node.AST[BInstanceOfNode._Left]);
-		this.CurrentBuilder.Append(" instanceof ");
+		this.Source.Append(" instanceof ");
 		this.GenerateTypeName(Node.TargetType());
 	}
 
 
 	private void GenerateClass(String Qualifier, String ClassName, BType SuperType) {
 		if(Qualifier != null && Qualifier.length() > 0) {
-			this.CurrentBuilder.AppendNewLine(Qualifier);
-			this.CurrentBuilder.AppendToken("class");
-			this.CurrentBuilder.Append(ClassName);
+			this.Source.AppendNewLine(Qualifier);
+			this.Source.AppendWhiteSpace("class");
+			this.Source.Append(ClassName);
 		}
 		else {
-			this.CurrentBuilder.AppendNewLine("class ", ClassName);
+			this.Source.AppendNewLine("class ", ClassName);
 		}
 		if(!SuperType.Equals(BClassType._ObjectType)) {
-			this.CurrentBuilder.Append(" extends ");
+			this.Source.Append(" extends ");
 			this.GenerateTypeName(SuperType);
 		}
 	}
 
 	private void GenerateClassField(String Qualifier, BType FieldType, String FieldName, String Value) {
-		this.CurrentBuilder.AppendNewLine(Qualifier);
-		this.CurrentBuilder.AppendWhiteSpace();
+		this.Source.AppendNewLine(Qualifier);
+		this.Source.AppendWhiteSpace();
 		this.GenerateTypeName(FieldType);
-		this.CurrentBuilder.Append(" ", FieldName);
+		this.Source.Append(" ", FieldName);
 		if(Value != null) {
-			this.CurrentBuilder.Append(" = ", Value);
-			this.CurrentBuilder.Append(this.SemiColon);
+			this.Source.Append(" = ", Value);
+			this.Source.Append(this.SemiColon);
 		}
 	}
 
@@ -410,59 +410,59 @@ public class JavaGenerator extends OldSourceGenerator {
 		@Var BType SuperType = Node.ClassType.GetSuperType();
 		@Var String ClassName = this.NameClass(Node.ClassType);
 		this.GenerateClass("", ClassName, SuperType);
-		this.CurrentBuilder.OpenIndent(" {");
+		this.Source.OpenIndent(" {");
 		@Var int i = 0;
 		while (i < Node.GetListSize()) {
 			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
 			this.GenerateClassField("", FieldNode.DeclType(), FieldNode.GetGivenName(), null);
-			this.CurrentBuilder.Append(this.SemiColon);
+			this.Source.Append(this.SemiColon);
 			i = i + 1;
 		}
-		this.CurrentBuilder.AppendNewLine();
+		this.Source.AppendNewLine();
 
 		i = 0;
 		while(i < Node.ClassType.GetFieldSize()) {
 			@Var BClassField Field = Node.ClassType.GetFieldAt(i);
 			if(Field.FieldType.IsFuncType()) {
 				this.GenerateClassField("static", Field.FieldType, this.NameMethod(Node.ClassType, Field.FieldName), "null");
-				this.CurrentBuilder.Append(this.SemiColon);
+				this.Source.Append(this.SemiColon);
 			}
 			i = i + 1;
 		}
 
-		this.CurrentBuilder.AppendNewLine(this.NameClass(Node.ClassType), "()");
-		this.CurrentBuilder.OpenIndent(" {");
-		this.CurrentBuilder.AppendNewLine("super();");
+		this.Source.AppendNewLine(this.NameClass(Node.ClassType), "()");
+		this.Source.OpenIndent(" {");
+		this.Source.AppendNewLine("super();");
 		while (i < Node.GetListSize()) {
 			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
-			this.CurrentBuilder.AppendNewLine("this.", FieldNode.GetGivenName(), "=");
+			this.Source.AppendNewLine("this.", FieldNode.GetGivenName(), "=");
 			this.GenerateCode(null, FieldNode.InitValueNode());
-			this.CurrentBuilder.Append(this.SemiColon);
+			this.Source.Append(this.SemiColon);
 			i = i + 1;
 		}
 		i = 0;
 		while(i < Node.ClassType.GetFieldSize()) {
 			@Var BClassField Field = Node.ClassType.GetFieldAt(i);
 			if(Field.FieldType.IsFuncType()) {
-				this.CurrentBuilder.AppendNewLine("if(", this.NameMethod(Node.ClassType, Field.FieldName), " != null) ");
-				this.CurrentBuilder.OpenIndent("{");
-				this.CurrentBuilder.AppendNewLine("this.", Field.FieldName, "=");
-				this.CurrentBuilder.Append(this.NameMethod(Node.ClassType, Field.FieldName), ";", this.LineFeed);
-				this.CurrentBuilder.CloseIndent("}");
+				this.Source.AppendNewLine("if(", this.NameMethod(Node.ClassType, Field.FieldName), " != null) ");
+				this.Source.OpenIndent("{");
+				this.Source.AppendNewLine("this.", Field.FieldName, "=");
+				this.Source.Append(this.NameMethod(Node.ClassType, Field.FieldName), ";", this.LineFeed);
+				this.Source.CloseIndent("}");
 			}
 			i = i + 1;
 		}
 
-		this.CurrentBuilder.CloseIndent("}"); /* end of constructor*/
-		this.CurrentBuilder.CloseIndent("}");  /* end of class */
-		this.CurrentBuilder.AppendLineFeed();
+		this.Source.CloseIndent("}"); /* end of constructor*/
+		this.Source.CloseIndent("}");  /* end of class */
+		this.Source.AppendLineFeed();
 	}
 
 	@Override public void VisitErrorNode(ErrorNode Node) {
 		BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
-		this.CurrentBuilder.Append("ThrowError(");
-		this.CurrentBuilder.Append(BLib._QuoteString(Node.ErrorMessage));
-		this.CurrentBuilder.Append(")");
+		this.Source.Append("ThrowError(");
+		this.Source.Append(BLib._QuoteString(Node.ErrorMessage));
+		this.Source.Append(")");
 	}
 
 	//	@Override public void VisitExtendedNode(ZNode Node) {

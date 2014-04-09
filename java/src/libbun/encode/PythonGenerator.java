@@ -25,8 +25,8 @@
 
 package libbun.encode;
 
-import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
@@ -79,26 +79,26 @@ public class PythonGenerator extends OldSourceGenerator {
 		this.SetNativeType(BType.FloatType, "float");
 		this.SetNativeType(BType.StringType, "str");
 
-		this.HeaderBuilder.Append("#! /usr/bin/env python");
-		this.HeaderBuilder.AppendNewLine("# -*- coding: utf-8 -*-");
-		this.HeaderBuilder.AppendNewLine("def zstr(s) : return str(s) if s != None else \'null\'");
-		this.CurrentBuilder.AppendNewLine("## end of header", this.LineFeed);
+		this.Header.Append("#! /usr/bin/env python");
+		this.Header.AppendNewLine("# -*- coding: utf-8 -*-");
+		this.Header.AppendNewLine("def zstr(s) : return str(s) if s != None else \'null\'");
+		this.Source.AppendNewLine("## end of header", this.LineFeed);
 
 	}
 
 	@Override protected void GenerateImportLibrary(String LibName) {
 		if(LibName.startsWith("def ")) {
-			this.HeaderBuilder.AppendNewLine(LibName);
+			this.Header.AppendNewLine(LibName);
 		}
 		else {
-			this.HeaderBuilder.AppendNewLine("import ", LibName);
+			this.Header.AppendNewLine("import ", LibName);
 		}
 	}
 
 	@Override @ZenMethod protected void Finish(String FileName) {
 		if(this.HasMainFunction) {
-			this.CurrentBuilder.AppendNewLine("if __name__ == \"__main__\":\n\tmain()");
-			this.CurrentBuilder.AppendLineFeed();
+			this.Source.AppendNewLine("if __name__ == \"__main__\":\n\tmain()");
+			this.Source.AppendLineFeed();
 		}
 	}
 
@@ -111,18 +111,18 @@ public class PythonGenerator extends OldSourceGenerator {
 			i = i + 1;
 		}
 		if (i == 0) {
-			this.CurrentBuilder.AppendNewLine("pass");
+			this.Source.AppendNewLine("pass");
 		}
 	}
 
 	@Override public void VisitBlockNode(BunBlockNode Node) {
-		this.CurrentBuilder.OpenIndent(":");
+		this.Source.OpenIndent(":");
 		this.VisitStmtList(Node);
-		this.CurrentBuilder.CloseIndent("");
+		this.Source.CloseIndent("");
 	}
 
 	@Override protected void VisitVarDeclNode(BunLetVarNode Node) {
-		this.CurrentBuilder.AppendNewLine(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = ");
+		this.Source.AppendNewLine(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = ");
 		this.GenerateCode(null, Node.InitValueNode());
 		if(Node.HasNextVarNode()) {
 			this.VisitVarDeclNode(Node.NextVarNode());
@@ -135,7 +135,7 @@ public class PythonGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitNewObjectNode(NewObjectNode Node) {
-		this.CurrentBuilder.Append(this.NameClass(Node.Type));
+		this.Source.Append(this.NameClass(Node.Type));
 		this.VisitListNode("(", Node, ")");
 	}
 
@@ -157,29 +157,29 @@ public class PythonGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
-		this.CurrentBuilder.Append("isinstance(");
+		this.Source.Append("isinstance(");
 		this.GenerateCode(null, Node.LeftNode());
 		if(Node.TargetType() instanceof BClassType) {
-			this.CurrentBuilder.Append(this.Camma, this.NameClass(Node.TargetType()), ")");
+			this.Source.Append(this.Camma, this.NameClass(Node.TargetType()), ")");
 		}
 		else {
-			this.CurrentBuilder.Append(this.Camma);
+			this.Source.Append(this.Camma);
 			this.GenerateTypeName(Node.TargetType());
-			this.CurrentBuilder.Append(")");
+			this.Source.Append(")");
 		}
 	}
 
 	@Override public void VisitIfNode(BunIfNode Node) {
-		this.CurrentBuilder.Append("if ");
+		this.Source.Append("if ");
 		this.GenerateCode(null, Node.CondNode());
 		this.GenerateCode(null, Node.ThenNode());
 		if (Node.HasElseNode()) {
 			BNode ElseNode = Node.ElseNode();
 			if(ElseNode instanceof BunIfNode) {
-				this.CurrentBuilder.AppendNewLine("el");
+				this.Source.AppendNewLine("el");
 			}
 			else {
-				this.CurrentBuilder.AppendNewLine("else");
+				this.Source.AppendNewLine("else");
 			}
 			this.GenerateCode(null, Node.ElseNode());
 		}
@@ -187,14 +187,14 @@ public class PythonGenerator extends OldSourceGenerator {
 
 	@Override public void VisitLetNode(BunLetVarNode Node) {
 		if(this.ReadableCode || !Node.IsConstValue()) {
-			this.CurrentBuilder.Append(Node.GetUniqueName(this));
-			this.CurrentBuilder.Append(" = ");
+			this.Source.Append(Node.GetUniqueName(this));
+			this.Source.Append(" = ");
 			this.GenerateCode(null, Node.InitValueNode());
 		}
 	}
 
 	@Override protected void VisitParamNode(BunLetVarNode Node) {
-		this.CurrentBuilder.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 	}
 
 	/**
@@ -210,34 +210,34 @@ public class PythonGenerator extends OldSourceGenerator {
 	@Override public void VisitFunctionNode(BunFunctionNode Node) {
 		if(!Node.IsTopLevelDefineFunction()) {
 			@Var String FuncName = Node.GetUniqueName(this);
-			this.CurrentBuilder = this.InsertNewSourceBuilder();
-			this.CurrentBuilder.Append("def ");
-			this.CurrentBuilder.Append(FuncName);
+			this.Source = this.InsertNewSourceBuilder();
+			this.Source.Append("def ");
+			this.Source.Append(FuncName);
 			this.VisitFuncParamNode("(", Node, ")");
 			this.GenerateCode(null, Node.BlockNode());
-			this.CurrentBuilder.AppendLineFeed();
-			this.CurrentBuilder.AppendLineFeed();
-			this.CurrentBuilder = this.CurrentBuilder.Pop();
-			this.CurrentBuilder.Append(FuncName);
+			this.Source.AppendLineFeed();
+			this.Source.AppendLineFeed();
+			this.Source = this.Source.Pop();
+			this.Source.Append(FuncName);
 		}
 		else {
 			@Var BFuncType FuncType = Node.GetFuncType();
-			this.CurrentBuilder.Append("def ");
-			this.CurrentBuilder.Append(Node.GetSignature());
+			this.Source.Append("def ");
+			this.Source.Append(Node.GetSignature());
 			this.VisitFuncParamNode("(", Node, ")");
 			this.GenerateCode(null, Node.BlockNode());
-			this.CurrentBuilder.AppendLineFeed();
+			this.Source.AppendLineFeed();
 			if(Node.IsExport) {
-				this.CurrentBuilder.Append(Node.FuncName(), " = ", FuncType.StringfySignature(Node.FuncName()));
-				this.CurrentBuilder.AppendLineFeed();
+				this.Source.Append(Node.FuncName(), " = ", FuncType.StringfySignature(Node.FuncName()));
+				this.Source.AppendLineFeed();
 				if(Node.FuncName().equals("main")) {
 					this.HasMainFunction = true;
 				}
 			}
 			if(this.IsMethod(Node.FuncName(), FuncType)) {
-				this.CurrentBuilder.Append(this.NameMethod(FuncType.GetRecvType(), Node.FuncName()));
-				this.CurrentBuilder.Append(" = ", FuncType.StringfySignature(Node.FuncName()));
-				this.CurrentBuilder.AppendLineFeed();
+				this.Source.Append(this.NameMethod(FuncType.GetRecvType(), Node.FuncName()));
+				this.Source.Append(" = ", FuncType.StringfySignature(Node.FuncName()));
+				this.Source.AppendLineFeed();
 			}
 		}
 	}
@@ -247,44 +247,42 @@ public class PythonGenerator extends OldSourceGenerator {
 		while (i < Node.ClassType.GetFieldSize()) {
 			@Var BClassField ClassField = Node.ClassType.GetFieldAt(i);
 			if(ClassField.FieldType.IsFuncType()) {
-				this.CurrentBuilder.AppendNewLine();
-				this.CurrentBuilder.Append(this.NameMethod(Node.ClassType, ClassField.FieldName));
-				this.CurrentBuilder.Append(" = ", this.NullLiteral);
+				this.Source.AppendNewLine();
+				this.Source.Append(this.NameMethod(Node.ClassType, ClassField.FieldName));
+				this.Source.Append(" = ", this.NullLiteral);
 			}
 			i = i + 1;
 		}
-		this.CurrentBuilder.AppendNewLine();
+		this.Source.AppendNewLine();
 	}
 
 	@Override public void VisitClassNode(BunClassNode Node) {
 		@Var BType SuperType = Node.ClassType.GetSuperType();
 		this.GenerateMethodVariables(Node);
-		this.CurrentBuilder.Append("class ");
-		this.CurrentBuilder.Append(this.NameClass(Node.ClassType));
+		this.Source.Append("class ");
+		this.Source.Append(this.NameClass(Node.ClassType));
 		if(!SuperType.Equals(BClassType._ObjectType)) {
-			this.CurrentBuilder.Append("(");
-			this.CurrentBuilder.Append(this.NameClass(SuperType));
-			this.CurrentBuilder.Append(")");
+			this.Source.Append("(");
+			this.Source.Append(this.NameClass(SuperType));
+			this.Source.Append(")");
 		}
-		this.CurrentBuilder.Append(":");
-		this.CurrentBuilder.Indent();
-		this.CurrentBuilder.AppendNewLine();
-		this.CurrentBuilder.Append("def __init__(self):");
-		this.CurrentBuilder.Indent();
+		this.Source.OpenIndent(":");
+		this.Source.AppendNewLine("def __init__(self)");
+		this.Source.OpenIndent(":");
 		if(!Node.SuperType().Equals(BClassType._ObjectType)) {
-			this.CurrentBuilder.AppendNewLine();
-			this.CurrentBuilder.Append(this.NameClass(SuperType));
-			this.CurrentBuilder.Append(".__init__(self)");
+			this.Source.AppendNewLine();
+			this.Source.Append(this.NameClass(SuperType));
+			this.Source.Append(".__init__(self)");
 		}
 		@Var int i = 0;
 		while (i < Node.GetListSize()) {
 			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
 			if(!FieldNode.DeclType().IsFuncType()) {
-				this.CurrentBuilder.AppendNewLine();
-				this.CurrentBuilder.Append("self." + FieldNode.GetGivenName() + " = ");
+				this.Source.AppendNewLine();
+				this.Source.Append("self." + FieldNode.GetGivenName() + " = ");
 				this.GenerateCode(null, FieldNode.InitValueNode());
 			}
-			this.CurrentBuilder.Append(this.SemiColon);
+			this.Source.Append(this.SemiColon);
 			i = i + 1;
 		}
 
@@ -292,16 +290,15 @@ public class PythonGenerator extends OldSourceGenerator {
 		while (i < Node.ClassType.GetFieldSize()) {
 			@Var BClassField ClassField = Node.ClassType.GetFieldAt(i);
 			if(ClassField.FieldType.IsFuncType()) {
-				this.CurrentBuilder.AppendNewLine();
-				this.CurrentBuilder.Append("self." + ClassField.FieldName);
-				this.CurrentBuilder.Append(" = _" + this.NameClass(Node.ClassType) + "_" + ClassField.FieldName);
+				this.Source.AppendNewLine();
+				this.Source.Append("self." + ClassField.FieldName);
+				this.Source.Append(" = _" + this.NameClass(Node.ClassType) + "_" + ClassField.FieldName);
 			}
 			i = i + 1;
 		}
-		this.CurrentBuilder.UnIndent();
-		this.CurrentBuilder.UnIndent();
-		this.CurrentBuilder.AppendLineFeed();
-		this.CurrentBuilder.AppendLineFeed();
+		this.Source.CloseIndent(null);
+		this.Source.CloseIndent(null);
+		this.Source.AppendLineFeed();
 	}
 
 	@Override public void VisitErrorNode(ErrorNode Node) {
@@ -311,31 +308,31 @@ public class PythonGenerator extends OldSourceGenerator {
 		}
 		else {
 			@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
-			this.CurrentBuilder.AppendWhiteSpace();
-			this.CurrentBuilder.Append("LibZen.ThrowError(");
-			this.CurrentBuilder.Append(BLib._QuoteString(Message));
-			this.CurrentBuilder.Append(")");
+			this.Source.AppendWhiteSpace();
+			this.Source.Append("LibZen.ThrowError(");
+			this.Source.Append(BLib._QuoteString(Message));
+			this.Source.Append(")");
 		}
 	}
 
 	@Override public void VisitThrowNode(BunThrowNode Node) {
-		this.CurrentBuilder.Append("raise ");
+		this.Source.Append("raise ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
 	@Override public void VisitTryNode(BunTryNode Node) {
-		this.CurrentBuilder.Append("try");
+		this.Source.Append("try");
 		this.GenerateCode(null, Node.TryBlockNode());
 		if(Node.HasCatchBlockNode()) {
 			@Var String VarName = this.NameUniqueSymbol("e");
-			this.CurrentBuilder.AppendNewLine("except Exception as ", VarName);
-			this.CurrentBuilder.OpenIndent(":");
-			this.CurrentBuilder.AppendNewLine(Node.ExceptionName(), " = ", VarName);
+			this.Source.AppendNewLine("except Exception as ", VarName);
+			this.Source.OpenIndent(":");
+			this.Source.AppendNewLine(Node.ExceptionName(), " = ", VarName);
 			this.VisitStmtList(Node.CatchBlockNode());
-			this.CurrentBuilder.CloseIndent("");
+			this.Source.CloseIndent("");
 		}
 		if(Node.HasFinallyBlockNode()) {
-			this.CurrentBuilder.AppendNewLine("finally");
+			this.Source.AppendNewLine("finally");
 			this.GenerateCode(null, Node.FinallyBlockNode());
 		}
 	}

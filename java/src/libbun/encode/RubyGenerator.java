@@ -57,18 +57,17 @@ public class RubyGenerator extends OldSourceGenerator {
 
 	@Override
 	public void VisitBlockNode(BunBlockNode Node) {
-		this.CurrentBuilder.Append("do");
-		this.CurrentBuilder.Indent();
+		this.Source.Append("do");
 		throw new RuntimeException("FIXME: don't use for statement");
 		//		for(ZNode SubNode : Node.StmtList) {
 		//			this.CurrentBuilder.AppendLineFeed();
-		//			this.CurrentBuilder.AppendIndent();
+		//			this.CurrentBuilder.AppendNewLine();
 		//			this.GenerateCode(SubNode);
 		//			this.CurrentBuilder.Append(this.SemiColon);
 		//		}
 		//		this.CurrentBuilder.UnIndent();
 		//		this.CurrentBuilder.AppendLineFeed();
-		//		this.CurrentBuilder.AppendIndent();
+		//		this.CurrentBuilder.AppendNewLine();
 		//		this.CurrentBuilder.Append("end");
 	}
 
@@ -82,19 +81,19 @@ public class RubyGenerator extends OldSourceGenerator {
 
 	@Override
 	public void VisitThrowNode(BunThrowNode Node) {
-		this.CurrentBuilder.Append("raise ");
+		this.Source.Append("raise ");
 		this.GenerateCode(null, Node.ExprNode());
 	}
 
 	@Override
 	public void VisitTryNode(BunTryNode Node) {
-		this.CurrentBuilder.Append("begin");
+		this.Source.Append("begin");
 		this.GenerateCode(null, Node.TryBlockNode());
 		if (Node.CatchBlockNode() != null) {
 			this.GenerateCode(null, Node.CatchBlockNode());
 		}
 		if (Node.FinallyBlockNode() != null) {
-			this.CurrentBuilder.Append("ensure");
+			this.Source.Append("ensure");
 			this.GenerateCode(null, Node.FinallyBlockNode());
 		}
 	}
@@ -116,11 +115,11 @@ public class RubyGenerator extends OldSourceGenerator {
 
 	@Override
 	protected void VisitParamNode(BunLetVarNode Node) {
-		this.CurrentBuilder.Append(Node.GetGivenName());
+		this.Source.Append(Node.GetGivenName());
 	}
 
 	@Override public void VisitFunctionNode(BunFunctionNode Node) {
-		this.CurrentBuilder.Append("->");
+		this.Source.Append("->");
 		this.VisitFuncParamNode("(", Node, ")");
 		this.GenerateCode(null, Node.BlockNode());
 	}

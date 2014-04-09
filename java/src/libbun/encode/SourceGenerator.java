@@ -10,8 +10,8 @@ import libbun.util.ZenMethod;
 
 public abstract class SourceGenerator extends AbstractGenerator {
 	@BField private final BArray<SourceBuilder> BuilderList = new BArray<SourceBuilder>(new SourceBuilder[4]);
-	@BField protected SourceBuilder HeaderBuilder;
-	@BField protected SourceBuilder CurrentBuilder;
+	@BField protected SourceBuilder Header;
+	@BField protected SourceBuilder Source;
 	@BField protected String LineFeed = "\n";
 	@BField protected String Tab = "   ";
 
@@ -21,23 +21,23 @@ public abstract class SourceGenerator extends AbstractGenerator {
 	}
 
 	@ZenMethod protected void InitBuilderList() {
-		this.CurrentBuilder = null;
+		this.Source = null;
 		this.BuilderList.clear(0);
-		this.HeaderBuilder = this.AppendNewSourceBuilder();
-		this.CurrentBuilder = this.AppendNewSourceBuilder();
+		this.Header = this.AppendNewSourceBuilder();
+		this.Source = this.AppendNewSourceBuilder();
 	}
 
 	protected final SourceBuilder AppendNewSourceBuilder() {
-		@Var SourceBuilder Builder = new SourceBuilder(this, this.CurrentBuilder);
+		@Var SourceBuilder Builder = new SourceBuilder(this, this.Source);
 		this.BuilderList.add(Builder);
 		return Builder;
 	}
 
 	protected final SourceBuilder InsertNewSourceBuilder() {
-		@Var SourceBuilder Builder = new SourceBuilder(this, this.CurrentBuilder);
+		@Var SourceBuilder Builder = new SourceBuilder(this, this.Source);
 		@Var int i = 0;
 		while(i < this.BuilderList.size()) {
-			if(this.BuilderList.ArrayValues[i] == this.CurrentBuilder) {
+			if(this.BuilderList.ArrayValues[i] == this.Source) {
 				this.BuilderList.add(i, Builder);
 				return Builder;
 			}
@@ -66,7 +66,6 @@ public abstract class SourceGenerator extends AbstractGenerator {
 			@Var SourceBuilder Builder = this.BuilderList.ArrayValues[i];
 			sb.Append(Builder.toString());
 			Builder.Clear();
-			sb.AppendLineFeed();
 			sb.AppendLineFeed();
 			i = i + 1;
 		}
