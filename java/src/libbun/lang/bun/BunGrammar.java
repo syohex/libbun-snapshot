@@ -688,14 +688,13 @@ class BlockPatternFunction extends BMatchFunction {
 		BlockNode = TokenContext.MatchToken(BlockNode, "{", BTokenContext._Required);
 		if(!BlockNode.IsErrorNode()) {
 			@Var boolean Remembered = TokenContext.SetParseFlag(BTokenContext._AllowSkipIndent); // init
-			@Var BNode NestedBlockNode = BlockNode;
 			while(TokenContext.HasNext()) {
 				//System.out.println("Token :" + TokenContext.GetToken());
 				if(TokenContext.MatchToken("}")) {
 					break;
 				}
-				NestedBlockNode = TokenContext.MatchPattern(NestedBlockNode, BNode._NestedAppendIndex, "$Statement$", BTokenContext._Required);
-				if(NestedBlockNode.IsErrorNode()) {
+				BlockNode = TokenContext.MatchPattern(BlockNode, BNode._AppendIndex, "$Statement$", BTokenContext._Required);
+				if(BlockNode.IsErrorNode()) {
 					TokenContext.SkipError(SkipToken);
 					TokenContext.MatchToken("}");
 					break;

@@ -24,15 +24,14 @@
 
 
 package libbun.parser;
-import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
 import libbun.ast.EmptyNode;
 import libbun.ast.error.ErrorNode;
 import libbun.encode.AbstractGenerator;
+import libbun.util.BArray;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.BArray;
 
 public final class BTokenContext {
 	public final static boolean     _Required          = true;
@@ -289,14 +288,14 @@ public final class BTokenContext {
 			@Var BNode ParsedNode = this.ParsePattern(ParentNode, PatternName, IsRequired);
 			this.SetParseFlag(Rememberd);
 			if(ParsedNode != null) {
-				if(Index == BNode._NestedAppendIndex) {
-					if(!(ParsedNode instanceof EmptyNode)) {
-						ParentNode.SetNode(BNode._AppendIndex, ParsedNode);
-					}
-					if(ParsedNode instanceof BunBlockNode || ParsedNode.IsErrorNode()) {
-						return ParsedNode;
-					}
-				}
+				//				if(Index == BNode._NestedAppendIndex) {
+				//					if(!(ParsedNode instanceof EmptyNode)) {
+				//						ParentNode.SetNode(BNode._AppendIndex, ParsedNode);
+				//					}
+				//					if(ParsedNode instanceof BunBlockNode || ParsedNode.IsErrorNode()) {
+				//						return ParsedNode;
+				//					}
+				//				}
 				if(ParsedNode.IsErrorNode()) {
 					return ParsedNode;
 				}

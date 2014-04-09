@@ -1,7 +1,7 @@
 package libbun.lang.python;
 
-import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
+import libbun.ast.BunBlockNode;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
 import libbun.util.BMatchFunction;
@@ -16,7 +16,6 @@ public class PythonBlockPatternFunction extends BMatchFunction {
 		BlockNode = TokenContext.MatchToken(BlockNode, ":", BTokenContext._Required);
 		if(!BlockNode.IsErrorNode()) {
 			@Var boolean Remembered = TokenContext.SetParseFlag(BTokenContext._AllowSkipIndent); // init
-			@Var BNode NestedBlockNode = BlockNode;
 			@Var int IndentSize = 0;
 			while(TokenContext.HasNext()) {
 				@Var BToken Token = TokenContext.GetToken();
@@ -24,8 +23,8 @@ public class PythonBlockPatternFunction extends BMatchFunction {
 					break;
 				}
 				IndentSize = Token.GetIndentSize();
-				NestedBlockNode = TokenContext.MatchPattern(NestedBlockNode, BNode._NestedAppendIndex, "$Statement$", BTokenContext._Required);
-				if(NestedBlockNode.IsErrorNode()) {
+				BlockNode = TokenContext.MatchPattern(BlockNode, BNode._AppendIndex, "$Statement$", BTokenContext._Required);
+				if(BlockNode.IsErrorNode()) {
 					TokenContext.SkipError(SkipToken);
 					break;
 				}

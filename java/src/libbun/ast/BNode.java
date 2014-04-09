@@ -42,7 +42,7 @@ import libbun.util.Var;
 
 public abstract class BNode {
 	public final static int _AppendIndex = -1;
-	public final static int _NestedAppendIndex = -2;
+	//	public final static int _NestedAppendIndex = -2;
 	public final static int _Nop =      -3;
 	public final static boolean _EnforcedParent = true;
 	public final static boolean _PreservedParent = false;
