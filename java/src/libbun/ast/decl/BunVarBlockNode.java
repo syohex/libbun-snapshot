@@ -40,8 +40,12 @@ public class BunVarBlockNode extends BunBlockNode {
 	public BunVarBlockNode(BNode ParentNode, BunLetVarNode VarNode, BunBlockNode ParentBlockNode) {
 		super(ParentNode, null, 1);
 		this.SetNode(BunVarBlockNode._VarDecl, VarNode);
-		@Var int Index = BNodeUtils._AstIndexOf(ParentBlockNode, VarNode);
-		BNodeUtils._MoveAstList(ParentBlockNode, Index+1, this);
+		@Var int Index = BNodeUtils._AstListIndexOf(ParentBlockNode, VarNode);
+		assert(Index >= 0);
+		// before: ParentBlockNode = [NodeA, NodeB, ..., VarNode, NodeC, ..., NodeZ], this = []
+		// after : ParentBlockNode = [NodeA, NodeB, ..., this],  this = [NodeC, ..., NodeZ]
+		BNodeUtils._MoveAstList(ParentBlockNode, Index + 1, this);
+		ParentBlockNode.SetListAt(Index, this);
 	}
 
 	public final BunLetVarNode VarDeclNode() {
