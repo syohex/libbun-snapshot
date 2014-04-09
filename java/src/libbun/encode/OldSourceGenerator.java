@@ -294,7 +294,7 @@ public class OldSourceGenerator extends SourceGenerator {
 		if(ResolvedNode == null && !this.LangInfo.AllowUndefinedSymbol) {
 			BLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GivenName);
 		}
-		this.Source.Append(Node.GetUniqueName(this));
+		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetUniqueName(this)));
 	}
 
 	@Override public void VisitSetNameNode(SetNameNode Node) {
