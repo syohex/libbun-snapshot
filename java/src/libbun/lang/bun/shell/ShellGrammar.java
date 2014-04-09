@@ -1,27 +1,445 @@
 package libbun.lang.bun.shell;
 
+import java.util.ArrayList;
+
+import libbun.ast.BNode;
+import libbun.ast.EmptyNode;
+import libbun.ast.decl.BunLetVarNode;
+import libbun.ast.error.ErrorNode;
+import libbun.ast.literal.BunStringNode;
 import libbun.parser.BNameSpace;
+import libbun.parser.BPatternToken;
+import libbun.parser.BSourceContext;
+import libbun.parser.BSyntax;
+import libbun.parser.BToken;
+import libbun.parser.BTokenContext;
+import libbun.type.BType;
+import libbun.util.BArray;
+import libbun.util.BLib;
+import libbun.util.BMatchFunction;
+import libbun.util.BTokenFunction;
+import libbun.util.Var;
+
+// Token
+class ShellStyleCommentTokenFunction extends BTokenFunction {
+	@Override public boolean Invoke(BSourceContext SourceContext) {
+		while(SourceContext.HasChar()) {
+			@Var char ch = SourceContext.GetCurrentChar();
+			if(ch == '\n') {
+				break;
+			}
+			SourceContext.MoveNext();
+		}
+		return true;
+	}
+}
+
+class CommandSymbolTokenFunction extends BTokenFunction {
+	@Override public boolean Invoke(BSourceContext SourceContext) {
+		@Var int startIndex = SourceContext.GetPosition();
+		@Var StringBuilder symbolBuilder = new StringBuilder();
+		while(SourceContext.HasChar()) {
+			@Var char ch = SourceContext.GetCurrentChar();
+			if(!BLib._IsDigitOrLetter(ch) && ch != '-' && ch != '+' && ch != '_') {
+				break;
+			}
+			symbolBuilder.append(ch);
+			SourceContext.MoveNext();
+		}
+		if(SourceContext.TokenContext.NameSpace.GetSymbol(ShellUtils._ToCommandSymbol(symbolBuilder.toString())) != null) {
+			SourceContext.Tokenize(CommandSymbolPatternFunction._PatternName, startIndex, SourceContext.GetPosition());
+			return true;
+		}
+		return false;
+	}
+}
+
+// Syntax Pattern
+class ImportPatternFunction extends BMatchFunction {
+	@Override
+	public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		TokenContext.MoveNext();
+		BToken Token = TokenContext.GetToken();
+		if(Token.EqualsText("command")) {
+			return TokenContext.ParsePattern(ParentNode, ImportCommandPatternFunction._PatternName, BTokenContext._Required);
+		}
+		return this.MatchEnvPattern(ParentNode, TokenContext, Token);
+	}
+
+	public BNode MatchEnvPattern(BNode ParentNode, BTokenContext TokenContext, BToken Token) {
+		return null;	//do not support it
+	}
+}
+
+class ImportCommandPatternFunction extends BMatchFunction {
+	public final static String _PatternName = "$ImportCommand$";
+
+	public String ResolveHome(String Path) {
+		return ShellUtils._ResolveHome(Path);
+	}
+
+	public boolean IsFileExecutable(String Path) {
+		return ShellUtils._IsFileExecutable(Path);
+	}
+
+	public String GetUnixCommand(String cmd) {
+		return ShellUtils._GetUnixCommand(cmd);
+	}
+
+	private BToken ToCommandToken(ArrayList<BToken> TokenList) {
+		if(TokenList.isEmpty()) {
+			return null;
+		}
+		@Var int StartIndex = TokenList.get(0).StartIndex;
+		@Var int EndIndex = TokenList.get(TokenList.size() - 1).EndIndex;
+		@Var BToken CommandToken = new BToken(TokenList.get(0).Source, StartIndex, EndIndex);
+		TokenList.clear();
+		return CommandToken;
+	}
+
+	private boolean FoundDuplicatedSymbol(BNameSpace NameSpace, String Command) {
+		@Var BSyntax Syntax = NameSpace.GetSyntaxPattern(Command);
+		if(Syntax != null) {
+			if(BLib.DebugMode) {
+				System.err.println("found duplicated syntax pattern: " + Syntax);
+			}
+			return true;
+		}
+		if(NameSpace.GetSymbol(ShellUtils._ToCommandSymbol(Command)) != null) {
+			if(BLib.DebugMode) {
+				System.err.println("found duplicated symbol: " + Command);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	private void SetCommandSymbol(BNode ParentNode, BTokenContext TokenContext, ArrayList<BToken> TokenList) {	//TODO: command scope
+		@Var BToken CommandToken = this.ToCommandToken(TokenList);
+		if(CommandToken == null) {
+			return;
+		}
+		@Var String CommandPath = this.ResolveHome(CommandToken.GetText());
+		@Var BNameSpace NameSpace = TokenContext.NameSpace;
+		@Var int loc = CommandPath.lastIndexOf('/');
+		@Var String Command = CommandPath;
+		if(loc != -1) {
+			if(!this.IsFileExecutable(CommandPath)) {
+				System.err.println("[warning] unknown command: " + CommandPath);
+				return;
+			}
+			Command = CommandPath.substring(loc + 1);
+		}
+		else {
+			@Var String FullPath = this.GetUnixCommand(CommandPath);
+			if(FullPath == null) {
+				System.err.println("[warning] unknown command: " + CommandPath);
+				return;
+			}
+			CommandPath = FullPath;
+		}
+		if(this.FoundDuplicatedSymbol(NameSpace, Command)) {
+			return;
+		}
+		BunLetVarNode Node = new BunLetVarNode(ParentNode, BunLetVarNode._IsReadOnly, BType.StringType, Command);
+		Node.SetNode(BunLetVarNode._InitValue, new BunStringNode(ParentNode, null, CommandPath));
+		NameSpace.SetSymbol(ShellUtils._ToCommandSymbol(Command), Node);
+	}
+
+	@Override
+	public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		@Var ArrayList<BToken> TokenList = new ArrayList<BToken>();
+		TokenContext.MoveNext();
+		while(TokenContext.HasNext()) {
+			@Var BToken Token = TokenContext.GetToken();
+			if(Token.EqualsText(";") || Token.IsIndent()) {
+				break;
+			}
+			if(!Token.EqualsText(",")) {
+				TokenList.add(Token);
+			}
+			if(Token.IsNextWhiteSpace()) {
+				this.SetCommandSymbol(ParentNode, TokenContext, TokenList);
+			}
+			TokenContext.MoveNext();
+		}
+		this.SetCommandSymbol(ParentNode, TokenContext, TokenList);
+		return new EmptyNode(ParentNode, null);
+	}
+}
+
+class CommandSymbolPatternFunction extends BMatchFunction {
+	public final static String _PatternName = "$CommandSymbol$";
+
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		@Var BToken CommandToken = TokenContext.GetToken(BTokenContext._MoveNext);
+		@Var BunLetVarNode SymbolNode = ParentNode.GetNameSpace().GetSymbol(ShellUtils._ToCommandSymbol(CommandToken.GetText()));
+		if(SymbolNode == null || !(SymbolNode.InitValueNode() instanceof BunStringNode)) {
+			return new ErrorNode(ParentNode, CommandToken, "undefined command symbol");
+		}
+		@Var String Command = ((BunStringNode)SymbolNode.InitValueNode()).StringValue;
+		@Var CommandNode CommandNode = new CommandNode(ParentNode, CommandToken, Command);
+		while(TokenContext.HasNext()) {
+			if(TokenContext.MatchToken("|")) {
+				// Match Prefix Option
+				@Var BNode PrefixOptionNode = TokenContext.ParsePatternAfter(ParentNode, CommandNode, PrefixOptionPatternFunction._PatternName, BTokenContext._Optional);
+				if(PrefixOptionNode != null) {
+					return CommandNode.AppendPipedNextNode((CommandNode)PrefixOptionNode);
+				}
+				// Match Command Symbol
+				@Var BNode PipedNode = TokenContext.ParsePattern(ParentNode, CommandSymbolPatternFunction._PatternName, BTokenContext._Required);
+				if(PipedNode.IsErrorNode()) {
+					return PipedNode;
+				}
+				return CommandNode.AppendPipedNextNode((CommandNode)PipedNode);
+			}
+			// Match Redirect
+			@Var BNode RedirectNode = TokenContext.ParsePattern(ParentNode, RedirectPatternFunction._PatternName, BTokenContext._Optional);
+			if(RedirectNode != null) {
+				CommandNode.AppendPipedNextNode((CommandNode)RedirectNode);
+				continue;
+			}
+			// Match Suffix Option
+			@Var BNode SuffixOptionNode = TokenContext.ParsePattern(ParentNode, SuffixOptionPatternFunction._PatternName, BTokenContext._Optional);
+			if(SuffixOptionNode != null) {
+				if(SuffixOptionNode.IsErrorNode()) {
+					return SuffixOptionNode;
+				}
+				return CommandNode.AppendPipedNextNode((CommandNode)SuffixOptionNode);
+			}
+			// Match Argument
+			@Var BNode ArgNode = TokenContext.ParsePattern(ParentNode, SimpleArgumentPatternFunction._PatternName, BTokenContext._Optional);
+			if(ArgNode == null) {
+				break;
+			}
+			CommandNode.AppendArgNode(ArgNode);
+		}
+		return CommandNode;
+	}
+}
+
+class SimpleArgumentPatternFunction extends BMatchFunction {	// subset of CommandArgPatternFunc
+	public final static String _PatternName = "$CommandArg$";
+
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		if(ShellUtils._MatchStopToken(TokenContext)) {
+			return null;
+		}
+		@Var boolean FoundSubstitution = false;
+		@Var boolean FoundEscape = false;
+		@Var BArray<BToken> TokenList = new BArray<BToken>(new BToken[]{});
+		@Var BArray<BNode> NodeList = new BArray<BNode>(new BNode[]{});
+		while(!ShellUtils._MatchStopToken(TokenContext)) {
+			@Var BToken Token = TokenContext.GetToken(BTokenContext._MoveNext);
+			if(Token instanceof BPatternToken && ((BPatternToken)Token).PresetPattern.equals("$StringLiteral$")) {
+				this.Flush(TokenContext, NodeList, TokenList);
+				NodeList.add(new BunStringNode(ParentNode, null, BLib._UnquoteString(Token.GetText())));
+			}
+			else {
+				TokenList.add(Token);
+			}
+			if(Token.IsNextWhiteSpace()) {
+				break;
+			}
+			FoundEscape = this.CheckEscape(Token, FoundEscape);
+		}
+		this.Flush(TokenContext, NodeList, TokenList);
+		@Var BNode ArgNode = new ArgumentNode(ParentNode, FoundSubstitution ? ArgumentNode._Substitution : ArgumentNode._Normal);
+		ArgNode.SetNode(ArgumentNode._Expr, ShellUtils._ToNode(ParentNode, TokenContext, NodeList));
+		return ArgNode;
+	}
+
+	private boolean CheckEscape(BToken Token, boolean FoundEscape) {
+		if(Token.EqualsText("\\") && !FoundEscape) {
+			return true;
+		}
+		return false;
+	}
+
+	private void Flush(BTokenContext TokenContext, BArray<BNode> NodeList, BArray<BToken> TokenList) {
+		@Var int size = TokenList.size();
+		if(size == 0) {
+			return;
+		}
+		@Var int StartIndex = 0;
+		@Var int EndIndex = 0;
+		for(int i = 0; i < size; i++) {
+			if(i == 0) {
+				StartIndex = BArray.GetIndex(TokenList, i).StartIndex;
+			}
+			if(i == size - 1) {
+				EndIndex = BArray.GetIndex(TokenList, i).EndIndex;
+			}
+		}
+		@Var BToken Token = new BToken(TokenContext.Source, StartIndex, EndIndex);
+		NodeList.add(new BunStringNode(null, Token, BLib._UnquoteString(this.ResolveHome(Token.GetText()))));
+		TokenList.clear(0);
+	}
+
+	public String ResolveHome(String Path) {
+		return ShellUtils._ResolveHome(Path);
+	}
+}
+
+class RedirectPatternFunction extends BMatchFunction {
+	public final static String _PatternName = "$Redirect$";
+
+	// <, >, >>, >&, 1>, 2>, 1>>, 2>>, &>, &>>
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		@Var BToken Token = TokenContext.GetToken(BTokenContext._MoveNext);
+		@Var String RedirectSymbol = Token.GetText();
+		if(Token.EqualsText(">>") || Token.EqualsText("<")) {
+			return this.CreateRedirectNode(ParentNode, TokenContext, RedirectSymbol, true);
+		}
+		else if(Token.EqualsText("&")) {
+			@Var BToken Token2 = TokenContext.GetToken(BTokenContext._MoveNext);
+			if(Token2.EqualsText(">") || Token2.EqualsText(">>")) {
+				RedirectSymbol += Token2.GetText();
+				return this.CreateRedirectNode(ParentNode, TokenContext, RedirectSymbol, true);
+			}
+		}
+		else if(Token.EqualsText(">")) {
+			@Var BToken Token2 = TokenContext.GetToken();
+			if(Token2.EqualsText("&")) {
+				RedirectSymbol += Token2.GetText();
+				return this.CreateRedirectNode(ParentNode, TokenContext, RedirectSymbol, true);
+			}
+			return this.CreateRedirectNode(ParentNode, TokenContext, RedirectSymbol, true);
+		}
+		else if(Token.EqualsText("1") || Token.EqualsText("2")) {
+			@Var BToken Token2 = TokenContext.GetToken(BTokenContext._MoveNext);
+			if(Token2.EqualsText(">>")) {
+				RedirectSymbol += Token2.GetText();
+				return this.CreateRedirectNode(ParentNode, TokenContext, RedirectSymbol, true);
+			}
+			else if(Token2.EqualsText(">")) {
+				RedirectSymbol += Token2.GetText();
+				if(RedirectSymbol.equals("2>") && TokenContext.MatchToken("&")) {
+					if(TokenContext.MatchToken("1")) {
+						return this.CreateRedirectNode(ParentNode, TokenContext, "2>&1", false);
+					}
+					return null;
+				}
+				return this.CreateRedirectNode(ParentNode, TokenContext, RedirectSymbol, true);
+			}
+		}
+		return null;
+	}
+
+	private BNode CreateRedirectNode(BNode ParentNode, BTokenContext TokenContext, String RedirectSymbol, boolean existTarget) {
+		@Var CommandNode Node = new CommandNode(ParentNode, null, RedirectSymbol);
+		if(existTarget) {
+			@Var BNode TargetNode = TokenContext.ParsePattern(Node, SimpleArgumentPatternFunction._PatternName, BTokenContext._Required);
+			if(TargetNode.IsErrorNode()) {
+				return TargetNode;
+			}
+			Node.AppendArgNode(TargetNode);
+		}
+		return Node;
+	}
+}
+
+class PrefixOptionPatternFunction extends BMatchFunction {
+	public final static String _PatternName = "$PrefixOption$";
+
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		@Var BToken Token = TokenContext.GetToken(BTokenContext._MoveNext);
+		@Var String Symbol = Token.GetText();
+		if(Symbol.equals(ShellUtils._trace)) {
+			@Var BNode CommandNode = TokenContext.ParsePattern(ParentNode, CommandSymbolPatternFunction._PatternName, BTokenContext._Required);
+			if(CommandNode.IsErrorNode()) {
+				return CommandNode;
+			}
+			@Var CommandNode Node = new CommandNode(ParentNode, Token, Symbol);
+			return Node.AppendPipedNextNode((CommandNode) CommandNode);
+		}
+		if(Symbol.equals(ShellUtils._timeout) && LeftNode == null) {
+			@Var BNode TimeNode = this.ParseTimeout(ParentNode, TokenContext);
+			if(TimeNode.IsErrorNode()) {
+				return TimeNode;
+			}
+			@Var BNode CommandNode = TokenContext.ParsePattern(ParentNode, CommandSymbolPatternFunction._PatternName, BTokenContext._Required);
+			if(CommandNode.IsErrorNode()) {
+				return CommandNode;
+			}
+			@Var CommandNode Node = new CommandNode(ParentNode, Token, Symbol);
+			Node.AppendArgNode(TimeNode);
+			return Node.AppendPipedNextNode((CommandNode) CommandNode);
+		}
+		return null;
+	}
+
+	public BNode ParseTimeout(BNode ParentNode, BTokenContext TokenContext) {
+		@Var BToken NumToken = TokenContext.GetToken(BTokenContext._MoveNext);
+		if((NumToken instanceof BPatternToken)) {
+			if(((BPatternToken)NumToken).PresetPattern.PatternName.equals(("$IntegerLiteral$"))) {
+				@Var long Num = BLib._ParseInt(NumToken.GetText());
+				if(Num > 0) {
+					if(NumToken.IsNextWhiteSpace()) {
+						return new ArgumentNode(ParentNode, Long.toString(Num));
+					}
+					@Var BToken UnitToken = TokenContext.GetToken(BTokenContext._MoveNext);
+					@Var String UnitSymbol = UnitToken.GetText();
+					if(UnitSymbol.equals("ms")) {
+						return new ArgumentNode(ParentNode, Long.toString(Num));
+					}
+					if(UnitSymbol.equals("s")) {
+						return new ArgumentNode(ParentNode, Long.toString(Num * 1000));
+					}
+					if(UnitSymbol.equals("m")) {
+						return new ArgumentNode(ParentNode, Long.toString(Num * 1000 * 60));
+					}
+					return TokenContext.CreateExpectedErrorNode(UnitToken, "{ms, s, m}");
+				}
+			}
+		}
+		return TokenContext.CreateExpectedErrorNode(NumToken, "Integer Number Symbol");
+	}
+}
+
+class SuffixOptionPatternFunction extends BMatchFunction {
+	public final static String _PatternName = "$SuffixOption$";
+
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		@Var BToken Token = TokenContext.GetToken();
+		TokenContext.MoveNext();
+		@Var String OptionSymbol = Token.GetText();
+		if(Token.EqualsText(ShellUtils._background)) {	// set background job
+			return new CommandNode(ParentNode, Token, OptionSymbol);
+		}
+		return null;
+	}
+}
 
 public class ShellGrammar {
+	// token func
+	public final static BTokenFunction ShellStyleCommentToken = new ShellStyleCommentTokenFunction();
+	public final static BTokenFunction CommandSymbolToken = new CommandSymbolTokenFunction();
+
+	// pattern func
+	public final static BMatchFunction ImportPattern = new ImportPatternFunction();
+	public final static BMatchFunction ImportCommandPattern = new ImportCommandPatternFunction();
+	public final static BMatchFunction CommandSymbolPattern = new CommandSymbolPatternFunction();
+	public final static BMatchFunction SimpleArgumentPattern = new SimpleArgumentPatternFunction();
+	public final static BMatchFunction RedirectPattern = new RedirectPatternFunction();
+	public final static BMatchFunction PrefixOptionPattern = new PrefixOptionPatternFunction();
+	public final static BMatchFunction SuffixOptionPattern = new SuffixOptionPatternFunction();
+
 	public static void ImportGrammar(BNameSpace NameSpace) {
-		CommandSymbolTokenFunction commandSymbolToken = new CommandSymbolTokenFunction();
-		ImportCommandPatternFunction importCommandPattern = new ImportCommandPatternFunction();
-		PrefixOptionPatternFunction prefixOptionPattern = new PrefixOptionPatternFunction();
+		NameSpace.AppendTokenFunc("#", ShellStyleCommentToken);
+		NameSpace.AppendTokenFunc("Aa_", CommandSymbolToken);
+		NameSpace.AppendTokenFunc("1", CommandSymbolToken);
 
-		NameSpace.AppendTokenFunc("#", new ShellStyleCommentTokenFunction());
-		NameSpace.AppendTokenFunc("Aa_", commandSymbolToken);
-		NameSpace.AppendTokenFunc("1", commandSymbolToken);
-
-		NameSpace.DefineStatement("import", new ImportPatternFunction());
-		NameSpace.DefineExpression("command", importCommandPattern);
-		NameSpace.DefineExpression(ImportCommandPatternFunction._PatternName, importCommandPattern);
-		NameSpace.DefineExpression(SimpleArgumentPatternFunction._PatternName, new SimpleArgumentPatternFunction());
-		NameSpace.DefineExpression(RedirectPatternFunction._PatternName, new RedirectPatternFunction());
-		NameSpace.DefineExpression(SuffixOptionPatternFunction._PatternName, new SuffixOptionPatternFunction());
-		NameSpace.DefineExpression(CommandSymbolPatternFunction._PatternName, new CommandSymbolPatternFunction());
-		NameSpace.DefineExpression(ShellUtils._timeout, prefixOptionPattern);
-		NameSpace.DefineExpression(ShellUtils._trace, prefixOptionPattern);
-		NameSpace.DefineExpression(PrefixOptionPatternFunction._PatternName, prefixOptionPattern);
+		NameSpace.DefineStatement("import", ImportPattern);
+		NameSpace.DefineExpression("command", ImportCommandPattern);
+		NameSpace.DefineExpression(ImportCommandPatternFunction._PatternName, ImportCommandPattern);
+		NameSpace.DefineExpression(CommandSymbolPatternFunction._PatternName, CommandSymbolPattern);
+		NameSpace.DefineExpression(SimpleArgumentPatternFunction._PatternName, SimpleArgumentPattern);
+		NameSpace.DefineExpression(RedirectPatternFunction._PatternName, RedirectPattern);
+		NameSpace.DefineExpression(ShellUtils._timeout, PrefixOptionPattern);
+		NameSpace.DefineExpression(ShellUtils._trace, PrefixOptionPattern);
+		NameSpace.DefineExpression(PrefixOptionPatternFunction._PatternName, PrefixOptionPattern);
+		NameSpace.DefineExpression(SuffixOptionPatternFunction._PatternName, SuffixOptionPattern);
 
 		NameSpace.Generator.LangInfo.AppendGrammarInfo("shell");
 	}
