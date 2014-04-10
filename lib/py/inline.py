@@ -30,4 +30,10 @@ def libbun_strnull(s) :
 def libbun_catch(e):
 	return e
 
+## @arraysize
+def libbun_arraysize(a, n, v):
+    while len(a) < n:
+        a.append(v)
+    while len(a) > n:
+        a.pop()
 
