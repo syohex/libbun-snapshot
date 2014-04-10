@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [ -d $1 -a -f $2 ]; then
+	BOEHMDIR=$1
+	SRC=$2
+else
+	echo "usage: boehmgc-dir srcfile"
+	exit 1
+fi
+
+clang -c ./lib/ll/BStdLib.c -o BStdLib.o
+if [ $? -ne 0 ]; then
+	exit 1
+fi
+clang -c ./lib/ll/BArray.c -o BArray.o -I$BOEHMDIR/include
+if [ $? -ne 0 ]; then
+	rm -f BStdLib.o
+	exit 1
+fi
+llc-3.0 $2 -filetype=obj -o _main.o
+if [ $? -ne 0 ]; then
+	rm -f BArray.o BStdLib.o
+	exit 1
+fi
+clang _main.o BStdLib.o BArray.o -L$BOEHMDIR/lib -lgc -o a.out
+if [ $? -ne 0 ]; then
+	rm -f BArray.o BStdLib.o _main.o
+	exit 1
+fi
+LD_LIBRARY_PATH=$BOEHMDIR/lib ./a.out
+RESULT_EXEC=$?
+rm -f BArray.o BStdLib.o a.out _main.o
+exit $RESULT_EXEC

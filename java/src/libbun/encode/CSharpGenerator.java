@@ -7,6 +7,7 @@ import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.BunFuncNameNode;
+import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.MethodCallNode;
 import libbun.ast.expression.NewObjectNode;
@@ -40,10 +41,10 @@ public class CSharpGenerator extends OldSourceGenerator {
 		this.IntLiteralSuffix="";
 		this.TopType = "object";
 		this.SetNativeType(BType.BooleanType, "bool");
-		this.SetNativeType(BType.IntType, "long");  // for beautiful code
+		this.SetNativeType(BType.IntType, "long");
 		this.SetNativeType(BType.FloatType, "double");
 		this.SetNativeType(BType.StringType, "string");
-		this.SetNativeType(BType.VarType, "object");  // for safety
+		this.SetNativeType(BType.VarType, "dynamic");
 
 		this.SetReservedName("this", "@this");
 		this.Source.AppendNewLine("/* end of header */", this.LineFeed);
@@ -55,26 +56,18 @@ public class CSharpGenerator extends OldSourceGenerator {
 	}
 
 	@Override @ZenMethod protected void Finish(String FileName) {
-		//if(FileName == null) {
 		FileName = "ZenMain";
-		/*}
-		else {
-			@Var int loc = FileName.lastIndexOf('/');
-			if(loc != -1) {
-				FileName = FileName.substring(loc+1);
-			}
-		}*/
 
 		this.GenerateClass("public static", FileName, BClassType._ObjectType);
 		this.Source.OpenIndent(" {");
+
+		this.Source.AppendNewLine("public static void Main(String[] a)");
+
+		this.Source.OpenIndent(" {");
 		if(this.MainFuncNode != null) {
-			this.Source.AppendNewLine("public static void Main(String[] a)");
-			this.Source.OpenIndent(" {");
-			//this.CurrentBuilder.AppendNewLine(this.NameFunctionClass(this.MainFuncNode.FuncName(), ZType.VoidType, 0), ".f();");
-			this.Source.AppendNewLine(this.MainFuncNode.FuncName() + "();");
-			this.NameFunctionClass(this.MainFuncNode.FuncName(), BType.VoidType, 0);
-			this.Source.CloseIndent("}");
+			this.Source.AppendNewLine("main();");
 		}
+		this.Source.CloseIndent("}");
 		this.Source.CloseIndent("}");
 		this.Source.CloseIndent("}"); // end of namespace
 		this.Source.AppendLineFeed();
@@ -143,6 +136,17 @@ public class CSharpGenerator extends OldSourceGenerator {
 		this.GenerateCode(null, Node.RecvNode());
 		this.GenerateCode2("[", null, Node.IndexNode(), "] = ");
 		this.GenerateCode(null, Node.ExprNode());
+	}
+
+	@Override public void VisitFuncCallNode(FuncCallNode Node) {
+		@Var BunFuncNameNode FuncNameNode = Node.FuncNameNode();
+		if(FuncNameNode != null) {
+			this.Source.Append((Node.FuncNameNode().FuncName));
+		}
+		else {
+			this.GenerateCode(null, Node.FunctorNode());
+		}
+		this.VisitListNode("(", Node, ")");
 	}
 
 	@Override public void VisitMethodCallNode(MethodCallNode Node) {
@@ -377,7 +381,6 @@ public class CSharpGenerator extends OldSourceGenerator {
 		this.GenerateCode(null, Node.BlockNode());
 
 		this.Source.CloseIndent("}");
-		this.Source.AppendNewLine();
 		return FuncName;
 	}
 
@@ -466,7 +469,6 @@ public class CSharpGenerator extends OldSourceGenerator {
 
 		this.Source.CloseIndent("}"); /* end of constructor*/
 		this.Source.CloseIndent("}"); /* end of class */
-		this.Source.AppendLineFeed();
 	}
 
 	@Override public void VisitErrorNode(ErrorNode Node) {
