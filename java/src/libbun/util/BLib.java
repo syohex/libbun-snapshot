@@ -584,8 +584,9 @@ public class BLib {
 
 		GenMap.put("pl",  libbun.encode.obsolete.PerlGenerator.class);
 		//GenMap.put("py", libbun.encode.obsolete.OldPythonGenerator.class);
-		GenMap.put("py",  libbun.encode.PythonGenerator.class);
-		GenMap.put("rb",  libbun.encode.RubyGenerator.class);
+		GenMap.put("py", libbun.encode.PythonGenerator.class);
+		GenMap.put("r", libbun.encode.RGenerator.class);
+		GenMap.put("rb", libbun.encode.RubyGenerator.class);
 
 		GenMap.put("zen", libbun.encode.BunGenerator.class);
 
