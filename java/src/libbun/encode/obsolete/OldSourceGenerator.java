@@ -22,14 +22,13 @@
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // **************************************************************************
 
-package libbun.encode;
+package libbun.encode.obsolete;
 
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.DesugarNode;
 import libbun.ast.GroupNode;
-import libbun.ast.LocalDefinedNode;
 import libbun.ast.SyntaxSugarNode;
 import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BinaryOperatorNode;
@@ -56,10 +55,8 @@ import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
-import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.BunFuncNameNode;
-import libbun.ast.expression.BunMacroNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
@@ -70,7 +67,6 @@ import libbun.ast.expression.SetFieldNode;
 import libbun.ast.expression.SetIndexNode;
 import libbun.ast.expression.SetNameNode;
 import libbun.ast.literal.BunArrayLiteralNode;
-import libbun.ast.literal.BunAsmNode;
 import libbun.ast.literal.BunBooleanNode;
 import libbun.ast.literal.BunFloatNode;
 import libbun.ast.literal.BunIntNode;
@@ -78,7 +74,6 @@ import libbun.ast.literal.BunMapEntryNode;
 import libbun.ast.literal.BunMapLiteralNode;
 import libbun.ast.literal.BunNullNode;
 import libbun.ast.literal.BunStringNode;
-import libbun.ast.literal.LiteralNode;
 import libbun.ast.statement.BunBreakNode;
 import libbun.ast.statement.BunIfNode;
 import libbun.ast.statement.BunReturnNode;
@@ -91,15 +86,15 @@ import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
+import libbun.encode.SourceGenerator;
 import libbun.lang.bun.BunTypeSafer;
 import libbun.parser.BLangInfo;
 import libbun.parser.BLogger;
-import libbun.type.BClassType;
-import libbun.type.BFuncType;
 import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
+import libbun.util.ZenMethod;
 
 public class OldSourceGenerator extends SourceGenerator {
 
@@ -135,6 +130,9 @@ public class OldSourceGenerator extends SourceGenerator {
 		this.Header.AppendNewLine("require ", LibName, this.SemiColon);
 	}
 
+	@ZenMethod protected void GenerateCode(BType ContextType, BNode Node) {
+		Node.Accept(this);
+	}
 
 	protected final void GenerateCode2(String Pre, BType ContextType, BNode Node, String Post) {
 		if(Pre != null && Pre.length() > 0) {
@@ -181,12 +179,13 @@ public class OldSourceGenerator extends SourceGenerator {
 	}
 
 	protected void GenerateStatementEnd() {
-		if(this.SemiColon != null && (!this.Source.EndsWith("}") || !this.Source.EndsWith(this.SemiColon))) {
+		if(this.SemiColon != null && (!this.Source.EndsWith('}') || !this.Source.EndsWith(';'))) {
 			this.Source.Append(this.SemiColon);
 		}
 	}
 
-	@Override public void GenerateStatement(BNode Node) {
+	@Override
+	public void GenerateStatement(BNode Node) {
 		this.Source.AppendNewLine();
 		if(Node instanceof BunCastNode && Node.Type == BType.VoidType) {
 			Node.AST[BunCastNode._Expr].Accept(this);
@@ -320,29 +319,6 @@ public class OldSourceGenerator extends SourceGenerator {
 		this.VisitListNode("(", Node, ")");
 	}
 
-	@Override public void VisitMacroNode(BunMacroNode Node) {
-		@Var String Macro = Node.GetMacroText();
-		@Var BFuncType FuncType = Node.GetFuncType();
-		@Var int fromIndex = 0;
-		@Var int BeginNum = Macro.indexOf("$[", fromIndex);
-		while(BeginNum != -1) {
-			@Var int EndNum = Macro.indexOf("]", BeginNum + 2);
-			if(EndNum == -1) {
-				break;
-			}
-			this.Source.Append(Macro.substring(fromIndex, BeginNum));
-			@Var int Index = (int)BLib._ParseInt(Macro.substring(BeginNum+2, EndNum));
-			if(Node.AST[Index] != null) {
-				this.GenerateCode(FuncType.GetFuncParamType(Index), Node.AST[Index]);
-			}
-			fromIndex = EndNum + 1;
-			BeginNum = Macro.indexOf("$[", fromIndex);
-		}
-		this.Source.Append(Macro.substring(fromIndex));
-		if(Node.MacroFunc.RequiredLibrary != null) {
-			this.ImportLibrary(Node.MacroFunc.RequiredLibrary);
-		}
-	}
 
 	protected final void GenerateFuncName(BunFuncNameNode Node) {
 		if(this.LangInfo.AllowFunctionOverloading) {
@@ -486,10 +462,6 @@ public class OldSourceGenerator extends SourceGenerator {
 		this.VisitComparatorNode(Node);
 	}
 
-	@Override public void VisitLiteralNode(LiteralNode Node) {
-		// TODO Auto-generated method stub
-	}
-
 	@Override public void VisitAndNode(BunAndNode Node) {
 		this.GenerateCode(null, Node.LeftNode());
 		this.Source.AppendWhiteSpace(this.AndOperator, " ");
@@ -567,6 +539,7 @@ public class OldSourceGenerator extends SourceGenerator {
 		}
 	}
 
+	@Override
 	protected void VisitParamNode(BunLetVarNode Node) {
 		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 		this.GenerateTypeAnnotation(Node.Type);
@@ -626,19 +599,6 @@ public class OldSourceGenerator extends SourceGenerator {
 		this.Source.Append(")");
 	}
 
-	@Override public void VisitAsmNode(BunAsmNode Node) {
-		this.ImportLibrary(Node.RequiredLibrary);
-		this.Source.Append(Node.GetMacroText());
-	}
-
-	@Override public void VisitLocalDefinedNode(LocalDefinedNode Node) {
-		this.VisitUndefinedNode(Node);
-	}
-
-	@Override public void VisitTopLevelNode(TopLevelNode Node) {
-		this.VisitUndefinedNode(Node);
-	}
-
 	@Override public void VisitSyntaxSugarNode(SyntaxSugarNode Node) {
 		@Var DesugarNode DesugarNode = Node.DeSugar(this, this.TypeChecker);
 		this.GenerateCode(null, DesugarNode.AST[0]);
@@ -652,6 +612,7 @@ public class OldSourceGenerator extends SourceGenerator {
 	}
 
 	// Utils
+	@Override
 	protected void GenerateTypeName(BType Type) {
 		this.Source.Append(this.GetNativeTypeName(Type.GetRealType()));
 	}
@@ -687,32 +648,5 @@ public class OldSourceGenerator extends SourceGenerator {
 		}
 		this.Source.Append(CloseToken);
 	}
-
-	protected final String NameMethod(BType ClassType, String MethodName) {
-		return "_" + this.NameClass(ClassType) + "_" + MethodName;
-	}
-
-	protected final boolean IsMethod(String FuncName, BFuncType FuncType) {
-		@Var BType RecvType = FuncType.GetRecvType();
-		if(RecvType instanceof BClassType && FuncName != null) {
-			@Var BClassType ClassType = (BClassType)RecvType;
-			@Var BType FieldType = ClassType.GetFieldType(FuncName, null);
-			if(FieldType == null || !FieldType.IsFuncType()) {
-				FuncName = BLib._AnotherName(FuncName);
-				FieldType = ClassType.GetFieldType(FuncName, null);
-				if(FieldType == null || !FieldType.IsFuncType()) {
-					return false;
-				}
-			}
-			if(FieldType instanceof BFuncType) {
-				if(((BFuncType)FieldType).AcceptAsFieldFunc(FuncType)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-
 
 }

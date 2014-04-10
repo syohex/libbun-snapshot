@@ -23,7 +23,7 @@
 // **************************************************************************
 
 
-package libbun.encode;
+package libbun.encode.obsolete;
 
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;

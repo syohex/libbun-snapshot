@@ -42,7 +42,7 @@ import libbun.ast.statement.BunTryNode;
 import libbun.ast.statement.BunWhileNode;
 import libbun.ast.unary.BunCastNode;
 import libbun.encode.SourceBuilder;
-import libbun.encode.OldSourceGenerator;
+import libbun.encode.obsolete.OldSourceGenerator;
 import libbun.parser.BNodeUtils;
 import libbun.type.BType;
 import libbun.util.BField;

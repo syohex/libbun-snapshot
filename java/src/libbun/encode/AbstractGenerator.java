@@ -81,7 +81,6 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 		this.TypeChecker = TypeChecker;
 	}
 
-
 	// symbol map
 
 	protected void SetReservedName(String Keyword, @Nullable String AnotherName) {
@@ -136,7 +135,7 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 	}
 
 	public final String NameClass(BType ClassType) {
-		return ClassType.ShortName + "" + ClassType.TypeId;
+		return ClassType.ShortName /*+ "" + ClassType.TypeId*/;
 	}
 
 	public final String NameFunctionClass(String FuncName, BFuncType FuncType) {
@@ -167,6 +166,31 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 			return this.NameClass(Type);
 		}
 		return Type.GetName();
+	}
+
+	protected final String NameMethod(BType ClassType, String MethodName) {
+		return "_" + this.NameClass(ClassType) + "_" + MethodName;
+	}
+
+	protected final boolean IsMethod(String FuncName, BFuncType FuncType) {
+		@Var BType RecvType = FuncType.GetRecvType();
+		if(RecvType instanceof BClassType && FuncName != null) {
+			@Var BClassType ClassType = (BClassType)RecvType;
+			@Var BType FieldType = ClassType.GetFieldType(FuncName, null);
+			if(FieldType == null || !FieldType.IsFuncType()) {
+				FuncName = BLib._AnotherName(FuncName);
+				FieldType = ClassType.GetFieldType(FuncName, null);
+				if(FieldType == null || !FieldType.IsFuncType()) {
+					return false;
+				}
+			}
+			if(FieldType instanceof BFuncType) {
+				if(((BFuncType)FieldType).AcceptAsFieldFunc(FuncType)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	// function map
@@ -256,7 +280,6 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 		return null;
 	}
 
-
 	@ZenMethod public void WriteTo(@Nullable String FileName) {
 		// TODO Stub
 	}
@@ -304,11 +327,11 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 		}
 	}
 
-	@ZenMethod protected void GenerateCode(BType ContextType, BNode Node) {
+	@ZenMethod protected void GenerateExpression(BNode Node) {
 		Node.Accept(this);
 	}
 
-	@ZenMethod public void GenerateStatement(BNode Node) {
+	@ZenMethod protected void GenerateStatement(BNode Node) {
 		Node.Accept(this);
 	}
 

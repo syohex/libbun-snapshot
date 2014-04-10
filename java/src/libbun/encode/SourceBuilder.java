@@ -36,6 +36,8 @@ public final class SourceBuilder {
 	@BField SourceGenerator Template;
 	@BField int IndentLevel = 0;
 	@BField String CurrentIndentString = "";
+	@BField char LastChar = '\n';
+
 
 	public SourceBuilder(SourceGenerator Template, SourceBuilder Parent) {
 		this.Template = Template;
@@ -43,13 +45,19 @@ public final class SourceBuilder {
 	}
 
 	public final SourceBuilder Pop() {
-		this.Append(this.Template.LineFeed);
+		this.AppendLineFeed();
 		return this.Parent;
 	}
 
+	public final boolean IsEmpty(String Text) {
+		return (Text == null || Text.length() == 0);
+	}
 
 	public final void Append(String Source) {
-		this.SourceList.add(Source);
+		if(!this.IsEmpty(Source)) {
+			this.SourceList.add(Source);
+			this.LastChar = BLib._GetChar(Source, Source.length()-1);
+		}
 	}
 
 	public final void Append(String Text, String Text2) {
@@ -72,32 +80,10 @@ public final class SourceBuilder {
 	}
 
 	public final void AppendLineFeed() {
-		this.SourceList.add(this.Template.LineFeed);
+		if(this.LastChar != '\n') {
+			this.SourceList.add(this.Template.LineFeed);
+		}
 	}
-
-	public final void AppendNewLine() {
-		this.SourceList.add(this.Template.LineFeed);
-		this.SourceList.add(this.GetIndentString());
-	}
-
-	public final void AppendNewLine(String Text) {
-		this.AppendNewLine();
-		this.Append(Text);
-	}
-
-	public final void AppendNewLine(String Text, String Text2) {
-		this.AppendNewLine();
-		this.Append(Text);
-		this.Append(Text2);
-	}
-
-	public final void AppendNewLine(String Text, String Text2, String Text3) {
-		this.AppendNewLine();
-		this.Append(Text);
-		this.Append(Text2);
-		this.Append(Text3);
-	}
-
 
 	public final void OpenIndent() {
 		this.IndentLevel = this.IndentLevel + 1;
@@ -124,8 +110,6 @@ public final class SourceBuilder {
 		}
 	}
 
-
-
 	public final int SetIndentLevel(int IndentLevel) {
 		int Level = this.IndentLevel;
 		this.IndentLevel = IndentLevel;
@@ -140,24 +124,36 @@ public final class SourceBuilder {
 		return this.CurrentIndentString;
 	}
 
-	public final boolean EndsWith(String s) {
-		@Var int Size = this.SourceList.size();
-		if(Size > 0) {
-			@Var String Last = this.SourceList.ArrayValues[Size-1];
-			if(Last != null && Last.endsWith(s)) {
-				return true;
-			}
-		}
-		return false;
+	public final void AppendNewLine() {
+		this.AppendLineFeed();
+		this.SourceList.add(this.GetIndentString());
+	}
+
+	public final void AppendNewLine(String Text) {
+		this.AppendNewLine();
+		this.Append(Text);
+	}
+
+	public final void AppendNewLine(String Text, String Text2) {
+		this.AppendNewLine();
+		this.Append(Text);
+		this.Append(Text2);
+	}
+
+	public final void AppendNewLine(String Text, String Text2, String Text3) {
+		this.AppendNewLine();
+		this.Append(Text);
+		this.Append(Text2);
+		this.Append(Text3);
+	}
+
+	public final boolean EndsWith(char s) {
+		return this.LastChar == s;
 	}
 
 	public final void AppendWhiteSpace() {
-		@Var int Size = this.SourceList.size();
-		if(Size > 0) {
-			@Var String Last = this.SourceList.ArrayValues[Size-1];
-			if(Last != null && (Last.endsWith(" ") || Last.endsWith("\n") || Last.endsWith("\t"))) {
-				return;
-			}
+		if(this.LastChar == ' ' || this.LastChar == '\t' || this.LastChar == '\n') {
+			return;
 		}
 		this.SourceList.add(" ");
 	}
@@ -173,74 +169,40 @@ public final class SourceBuilder {
 		this.Append(Text2);
 	}
 
-	//	public final void AppendWhiteSpace(String Text, String Text2, String Text3) {
-	//		this.AppendWhiteSpace();
-	//		this.Append(Text);
-	//		this.Append(Text2);
-	//		this.Append(Text3);
-	//	}
+	public final void AppendWhiteSpace(String Text, String Text2, String Text3) {
+		this.AppendWhiteSpace();
+		this.Append(Text);
+		this.Append(Text2);
+		this.Append(Text3);
+	}
 
-	//	public final void AppendToken(String Text) {
-	//		this.AppendWhiteSpace();
-	//		this.SourceList.add(Text);
-	//		this.AppendWhiteSpace();
-	//	}
+	public final void AppendCode(String Source) {
+		this.LastChar = '\0';
+		@Var int StartIndex = 0;
+		@Var int i = 0;
+		while(i < Source.length()) {
+			@Var char ch = BLib._GetChar(Source, i);
+			if(ch == '\n') {
+				if(StartIndex < i) {
+					this.SourceList.add(Source.substring(StartIndex, i));
+				}
+				this.AppendNewLine();
+				StartIndex = i + 1;
+			}
+			if(ch == '\t') {
+				if(StartIndex < i) {
+					this.SourceList.add(Source.substring(StartIndex, i));
+				}
+				this.Append(this.Template.Tab);
+				StartIndex = i + 1;
+			}
+			i = i + 1;
+		}
+		if(StartIndex < i) {
+			this.SourceList.add(Source.substring(StartIndex, i));
+		}
+	}
 
-	//	public final void AppendBlockComment(String Text) {
-	//		if (this.Template.BeginComment != null) {
-	//			this.SourceList.add(this.Template.BeginComment);
-	//			this.SourceList.add(Text);
-	//			this.SourceList.add(this.Template.EndComment);
-	//		} else if (this.Template.LineComment != null) {
-	//			this.BufferedLineComment = this.BufferedLineComment + this.Template.LineComment + Text;
-	//		}
-	//	}
-	//
-	//	public final void AppendCommentLine(String Text) {
-	//		if (this.Template.LineComment == null) {
-	//			this.SourceList.add(this.Template.BeginComment);
-	//			this.SourceList.add(Text);
-	//			this.SourceList.add(this.Template.EndComment);
-	//		} else {
-	//			this.SourceList.add(this.Template.LineComment);
-	//			this.SourceList.add(Text);
-	//		}
-	//		this.SourceList.add(this.Template.LineFeed);
-	//	}
-	//
-	//	public final void Indent() {
-	//		this.IndentLevel = this.IndentLevel + 1;
-	//		this.CurrentIndentString = null;
-	//	}
-	//
-	//	public final void UnIndent() {
-	//		this.IndentLevel = this.IndentLevel - 1;
-	//		this.CurrentIndentString = null;
-	//		BLib._Assert(this.IndentLevel >= 0);
-	//	}
-
-
-	//	public final void AppendNewLine() {
-	//		this.SourceList.add(this.GetIndentString());
-	//	}
-
-
-	//
-	//	public final void IndentAndAppend(String Text) {
-	//		this.SourceList.add(this.GetIndentString());
-	//		this.SourceList.add(Text);
-	//	}
-	//
-	//	public final void AppendParamList(AbstractListNode ParamList, int BeginIdx, int EndIdx) {
-	//		@Var int i = BeginIdx;
-	//		while(i < EndIdx) {
-	//			if (i > BeginIdx) {
-	//				this.Append(this.Template.Camma);
-	//			}
-	//			ParamList.GetListAt(i).Accept(this.Template);
-	//			i = i + 1;
-	//		}
-	//	}
 
 	public final void Clear() {
 		this.SourceList.clear(0);
@@ -254,31 +216,6 @@ public final class SourceBuilder {
 		return BLib._SourceBuilderToString(this, BeginIndex, EndIndex);
 	}
 
-	//	public final void AppendCode(String Source) {
-	//		@Var int StartIndex = 0;
-	//		@Var int i = 0;
-	//		while(i < Source.length()) {
-	//			@Var char ch = BLib._GetChar(Source, i);
-	//			if(ch == '\n') {
-	//				if(StartIndex < i) {
-	//					this.SourceList.add(Source.substring(StartIndex, i));
-	//				}
-	//				this.AppendNewLine();
-	//				StartIndex = i + 1;
-	//			}
-	//			if(ch == '\t') {
-	//				if(StartIndex < i) {
-	//					this.SourceList.add(Source.substring(StartIndex, i));
-	//				}
-	//				this.Append(this.Template.Tab);
-	//				StartIndex = i + 1;
-	//			}
-	//			i = i + 1;
-	//		}
-	//		if(StartIndex < i) {
-	//			this.SourceList.add(Source.substring(StartIndex, i));
-	//		}
-	//	}
 
 	@Override public final String toString() {
 		return BLib._SourceBuilderToString(this);

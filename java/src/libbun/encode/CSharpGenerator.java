@@ -18,6 +18,7 @@ import libbun.ast.literal.BunNullNode;
 import libbun.ast.statement.BunReturnNode;
 import libbun.ast.statement.BunThrowNode;
 import libbun.ast.statement.BunTryNode;
+import libbun.encode.obsolete.OldSourceGenerator;
 import libbun.parser.BLogger;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;

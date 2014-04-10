@@ -10,6 +10,7 @@ import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.statement.BunThrowNode;
 import libbun.ast.statement.BunTryNode;
 import libbun.ast.unary.BunCastNode;
+import libbun.encode.obsolete.OldSourceGenerator;
 import libbun.type.BType;
 
 

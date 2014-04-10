@@ -1,6 +1,10 @@
 ## @main
-if __name__ == \"__main__\":
+if __name__ == "__main__":
 	main()
+
+## @error;@SoftwareFault
+def libbun_error(msg):
+	raise SoftwareFault(msg)
 
 ## @Fault
 class Fault:
@@ -18,9 +22,9 @@ def mapget(m,k):
 		return m[k]
 	raise SoftwareFault('undefined key: ' + k)
 
-## @zstr
-def zstr(s) : 
-	return str(s) if s != None else "null"
+## @strnull
+def libbun_strnull(s) : 
+	return s if s != None else "null"
 
 ## @catch
 def libbun_catch(e):

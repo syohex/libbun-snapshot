@@ -42,6 +42,7 @@ import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.ast.literal.BunMapLiteralNode;
 import libbun.ast.statement.BunThrowNode;
 import libbun.ast.statement.BunTryNode;
+import libbun.encode.obsolete.OldSourceGenerator;
 import libbun.parser.BLogger;
 import libbun.type.BClassField;
 import libbun.type.BClassType;

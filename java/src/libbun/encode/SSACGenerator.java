@@ -45,6 +45,7 @@ import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.ast.literal.BunMapLiteralNode;
 import libbun.ast.statement.BunThrowNode;
 import libbun.ast.statement.BunTryNode;
+import libbun.encode.obsolete.OldSourceGenerator;
 import libbun.parser.BLogger;
 import libbun.parser.ssa.NodeLib;
 import libbun.parser.ssa.PHINode;

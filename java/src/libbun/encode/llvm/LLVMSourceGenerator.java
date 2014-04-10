@@ -28,40 +28,39 @@ package libbun.encode.llvm;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import libbun.ast.BunBlockNode;
-import libbun.ast.GroupNode;
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
-import libbun.ast.LocalDefinedNode;
-import libbun.ast.binary.BinaryOperatorNode;
+import libbun.ast.BunBlockNode;
+import libbun.ast.GroupNode;
 import libbun.ast.binary.BInstanceOfNode;
-import libbun.ast.binary.BunOrNode;
+import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAndNode;
+import libbun.ast.binary.BunOrNode;
 import libbun.ast.binary.ComparatorNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
-import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.BunFuncNameNode;
+import libbun.ast.expression.BunMacroNode;
+import libbun.ast.expression.FuncCallNode;
+import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.GetNameNode;
-import libbun.ast.expression.GetFieldNode;
-import libbun.ast.expression.BunMacroNode;
 import libbun.ast.expression.MethodCallNode;
 import libbun.ast.expression.NewObjectNode;
+import libbun.ast.expression.SetFieldNode;
 import libbun.ast.expression.SetIndexNode;
 import libbun.ast.expression.SetNameNode;
-import libbun.ast.expression.SetFieldNode;
 import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.ast.literal.BunBooleanNode;
-import libbun.ast.literal.ConstNode;
 import libbun.ast.literal.BunFloatNode;
 import libbun.ast.literal.BunIntNode;
+import libbun.ast.literal.BunMapLiteralNode;
 import libbun.ast.literal.BunNullNode;
 import libbun.ast.literal.BunStringNode;
-import libbun.ast.literal.BunMapLiteralNode;
+import libbun.ast.literal.ConstNode;
 import libbun.ast.statement.BunBreakNode;
 import libbun.ast.statement.BunIfNode;
 import libbun.ast.statement.BunReturnNode;
@@ -72,7 +71,7 @@ import libbun.ast.unary.BunCastNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.UnaryOperatorNode;
 import libbun.encode.SourceBuilder;
-import libbun.encode.OldSourceGenerator;
+import libbun.encode.obsolete.OldSourceGenerator;
 import libbun.parser.BLogger;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
@@ -1430,9 +1429,6 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		this.CurrentScope.SetLabel(EndLabel);
 	}
 
-	@Override public void VisitLocalDefinedNode(LocalDefinedNode Node) {
-		this.VisitUndefinedNode(Node);
-	}
 
 	@Override
 	protected void GenerateSurroundCode(BNode Node) {

@@ -24,10 +24,10 @@
 
 package libbun.parser;
 
+import libbun.util.BArray;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.BArray;
 
 public final class BLogger {
 
@@ -61,6 +61,10 @@ public final class BLogger {
 		if(Token != null && Token.Source != null) {
 			Message = Token.Source.FormatErrorMarker("error", Token.StartIndex, Message);
 			Token.Source.Logger.Report(Message);
+			@Var int loc = Message.indexOf("\n");
+			if(loc > 0) {
+				Message = Message.substring(0, loc);
+			}
 		}
 		return Message;
 	}

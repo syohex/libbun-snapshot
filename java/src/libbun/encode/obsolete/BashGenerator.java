@@ -23,7 +23,8 @@
 // **************************************************************************
 
 
-package libbun.encode;
+package libbun.encode.obsolete;
+
 
 
 //Zen Generator should be written in each language.

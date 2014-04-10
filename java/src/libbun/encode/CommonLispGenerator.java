@@ -49,6 +49,7 @@ import libbun.ast.statement.BunTryNode;
 import libbun.ast.statement.BunWhileNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.UnaryOperatorNode;
+import libbun.encode.obsolete.OldSourceGenerator;
 import libbun.parser.BToken;
 import libbun.type.BFuncType;
 import libbun.type.BType;
