@@ -112,6 +112,15 @@ size: Func<α[],int,void>
  bun: $[0].size($[1])
  py: @arraysize~libbun_arraysize($[0], $[1], None)
  
+get: Func<a[],int,a>
+ #: a.$$() tests the existence of the specified key in this array
+ bun: $[0][$[1]]
+ py:  $[0][$[1]]
+
+set: Func<a[],int,a,void>
+ bun: $[0][$[1]] = $[2]
+ py:  $[0][$[1]] = $[2]
+ 
 add: Func<α[],α,void>
  #: a.$$(x) adds a new element to the end of this array
  bun: $[0].add($[1])

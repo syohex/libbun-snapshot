@@ -16,12 +16,6 @@ class SoftwareFault(Fault):
 	def __init__(self, msg):
 		self.msg = msg
 
-## @mapget;@SoftwareFault
-def mapget(m,k):
-	if m.has_key(k):
-		return m[k]
-	raise SoftwareFault('undefined key: ' + k)
-
 ## @strnull
 def libbun_strnull(s) : 
 	return s if s != None else "null"
@@ -32,8 +26,12 @@ def libbun_catch(e):
 
 ## @arraysize
 def libbun_arraysize(a, n, v):
-    while len(a) < n:
-        a.append(v)
-    while len(a) > n:
-        a.pop()
+    while len(a) < n: a.append(v)
+    while len(a) > n: a.pop()
+
+## @mapget
+def libbun_mapget(m, k, v):
+    if m.has_key(k): return m[k]
+    else: return v
+
 
