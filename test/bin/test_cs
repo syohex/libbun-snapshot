@@ -1,0 +1,4 @@
+#!/bin/bash
+
+OUTDIR=test/w TARGET=cs CHECK=mcs CHECKEXT=mono test/bin/buntest test/bun/*.bun
+

@@ -35,3 +35,6 @@ define _ "$[0].ToString()" : Func<α[],String>;
 
 // Object
 define _ "$[0].ToString()" : Func<Object,String>;
+
+// Map
+define containsKey "$[0].ContainsKey($[1])" : Func<Object, boolean>;
