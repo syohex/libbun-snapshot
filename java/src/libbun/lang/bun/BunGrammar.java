@@ -54,7 +54,6 @@ import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunPrototypeNode;
 import libbun.ast.decl.BunRequireNode;
-import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetFieldNode;
@@ -880,9 +879,9 @@ class VarPatternFunction extends BMatchFunction {
 		VarNode = TokenContext.MatchPattern(VarNode, BunLetVarNode._TypeInfo, "$TypeAnnotation$", BTokenContext._Optional);
 		VarNode = TokenContext.MatchToken(VarNode, "=", BTokenContext._Required);
 		VarNode = TokenContext.MatchPattern(VarNode, BunLetVarNode._InitValue, "$Expression$", BTokenContext._Required);
-		if(VarNode instanceof BunLetVarNode) {
-			return new BunVarBlockNode(ParentNode, (BunLetVarNode)VarNode);
-		}
+		//		if(VarNode instanceof BunLetVarNode) {
+		//			return new BunVarBlockNode(ParentNode, (BunLetVarNode)VarNode);
+		//		}
 		return VarNode;
 	}
 }
