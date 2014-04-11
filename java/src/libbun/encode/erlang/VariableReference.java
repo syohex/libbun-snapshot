@@ -4,7 +4,7 @@ package libbun.encode.erlang;
 
 import libbun.util.BField;
 
-//endif VAJA
+
 
 public class VariableReference {
 	@BField public VariableDefinition SelfDef;
@@ -13,7 +13,7 @@ public class VariableReference {
 	@BField public int ScopeLevel;
 	@BField public int Flag;
 
-	public VariableReference/*constructor*/(VariableDefinition SelfDef, VariableReference ParentRef, int UniqueID, int ScopeLevel) {
+	public VariableReference(VariableDefinition SelfDef, VariableReference ParentRef, int UniqueID, int ScopeLevel) {
 		this.SelfDef = SelfDef;
 		this.UniqueID = UniqueID;
 		this.ParentRef = ParentRef;

@@ -195,7 +195,7 @@ size: Func<float[],int,void>
  js: @arraysize~libbun_arraysize($[0], $[1], 0.0)
 
 ## Map
- _: Func<Map<α>,String>
+_: Func<Map<α>,String>
  #: Converts this map to a string
  bun: ((String)$[0])
  py:  unicode($[0])

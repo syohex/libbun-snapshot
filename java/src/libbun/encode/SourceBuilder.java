@@ -203,10 +203,9 @@ public final class SourceBuilder {
 		}
 	}
 
-
-	public final void Clear() {
-		this.SourceList.clear(0);
-	}
+	//	public final void Clear() {
+	//		this.SourceList.clear(0);
+	//	}
 
 	public final int GetPosition() {
 		return this.SourceList.size();
@@ -215,7 +214,6 @@ public final class SourceBuilder {
 	public final String CopyString(int BeginIndex, int EndIndex) {
 		return BLib._SourceBuilderToString(this, BeginIndex, EndIndex);
 	}
-
 
 	@Override public final String toString() {
 		return BLib._SourceBuilderToString(this);

@@ -34,8 +34,6 @@ import libbun.util.BField;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
-
-
 public class ErlangGenerator extends OldSourceGenerator {
 	@BField private int LoopNodeNumber;
 	@BField private int BreakMark;

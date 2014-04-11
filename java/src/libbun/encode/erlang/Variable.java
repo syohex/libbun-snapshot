@@ -4,14 +4,14 @@ package libbun.encode.erlang;
 
 import libbun.util.BField;
 
-//endif VAJA
+
 
 public class Variable {
 	@BField public int Read;
 	@BField public int Next;
 	@BField public int Flags;
 
-	public Variable/*constructor*/() {
+	public Variable() {
 		this.Read = -1;
 		this.Next = 0;
 		this.Flags = 0;

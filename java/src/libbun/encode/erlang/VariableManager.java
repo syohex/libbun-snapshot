@@ -10,7 +10,7 @@ import libbun.util.BField;
 import libbun.util.Var;
 
 
-//endif VAJA
+
 
 public class VariableManager{
 	@BField private HashMap<String, VariableDefinition> DefMap;
@@ -19,7 +19,7 @@ public class VariableManager{
 	@BField private int FilterCount;
 	@BField private int FilterFlag;
 
-	public VariableManager/*constructor*/() {
+	public VariableManager() {
 		this.Init();
 	}
 	public void Init() {
@@ -145,7 +145,7 @@ public class VariableManager{
 // 	@Field private int filter;
 // 	@Field private boolean FilterOnlyUsed;
 
-// 	public VariableManager/*constructor*/() {
+// 	public VariableManager() {
 // 		this.CurrentMap = new HashMap<String, Variable>();
 // 		this.MapList = new ArrayList<HashMap<String, Variable>>();
 // 		this.filter = 0;

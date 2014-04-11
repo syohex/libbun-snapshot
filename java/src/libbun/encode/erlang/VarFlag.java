@@ -4,7 +4,7 @@ package libbun.encode.erlang;
 
 import libbun.util.BField;
 
-//endif VAJA
+
 
 public class VarFlag {
 	@BField public static final int None = 0;
@@ -28,7 +28,7 @@ public class VarFlag {
 	@BField public static final int NotReadByCurrentScope = 1 << 20;
 	@BField public static final int NotReadByChildScope = 1 << 21;
 
-	private VarFlag/*constructor*/() {
+	private VarFlag() {
 	}
 
 	private static void ValidateArg(int Flag) {

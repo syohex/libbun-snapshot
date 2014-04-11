@@ -48,19 +48,19 @@ math-sqrt: Func<float,float>
  py: math~math.sqrt($[0])
 
 math-acos: Func<float,float>
- #: acos(x)	returns the arccosine of $x, in radians
+ #: acos(x) returns the arccosine of $x, in radians
  bun: math~math::acos($[0])
  c:   <math.h>~acos($[0])
  py: math~math.acos($[0])
   
 math-asin: Func<float,float>
- #: asin(x)	returns the arcsine of $x, in radians
+ #: asin(x) returns the arcsine of $x, in radians
  bun: math~math::asin($[0])
  c:   <math.h>~asin($[0])
  py: math~math.asin($[0])
  
 math-atan: Func<float,float>
- #: atan(x)	returns the arctangent of $x as a numeric value between -math::PI/2 and math::PI/2 radians
+ #: atan(x) returns the arctangent of $x as a numeric value between -math::PI/2 and math::PI/2 radians
  bun: math~math::atan($[0])
  c:   <math.h>~atan($[0])
  py: math~math.atan($[0])
@@ -72,7 +72,7 @@ math-atan2: Func<float,float>
  py: math~math.atan2($[0], $[1])
 
 math-ceil: Func<float,float>
- #: ceil(x)	returns x, rounded upwards to the nearest integer
+ #: ceil(x) returns x, rounded upwards to the nearest integer
  bun: math~math::ceil($[0])
  c:   <math.h>~ceil($[0])
  py: math~math.ceil($[0])
@@ -90,7 +90,7 @@ math-floor: Func<float,float>
  py: math~math.floor($[0])
 
 math-log: Func<float,float>
- #: log(x)	Returns the natural logarithm (base E) of $x
+ #: log(x) returns the natural logarithm (base E) of $x
  bun: math~math::log($[0])
  c:   <math.h>~log($[0])
  py: math~math.log($[0])
