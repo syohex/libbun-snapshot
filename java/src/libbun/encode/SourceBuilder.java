@@ -38,7 +38,6 @@ public final class SourceBuilder {
 	@BField String CurrentIndentString = "";
 	@BField char LastChar = '\n';
 
-
 	public SourceBuilder(SourceGenerator Template, SourceBuilder Parent) {
 		this.Template = Template;
 		this.Parent = Parent;
@@ -203,9 +202,9 @@ public final class SourceBuilder {
 		}
 	}
 
-	//	public final void Clear() {
-	//		this.SourceList.clear(0);
-	//	}
+	public final void Clear() {
+		this.SourceList.clear(0);
+	}
 
 	public final int GetPosition() {
 		return this.SourceList.size();
