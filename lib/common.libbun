@@ -95,6 +95,11 @@ toUpperCase: Func<String,String>
  bun,java,js: $[0].toUpperCase($[1]) 
  py:  $[0].upper()
 
+#codeAt
+#replace
+#split
+#trim
+
 
 ## Array
 _: Func<α[],String>
@@ -162,11 +167,6 @@ size: Func<float[],int,void>
  bun: ((String)$[0])
  py:  unicode($[0])
   
-size: Func<Map<a>,int>
- #: a.$$() returns the number of entries in this map
- bun: $[0].size()
- py:  len($[0])
-
 hasKey: Func<Map<a>,String,boolean>
  #: a.$$() tests the existence of the specified key in this array
  bun: $[0].hasKey($[1])
