@@ -3,6 +3,7 @@
 assert: Func<boolean,String,void>
  bun,java: assert($[0])
  py:  assert $[0], $[1]
+ js: onsole.assert($[0], $[1])
 
 println: Func<String,void>
  bun:  println($[0])
@@ -21,29 +22,34 @@ _: Func<boolean,String>
  bun: ((String)$[0])
  java: String.valueOf($[0])
  py:  (u'true' if $[0] else u'false')
+ js: String($[0])
 
 ## int
 _: Func<int,float>
  bun: ((float)$[0])
  java: ((long)$[0])
  py:  float($[0])
+ js: $[0]
 
 _: Func<int,String>
  bun: ((String)$[0])
  java: String.valueOf($[0])
  py:  unicode($[0])
+ js: String($[0])
 
 ## float
 _: Func<float,int>
  bun: ((int)$[0])
  bun: ((double)$[0])
  py:  int($[0])
+ js: ($[0])
 
 _: Func<float,String>
  bun: ((String)$[0])
  java: String.valueOf($[0])
  py:  (u'%.5f' % ($[0]))
- 
+ js: String($[0])
+
 ## String
 
 size: Func<String,int>
@@ -56,14 +62,17 @@ size: Func<String,int>
 equals: Func<String,String,boolean>
  bun:  $[0] == $[1]
  py:   $[0] == $[1]
+ js:   $[0] == $[1]
 
 startsWith: Func<String,String,boolean>
- bun,java,js:  $[0].startsWith($[1])
+ bun,java:  $[0].startsWith($[1])
  py:   $[0].startswith($[1])
+ js:   ($[0].lastIndexOf($[1], 0) === 0)
 
 endsWith: Func<String,String,boolean>
- bun,java,js:  $[0].endsWith($[1])
+ bun,java:  $[0].endsWith($[1])
  py:   $[0].endswith($[1])
+ js:   ($[0].slice(- $[1].length) === $[1])
 
 substring: Func<String,int,String>
  #: s.substring(x) extracts the substring from a string $s, between $x and the end of $s
@@ -101,95 +110,113 @@ _: Func<α[],String>
  #: Converts an array to a string
  bun: ((String)$[0])
  py:  unicode($[0])
+ js:  $[0].join("")
   
 size: Func<α[],int>
  #: a.$$() returns the number of elements in this array
  bun: $[0].size()
  py:  len($[0])
+ js:  $[0].length
 
 size: Func<α[],int,void>
  #: a.$$(n) sets the number of elements in this array
  bun: $[0].size($[1])
  py: @arraysize~libbun_arraysize($[0], $[1], None)
+ js: $[0].size
  
 get: Func<a[],int,a>
  #: a.$$() tests the existence of the specified key in this array
  bun: $[0][$[1]]
  py:  $[0][$[1]]
+ js:  $[0][$[1]]
 
 set: Func<a[],int,a,void>
  bun: $[0][$[1]] = $[2]
  py:  $[0][$[1]] = $[2]
- 
+ js:  $[0][$[1]] = $[2]
+
 add: Func<α[],α,void>
  #: a.$$(x) adds a new element to the end of this array
  bun: $[0].add($[1])
  py: $[0].append($[1])
+ js: $[0].push($[1])
 
 insert: Func<α[],int,α,void>
  #: a.$$(n,x) inserts a new element at the specified position in this array
  bun: $[0].insert($[1], $[2])
  py:  $[0].insert($[1], $[2])
- 
+ js:  $[0].splice($[1], 0, $[2])
+
 remove: Func<α[],int,α>
  #: a.$$(n) removes the element at the specified position in this array
  bun: $[0].remove($[1])
  py:  $[0].remove($[1])
+ js:  $[0].splice($[1], 0)
 
 pop: Func<α[],α>
  #: a.$$(n) removes the last element in this array
  bun: $[0].pop($[1])
  py:  $[0].pop($[1])
+ js:  $[0].pop($[1])
 
 # boolean[]
 size: Func<boolean[],int,void>
  #: a.$$(n) sets the number of elements in this array
  py: @arraysize~libbun_arraysize($[0], $[1], False)
+ js: @arraysize~libbun_arraysize($[0], $[1], False)
 
 # int[]
 size: Func<int[],int,void>
  #: a.$$(n) sets the number of elements in this array
  py: @arraysize~libbun_arraysize($[0], $[1], 0)
+ js: @arraysize~libbun_arraysize($[0], $[1], 0)
 
 # float[]
 size: Func<float[],int,void>
  #: a.$$(n) sets the number of elements in this array
  py: @arraysize~libbun_arraysize($[0], $[1], 0.0)
+ js: @arraysize~libbun_arraysize($[0], $[1], 0.0)
 
- ## Map
+## Map
  _: Func<Map<α>,String>
  #: Converts this map to a string
  bun: ((String)$[0])
  py:  unicode($[0])
+ js:  JSON.stringify($[0])
   
 size: Func<Map<a>,int>
  #: a.$$() returns the number of entries in this map
  bun: $[0].size()
  py:  len($[0])
+ js:  Object.keys($[0]).length
 
 hasKey: Func<Map<a>,String,boolean>
  #: a.$$() tests the existence of the specified key in this array
  bun: $[0].hasKey($[1])
  py:  $[0].has_key($[1])
+ js:  ($[1] in $[0])
  
 get: Func<Map<a>,String,a>
  #: a.$$() tests the existence of the specified key in this array
  bun: $[0][$[1]]
  py:  $[0][$[1]]
- 
+ js:  $[0][$[1]] 
+
 get: Func<Map<a>,String,a,a>
  #: a.$$() tests the existence of the specified key in this array
  bun: $[0].get($[1],$[2])
  py:  @mapget~libbun_mapget($[0],$[1],$[2])
+ js:  @mapget~libbun_mapget($[0],$[1],$[2])
 
 set: Func<Map<a>,String,a,void>
  bun: $[0][$[1]] = $[2]
  py:  $[0][$[1]] = $[2]
+ js:  $[0][$[1]] = $[2]
 
 keys: Func<Map<a>,String[]>
  bun: $[0].keys()
  py:  $[0].keys()
-
+ js:  Object.keys($[0])
 
  
  
