@@ -117,6 +117,11 @@ toUpperCase: Func<String,String>
  py:  $[0].upper()
  cs:  $[0].ToUpperCase($[1]) 
 
+#codeAt
+#replace
+#split
+#trim
+
 ## Array
 _: Func<α[],String>
  #: Converts an array to a string
@@ -195,12 +200,6 @@ size: Func<float[],int,void>
  bun: ((String)$[0])
  py:  unicode($[0])
  js:  JSON.stringify($[0])
-  
-size: Func<Map<a>,int>
- #: a.$$() returns the number of entries in this map
- bun: $[0].size()
- py:  len($[0])
- js:  Object.keys($[0]).length
 
 hasKey: Func<Map<a>,String,boolean>
  #: a.$$() tests the existence of the specified key in this array
