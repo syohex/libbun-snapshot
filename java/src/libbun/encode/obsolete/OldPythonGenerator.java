@@ -98,7 +98,7 @@ public class OldPythonGenerator extends OldSourceGenerator {
 	}
 
 	@Override
-	public void VisitStmtList(BunBlockNode BlockNode) {
+	public void GenerateStmtListNode(BunBlockNode BlockNode) {
 		@Var int i = 0;
 		while (i < BlockNode.GetListSize()) {
 			BNode SubNode = BlockNode.GetListAt(i);
@@ -112,13 +112,13 @@ public class OldPythonGenerator extends OldSourceGenerator {
 
 	@Override public void VisitBlockNode(BunBlockNode Node) {
 		this.Source.OpenIndent(":");
-		this.VisitStmtList(Node);
+		this.GenerateStmtListNode(Node);
 		this.Source.CloseIndent("");
 	}
 
 	@Override protected void VisitVarDeclNode(BunLetVarNode Node) {
 		this.Source.AppendNewLine(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = ");
-		this.GenerateCode(null, Node.InitValueNode());
+		this.GenerateExpression(Node.InitValueNode());
 		if(Node.HasNextVarNode()) {
 			this.VisitVarDeclNode(Node.NextVarNode());
 		}
@@ -126,34 +126,34 @@ public class OldPythonGenerator extends OldSourceGenerator {
 
 	@Override public void VisitVarBlockNode(BunVarBlockNode Node) {
 		this.VisitVarDeclNode(Node.VarDeclNode());
-		this.VisitStmtList(Node);
+		this.GenerateStmtListNode(Node);
 	}
 
 	@Override public void VisitNewObjectNode(NewObjectNode Node) {
 		this.Source.Append(this.NameClass(Node.Type));
-		this.VisitListNode("(", Node, ")");
+		this.GenerateListNode("(", Node, ")");
 	}
 
 	@Override public void VisitCastNode(BunCastNode Node) {
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override public void VisitGetIndexNode(GetIndexNode Node) {
 		@Var BType RecvType = Node.GetAstType(GetIndexNode._Recv);
 		if(RecvType.IsMapType()) {
 			this.ImportLibrary("@mapget");
-			this.GenerateCode2("libbun_mapget(", null, Node.RecvNode(), ", ");
-			this.GenerateCode2("", null, Node.IndexNode(), ")");
+			this.GenerateExpression("libbun_mapget(", Node.RecvNode(), ", ");
+			this.GenerateExpression("", Node.IndexNode(), ")");
 		}
 		else {
-			this.GenerateCode(null, Node.RecvNode());
-			this.GenerateCode2("[", null, Node.IndexNode(), "]");
+			this.GenerateExpression(Node.RecvNode());
+			this.GenerateExpression("[", Node.IndexNode(), "]");
 		}
 	}
 
 	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
 		this.Source.Append("isinstance(");
-		this.GenerateCode(null, Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		if(Node.TargetType() instanceof BClassType) {
 			this.Source.Append(this.Camma, this.NameClass(Node.TargetType()), ")");
 		}
@@ -166,8 +166,8 @@ public class OldPythonGenerator extends OldSourceGenerator {
 
 	@Override public void VisitIfNode(BunIfNode Node) {
 		this.Source.Append("if ");
-		this.GenerateCode(null, Node.CondNode());
-		this.GenerateCode(null, Node.ThenNode());
+		this.GenerateExpression(Node.CondNode());
+		this.GenerateExpression(Node.ThenNode());
 		if (Node.HasElseNode()) {
 			BNode ElseNode = Node.ElseNode();
 			if(ElseNode instanceof BunIfNode) {
@@ -176,7 +176,7 @@ public class OldPythonGenerator extends OldSourceGenerator {
 			else {
 				this.Source.AppendNewLine("else");
 			}
-			this.GenerateCode(null, Node.ElseNode());
+			this.GenerateExpression(Node.ElseNode());
 		}
 	}
 
@@ -184,7 +184,7 @@ public class OldPythonGenerator extends OldSourceGenerator {
 		if(this.ReadableCode || !Node.IsConstValue()) {
 			this.Source.Append(Node.GetUniqueName(this));
 			this.Source.Append(" = ");
-			this.GenerateCode(null, Node.InitValueNode());
+			this.GenerateExpression(Node.InitValueNode());
 		}
 	}
 
@@ -209,7 +209,7 @@ public class OldPythonGenerator extends OldSourceGenerator {
 			this.Source.Append("def ");
 			this.Source.Append(FuncName);
 			this.VisitFuncParamNode("(", Node, ")");
-			this.GenerateCode(null, Node.BlockNode());
+			this.GenerateExpression(Node.BlockNode());
 			this.Source.AppendLineFeed();
 			this.Source.AppendLineFeed();
 			this.Source = this.Source.Pop();
@@ -220,7 +220,7 @@ public class OldPythonGenerator extends OldSourceGenerator {
 			this.Source.Append("def ");
 			this.Source.Append(Node.GetSignature());
 			this.VisitFuncParamNode("(", Node, ")");
-			this.GenerateCode(null, Node.BlockNode());
+			this.GenerateExpression(Node.BlockNode());
 			this.Source.AppendLineFeed();
 			if(Node.IsExport) {
 				this.Source.Append(Node.FuncName(), " = ", FuncType.StringfySignature(Node.FuncName()));
@@ -275,7 +275,7 @@ public class OldPythonGenerator extends OldSourceGenerator {
 			if(!FieldNode.DeclType().IsFuncType()) {
 				this.Source.AppendNewLine();
 				this.Source.Append("self." + FieldNode.GetGivenName() + " = ");
-				this.GenerateCode(null, FieldNode.InitValueNode());
+				this.GenerateExpression(FieldNode.InitValueNode());
 			}
 			this.Source.Append(this.SemiColon);
 			i = i + 1;
@@ -299,7 +299,7 @@ public class OldPythonGenerator extends OldSourceGenerator {
 	@Override public void VisitErrorNode(ErrorNode Node) {
 		if(Node instanceof StupidCastErrorNode) {
 			@Var StupidCastErrorNode ErrorNode = (StupidCastErrorNode)Node;
-			this.GenerateCode(null, ErrorNode.ErrorNode);
+			this.GenerateExpression(ErrorNode.ErrorNode);
 		}
 		else {
 			@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
@@ -312,23 +312,23 @@ public class OldPythonGenerator extends OldSourceGenerator {
 
 	@Override public void VisitThrowNode(BunThrowNode Node) {
 		this.Source.Append("raise ");
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override public void VisitTryNode(BunTryNode Node) {
 		this.Source.Append("try");
-		this.GenerateCode(null, Node.TryBlockNode());
+		this.GenerateExpression(Node.TryBlockNode());
 		if(Node.HasCatchBlockNode()) {
 			@Var String VarName = this.NameUniqueSymbol("e");
 			this.Source.AppendNewLine("except Exception as ", VarName);
 			this.Source.OpenIndent(":");
 			this.Source.AppendNewLine(Node.ExceptionName(), " = ", VarName);
-			this.VisitStmtList(Node.CatchBlockNode());
+			this.GenerateStmtListNode(Node.CatchBlockNode());
 			this.Source.CloseIndent("");
 		}
 		if(Node.HasFinallyBlockNode()) {
 			this.Source.AppendNewLine("finally");
-			this.GenerateCode(null, Node.FinallyBlockNode());
+			this.GenerateExpression(Node.FinallyBlockNode());
 		}
 	}
 

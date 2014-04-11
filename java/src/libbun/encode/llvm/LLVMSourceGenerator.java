@@ -523,7 +523,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		@Var String RightLabel = "And__" + LabelNum + ".Right";
 		@Var String EndLabel = "And__" + LabelNum + ".End";
 
-		this.GenerateCode(null, Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		@Var String LeftResult = this.CurrentScope.PopValue();
 
 		this.Source.AppendNewLine("br i1 ");
@@ -536,7 +536,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		this.Source.AppendLineFeed();
 		this.Source.Append(RightLabel + ":");
 		this.CurrentScope.SetLabel(RightLabel);
-		this.GenerateCode(null, Node.RightNode());
+		this.GenerateExpression(Node.RightNode());
 		@Var String RightResult = this.CurrentScope.PopValue();
 		this.Source.AppendNewLine("br label %" + EndLabel);
 		RightLabel = this.CurrentScope.GetCurrentLabel();
@@ -588,7 +588,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 				@Var BNode SubNode = Node.GetListAt(i);
 				sb.append(this.GetTypeExpr(SubNode.Type));
 				sb.append(" ");
-				this.GenerateCode(null, SubNode);
+				this.GenerateExpression(SubNode);
 				sb.append(this.CurrentScope.PopValue());
 				i = i + 1;
 			}
@@ -603,9 +603,9 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitBinaryNode(BinaryOperatorNode Node) {
-		this.GenerateCode(null, Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		@Var String Left = this.CurrentScope.PopValue();
-		this.GenerateCode(null, Node.RightNode());
+		this.GenerateExpression(Node.RightNode());
 		@Var String Right = this.CurrentScope.PopValue();
 
 		if(this.IsPrimitiveType(Node.LeftNode().Type)) {
@@ -639,7 +639,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitBlockNode(BunBlockNode Node) {
-		this.VisitStmtList(Node);
+		this.GenerateStmtListNode(Node);
 	}
 
 	@Override public void VisitBooleanNode(BunBooleanNode Node) {
@@ -655,14 +655,14 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		@Var BType BeforeType = Node.ExprNode().Type;
 		@Var BType AfterType = Node.Type;
 		if(BeforeType == AfterType || BeforeType.IsVarType()) {
-			this.GenerateCode(null, Node.ExprNode());
+			this.GenerateExpression(Node.ExprNode());
 		}
 		else if(!(BeforeType.IsVoidType()) && AfterType.IsVoidType()) {
-			this.GenerateCode(null, Node.ExprNode());
+			this.GenerateExpression(Node.ExprNode());
 			this.CurrentScope.PopValue();
 		}
 		else {
-			this.GenerateSurroundCode(Node.ExprNode());
+			this.GenerateExpression(Node.ExprNode());
 			@Var String Expr = this.CurrentScope.PopValue();
 
 			@Var String TempVar = this.CurrentScope.CreateTempLocalSymbol();
@@ -717,9 +717,9 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitComparatorNode(ComparatorNode Node) {
-		this.GenerateCode(null, Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		@Var String Left = this.CurrentScope.PopValue();
-		this.GenerateCode(null, Node.RightNode());
+		this.GenerateExpression(Node.RightNode());
 		@Var String Right = this.CurrentScope.PopValue();
 
 		if(this.IsPrimitiveType(Node.LeftNode().Type)) {
@@ -793,10 +793,10 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 			this.CurrentScope.PushValue(this.ToGlobalSymbol(FuncName));
 		}
 		else {
-			this.GenerateCode(null, Node.FunctorNode());
+			this.GenerateExpression(Node.FunctorNode());
 		}
 		@Var String CallFunc = this.CurrentScope.PopValue();
-		this.VisitListNode(" (", Node, ", ", ")");
+		this.GenerateListNode(" (", Node, ", ", ")");
 		@Var String Args = this.CurrentScope.PopValue();
 
 		@Var String TempVar = "";
@@ -845,7 +845,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 
 		//this.Source = this.AppendNewSourceBuilder();
 		//this.Source.Indent();
-		this.GenerateCode(null, Node.BlockNode());
+		this.GenerateExpression(Node.BlockNode());
 		if(!this.CurrentScope.IsBlockTerminated()) {
 			this.AppendDefaultReturn(Node.ReturnType());
 		}
@@ -890,9 +890,9 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitGetIndexNode(GetIndexNode Node) {
-		this.GenerateCode(null, Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 		@Var String Recv = this.CurrentScope.PopValue();
-		this.GenerateCode(null, Node.IndexNode());
+		this.GenerateExpression(Node.IndexNode());
 		@Var String Index = this.CurrentScope.PopValue();
 
 		if(Node.RecvNode().Type.IsArrayType()) {
@@ -931,7 +931,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 				this.CurrentScope.PushValue(TempVar);
 			}
 			else {
-				this.GenerateCode(null, Node.ResolvedNode.InitValueNode());
+				this.GenerateExpression(Node.ResolvedNode.InitValueNode());
 			}
 		}
 		else if(Node.ResolvedNode.IsReadOnly()) {
@@ -969,7 +969,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitGroupNode(GroupNode Node) {
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override public void VisitIfNode(BunIfNode Node) {
@@ -979,7 +979,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		@Var String EndLabel = "If__" + LabelNum + ".End";
 		@Var boolean IsEndReachable = false;
 
-		this.GenerateCode(null, Node.CondNode());
+		this.GenerateExpression(Node.CondNode());
 		@Var String Cond = this.CurrentScope.PopValue();
 
 		this.Source.AppendNewLine("br i1 ");
@@ -997,7 +997,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		this.Source.AppendLineFeed();
 		this.Source.Append(ThenLabel + ":");
 		this.CurrentScope.SetLabel(ThenLabel);
-		this.GenerateCode(null, Node.ThenNode());
+		this.GenerateExpression(Node.ThenNode());
 		if(!this.CurrentScope.IsBlockTerminated()) {
 			this.Source.AppendNewLine("br label %" + EndLabel);
 			IsEndReachable = true;
@@ -1007,7 +1007,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 			this.Source.AppendLineFeed();
 			this.Source.Append(ElseLabel + ":");
 			this.CurrentScope.SetLabel(ElseLabel);
-			this.GenerateCode(null, Node.ElseNode());
+			this.GenerateExpression(Node.ElseNode());
 			if(!this.CurrentScope.IsBlockTerminated()) {
 				this.Source.AppendNewLine("br label %" + EndLabel);
 				IsEndReachable = true;
@@ -1048,7 +1048,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 				return;
 			}
 
-			this.GenerateCode(null, InitNode);
+			this.GenerateExpression(InitNode);
 			@Var String Init = this.CurrentScope.PopValue();
 
 			this.DefineGlobalSymbol(Node.GetUniqueName(this));
@@ -1090,7 +1090,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 			if(Node.AST[Index] != null) {
 				sb.append(this.GetTypeExpr(Node.AST[Index].Type));
 				sb.append(" ");
-				this.GenerateCode(FuncType.GetFuncParamType(Index), Node.AST[Index]);
+				this.GenerateExpression(Node.AST[Index]);
 				sb.append(this.CurrentScope.PopValue());
 			}
 			fromIndex = EndNum + 1;
@@ -1167,7 +1167,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 				sb.append(this.GetTypeExpr(Node.Type));
 				sb.append(" " + TempVar);
 				if(Node.GetListSize() > 0) {
-					this.VisitListNode(", ", Node, ", ", ")");
+					this.GenerateListNode(", ", Node, ", ", ")");
 					sb.append(this.Writer.PopValue());
 				}
 				else {
@@ -1183,7 +1183,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitNotNode(BunNotNode Node) {
-		this.GenerateSurroundCode(Node.AST[BunNotNode._Recv]);
+		this.GenerateExpression(Node.AST[BunNotNode._Recv]);
 		@Var String Recv = this.CurrentScope.PopValue();
 
 		@Var String TempVar = this.CurrentScope.CreateTempLocalSymbol();
@@ -1207,7 +1207,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		@Var String RightLabel = "Or__" + LabelNum + ".Right";
 		@Var String EndLabel = "Or__" + LabelNum + ".End";
 
-		this.GenerateCode(null, Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		@Var String LeftResult = this.CurrentScope.PopValue();
 
 		this.Source.AppendNewLine("br i1 ");
@@ -1220,7 +1220,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		this.Source.AppendLineFeed();
 		this.Source.Append(RightLabel + ":");
 		this.CurrentScope.SetLabel(RightLabel);
-		this.GenerateCode(null, Node.RightNode());
+		this.GenerateExpression(Node.RightNode());
 		@Var String RightResult = this.CurrentScope.PopValue();
 		this.Source.AppendNewLine("br label %" + EndLabel);
 		RightLabel = this.CurrentScope.GetCurrentLabel();
@@ -1239,7 +1239,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 
 	@Override public void VisitReturnNode(BunReturnNode Node) {
 		if (Node.HasReturnExpr()) {
-			this.GenerateCode(null, Node.ExprNode());
+			this.GenerateExpression(Node.ExprNode());
 			@Var String Expr = this.CurrentScope.PopValue();
 
 			this.Source.AppendNewLine("ret ");
@@ -1254,11 +1254,11 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitSetIndexNode(SetIndexNode Node) {
-		this.GenerateCode(null, Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 		@Var String Recv = this.CurrentScope.PopValue();
-		this.GenerateCode(null, Node.IndexNode());
+		this.GenerateExpression(Node.IndexNode());
 		@Var String Index = this.CurrentScope.PopValue();
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 		@Var String Expr = this.CurrentScope.PopValue();
 
 		if(Node.RecvNode().Type.IsArrayType()) {
@@ -1283,7 +1283,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitSetNameNode(SetNameNode Node) {
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 		@Var String Expr = this.CurrentScope.PopValue();
 
 		this.Source.AppendNewLine("store ");
@@ -1315,7 +1315,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitSetFieldNode(SetFieldNode Node) {
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 		@Var String Expr = this.CurrentScope.PopValue();
 		this.GetObjectElementPointer(Node.RecvNode(), Node.GetName());
 		@Var String Element = this.CurrentScope.PopValue();
@@ -1340,7 +1340,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitUnaryNode(UnaryOperatorNode Node) {
-		this.GenerateCode(null, Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 		@Var String Recv = this.CurrentScope.PopValue();
 
 		if(Node.SourceToken.EqualsText('+')) {
@@ -1399,7 +1399,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 
 	@Override public void VisitVarBlockNode(BunVarBlockNode Node) {
 		this.VisitVarDeclNode(Node.VarDeclNode());
-		this.VisitStmtList(Node);
+		this.GenerateStmtListNode(Node);
 	}
 
 	@Override public void VisitWhileNode(BunWhileNode Node) {
@@ -1413,7 +1413,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		this.Source.AppendLineFeed();
 		this.Source.Append(CondLabel + ":");
 		this.CurrentScope.SetLabel(CondLabel);
-		this.GenerateCode(null, Node.CondNode());
+		this.GenerateExpression(Node.CondNode());
 		@Var String Cond = this.CurrentScope.PopValue();
 
 		this.Source.AppendNewLine("br i1 ");
@@ -1426,7 +1426,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		this.Source.Append(BodyLabel + ":");
 		this.CurrentScope.SetLabel(BodyLabel);
 		this.CurrentScope.PushBreakLabel(EndLabel);
-		this.GenerateCode(null, Node.BlockNode());
+		this.GenerateExpression(Node.BlockNode());
 		if(!this.CurrentScope.IsBlockTerminated()) {
 			this.Source.AppendNewLine("br label %" + CondLabel);
 		}
@@ -1438,22 +1438,22 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 	}
 
 
-	@Override protected void GenerateSurroundCode(BNode Node) {
+	@Override protected void GenerateExpression(BNode Node) {
 		if(this.IsNeededSurroud(Node)) {
 			//this.Source.Append("(");
-			this.GenerateCode(null, Node);
+			this.GenerateExpression(Node);
 			//this.Source.Append(")");
 		}
 		else {
-			this.GenerateCode(null, Node);
+			this.GenerateExpression(Node);
 		}
 	}
 
-	@Override public void VisitStmtList(BunBlockNode BlockNode) {
+	@Override public void GenerateStmtListNode(BunBlockNode BlockNode) {
 		@Var int i = 0;
 		while (i < BlockNode.GetListSize()) {
 			@Var BNode SubNode = BlockNode.GetListAt(i);
-			this.GenerateCode(null, SubNode);
+			this.GenerateExpression(SubNode);
 			i = i + 1;
 		}
 	}
@@ -1497,7 +1497,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		//@llvm.gcroot
 		//}
 
-		this.GenerateCode(null, Node.InitValueNode());
+		this.GenerateExpression(Node.InitValueNode());
 		@Var String Init = this.CurrentScope.PopValue();
 
 		this.Source.AppendNewLine("store ");
@@ -1513,7 +1513,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		}
 	}
 
-	@Override protected void VisitListNode(String OpenToken, AbstractListNode VargNode, String DelimToken, String CloseToken) {
+	@Override protected void GenerateListNode(String OpenToken, AbstractListNode VargNode, String DelimToken, String CloseToken) {
 		@Var StringBuilder sb = new StringBuilder();
 		sb.append(OpenToken);
 		@Var int i = 0;
@@ -1524,7 +1524,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 			}
 			sb.append(this.GetTypeExpr(ParamNode.Type));
 			sb.append(" ");
-			this.GenerateCode(null, ParamNode);
+			this.GenerateExpression(ParamNode);
 			sb.append(this.CurrentScope.PopValue());
 			i = i + 1;
 		}
@@ -1544,7 +1544,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 			this.Source.AppendNewLine(this.GetTypeExpr(FieldNode.DeclType()));
 			if(WithInitValue) {
 				this.Source.Append(" ");
-				this.GenerateCode(null, FieldNode.InitValueNode());
+				this.GenerateExpression(FieldNode.InitValueNode());
 				this.Source.Append(this.CurrentScope.PopValue());
 			}
 			i = i + 1;
@@ -1590,7 +1590,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 	}
 
 	private void GetObjectElementPointer(BNode RecvNode, String FieldName) {
-		this.GenerateCode(null, RecvNode);
+		this.GenerateExpression(RecvNode);
 		@Var String Recv = this.CurrentScope.PopValue();
 		this.GetObjectElementOffset(RecvNode.Type, FieldName);
 		@Var String Field = this.CurrentScope.PopValue();

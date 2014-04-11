@@ -61,7 +61,7 @@ public class ZASTTransformer extends BVisitor {
 		this.TransformedValue = LastTransformed;
 	}
 
-	protected void VisitListNode(AbstractListNode Node) {
+	protected void GenerateListNode(AbstractListNode Node) {
 		@Var int i = 0;
 		while(i < Node.GetListSize()) {
 			this.Transform(Node, i);
@@ -76,22 +76,22 @@ public class ZASTTransformer extends BVisitor {
 
 	@Override
 	public void VisitArrayLiteralNode(BunArrayLiteralNode Node) {
-		this.VisitListNode(Node);
+		this.GenerateListNode(Node);
 	}
 
 	@Override
 	public void VisitMapLiteralNode(BunMapLiteralNode Node) {
-		this.VisitListNode(Node);
+		this.GenerateListNode(Node);
 	}
 
 	//	@Override
 	//	public void VisitNewArrayNode(ZNewArrayNode Node) {
-	//		this.VisitListNode(Node);
+	//		this.GenerateListNode(Node);
 	//	}
 
 	@Override
 	public void VisitNewObjectNode(NewObjectNode Node) {
-		this.VisitListNode(Node);
+		this.GenerateListNode(Node);
 	}
 
 	@Override
@@ -136,13 +136,13 @@ public class ZASTTransformer extends BVisitor {
 	@Override
 	public void VisitMethodCallNode(MethodCallNode Node) {
 		this.Transform(Node, MethodCallNode._Recv);
-		this.VisitListNode(Node);
+		this.GenerateListNode(Node);
 	}
 
 	@Override
 	public void VisitFuncCallNode(FuncCallNode Node) {
 		this.Transform(Node, FuncCallNode._Functor);
-		this.VisitListNode(Node);
+		this.GenerateListNode(Node);
 	}
 
 	@Override
@@ -168,13 +168,13 @@ public class ZASTTransformer extends BVisitor {
 
 	@Override
 	public void VisitBlockNode(BunBlockNode Node) {
-		this.VisitListNode(Node);
+		this.GenerateListNode(Node);
 	}
 
 	@Override
 	public void VisitVarBlockNode(BunVarBlockNode Node) {
 		this.Transform(Node, BunLetVarNode._InitValue);
-		this.VisitListNode(Node);
+		this.GenerateListNode(Node);
 	}
 
 	@Override
@@ -232,7 +232,7 @@ public class ZASTTransformer extends BVisitor {
 
 	@Override
 	public void VisitClassNode(BunClassNode Node) {
-		this.VisitListNode(Node);
+		this.GenerateListNode(Node);
 	}
 
 	@Override
@@ -242,7 +242,7 @@ public class ZASTTransformer extends BVisitor {
 
 	@Override
 	public void VisitMacroNode(BunMacroNode Node) {
-		this.VisitListNode(Node);
+		this.GenerateListNode(Node);
 	}
 
 	@Override

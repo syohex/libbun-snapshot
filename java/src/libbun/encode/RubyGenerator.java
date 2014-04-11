@@ -83,19 +83,19 @@ public class RubyGenerator extends OldSourceGenerator {
 	@Override
 	public void VisitThrowNode(BunThrowNode Node) {
 		this.Source.Append("raise ");
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override
 	public void VisitTryNode(BunTryNode Node) {
 		this.Source.Append("begin");
-		this.GenerateCode(null, Node.TryBlockNode());
+		this.GenerateExpression(Node.TryBlockNode());
 		if (Node.CatchBlockNode() != null) {
-			this.GenerateCode(null, Node.CatchBlockNode());
+			this.GenerateExpression(Node.CatchBlockNode());
 		}
 		if (Node.FinallyBlockNode() != null) {
 			this.Source.Append("ensure");
-			this.GenerateCode(null, Node.FinallyBlockNode());
+			this.GenerateExpression(Node.FinallyBlockNode());
 		}
 	}
 
@@ -122,13 +122,13 @@ public class RubyGenerator extends OldSourceGenerator {
 	@Override public void VisitFunctionNode(BunFunctionNode Node) {
 		this.Source.Append("->");
 		this.VisitFuncParamNode("(", Node, ")");
-		this.GenerateCode(null, Node.BlockNode());
+		this.GenerateExpression(Node.BlockNode());
 	}
 
 	//	public void VisitFuncDeclNode(ZFunctionNode/ Node) {
 	//		this.CurrentBuilder.Append("def ");
 	//		this.CurrentBuilder.Append(Node.FuncName);
-	//		this.VisitListNode("(", Node, ")");
+	//		this.GenerateListNode("(", Node, ")");
 	//		if (Node.BlockNode() != null) {
 	//			this.GenerateCode(Node.BlockNode());
 	//		}

@@ -94,7 +94,6 @@ import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
-import libbun.util.ZenMethod;
 
 public class OldSourceGenerator extends SourceGenerator {
 
@@ -137,36 +136,18 @@ public class OldSourceGenerator extends SourceGenerator {
 		}
 	}
 
-	@ZenMethod protected void GenerateCode(BType ContextType, BNode Node) {
-		Node.Accept(this);
-	}
-
-	protected final void GenerateCode2(String Pre, BType ContextType, BNode Node, String Post) {
-		if(Pre != null && Pre.length() > 0) {
-			this.Source.Append(Pre);
-		}
-		this.GenerateCode(ContextType, Node);
-		if(Post != null && Post.length() > 0) {
-			this.Source.Append(Post);
-		}
-	}
-
 	protected final void GenerateCode2(String Pre, BType ContextType, BNode Node, String Delim, BType ContextType2, BNode Node2, String Post) {
 		if(Pre != null && Pre.length() > 0) {
 			this.Source.Append(Pre);
 		}
-		this.GenerateCode(ContextType, Node);
+		this.GenerateExpression(Node);
 		if(Delim != null && Delim.length() > 0) {
 			this.Source.Append(Delim);
 		}
-		this.GenerateCode(ContextType2, Node2);
+		this.GenerateExpression(Node2);
 		if(Post != null && Post.length() > 0) {
 			this.Source.Append(Post);
 		}
-	}
-
-	protected final void GenerateCode2(String Pre, BNode Node, String Delim, BNode Node2, String Post) {
-		this.GenerateCode2(Pre, null, Node, Delim, null, Node2, Post);
 	}
 
 	final protected boolean IsNeededSurroud(BNode Node) {
@@ -176,12 +157,13 @@ public class OldSourceGenerator extends SourceGenerator {
 		return false;
 	}
 
-	protected void GenerateSurroundCode(BNode Node) {
+	@Override
+	protected void GenerateExpression(BNode Node) {
 		if(this.IsNeededSurroud(Node)) {
-			this.GenerateCode2("(", null, Node, ")");
+			this.GenerateExpression("(", Node, ")");
 		}
 		else {
-			this.GenerateCode(null, Node);
+			this.GenerateExpression(Node);
 		}
 	}
 
@@ -203,7 +185,7 @@ public class OldSourceGenerator extends SourceGenerator {
 		this.GenerateStatementEnd();
 	}
 
-	protected void VisitStmtList(BunBlockNode Node) {
+	protected void GenerateStmtListNode(BunBlockNode Node) {
 		@Var int i = 0;
 		while (i < Node.GetListSize()) {
 			@Var BNode SubNode = Node.GetListAt(i);
@@ -215,14 +197,14 @@ public class OldSourceGenerator extends SourceGenerator {
 	@Override public void VisitBlockNode(BunBlockNode Node) {
 		this.Source.AppendWhiteSpace();
 		this.Source.OpenIndent("{");
-		this.VisitStmtList(Node);
+		this.GenerateStmtListNode(Node);
 		this.Source.CloseIndent("}");
 	}
 
 	protected void VisitVarDeclNode(BunLetVarNode Node) {
 		this.Source.Append("var ", this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 		this.GenerateTypeAnnotation(Node.DeclType());
-		this.GenerateCode2(" = ", null, Node.InitValueNode(), this.SemiColon);
+		this.GenerateExpression(" = ", Node.InitValueNode(), this.SemiColon);
 		if(Node.HasNextVarNode()) {
 			this.Source.AppendNewLine();
 			this.VisitVarDeclNode(Node.NextVarNode());
@@ -232,7 +214,7 @@ public class OldSourceGenerator extends SourceGenerator {
 	@Override public void VisitVarBlockNode(BunVarBlockNode Node) {
 		this.Source.AppendWhiteSpace();
 		this.VisitVarDeclNode(Node.VarDeclNode());
-		this.VisitStmtList(Node);
+		this.GenerateStmtListNode(Node);
 	}
 
 	@Override public void VisitNullNode(BunNullNode Node) {
@@ -260,7 +242,7 @@ public class OldSourceGenerator extends SourceGenerator {
 	}
 
 	@Override public void VisitArrayLiteralNode(BunArrayLiteralNode Node) {
-		this.VisitListNode("[", Node, "]");
+		this.GenerateListNode("[", Node, "]");
 	}
 
 	@Override public void VisitMapLiteralNode(BunMapLiteralNode Node) {
@@ -268,7 +250,7 @@ public class OldSourceGenerator extends SourceGenerator {
 		@Var int i = 0;
 		while(i < Node.GetListSize()) {
 			@Var BunMapEntryNode Entry = Node.GetMapEntryNode(i);
-			this.GenerateCode2("", Entry.KeyNode(), ": ", Entry.ValueNode(), ",");
+			this.GenerateExpression("", Entry.KeyNode(), ": ", Entry.ValueNode(), ",");
 			i = i + 1;
 		}
 		this.Source.Append("} ");  // space is needed to distinguish block
@@ -277,22 +259,22 @@ public class OldSourceGenerator extends SourceGenerator {
 	@Override public void VisitNewObjectNode(NewObjectNode Node) {
 		this.Source.Append("new ");
 		this.GenerateTypeName(Node.Type);
-		this.VisitListNode("(", Node, ")");
+		this.GenerateListNode("(", Node, ")");
 	}
 
 	@Override public void VisitGroupNode(GroupNode Node) {
-		this.GenerateCode2("(", null, Node.ExprNode(), ")");
+		this.GenerateExpression("(", Node.ExprNode(), ")");
 	}
 
 	@Override public void VisitGetIndexNode(GetIndexNode Node) {
-		this.GenerateCode(null, Node.RecvNode());
-		this.GenerateCode2("[", null, Node.IndexNode(), "]");
+		this.GenerateExpression(Node.RecvNode());
+		this.GenerateExpression("[", Node.IndexNode(), "]");
 	}
 
 	@Override public void VisitSetIndexNode(SetIndexNode Node) {
-		this.GenerateCode(null, Node.RecvNode());
-		this.GenerateCode2("[", null, Node.IndexNode(), "] = ");
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.RecvNode());
+		this.GenerateExpression("[", Node.IndexNode(), "] = ");
+		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override public void VisitGetNameNode(GetNameNode Node) {
@@ -306,26 +288,25 @@ public class OldSourceGenerator extends SourceGenerator {
 	@Override public void VisitSetNameNode(SetNameNode Node) {
 		this.VisitGetNameNode(Node.NameNode());
 		this.Source.Append(" = ");
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override public void VisitGetFieldNode(GetFieldNode Node) {
-		this.GenerateSurroundCode(Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 		this.Source.Append(".", Node.GetName());
 	}
 
 	@Override public void VisitSetFieldNode(SetFieldNode Node) {
-		this.GenerateSurroundCode(Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 		this.Source.Append(".", Node.GetName(), " = ");
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override public void VisitMethodCallNode(MethodCallNode Node) {
-		this.GenerateSurroundCode(Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 		this.Source.Append(".", Node.MethodName());
-		this.VisitListNode("(", Node, ")");
+		this.GenerateListNode("(", Node, ")");
 	}
-
 
 	protected final void GenerateFuncName(BunFuncNameNode Node) {
 		if(this.LangInfo.AllowFunctionOverloading) {
@@ -342,14 +323,14 @@ public class OldSourceGenerator extends SourceGenerator {
 			this.GenerateFuncName(FuncNameNode);
 		}
 		else {
-			this.GenerateCode(null, Node.FunctorNode());
+			this.GenerateExpression(Node.FunctorNode());
 		}
-		this.VisitListNode("(", Node, ")");
+		this.GenerateListNode("(", Node, ")");
 	}
 
 	@Override public void VisitUnaryNode(UnaryOperatorNode Node) {
 		this.Source.Append(Node.GetOperator());
-		this.GenerateCode(null, Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 	}
 
 	@Override public void VisitPlusNode(BunPlusNode Node) {
@@ -366,23 +347,23 @@ public class OldSourceGenerator extends SourceGenerator {
 
 	@Override public void VisitNotNode(BunNotNode Node) {
 		this.Source.Append(this.NotOperator);
-		this.GenerateSurroundCode(Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 	}
 
 	@Override public void VisitCastNode(BunCastNode Node) {
 		if(Node.Type.IsVoidType()) {
-			this.GenerateCode(null, Node.ExprNode());
+			this.GenerateExpression(Node.ExprNode());
 		}
 		else {
 			this.Source.Append("(");
 			this.GenerateTypeName(Node.Type);
 			this.Source.Append(")");
-			this.GenerateSurroundCode(Node.ExprNode());
+			this.GenerateExpression(Node.ExprNode());
 		}
 	}
 
 	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
-		this.GenerateCode(null, Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		this.Source.Append(" instanceof ");
 		this.GenerateTypeName(Node.TargetType());
 	}
@@ -391,9 +372,9 @@ public class OldSourceGenerator extends SourceGenerator {
 		if (Node.ParentNode instanceof BinaryOperatorNode) {
 			this.Source.Append("(");
 		}
-		this.GenerateCode(null, Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		this.Source.AppendWhiteSpace(Node.GetOperator(), " ");
-		this.GenerateCode(null, Node.RightNode());
+		this.GenerateExpression(Node.RightNode());
 		if (Node.ParentNode instanceof BinaryOperatorNode) {
 			this.Source.Append(")");
 		}
@@ -440,9 +421,9 @@ public class OldSourceGenerator extends SourceGenerator {
 	}
 
 	protected void VisitComparatorNode(ComparatorNode Node) {
-		this.GenerateCode(null, Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		this.Source.AppendWhiteSpace(Node.GetOperator(), " ");
-		this.GenerateCode(null, Node.RightNode());
+		this.GenerateExpression(Node.RightNode());
 	}
 
 	@Override public void VisitEqualsNode(BunEqualsNode Node) {
@@ -470,24 +451,24 @@ public class OldSourceGenerator extends SourceGenerator {
 	}
 
 	@Override public void VisitAndNode(BunAndNode Node) {
-		this.GenerateCode(null, Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		this.Source.AppendWhiteSpace(this.AndOperator, " ");
-		this.GenerateCode(null, Node.RightNode());
+		this.GenerateExpression(Node.RightNode());
 	}
 
 	@Override public void VisitOrNode(BunOrNode Node) {
-		this.GenerateCode(null, Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		this.Source.AppendWhiteSpace(this.OrOperator, " ");
-		this.GenerateCode(null, Node.RightNode());
+		this.GenerateExpression(Node.RightNode());
 	}
 
 	@Override public void VisitIfNode(BunIfNode Node) {
-		this.GenerateCode2("if (", null, Node.CondNode(), ")");
-		this.GenerateCode(null, Node.ThenNode());
+		this.GenerateExpression("if (", Node.CondNode(), ")");
+		this.GenerateExpression(Node.ThenNode());
 		if (Node.HasElseNode()) {
 			this.Source.AppendNewLine();
 			this.Source.Append("else ");
-			this.GenerateCode(null, Node.ElseNode());
+			this.GenerateExpression(Node.ElseNode());
 		}
 	}
 
@@ -495,13 +476,13 @@ public class OldSourceGenerator extends SourceGenerator {
 		this.Source.Append("return");
 		if (Node.HasReturnExpr()) {
 			this.Source.Append(" ");
-			this.GenerateCode(null, Node.ExprNode());
+			this.GenerateExpression(Node.ExprNode());
 		}
 	}
 
 	@Override public void VisitWhileNode(BunWhileNode Node) {
-		this.GenerateCode2("while (", null, Node.CondNode(),")");
-		this.GenerateCode(null, Node.BlockNode());
+		this.GenerateExpression("while (", Node.CondNode(), ")");
+		this.GenerateExpression(Node.BlockNode());
 	}
 
 	@Override public void VisitBreakNode(BunBreakNode Node) {
@@ -510,20 +491,20 @@ public class OldSourceGenerator extends SourceGenerator {
 
 	@Override public void VisitThrowNode(BunThrowNode Node) {
 		this.Source.Append("throw ");
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override public void VisitTryNode(BunTryNode Node) {
 		this.Source.Append("try");
-		this.GenerateCode(null, Node.TryBlockNode());
+		this.GenerateExpression(Node.TryBlockNode());
 		if(Node.HasCatchBlockNode()) {
 			this.Source.AppendNewLine("catch (", Node.ExceptionName());
 			this.Source.Append(") ");
-			this.GenerateCode(null, Node.CatchBlockNode());
+			this.GenerateExpression(Node.CatchBlockNode());
 		}
 		if (Node.HasFinallyBlockNode()) {
 			this.Source.AppendNewLine("finally ");
-			this.GenerateCode(null, Node.FinallyBlockNode());
+			this.GenerateExpression(Node.FinallyBlockNode());
 		}
 	}
 
@@ -542,7 +523,7 @@ public class OldSourceGenerator extends SourceGenerator {
 			this.Source.AppendNewLine("let ", Node.GetGivenName());
 			this.GenerateTypeAnnotation(Node.DeclType());
 			this.Source.Append(" = ");
-			this.GenerateCode(null, Node.InitValueNode());
+			this.GenerateExpression(Node.InitValueNode());
 		}
 	}
 
@@ -576,7 +557,7 @@ public class OldSourceGenerator extends SourceGenerator {
 		}
 		this.VisitFuncParamNode("(", Node, ")");
 		this.GenerateTypeAnnotation(Node.ReturnType());
-		this.GenerateCode(null, Node.BlockNode());
+		this.GenerateExpression(Node.BlockNode());
 	}
 
 	@Override public void VisitClassNode(BunClassNode Node) {
@@ -592,7 +573,7 @@ public class OldSourceGenerator extends SourceGenerator {
 			this.Source.AppendNewLine("var ", FieldNode.GetGivenName());
 			this.GenerateTypeAnnotation(FieldNode.DeclType());
 			this.Source.Append(" = ");
-			this.GenerateCode(null, FieldNode.InitValueNode());
+			this.GenerateExpression(FieldNode.InitValueNode());
 			this.Source.Append(this.SemiColon);
 			i = i + 1;
 		}
@@ -608,12 +589,12 @@ public class OldSourceGenerator extends SourceGenerator {
 
 	@Override public void VisitSyntaxSugarNode(SyntaxSugarNode Node) {
 		@Var DesugarNode DesugarNode = Node.DeSugar(this, this.TypeChecker);
-		this.GenerateCode(null, DesugarNode.AST[0]);
+		this.GenerateExpression(DesugarNode.AST[0]);
 		@Var int i = 1;
 		while(i < DesugarNode.GetAstSize()) {
 			this.Source.Append(this.SemiColon);
 			this.Source.AppendNewLine();
-			this.GenerateCode(null, DesugarNode.AST[i]);
+			this.GenerateExpression(DesugarNode.AST[i]);
 			i = i + 1;
 		}
 	}
@@ -624,7 +605,8 @@ public class OldSourceGenerator extends SourceGenerator {
 		this.Source.Append(this.GetNativeTypeName(Type.GetRealType()));
 	}
 
-	protected void VisitListNode(String OpenToken, AbstractListNode VargNode, String DelimToken, String CloseToken) {
+	@Override
+	protected void GenerateListNode(String OpenToken, AbstractListNode VargNode, String DelimToken, String CloseToken) {
 		this.Source.Append(OpenToken);
 		@Var int i = 0;
 		while(i < VargNode.GetListSize()) {
@@ -632,14 +614,14 @@ public class OldSourceGenerator extends SourceGenerator {
 			if (i > 0) {
 				this.Source.Append(DelimToken);
 			}
-			this.GenerateCode(null, ParamNode);
+			this.GenerateExpression(ParamNode);
 			i = i + 1;
 		}
 		this.Source.Append(CloseToken);
 	}
 
-	protected void VisitListNode(String OpenToken, AbstractListNode VargNode, String CloseToken) {
-		this.VisitListNode(OpenToken, VargNode, this.Camma, CloseToken);
+	protected void GenerateListNode(String OpenToken, AbstractListNode VargNode, String CloseToken) {
+		this.GenerateListNode(OpenToken, VargNode, this.Camma, CloseToken);
 	}
 
 	protected void GenerateWrapperCall(String OpenToken, BunFunctionNode FuncNode, String CloseToken) {

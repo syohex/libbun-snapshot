@@ -80,17 +80,17 @@ public class SSACGenerator extends OldSourceGenerator {
 		this.Header.AppendNewLine("#include<", LibName, ">");
 	}
 
-	@Override protected void GenerateCode(BType ContextType, BNode Node) {
+	@Override protected void GenerateExpression(BNode Node) {
 		if(Node.IsUntyped() && !Node.IsErrorNode() && !(Node instanceof BunFuncNameNode)) {
 			this.Source.Append("/*untyped*/" + this.NullLiteral);
 			BLogger._LogError(Node.SourceToken, "untyped error: " + Node);
 		}
 		else {
-			if(ContextType != null && Node.Type != ContextType) {
-				this.Source.Append("(");
-				this.GenerateTypeName(ContextType);
-				this.Source.Append(")");
-			}
+			//			if(ContextType != null && Node.Type != ContextType) {
+			//				this.Source.Append("(");
+			//				this.GenerateTypeName(ContextType);
+			//				this.Source.Append(")");
+			//			}
 			Node.Accept(this);
 		}
 	}
@@ -105,7 +105,7 @@ public class SSACGenerator extends OldSourceGenerator {
 	@Override public void VisitSetNameNode(SetNameNode Node) {
 		this.VisitGetNameNode(Node.NameNode());
 		this.Source.Append(" = ");
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override public void VisitArrayLiteralNode(BunArrayLiteralNode Node) {
@@ -126,7 +126,7 @@ public class SSACGenerator extends OldSourceGenerator {
 		if(Node.GetListSize() > 0) {
 			this.Source.Append(this.Camma);
 		}
-		this.VisitListNode("", Node, ")");
+		this.GenerateListNode("", Node, ")");
 	}
 
 	@Override public void VisitMapLiteralNode(BunMapLiteralNode Node) {
@@ -147,49 +147,49 @@ public class SSACGenerator extends OldSourceGenerator {
 		if(Node.GetListSize() > 0) {
 			this.Source.Append(this.Camma);
 		}
-		this.VisitListNode("", Node, ")");
+		this.GenerateListNode("", Node, ")");
 	}
 
 	@Override public void VisitNewObjectNode(NewObjectNode Node) {
 		this.Source.Append("_New"+this.NameClass(Node.Type));
-		this.VisitListNode("(", Node, ")");
+		this.GenerateListNode("(", Node, ")");
 	}
 
 	@Override public void VisitGetIndexNode(GetIndexNode Node) {
 		this.Source.Append(this.NameType(Node.GetAstType(GetIndexNode._Recv)) + "GetIndex");
 		this.Source.Append("(");
-		this.GenerateCode(null, Node.IndexNode());
+		this.GenerateExpression(Node.IndexNode());
 		this.Source.Append(")");
 	}
 
 	@Override public void VisitSetIndexNode(SetIndexNode Node) {
 		this.Source.Append(this.NameType(Node.GetAstType(GetIndexNode._Recv)) + "SetIndex");
 		this.Source.Append("(");
-		this.GenerateCode(null, Node.IndexNode());
+		this.GenerateExpression(Node.IndexNode());
 		this.Source.Append(this.Camma);
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 		this.Source.Append(")");
 	}
 
 	@Override public void VisitGetFieldNode(GetFieldNode Node) {
-		this.GenerateSurroundCode(Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 		this.Source.Append("->");
 		this.Source.Append(Node.GetName());
 	}
 
 	@Override public void VisitSetFieldNode(SetFieldNode Node) {
-		this.GenerateSurroundCode(Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 		this.Source.Append("->");
 		this.Source.Append(Node.GetName());
 		this.Source.Append(" = ");
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override public void VisitMethodCallNode(MethodCallNode Node) {
 		//		this.GenerateSurroundCode(Node.RecvNode());
 		//		this.CurrentBuilder.Append(".");
 		//		this.CurrentBuilder.Append(Node.MethodName());
-		//		this.VisitListNode("(", Node, ")");
+		//		this.GenerateListNode("(", Node, ")");
 	}
 
 	@Override public void VisitFuncCallNode(FuncCallNode Node) {
@@ -198,9 +198,9 @@ public class SSACGenerator extends OldSourceGenerator {
 			this.GenerateFuncName(FuncNameNode);
 		}
 		else {
-			this.GenerateCode(null, Node.FunctorNode());
+			this.GenerateExpression(Node.FunctorNode());
 		}
-		this.VisitListNode("(", Node, ")");
+		this.GenerateListNode("(", Node, ")");
 	}
 
 	//	@Override public void VisitCastNode(ZCastNode Node) {
@@ -211,7 +211,7 @@ public class SSACGenerator extends OldSourceGenerator {
 	//	}
 
 	@Override public void VisitThrowNode(BunThrowNode Node) {
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 		this.Source.Append("longjump(1)"); // FIXME
 		this.Source.AppendWhiteSpace();
 	}
@@ -301,7 +301,7 @@ public class SSACGenerator extends OldSourceGenerator {
 		this.GenerateTypeName(Node.DeclType());
 		this.Source.Append(" ");
 		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName() + "0"));
-		this.GenerateCode2(" = ", null, Node.InitValueNode(), this.SemiColon);
+		this.GenerateExpression(" = ", Node.InitValueNode(), this.SemiColon);
 		if(Node.HasNextVarNode()) {
 			this.VisitVarDeclNode(Node.NextVarNode());
 		}
@@ -312,7 +312,7 @@ public class SSACGenerator extends OldSourceGenerator {
 		this.GenerateTypeName(Node.GetAstType(BunLetVarNode._InitValue));
 		this.Source.Append(" ");
 		this.Source.Append(Node.GetUniqueName(this));
-		this.GenerateCode2(" = ", null, Node.InitValueNode(), this.SemiColon);
+		this.GenerateExpression(" = ", Node.InitValueNode(), this.SemiColon);
 	}
 
 	@Override protected void VisitParamNode(BunLetVarNode Node) {
@@ -335,7 +335,7 @@ public class SSACGenerator extends OldSourceGenerator {
 			this.GenerateTypeName(Node.ReturnType());
 			this.Source.Append(" ", FuncName);
 			this.VisitFuncParamNode("(", Node, ")");
-			this.GenerateCode(null, Node.BlockNode());
+			this.GenerateExpression(Node.BlockNode());
 			this.Source.AppendLineFeed();
 			this.Source = this.Source.Pop();
 			this.Source.Append(FuncName);
@@ -347,7 +347,7 @@ public class SSACGenerator extends OldSourceGenerator {
 			this.Source.Append(" ", Node.GetSignature());
 			this.VisitFuncParamNode("(", Node, ")");
 			@Var String Prototype = this.Source.CopyString(StartIndex, this.Source.GetPosition());
-			this.GenerateCode(null, Node.BlockNode());
+			this.GenerateExpression(Node.BlockNode());
 			this.Source.AppendLineFeed();
 
 			this.Header.Append(Prototype);
@@ -371,7 +371,7 @@ public class SSACGenerator extends OldSourceGenerator {
 			this.GenerateTypeName(Node.ReturnType());
 		}
 		this.Source.Append(" ", Node.FuncName());
-		this.VisitListNode("(", Node, ")");
+		this.GenerateListNode("(", Node, ")");
 		this.Source.OpenIndent(" {");
 		if(!Node.ReturnType().IsVoidType()) {
 			this.Source.AppendNewLine("return ", Node.GetSignature());
@@ -389,7 +389,7 @@ public class SSACGenerator extends OldSourceGenerator {
 
 	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
 		this.Source.Append("LibZen_Is(");
-		this.GenerateCode(null, Node.AST[BInstanceOfNode._Left]);
+		this.GenerateExpression(Node.AST[BInstanceOfNode._Left]);
 		this.Source.Append(this.Camma);
 		this.Source.AppendInt(Node.TargetType().TypeId);
 		this.Source.Append(")");
@@ -455,7 +455,7 @@ public class SSACGenerator extends OldSourceGenerator {
 				this.Source.Append("NULL");
 			}
 			else {
-				this.GenerateCode(null, FieldNode.InitValueNode());
+				this.GenerateExpression(FieldNode.InitValueNode());
 			}
 			this.Source.Append(this.SemiColon);
 			i = i + 1;

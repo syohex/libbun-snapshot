@@ -114,7 +114,7 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 				this.Source.Append("return (");
 			}
 
-			this.GenerateCode(null, SubNode);
+			this.GenerateExpression(SubNode);
 			this.Source.Append(this.SemiColon);
 
 			if (IndentLevel == 1 && i == limit - 1) {
@@ -138,19 +138,19 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 	@Override
 	public void VisitThrowNode(BunThrowNode Node) {
 		this.Source.Append("raise ");
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override
 	public void VisitTryNode(BunTryNode Node) {
 		// See: http://d.hatena.ne.jp/kazu-yamamoto/20090819/1250660658
-		this.GenerateCode(null, Node.TryBlockNode());
+		this.GenerateExpression(Node.TryBlockNode());
 		this.Source.Append(" `catch` ");
 		if (Node.CatchBlockNode() != null) {
-			this.GenerateCode(null, Node.CatchBlockNode());
+			this.GenerateExpression(Node.CatchBlockNode());
 		}
 		if (Node.FinallyBlockNode() != null) {
-			this.GenerateCode(null, Node.FinallyBlockNode());
+			this.GenerateExpression(Node.FinallyBlockNode());
 		}
 	}
 
@@ -159,7 +159,7 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 	protected void VisitVarDeclNode(BunLetVarNode Node) {
 		this.Source.Append(Node.GetGivenName() + " <- readIORef ");
 		this.Source.Append(Node.GetGivenName() + "_ref");
-		this.GenerateCode(null, Node.InitValueNode());
+		this.GenerateExpression(Node.InitValueNode());
 		this.Source.AppendLineFeed();
 	}
 
@@ -210,10 +210,10 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 			String Indentation = BLib._JoinStrings("\t", IndentLevel);
 			this.Source.Append(Indentation);
 			this.Source.Append("return ");
-			this.GenerateCode(null, ReturnNode.ExprNode());
+			this.GenerateExpression(ReturnNode.ExprNode());
 			this.UnIndent(this.Source);
 		} else {
-			this.GenerateCode(null, Node.BlockNode());
+			this.GenerateExpression(Node.BlockNode());
 		}
 	}
 
@@ -226,7 +226,7 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 	public void VisitSetNameNode(SetNameNode Node) {
 		this.Source.Append("writeIORef ");
 		this.Source.Append(Node.NameNode().GetUniqueName(this) + "_ref ");
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 		this.Source.AppendLineFeed();
 
 		this.Source.AppendNewLine();
@@ -239,7 +239,7 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 	@Override
 	public void VisitReturnNode(BunReturnNode Node) {
 		if (Node.HasReturnExpr()) {
-			this.GenerateCode(null, Node.ExprNode());
+			this.GenerateExpression(Node.ExprNode());
 		}
 	}
 
@@ -330,13 +330,13 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 
 	@Override public void VisitFuncCallNode(FuncCallNode Node) {
 		if(Node.ParentNode instanceof BunBlockNode){
-			this.GenerateCode(null, Node.FunctorNode());
-			this.VisitListNode(" ", Node, " ", " ");
+			this.GenerateExpression(Node.FunctorNode());
+			this.GenerateListNode(" ", Node, " ", " ");
 		}else{
 			this.ImportLibrary("System.IO.Unsafe");
 			this.Source.Append("(unsafePerformIO (");
-			this.GenerateCode(null, Node.FunctorNode());
-			this.VisitListNode(" ", Node, " ", " ");
+			this.GenerateExpression(Node.FunctorNode());
+			this.GenerateListNode(" ", Node, " ", " ");
 			this.Source.Append("))");
 		}
 	}

@@ -103,32 +103,32 @@ public class PerlGenerator extends OldSourceGenerator {
 		this.Source.Append(this.VariablePrefix(Node.GetAstType(SetNameNode._Expr)));
 		this.VisitGetNameNode(Node.NameNode());
 		this.Source.Append(" = ");
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override public void VisitGetFieldNode(GetFieldNode Node) {
-		this.GenerateCode(null, Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 		this.Source.Append("->{\'", Node.GetName(), "\'} = ");
 	}
 
 	@Override public void VisitSetFieldNode(SetFieldNode Node) {
-		this.GenerateCode(null, Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 		this.Source.Append("->{\'", Node.GetName(), "\'}");
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override
 	protected void VisitVarDeclNode(BunLetVarNode Node) {
 		this.Source.Append("my ", this.VariablePrefix(Node.DeclType().GetRealType()));
 		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = ");
-		this.GenerateCode(null, Node.InitValueNode());
+		this.GenerateExpression(Node.InitValueNode());
 		this.Source.Append(this.SemiColon);
 		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 	}
 
 	@Override public void VisitLetNode(BunLetVarNode Node) {
 		this.Source.Append(this.VariablePrefix(Node.DeclType().GetRealType()), Node.GetUniqueName(this), " = ");
-		this.GenerateCode(null, Node.InitValueNode());
+		this.GenerateExpression(Node.InitValueNode());
 	}
 
 	//	@Override public void VisitIfNode(ZIfNode Node) {
@@ -170,7 +170,7 @@ public class PerlGenerator extends OldSourceGenerator {
 		this.Source.Append(this.SemiColon);
 		@Var BNode BlockNode = Node.BlockNode();
 		if(BlockNode instanceof BunBlockNode) {
-			this.VisitStmtList((BunBlockNode)BlockNode);
+			this.GenerateStmtListNode((BunBlockNode)BlockNode);
 		}
 		this.Source.Append(this.SemiColon);
 		this.Source.CloseIndent("}");
@@ -219,7 +219,7 @@ public class PerlGenerator extends OldSourceGenerator {
 			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
 			this.Source.AppendNewLine();
 			this.Source.Append("$o{", BLib._QuoteString(FieldNode.GetGivenName()), "} = ");
-			this.GenerateCode(null, FieldNode.InitValueNode());
+			this.GenerateExpression(FieldNode.InitValueNode());
 			this.Source.Append(this.SemiColon);
 			i = i + 1;
 		}

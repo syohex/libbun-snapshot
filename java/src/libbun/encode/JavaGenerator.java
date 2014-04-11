@@ -78,18 +78,18 @@ public class JavaGenerator extends OldSourceGenerator {
 	}
 
 
-	@Override protected void GenerateCode(BType ContextType, BNode Node) {
+	@Override protected void GenerateExpression(BNode Node) {
 		if(Node.IsUntyped() && !Node.IsErrorNode() && !(Node instanceof BunFuncNameNode)) {
 			BLogger._LogError(Node.SourceToken, "untyped error: " + Node);
 			Node.Accept(this);
 			this.Source.Append("/*untyped*/");
 		}
 		else {
-			if(ContextType != null && Node.Type != ContextType && !ContextType.IsGreekType()) {
-				this.Source.Append("(");
-				this.GenerateTypeName(ContextType);
-				this.Source.Append(")");
-			}
+			//			if(ContextType != null && Node.Type != ContextType && !ContextType.IsGreekType()) {
+			//				this.Source.Append("(");
+			//				this.GenerateTypeName(ContextType);
+			//				this.Source.Append(")");
+			//			}
 			Node.Accept(this);
 		}
 	}
@@ -103,7 +103,7 @@ public class JavaGenerator extends OldSourceGenerator {
 			this.ImportLibrary("java.util.Arrays");
 			this.Source.Append("new ", this.GetJavaTypeName(Node.Type, false), "(");
 			this.Source.Append("Arrays.asList(new ", this.GetJavaTypeName(ParamType, true), "[]");
-			this.VisitListNode("{", Node, "}))");
+			this.GenerateListNode("{", Node, "}))");
 		}
 	}
 
@@ -115,7 +115,7 @@ public class JavaGenerator extends OldSourceGenerator {
 			while(i < Node.GetListSize()) {
 				@Var BunMapEntryNode Entry = Node.GetMapEntryNode(i);
 				this.Source.AppendNewLine("put");
-				this.GenerateCode2("(", Entry.KeyNode(), this.Camma, Entry.ValueNode(), ");");
+				this.GenerateExpression("(", Entry.KeyNode(), this.Camma, Entry.ValueNode(), ");");
 				i = i + 1;
 			}
 			this.Source.CloseIndent("}}");
@@ -124,41 +124,41 @@ public class JavaGenerator extends OldSourceGenerator {
 
 	@Override public void VisitNewObjectNode(NewObjectNode Node) {
 		this.Source.Append("new " + this.NameClass(Node.Type));
-		this.VisitListNode("(", Node, ")");
+		this.GenerateListNode("(", Node, ")");
 	}
 
 	@Override public void VisitGetIndexNode(GetIndexNode Node) {
 		@Var BType RecvType = Node.GetAstType(GetIndexNode._Recv);
 		if(RecvType.IsStringType()) {
-			this.GenerateCode2("String.valueOf((", null, Node.RecvNode(), ")");
-			this.GenerateCode2(".charAt(", null, Node.IndexNode(), "))");
+			this.GenerateExpression("String.valueOf((", Node.RecvNode(), ")");
+			this.GenerateExpression(".charAt(", Node.IndexNode(), "))");
 		}
 		else {
-			this.GenerateCode(null, Node.RecvNode());
-			this.GenerateCode2(".get(", null, Node.IndexNode(), ")");
+			this.GenerateExpression(Node.RecvNode());
+			this.GenerateExpression(".get(", Node.IndexNode(), ")");
 		}
 	}
 
 	@Override public void VisitSetIndexNode(SetIndexNode Node) {
 		@Var BType RecvType = Node.GetAstType(GetIndexNode._Recv);
-		this.GenerateCode(null, Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 		if(RecvType.IsMapType()) {
 			this.Source.Append(".put(");
 		}
 		else {
 			this.Source.Append(".set(");
 		}
-		this.GenerateCode(null, Node.IndexNode());
+		this.GenerateExpression(Node.IndexNode());
 		this.Source.Append(this.Camma);
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 		this.Source.Append(")");
 	}
 
 	@Override public void VisitMethodCallNode(MethodCallNode Node) {
-		this.GenerateSurroundCode(Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 		this.Source.Append(".");
 		this.Source.Append(Node.MethodName());
-		this.VisitListNode("(", Node, ")");
+		this.GenerateListNode("(", Node, ")");
 	}
 
 	@Override public void VisitFuncCallNode(FuncCallNode Node) {
@@ -167,10 +167,10 @@ public class JavaGenerator extends OldSourceGenerator {
 			this.Source.Append(this.NameFunctionClass(FuncNameNode.FuncName, FuncNameNode.RecvType, FuncNameNode.FuncParamSize), ".f");
 		}
 		else {
-			this.GenerateCode(null, Node.FunctorNode());
+			this.GenerateExpression(Node.FunctorNode());
 			this.Source.Append(".Invoke");
 		}
-		this.VisitListNode("(", Node, ")");
+		this.GenerateListNode("(", Node, ")");
 	}
 
 	//	@Override public void VisitCastNode(ZCastNode Node) {
@@ -182,25 +182,25 @@ public class JavaGenerator extends OldSourceGenerator {
 
 	@Override public void VisitThrowNode(BunThrowNode Node) {
 		this.Source.Append("throw ");
-		this.GenerateCode2("new RuntimeException((", null, Node.ExprNode(),").toString())");
+		this.GenerateExpression("new RuntimeException((", Node.ExprNode(), ").toString())");
 	}
 
 	@Override public void VisitTryNode(BunTryNode Node) {
 		this.Source.Append("try ");
-		this.GenerateCode(null, Node.TryBlockNode());
+		this.GenerateExpression(Node.TryBlockNode());
 		if(Node.HasCatchBlockNode()) {
 			@Var String VarName = this.NameUniqueSymbol("e");
 			this.Source.AppendNewLine("catch (Exception ", VarName, ")");
 			this.Source.OpenIndent(" {");
 			this.Source.AppendNewLine("Object ", Node.ExceptionName(), " = ");
 			this.Source.Append("/*FIXME*/", VarName, this.SemiColon);
-			this.VisitStmtList(Node.CatchBlockNode());
+			this.GenerateStmtListNode(Node.CatchBlockNode());
 			this.Source.Append(this.SemiColon);
 			this.Source.CloseIndent("}");
 		}
 		if(Node.HasFinallyBlockNode()) {
 			this.Source.AppendNewLine("finally ");
-			this.GenerateCode(null, Node.FinallyBlockNode());
+			this.GenerateExpression(Node.FinallyBlockNode());
 		}
 	}
 
@@ -285,7 +285,7 @@ public class JavaGenerator extends OldSourceGenerator {
 		this.Source.Append(" ");
 		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 		this.Source.Append(" = ");
-		this.GenerateCode(null, Node.InitValueNode());
+		this.GenerateExpression(Node.InitValueNode());
 		this.Source.Append(this.SemiColon);
 		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 	}
@@ -296,7 +296,7 @@ public class JavaGenerator extends OldSourceGenerator {
 		this.Source.AppendNewLine("final class ", ClassName, "");
 		this.Source.OpenIndent(" {");
 		this.GenerateClassField("static", Node.GetAstType(BunLetVarNode._InitValue), "_", null);
-		this.GenerateCode2(" = ", null, Node.InitValueNode(), this.SemiColon);
+		this.GenerateExpression(" = ", Node.InitValueNode(), this.SemiColon);
 		this.Source.CloseIndent("}");
 		//		this.CurrentBuilder = this.CurrentBuilder.Pop();
 		//			Node.GlobalName = ClassName + "._";
@@ -345,7 +345,7 @@ public class JavaGenerator extends OldSourceGenerator {
 		this.GenerateTypeName(Node.ReturnType());
 		this.Source.Append(" f");
 		this.VisitFuncParamNode("(", Node, ")");
-		this.GenerateCode(null, Node.BlockNode());
+		this.GenerateExpression(Node.BlockNode());
 
 		this.GenerateClassField("static ", FuncType, "function", "new " + ClassName + "();");
 		this.Source.AppendNewLine(ClassName, "()");
@@ -358,7 +358,7 @@ public class JavaGenerator extends OldSourceGenerator {
 		this.Source.AppendNewLine("");
 		this.GenerateTypeName(Node.ReturnType());
 		this.Source.Append(" Invoke");
-		this.VisitListNode("(", Node, ")");
+		this.GenerateListNode("(", Node, ")");
 		this.Source.OpenIndent(" {");
 		if(!FuncType.GetReturnType().IsVoidType()) {
 			this.Source.AppendNewLine("return ", ClassName, ".f");
@@ -375,7 +375,7 @@ public class JavaGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
-		this.GenerateCode(null, Node.AST[BInstanceOfNode._Left]);
+		this.GenerateExpression(Node.AST[BInstanceOfNode._Left]);
 		this.Source.Append(" instanceof ");
 		this.GenerateTypeName(Node.TargetType());
 	}
@@ -437,7 +437,7 @@ public class JavaGenerator extends OldSourceGenerator {
 		while (i < Node.GetListSize()) {
 			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
 			this.Source.AppendNewLine("this.", FieldNode.GetGivenName(), "=");
-			this.GenerateCode(null, FieldNode.InitValueNode());
+			this.GenerateExpression(FieldNode.InitValueNode());
 			this.Source.Append(this.SemiColon);
 			i = i + 1;
 		}

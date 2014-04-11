@@ -32,7 +32,6 @@ import libbun.type.BFunc;
 import libbun.type.BType;
 import libbun.util.Var;
 
-//E.g., (T) $Expr
 public class BunCastNode extends BNode {
 	public final static int _Expr = 0;
 	public final static int _TypeInfo = 1;

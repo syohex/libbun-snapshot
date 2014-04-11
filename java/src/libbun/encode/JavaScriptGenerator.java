@@ -84,35 +84,35 @@ public class JavaScriptGenerator extends OldSourceGenerator {
 
 	@Override public void VisitNewObjectNode(NewObjectNode Node) {
 		this.Source.Append("new ", this.NameClass(Node.Type));
-		this.VisitListNode("(", Node, ")");
+		this.GenerateListNode("(", Node, ")");
 	}
 
 	@Override public void VisitCastNode(BunCastNode Node) {
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
 		this.Source.Append("(");
-		this.GenerateCode(null, Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		this.Source.Append(").constructor.name === ", this.NameClass(Node.TargetType()), ".name");
 	}
 
 	@Override public void VisitThrowNode(BunThrowNode Node) {
 		this.Source.Append("throw ");
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override public void VisitTryNode(BunTryNode Node) {
 		this.Source.Append("try");
-		this.GenerateCode(null, Node.TryBlockNode());
+		this.GenerateExpression(Node.TryBlockNode());
 		if(Node.HasCatchBlockNode()){
 			@Var String VarName = this.NameUniqueSymbol("e");
 			this.Source.Append("catch(", VarName, ")");
-			this.GenerateCode(null, Node.CatchBlockNode());
+			this.GenerateExpression(Node.CatchBlockNode());
 		}
 		if (Node.HasFinallyBlockNode()) {
 			this.Source.Append("finally");
-			this.GenerateCode(null, Node.FinallyBlockNode());
+			this.GenerateExpression(Node.FinallyBlockNode());
 		}
 	}
 
@@ -121,7 +121,7 @@ public class JavaScriptGenerator extends OldSourceGenerator {
 		this.Source.Append("var ");
 		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 		this.Source.Append(" = ");
-		this.GenerateCode(null, Node.InitValueNode());
+		this.GenerateExpression(Node.InitValueNode());
 		this.Source.Append(this.SemiColon);
 		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 	}
@@ -132,7 +132,7 @@ public class JavaScriptGenerator extends OldSourceGenerator {
 
 	private void VisitAnonymousFunctionNode(BunFunctionNode Node) {
 		this.VisitFuncParamNode("(function(", Node, ")");
-		this.GenerateCode(null, Node.BlockNode());
+		this.GenerateExpression(Node.BlockNode());
 		this.Source.Append(")");
 	}
 
@@ -144,7 +144,7 @@ public class JavaScriptGenerator extends OldSourceGenerator {
 		@Var BFuncType FuncType = Node.GetFuncType();
 		this.Source.Append("function ", Node.GetSignature());
 		this.VisitFuncParamNode("(", Node, ")");
-		this.GenerateCode(null, Node.BlockNode());
+		this.GenerateExpression(Node.BlockNode());
 		if(Node.IsExport) {
 			this.Source.Append(";");
 			this.Source.AppendLineFeed();
@@ -167,7 +167,7 @@ public class JavaScriptGenerator extends OldSourceGenerator {
 		while(i < ListSize) {
 			@Var BNode KeyNode = Node.GetListAt(i);
 			if(KeyNode instanceof ErrorNode){
-				this.GenerateCode(null, KeyNode);
+				this.GenerateExpression(KeyNode);
 				return;
 			}
 			i = i + 1;
@@ -178,12 +178,12 @@ public class JavaScriptGenerator extends OldSourceGenerator {
 			if (i > 0) {
 				this.Source.Append(", ");
 			}
-			this.GenerateCode(null, KeyNode);
+			this.GenerateExpression(KeyNode);
 			this.Source.Append(": ");
 			i = i + 1;
 			if(i < Node.GetListSize()){
 				@Var BNode ValueNode = Node.GetListAt(i);
-				this.GenerateCode(null, ValueNode);
+				this.GenerateExpression(ValueNode);
 				i = i + 1;
 			}else{
 				this.Source.Append("null");
@@ -194,7 +194,7 @@ public class JavaScriptGenerator extends OldSourceGenerator {
 
 	@Override public void VisitLetNode(BunLetVarNode Node) {
 		this.Source.AppendNewLine("var ", Node.GetUniqueName(this), " = ");
-		this.GenerateCode(null, Node.InitValueNode());
+		this.GenerateExpression(Node.InitValueNode());
 	}
 
 	@Override public void VisitClassNode(BunClassNode Node) {
@@ -235,7 +235,7 @@ public class JavaScriptGenerator extends OldSourceGenerator {
 				this.Source.AppendNewLine("this.");
 				this.Source.Append(FieldNode.GetGivenName());
 				this.Source.Append(" = ");
-				this.GenerateCode(null, FieldNode.InitValueNode());
+				this.GenerateExpression(FieldNode.InitValueNode());
 				this.Source.Append(this.SemiColon);
 			}
 			i = i + 1;
@@ -253,7 +253,7 @@ public class JavaScriptGenerator extends OldSourceGenerator {
 	@Override public void VisitErrorNode(ErrorNode Node) {
 		if(Node instanceof StupidCastErrorNode) {
 			@Var StupidCastErrorNode ErrorNode = (StupidCastErrorNode)Node;
-			this.GenerateCode(null, ErrorNode.ErrorNode);
+			this.GenerateExpression(ErrorNode.ErrorNode);
 		}
 		else {
 			@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);

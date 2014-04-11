@@ -86,7 +86,7 @@ public class CommonLispGenerator extends OldSourceGenerator {
 		this.Source.Append("(setq ");
 		this.VisitGetNameNode(Node.NameNode());
 		this.Source.Append(" ");
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 		this.Source.Append(")");
 	}
 
@@ -94,12 +94,12 @@ public class CommonLispGenerator extends OldSourceGenerator {
 		this.Source.Append("(");
 		this.Source.Append(Node.SourceToken.GetText());
 		this.Source.Append(" ");
-		this.GenerateCode(null, Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 		this.Source.Append(")");
 	}
 
-	@Override protected void GenerateSurroundCode(BNode Node) {
-		this.GenerateCode(null, Node);
+	@Override protected void GenerateExpression(BNode Node) {
+		this.GenerateExpression(Node);
 	}
 
 	private String GetBinaryOperator(BToken Token) {
@@ -122,9 +122,9 @@ public class CommonLispGenerator extends OldSourceGenerator {
 		}
 		this.Source.Append(operator);
 		this.Source.Append(" ");
-		this.GenerateCode(null, Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		this.Source.Append(" ");
-		this.GenerateCode(null, Node.RightNode());
+		this.GenerateExpression(Node.RightNode());
 		if (operator.equals("/")) {
 			this.Source.Append(")");
 		}
@@ -141,9 +141,9 @@ public class CommonLispGenerator extends OldSourceGenerator {
 			this.Source.Append(operator);
 		}
 		this.Source.Append(" ");
-		this.GenerateCode(null, Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		this.Source.Append(" ");
-		this.GenerateCode(null, Node.RightNode());
+		this.GenerateExpression(Node.RightNode());
 		if (operator.equals("!=")) {
 			this.Source.Append(")");
 		}
@@ -152,17 +152,17 @@ public class CommonLispGenerator extends OldSourceGenerator {
 
 	@Override public void VisitAndNode(BunAndNode Node) {
 		this.Source.Append("(and ");
-		this.GenerateCode(null, Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		this.Source.Append(" ");
-		this.GenerateCode(null, Node.RightNode());
+		this.GenerateExpression(Node.RightNode());
 		this.Source.Append(")");
 	}
 
 	@Override public void VisitOrNode(BunOrNode Node) {
 		this.Source.Append("(or ");
-		this.GenerateCode(null, Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		this.Source.Append(" ");
-		this.GenerateCode(null, Node.RightNode());
+		this.GenerateExpression(Node.RightNode());
 		this.Source.Append(")");
 	}
 
@@ -171,18 +171,18 @@ public class CommonLispGenerator extends OldSourceGenerator {
 	//
 	@Override public void VisitWhileNode(BunWhileNode Node) {
 		this.Source.Append("(loop while ");
-		this.GenerateCode(null, Node.CondNode());
+		this.GenerateExpression(Node.CondNode());
 		this.Source.AppendNewLine();
 		this.Source.Append("do");
 		this.Source.AppendNewLine();
-		this.GenerateCode(null, Node.BlockNode());
+		this.GenerateExpression(Node.BlockNode());
 		this.Source.Append(")");
 	}
 
 	@Override
 	protected void VisitVarDeclNode(BunLetVarNode Node) {
 		this.Source.Append("(", this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " ");
-		this.GenerateCode(null, Node.InitValueNode());
+		this.GenerateExpression(Node.InitValueNode());
 		this.Source.Append(")");
 		if(Node.HasNextVarNode()) {
 			this.VisitVarDeclNode(Node.NextVarNode());
@@ -190,7 +190,7 @@ public class CommonLispGenerator extends OldSourceGenerator {
 	}
 
 	@Override
-	protected void VisitStmtList(BunBlockNode BlockNode) {
+	protected void GenerateStmtListNode(BunBlockNode BlockNode) {
 		@Var int Size = BlockNode.GetListSize();
 		if(Size == 0) {
 			this.Source.Append("()");
@@ -211,14 +211,14 @@ public class CommonLispGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitBlockNode(BunBlockNode Node) {
-		this.VisitStmtList(Node);
+		this.GenerateStmtListNode(Node);
 	}
 
 	@Override public void VisitVarBlockNode(BunVarBlockNode Node) {
 		this.Source.Append("(let (");
 		this.VisitVarDeclNode(Node.VarDeclNode());
 		this.Source.Append(")");
-		this.VisitStmtList(Node);
+		this.GenerateStmtListNode(Node);
 		this.Source.Append(")");
 	}
 
@@ -235,12 +235,12 @@ public class CommonLispGenerator extends OldSourceGenerator {
 
 	@Override public void VisitIfNode(BunIfNode Node) {
 		this.Source.Append("(if  ");
-		this.GenerateCode(null, Node.CondNode());
+		this.GenerateExpression(Node.CondNode());
 		this.Source.Append(" ");
-		this.GenerateCode(null, Node.ThenNode());
+		this.GenerateExpression(Node.ThenNode());
 		this.Source.Append(" ");
 		if(Node.HasElseNode()) {
-			this.GenerateCode(null, Node.ElseNode());
+			this.GenerateExpression(Node.ElseNode());
 		}
 		else {
 			this.Source.Append("nil");
@@ -256,9 +256,9 @@ public class CommonLispGenerator extends OldSourceGenerator {
 		}
 		else {
 			this.Source.Append("funcall ");
-			this.GenerateCode(null, Node.FunctorNode());
+			this.GenerateExpression(Node.FunctorNode());
 		}
-		this.VisitListNode(" ", Node, " ");
+		this.GenerateListNode(" ", Node, " ");
 		this.Source.Append(")");
 	}
 
@@ -295,7 +295,7 @@ public class CommonLispGenerator extends OldSourceGenerator {
 			this.Source.Append("(return ");
 		}
 		if(Node.HasReturnExpr()) {
-			this.GenerateCode(null, Node.ExprNode());
+			this.GenerateExpression(Node.ExprNode());
 		}
 		else {
 			this.Source.Append("nil");
@@ -312,7 +312,7 @@ public class CommonLispGenerator extends OldSourceGenerator {
 			this.Source.Append("#'(lambda ");
 			this.VisitFuncParamNode("(", Node, ")");
 			this.Source.Append("(block nil ");
-			this.GenerateCode(null, Node.BlockNode());
+			this.GenerateExpression(Node.BlockNode());
 			this.Source.Append("))");
 		}
 		else {
@@ -320,7 +320,7 @@ public class CommonLispGenerator extends OldSourceGenerator {
 			this.Source.Append("(defun ");
 			this.Source.Append(this.ClFunctionName(Node));
 			this.VisitFuncParamNode(" (", Node, ")");
-			this.GenerateCode(null, Node.BlockNode());
+			this.GenerateExpression(Node.BlockNode());
 			this.Source.Append(")");
 			if(Node.IsExport) {
 				if(Node.FuncName().equals("main")) {
@@ -345,16 +345,16 @@ public class CommonLispGenerator extends OldSourceGenerator {
 	@Override public void VisitTryNode(BunTryNode Node) {
 		this.Source.Append("(unwind-protect ");
 		this.Source.Append("(handler-case ");
-		this.GenerateCode(null, Node.TryBlockNode());
+		this.GenerateExpression(Node.TryBlockNode());
 		if(Node.HasCatchBlockNode()) {
 			@Var String VarName = this.NameUniqueSymbol("e");
 			this.Source.AppendNewLine("(error (", VarName, ")");
-			this.VisitStmtList(Node.CatchBlockNode());
+			this.GenerateStmtListNode(Node.CatchBlockNode());
 			this.Source.AppendNewLine(")");
 		}
 		this.Source.Append(")");
 		if(Node.HasFinallyBlockNode()) {
-			this.GenerateCode(null, Node.FinallyBlockNode());
+			this.GenerateExpression(Node.FinallyBlockNode());
 		}
 		this.Source.Append(")");
 	}
@@ -368,25 +368,25 @@ public class CommonLispGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitGroupNode(GroupNode Node) {
-		this.GenerateCode2("", null, Node.ExprNode(), "");
+		this.GenerateExpression("", Node.ExprNode(), "");
 	}
 
 	@Override public void VisitNotNode(BunNotNode Node) {
 		this.Source.Append("(", this.NotOperator, " ");
-		this.GenerateSurroundCode(Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 		this.Source.Append(") ");
 	}
 
 	@Override public void VisitLetNode(BunLetVarNode Node) {
 		this.Source.AppendNewLine("(setf ", Node.GetUniqueName(this), "");
 		this.Source.Append(" ");
-		this.GenerateCode(null, Node.InitValueNode());
+		this.GenerateExpression(Node.InitValueNode());
 		this.Source.Append(")");
 	}
 
 	@Override public void VisitThrowNode(BunThrowNode Node) {
 		this.Source.Append("(throw nil ");
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 		this.Source.Append(")");
 	}
 
@@ -395,7 +395,7 @@ public class CommonLispGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitArrayLiteralNode(BunArrayLiteralNode Node) {
-		this.VisitListNode("'(", Node, ")");
+		this.GenerateListNode("'(", Node, ")");
 	}
 
 	@Override public void VisitGetIndexNode(GetIndexNode Node) {
@@ -403,26 +403,26 @@ public class CommonLispGenerator extends OldSourceGenerator {
 		if (Node.RecvNode().Type == BType.StringType) {
 			this.Source.Append("string (");
 			this.Source.Append("aref ");
-			this.GenerateCode(null, Node.RecvNode());
+			this.GenerateExpression(Node.RecvNode());
 			this.Source.Append(" ");
-			this.GenerateCode(null, Node.IndexNode());
+			this.GenerateExpression(Node.IndexNode());
 			this.Source.Append(") ");
 		} else {
 			this.Source.Append("nth ");
-			this.GenerateCode(null, Node.IndexNode());
+			this.GenerateExpression(Node.IndexNode());
 			this.Source.Append(" ");
-			this.GenerateCode(null, Node.RecvNode());
+			this.GenerateExpression(Node.RecvNode());
 		}
 		this.Source.Append(")");
 	}
 
 	@Override public void VisitSetIndexNode(SetIndexNode Node) {
 		this.Source.Append("(setf (nth ");
-		this.GenerateCode(null, Node.IndexNode());
+		this.GenerateExpression(Node.IndexNode());
 		this.Source.Append(" ");
-		this.GenerateCode(null, Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 		this.Source.Append(") ");
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 		this.Source.Append(")");
 	}
 }

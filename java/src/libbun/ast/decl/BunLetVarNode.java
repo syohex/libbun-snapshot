@@ -10,24 +10,21 @@ import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Nullable;
-import libbun.util.Var;
 
 public class BunLetVarNode extends AbstractListNode {
 	public static final int _NameInfo = 0;
 	public static final int _TypeInfo = 1;
 	public final static int _InitValue = 2;
-	// this is used for multiple declaration of variables
-	public final static int _NextVar = 3;  // by apppend
 
 	public final static int _IsExport   = 1;
 	public final static int _IsReadOnly = 1 << 1;
 	public final static int _IsDefined  = 1 << 2;
 	public final static int _IsUsed     = 1 << 3;
 
-	@BField public int NameFlag = 0;
+	@BField public int     NameFlag = 0;
 	@BField public BType   GivenType = null;
 	@BField public String  GivenName = null;
-	@BField public int NameIndex = 0;
+	@BField public int     NameIndex = 0;
 
 	public BunLetVarNode(BNode ParentNode, int NameFlag, @Nullable BType GivenType, @Nullable String GivenName) {
 		super(ParentNode, null, 3);
@@ -90,7 +87,6 @@ public class BunLetVarNode extends AbstractListNode {
 		return Generator.NameUniqueSymbol(this.GetGivenName(), this.NameIndex);
 	}
 
-
 	public final BNode InitValueNode() {
 		if(this.AST[BunLetVarNode._InitValue] == null) {
 			this.SetNode(BunLetVarNode._InitValue, new DefaultValueNode());
@@ -110,27 +106,34 @@ public class BunLetVarNode extends AbstractListNode {
 		return this.InitValueNode() instanceof ConstNode;
 	}
 
+	//		public final boolean HasNextVarNode() {
+	//			return BunLetVarNode._NextVar < this.GetAstSize();
+	//		}
+	//
+	//		public final BunLetVarNode NextVarNode() {
+	//			if(BunLetVarNode._NextVar < this.GetAstSize()) {
+	//				@Var BNode VarNode = this.AST[BunLetVarNode._NextVar];
+	//				if(VarNode instanceof BunLetVarNode) {
+	//					return (BunLetVarNode)VarNode;
+	//				}
+	//			}
+	//			return null;
+	//		}
+	//
+	//		public final boolean AppendVarNode(BunLetVarNode VarNode) {
+	//			if(this.HasNextVarNode()) {
+	//				return this.NextVarNode().AppendVarNode(VarNode);
+	//			}
+	//			this.Append(VarNode, BNode._EnforcedParent);
+	//			return true;
+	//		}
 
 	public final boolean HasNextVarNode() {
-		return BunLetVarNode._NextVar < this.GetAstSize();
+		return false;
 	}
 
 	public final BunLetVarNode NextVarNode() {
-		if(BunLetVarNode._NextVar < this.GetAstSize()) {
-			@Var BNode VarNode = this.AST[BunLetVarNode._NextVar];
-			if(VarNode instanceof BunLetVarNode) {
-				return (BunLetVarNode)VarNode;
-			}
-		}
 		return null;
-	}
-
-	public final boolean AppendVarNode(BunLetVarNode VarNode) {
-		if(this.HasNextVarNode()) {
-			return this.NextVarNode().AppendVarNode(VarNode);
-		}
-		this.Append(VarNode, BNode._EnforcedParent);
-		return true;
 	}
 
 }

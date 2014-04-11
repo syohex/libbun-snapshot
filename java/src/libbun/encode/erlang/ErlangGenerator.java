@@ -59,17 +59,17 @@ public class ErlangGenerator extends OldSourceGenerator {
 		this.AppendZStrDecl();
 	}
 
-	@Override public void VisitStmtList(BunBlockNode BlockNode) {
-		this.VisitStmtList(BlockNode, ",");
+	@Override public void GenerateStmtListNode(BunBlockNode BlockNode) {
+		this.GenerateStmtListNode(BlockNode, ",");
 	}
 
-	public void VisitStmtList(BunBlockNode BlockNode, String last) {
+	public void GenerateStmtListNode(BunBlockNode BlockNode, String last) {
 		@Var int i = 0;
 		@Var int size = BlockNode.GetListSize();
 		while (i < size) {
 			@Var BNode SubNode = BlockNode.GetListAt(i);
 			this.Source.AppendNewLine();
-			this.GenerateCode(null, SubNode);
+			this.GenerateExpression(SubNode);
 			if (i == size - 1) {
 				this.Source.Append(last);
 			}
@@ -82,7 +82,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 
 	@Override public void VisitBlockNode(BunBlockNode Node) {
 		this.Source.OpenIndent();
-		this.VisitStmtList(Node, ".");
+		this.GenerateStmtListNode(Node, ".");
 		this.Source.CloseIndent();
 	}
 	public void VisitBlockNode(BunBlockNode Node, String last) {
@@ -121,7 +121,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 	// }
 
 	// @Override public void VisitArrayLiteralNode(ZArrayLiteralNode Node) {
-	// 	this.VisitListNode("[", Node, "]");
+	// 	this.GenerateListNode("[", Node, "]");
 	// 	// TODO Auto-generated method stub
 	// }
 
@@ -132,7 +132,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 	@Override public void VisitNewObjectNode(NewObjectNode Node) {
 		this.Source.Append("#");
 		this.Source.Append(this.ToErlangTypeName(Node.Type.ShortName));
-		this.VisitListNode("{", Node, "}");
+		this.GenerateListNode("{", Node, "}");
 	}
 
 	// @Override public void VisitGroupNode(ZGroupNode Node) {
@@ -144,9 +144,9 @@ public class ErlangGenerator extends OldSourceGenerator {
 	@Override public void VisitGetIndexNode(GetIndexNode Node) {
 		if (Node.Type.Equals(BType.StringType)) {
 			this.Source.Append("string:substr(");
-			this.GenerateCode(null, Node.RecvNode());
+			this.GenerateExpression(Node.RecvNode());
 			this.Source.Append(", ");
-			this.GenerateCode(null, Node.IndexNode());
+			this.GenerateExpression(Node.IndexNode());
 			this.Source.Append(" + 1, 1)");
 		} else {
 			throw new RuntimeException("GetIndex of this Type is not supported yet");
@@ -183,7 +183,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 	@Override public void VisitSetNameNode(SetNameNode Node) {
 		int mark = this.GetLazyMark();
 
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 
 		String VarName = this.ToErlangVarName(Node.NameNode().GetUniqueName(this));
 		this.VarMgr.AssignVariable(VarName);
@@ -192,7 +192,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 
 
 	@Override public void VisitGetFieldNode(GetFieldNode Node) {
-		this.GenerateSurroundCode(Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 		this.Source.Append("#");
 		this.Source.Append(this.ToErlangTypeName(Node.RecvNode().Type.ShortName));
 		this.Source.Append(".");
@@ -203,18 +203,18 @@ public class ErlangGenerator extends OldSourceGenerator {
 		int mark = this.GetLazyMark();
 
 		GetNameNode GetNameNode = (GetNameNode)Node.RecvNode();
-		this.GenerateSurroundCode(GetNameNode);
+		this.GenerateExpression(GetNameNode);
 		this.Source.Append("#");
 		this.Source.Append(this.ToErlangTypeName(Node.RecvNode().Type.ShortName));
 		this.Source.Append("{");
 		this.Source.Append(Node.GetName(), " = ");
-		this.GenerateCode(null, Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 		this.Source.Append("}");
 		this.VarMgr.AssignVariable(GetNameNode.GetUniqueName(this));
 		SourceBuilder LazyBuilder = new SourceBuilder(this, this.Source);
 		SourceBuilder BodyBuilder = this.Source;
 		this.Source = LazyBuilder;
-		this.GenerateCode(null, Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 		this.Source.Append(" = ");
 		this.Source = BodyBuilder;
 		this.AppendLazy(mark, LazyBuilder.toString());
@@ -224,7 +224,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 	// 	this.GenerateSurroundCode(Node.RecvNode());
 	// 	this.CurrentBuilder.Append(".");
 	// 	this.CurrentBuilder.Append(Node.MethodName());
-	// 	this.VisitListNode("(", Node, ")");
+	// 	this.GenerateListNode("(", Node, ")");
 	// }
 
 	// @Override public void VisitMacroNode(ZMacroNode Node) {
@@ -254,9 +254,9 @@ public class ErlangGenerator extends OldSourceGenerator {
 			this.Source.Append(this.ToErlangFuncName(Node.FuncNameNode().GetSignature()));
 		}
 		else {
-			this.GenerateCode(null, Node.FunctorNode());
+			this.GenerateExpression(Node.FunctorNode());
 		}
-		this.VisitListNode("(", Node, ")");
+		this.GenerateListNode("(", Node, ")");
 	}
 
 	// @Override public void VisitUnaryNode(ZUnaryNode Node) {
@@ -266,14 +266,14 @@ public class ErlangGenerator extends OldSourceGenerator {
 
 	@Override public void VisitNotNode(BunNotNode Node) {
 		this.Source.Append(this.NotOperator);
-		this.GenerateSurroundCode(Node.RecvNode());
+		this.GenerateExpression(Node.RecvNode());
 	}
 
 	@Override public void VisitCastNode(BunCastNode Node) {
 		// this.CurrentBuilder.Append("(");
 		// this.GenerateTypeName(Node.Type);
 		// this.CurrentBuilder.Append(")");
-		this.GenerateSurroundCode(Node.ExprNode());
+		this.GenerateExpression(Node.ExprNode());
 	}
 
 	// @Override public void VisitInstanceOfNode(ZInstanceOfNode Node) {
@@ -312,40 +312,40 @@ public class ErlangGenerator extends OldSourceGenerator {
 		if (Node.ParentNode instanceof BinaryOperatorNode) {
 			this.Source.Append("(");
 		}
-		this.GenerateCode(null, Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		//		this.CurrentBuilder.AppendToken(Node.SourceToken.GetText());
 		@Var String Operator = this.GetBinaryOperator(Node.Type, Node.SourceToken);
 		this.Source.Append(Operator);
-		this.GenerateCode(null, Node.RightNode());
+		this.GenerateExpression(Node.RightNode());
 		if (Node.ParentNode instanceof BinaryOperatorNode) {
 			this.Source.Append(")");
 		}
 	}
 
 	@Override public void VisitComparatorNode(ComparatorNode Node) {
-		this.GenerateCode(null, Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		@Var String Operator = this.GetBinaryOperator(Node.Type, Node.SourceToken);
 		this.Source.Append(" ", Operator, " ");
-		this.GenerateCode(null, Node.RightNode());
+		this.GenerateExpression(Node.RightNode());
 	}
 
 	@Override public void VisitAndNode(BunAndNode Node) {
-		this.GenerateSurroundCode(Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		this.Source.Append(" ", this.AndOperator, " ");
-		this.GenerateSurroundCode(Node.RightNode());
+		this.GenerateExpression(Node.RightNode());
 	}
 
 	@Override public void VisitOrNode(BunOrNode Node) {
-		this.GenerateSurroundCode(Node.LeftNode());
+		this.GenerateExpression(Node.LeftNode());
 		this.Source.Append(" ", this.OrOperator, " ");
-		this.GenerateSurroundCode(Node.RightNode());
+		this.GenerateExpression(Node.RightNode());
 	}
 
 	public void AppendGuardAndBlock(BNode Node) {
 		if (Node instanceof BunIfNode) {
 			BunIfNode IfNode = (BunIfNode)Node;
 			this.Source.AppendNewLine();
-			this.GenerateSurroundCode(IfNode.CondNode());
+			this.GenerateExpression(IfNode.CondNode());
 			this.Source.Append(" ->");
 			this.VisitBlockNode((BunBlockNode)IfNode.ThenNode(), ";");
 			this.Source.AppendLineFeed();
@@ -381,7 +381,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 	@Override public void VisitReturnNode(BunReturnNode Node) {
 		this.Source.Append("throw({return, ");
 		if (Node.HasReturnExpr()) {
-			this.GenerateCode(null, Node.ExprNode());
+			this.GenerateExpression(Node.ExprNode());
 		} else {
 			this.Source.Append("void");
 		}
@@ -419,7 +419,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 		SourceBuilder LazyBuilder = new SourceBuilder(this, this.Source);
 		SourceBuilder BodyBuilder = this.Source;
 		this.Source = LazyBuilder;
-		this.GenerateCode(null, Node.CondNode());
+		this.GenerateExpression(Node.CondNode());
 		this.Source = BodyBuilder;
 		this.AppendLazy(mark1, ""
 				+ WhileNodeName
@@ -477,7 +477,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 	protected void VisitVarDeclNode(BunLetVarNode Node) {
 		@Var int mark = this.GetLazyMark();
 
-		this.GenerateCode(null, Node.InitValueNode());
+		this.GenerateExpression(Node.InitValueNode());
 
 		@Var String VarName = this.ToErlangVarName(Node.GetGivenName());
 		this.VarMgr.DefineVariable(VarName);
@@ -500,7 +500,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 		this.Source.Append("put(");
 		this.Source.Append(Node.GetUniqueName(this));
 		this.Source.Append(", ");
-		this.GenerateCode(null, Node.InitValueNode());
+		this.GenerateExpression(Node.InitValueNode());
 		this.Source.Append(")");
 	}
 
@@ -530,7 +530,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 			this.Source.AppendNewLine();
 			this.Source.Append("pass.");
 		} else {
-			this.GenerateCode(null, Node.BlockNode());
+			this.GenerateExpression(Node.BlockNode());
 		}
 
 		this.Source.AppendLineFeed();
@@ -554,7 +554,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
 			this.Source.Append(this.ToErlangTypeName(FieldNode.GetGivenName()));
 			this.Source.Append(" = ");
-			this.GenerateCode(null, FieldNode.InitValueNode());
+			this.GenerateExpression(FieldNode.InitValueNode());
 			if (i < size - 1) {
 				this.Source.AppendWhiteSpace();
 				this.Source.Append(",");
@@ -594,7 +594,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 	// }
 
 	@Override
-	protected void VisitListNode(String OpenToken, AbstractListNode VargNode, String DelimToken, String CloseToken) {
+	protected void GenerateListNode(String OpenToken, AbstractListNode VargNode, String DelimToken, String CloseToken) {
 		this.Source.Append(OpenToken);
 		@Var int i = 0;
 		while(i < VargNode.GetListSize()) {
@@ -602,14 +602,14 @@ public class ErlangGenerator extends OldSourceGenerator {
 			if (i > 0) {
 				this.Source.Append(DelimToken);
 			}
-			this.GenerateCode(null, ParamNode);
+			this.GenerateExpression(ParamNode);
 			i = i + 1;
 		}
 		this.Source.Append(CloseToken);
 	}
 	@Override
-	protected void VisitListNode(String OpenToken, AbstractListNode VargNode, String CloseToken) {
-		this.VisitListNode(OpenToken, VargNode, ", ", CloseToken);
+	protected void GenerateListNode(String OpenToken, AbstractListNode VargNode, String CloseToken) {
+		this.GenerateListNode(OpenToken, VargNode, ", ", CloseToken);
 	}
 
 	private void AppendAssertDecl() {
@@ -662,14 +662,14 @@ public class ErlangGenerator extends OldSourceGenerator {
 		if (FuncName.equals("main")) { //FIX ME!!
 			this.Source.Append("(_)");
 		} else {
-			this.VisitListNode("(", Node, ")");
+			this.GenerateListNode("(", Node, ")");
 		}
 
 		this.Source.Append(" ->");
 		this.Source.AppendLineFeed();
 		this.Source.OpenIndent();
 		this.Source.AppendNewLine("try "+ FuncName + "_inner");
-		this.VisitListNode("(", Node, ")");
+		this.GenerateListNode("(", Node, ")");
 		this.Source.Append(" of");
 		this.Source.AppendLineFeed();
 		this.Source.OpenIndent();

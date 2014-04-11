@@ -351,7 +351,7 @@ public class PythonGenerator extends SourceGenerator {
 
 	@Override public void VisitVarBlockNode(BunVarBlockNode Node) {
 		@Var BunLetVarNode VarNode = Node.VarDeclNode();
-		this.Source.AppendNewLine(this.NameLocalVariable(Node.GetNameSpace(), VarNode.GetGivenName()), " = ");
+		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), VarNode.GetGivenName()), " = ");
 		this.GenerateExpression(VarNode.InitValueNode());
 		this.GenerateStmtList(Node);
 	}
