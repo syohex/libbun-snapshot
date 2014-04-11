@@ -2,7 +2,9 @@ package libbun.encode;
 
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
+import libbun.ast.DesugarNode;
 import libbun.ast.LocalDefinedNode;
+import libbun.ast.SyntaxSugarNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.TopLevelNode;
@@ -212,6 +214,15 @@ public abstract class SourceGenerator extends AbstractGenerator {
 		this.Source.Append(Macro.substring(fromIndex));
 		if(Node.MacroFunc.RequiredLibrary != null) {
 			this.ImportLibrary(Node.MacroFunc.RequiredLibrary);
+		}
+	}
+
+	@Override public void VisitSyntaxSugarNode(SyntaxSugarNode Node) {
+		@Var DesugarNode DeNode = Node.DeSugar(this, this.TypeChecker);
+		@Var int i = 0;
+		while(i < DeNode.GetAstSize()) {
+			this.GenerateStatement(DeNode.AST[i], ";");
+			i = i + 1;
 		}
 	}
 
