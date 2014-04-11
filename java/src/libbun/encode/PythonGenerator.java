@@ -328,11 +328,14 @@ public class PythonGenerator extends SourceGenerator {
 
 	}
 
-	private void VisitStmtList(BunBlockNode BlockNode) {
+	@Override protected void GenerateStatementEnd(BNode Node) {
+	}
+
+	private void GenerateStmtList(BunBlockNode BlockNode) {
 		@Var int i = 0;
 		while (i < BlockNode.GetListSize()) {
 			@Var BNode SubNode = BlockNode.GetListAt(i);
-			this.GenerateStatement(SubNode, null);
+			this.GenerateStatement(SubNode);
 			i = i + 1;
 		}
 		if (i == 0) {
@@ -342,7 +345,7 @@ public class PythonGenerator extends SourceGenerator {
 
 	@Override public void VisitBlockNode(BunBlockNode Node) {
 		this.Source.OpenIndent(":");
-		this.VisitStmtList(Node);
+		this.GenerateStmtList(Node);
 		this.Source.CloseIndent("");
 	}
 
@@ -350,7 +353,7 @@ public class PythonGenerator extends SourceGenerator {
 		@Var BunLetVarNode VarNode = Node.VarDeclNode();
 		this.Source.AppendNewLine(this.NameLocalVariable(Node.GetNameSpace(), VarNode.GetGivenName()), " = ");
 		this.GenerateExpression(VarNode.InitValueNode());
-		this.VisitStmtList(Node);
+		this.GenerateStmtList(Node);
 	}
 
 	@Override public void VisitIfNode(BunIfNode Node) {
@@ -400,7 +403,7 @@ public class PythonGenerator extends SourceGenerator {
 			this.Source.OpenIndent(":");
 			this.Source.AppendNewLine(Node.ExceptionName());
 			this.Source.Append(" = libbun_catch(", VarName, ")");
-			this.VisitStmtList(Node.CatchBlockNode());
+			this.GenerateStmtList(Node.CatchBlockNode());
 			this.Source.CloseIndent("");
 		}
 		if(Node.HasFinallyBlockNode()) {

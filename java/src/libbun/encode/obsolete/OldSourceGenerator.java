@@ -130,6 +130,13 @@ public class OldSourceGenerator extends SourceGenerator {
 		this.Header.AppendNewLine("require ", LibName, this.SemiColon);
 	}
 
+	@Override
+	protected void GenerateStatementEnd(BNode Node) {
+		if(this.SemiColon != null && (!this.Source.EndsWith('}') || !this.Source.EndsWith(';'))) {
+			this.Source.Append(this.SemiColon);
+		}
+	}
+
 	@ZenMethod protected void GenerateCode(BType ContextType, BNode Node) {
 		Node.Accept(this);
 	}

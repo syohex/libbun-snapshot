@@ -1,5 +1,6 @@
 package libbun.encode.devel;
 
+import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
 import libbun.ast.binary.BInstanceOfNode;
@@ -68,6 +69,9 @@ public class LuaGenerator extends SourceGenerator {
 	protected void GenerateImportLibrary(String LibName) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override protected void GenerateStatementEnd(BNode Node) {
 	}
 
 	@Override

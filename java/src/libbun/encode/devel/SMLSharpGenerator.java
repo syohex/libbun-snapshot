@@ -1,5 +1,6 @@
 package libbun.encode.devel;
 
+import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
 import libbun.ast.binary.BInstanceOfNode;
@@ -63,6 +64,10 @@ public class SMLSharpGenerator extends SourceGenerator {
 	public SMLSharpGenerator() {
 		super(new BLangInfo("SML#-2.0", "sml"));
 		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	protected void GenerateStatementEnd(BNode Node) {
 	}
 
 	@Override

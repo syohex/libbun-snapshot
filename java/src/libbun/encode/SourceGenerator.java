@@ -158,17 +158,18 @@ public abstract class SourceGenerator extends AbstractGenerator {
 		}
 	}
 
-	protected void GenerateStatement(BNode Node, @Nullable String SemiColon) {
+	protected abstract void GenerateStatementEnd(BNode Node);
+
+	@Override protected void GenerateStatement(BNode Node) {
 		this.Source.AppendNewLine();
 		if(Node instanceof BunCastNode && Node.Type == BType.VoidType) {
-			Node.AST[BunCastNode._Expr].Accept(this);
+			Node = Node.AST[BunCastNode._Expr];
 		}
-		else {
-			Node.Accept(this);
-		}
-		if(SemiColon != null && (!this.Source.EndsWith('}') || !this.Source.EndsWith(';'))) {
-			this.Source.Append(SemiColon);
-		}
+		Node.Accept(this);
+		this.GenerateStatementEnd(Node);
+		//		if(SemiColon != null && (!this.Source.EndsWith('}') || !this.Source.EndsWith(';'))) {
+		//			this.Source.Append(SemiColon);
+		//		}
 	}
 
 	protected abstract void VisitParamNode(BunLetVarNode Node);
@@ -219,10 +220,13 @@ public abstract class SourceGenerator extends AbstractGenerator {
 
 	@Override public void VisitSyntaxSugarNode(SyntaxSugarNode Node) {
 		@Var DesugarNode DeNode = Node.DeSugar(this, this.TypeChecker);
-		@Var int i = 0;
-		while(i < DeNode.GetAstSize()) {
-			this.GenerateStatement(DeNode.AST[i], ";");
-			i = i + 1;
+		this.GenerateExpression(DeNode.AST[0]);
+		if(DeNode.GetAstSize() > 1) {
+			@Var int i = 1;
+			while(i < DeNode.GetAstSize()) {
+				this.GenerateStatement(DeNode.AST[i]);
+				i = i + 1;
+			}
 		}
 	}
 

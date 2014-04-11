@@ -1,5 +1,6 @@
 package libbun.encode.devel;
 
+import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
 import libbun.ast.binary.BInstanceOfNode;
@@ -62,6 +63,9 @@ public class PerlGenerator extends SourceGenerator {
 
 	public PerlGenerator() {
 		super(new BLangInfo("Perl-5.16","pl"));
+	}
+
+	@Override protected void GenerateStatementEnd(BNode Node) {
 	}
 
 	@Override
