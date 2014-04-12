@@ -27,169 +27,342 @@ package libbun.encode;
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
+import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BinaryOperatorNode;
+import libbun.ast.binary.BunAddNode;
 import libbun.ast.binary.BunAndNode;
+import libbun.ast.binary.BunBitwiseAndNode;
+import libbun.ast.binary.BunBitwiseOrNode;
+import libbun.ast.binary.BunBitwiseXorNode;
+import libbun.ast.binary.BunDivNode;
+import libbun.ast.binary.BunEqualsNode;
+import libbun.ast.binary.BunGreaterThanEqualsNode;
+import libbun.ast.binary.BunGreaterThanNode;
+import libbun.ast.binary.BunLeftShiftNode;
+import libbun.ast.binary.BunLessThanEqualsNode;
+import libbun.ast.binary.BunLessThanNode;
+import libbun.ast.binary.BunModNode;
+import libbun.ast.binary.BunMulNode;
+import libbun.ast.binary.BunNotEqualsNode;
 import libbun.ast.binary.BunOrNode;
-import libbun.ast.binary.ComparatorNode;
+import libbun.ast.binary.BunRightShiftNode;
+import libbun.ast.binary.BunSubNode;
+import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.BunFuncNameNode;
 import libbun.ast.expression.FuncCallNode;
+import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
+import libbun.ast.expression.GetNameNode;
+import libbun.ast.expression.MethodCallNode;
+import libbun.ast.expression.NewObjectNode;
+import libbun.ast.expression.SetFieldNode;
 import libbun.ast.expression.SetIndexNode;
 import libbun.ast.expression.SetNameNode;
 import libbun.ast.literal.BunArrayLiteralNode;
+import libbun.ast.literal.BunBooleanNode;
+import libbun.ast.literal.BunFloatNode;
+import libbun.ast.literal.BunIntNode;
+import libbun.ast.literal.BunMapEntryNode;
+import libbun.ast.literal.BunMapLiteralNode;
+import libbun.ast.literal.BunNullNode;
+import libbun.ast.literal.BunStringNode;
 import libbun.ast.statement.BunBreakNode;
 import libbun.ast.statement.BunIfNode;
 import libbun.ast.statement.BunReturnNode;
 import libbun.ast.statement.BunThrowNode;
 import libbun.ast.statement.BunTryNode;
 import libbun.ast.statement.BunWhileNode;
+import libbun.ast.unary.BunCastNode;
+import libbun.ast.unary.BunComplementNode;
+import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunNotNode;
+import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.encode.obsolete.OldSourceGenerator;
-import libbun.parser.BToken;
+import libbun.parser.BLangInfo;
+import libbun.parser.BLogger;
 import libbun.type.BFuncType;
 import libbun.type.BType;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
-public class CommonLispGenerator extends OldSourceGenerator {
+public class CommonLispGenerator extends SourceGenerator {
 	private boolean hasMain = false;
 	public CommonLispGenerator() {
-		super("cl", "CommonLisp");
+		super(new BLangInfo("CommonLisp", "cl"));
+	}
 
-		this.LineComment = "#"; // if not, set null
-		this.BeginComment = null; //"'''";
-		this.EndComment = null; //"'''";
-		this.Camma = " ";
-		this.SemiColon = "";
+	@Override
+	protected void GenerateImportLibrary(String LibName) {
+		//		this.Header.AppendNewLine("require ", LibName, ";");
+	}
 
-		this.TrueLiteral = "t";
-		this.FalseLiteral = "nil";
-		this.NullLiteral = "nil";
+	@Override public void VisitNullNode(BunNullNode Node) {
+		this.Source.Append("nil");
+	}
 
-		this.AndOperator = "and";
-		this.OrOperator = "or";
-		this.NotOperator = "not ";
+	@Override public void VisitBooleanNode(BunBooleanNode Node) {
+		if (Node.BooleanValue) {
+			this.Source.Append("t");
+		} else {
+			this.Source.Append("nil");
+		}
+	}
 
-		this.TopType = "object";
-		this.SetNativeType(BType.BooleanType, "bool");
-		this.SetNativeType(BType.IntType, "int");
-		this.SetNativeType(BType.FloatType, "float");
-		this.SetNativeType(BType.StringType, "str");
+	@Override public void VisitIntNode(BunIntNode Node) {
+		this.Source.Append(String.valueOf(Node.IntValue));
+	}
+
+	@Override public void VisitFloatNode(BunFloatNode Node) {
+		this.Source.Append(String.valueOf(Node.FloatValue));
+	}
+
+	@Override public void VisitStringNode(BunStringNode Node) {
+		this.Source.AppendQuotedText(Node.StringValue);
+	}
+
+	@Override public void VisitArrayLiteralNode(BunArrayLiteralNode Node) {
+		//		this.Source.Append("(let ((a (make-array 8 :adjustable T :fill-pointer 0 :initial-element 'e)))");
+		this.Source.Append("(let ((a (make-array ");
+		this.Source.AppendInt(Node.GetListSize());
+		this.Source.Append(" :initial-element ", this.InitArrayValue(Node));
+		this.Source.Append(" :adjustable T :fill-pointer 0)))");
+		@Var int i = 0;
+		while(i < Node.GetListSize()) {
+			this.GenerateExpression(" (vector-push ", Node.GetListAt(i), " a)");
+			i = i + 1;
+		}
+		this.Source.Append(" a)");
+	}
+
+	private String InitArrayValue(BunArrayLiteralNode Node) {
+		@Var BType ParamType = Node.Type.GetParamType(0);
+		if(ParamType.IsIntType()) {
+			return "0";
+		}
+		if(ParamType.IsFloatType()) {
+			return "0.0";
+		}
+		return "nil";
+	}
+
+	@Override public void VisitMapLiteralNode(BunMapLiteralNode Node) {
+		this.Source.Append("(let ((m (make-hash-table :test #'equal)))");
+		this.Source.Append("(setf");
+		@Var int i = 0;
+		while(i < Node.GetListSize()) {
+			@Var BunMapEntryNode Entry = Node.GetMapEntryNode(i);
+			this.GenerateExpression(" (gethash ", Entry.KeyNode(), " m)", Entry.ValueNode(), "");
+			i = i + 1;
+		}
+		this.Source.Append(")");/*setf*/
+		this.Source.Append(" m)");/*let*/
+	}
+
+	@Override public void VisitNewObjectNode(NewObjectNode Node) {
+		// FIXME
+		this.Source.Append("new ");
+		this.GenerateTypeName(Node.Type);
+		this.GenerateListNode("(", Node, ",", ")");
+	}
+
+	@Override public void VisitGroupNode(GroupNode Node) {
+		this.GenerateExpression(Node.ExprNode());
+	}
+
+	@Override public void VisitGetIndexNode(GetIndexNode Node) {
+		@Var BType RecvType = Node.RecvNode().Type;
+		if (RecvType.IsStringType()) {
+			this.GenerateExpression("(string (aref ", Node.RecvNode(), " ", Node.IndexNode(), "))");
+		}
+		else if(RecvType.IsMapType()) {
+			this.GenerateExpression("(gethash ", Node.RecvNode(), " ", Node.IndexNode(), ")");
+		}
+		else {
+			this.GenerateExpression("(nth ", Node.IndexNode(), " ", Node.RecvNode(), ")");
+		}
+	}
+
+	@Override public void VisitSetIndexNode(SetIndexNode Node) {
+		@Var BType RecvType = Node.RecvNode().Type;
+		if(RecvType.IsMapType()) {
+			this.GenerateExpression("(setf (gethash ", Node.IndexNode(), " ", Node.RecvNode(), ") ", Node.ExprNode(), ")");
+		}
+		else {
+			this.GenerateExpression("(setf (nth ", Node.IndexNode(), " ", Node.RecvNode(), ") ", Node.ExprNode(), ")");
+		}
+	}
+
+	@Override public void VisitGetNameNode(GetNameNode Node) {
+		this.Source.Append(Node.GetUniqueName(this));
 	}
 
 	@Override public void VisitSetNameNode(SetNameNode Node) {
 		this.Source.Append("(setq ");
 		this.VisitGetNameNode(Node.NameNode());
-		this.Source.Append(" ");
+		this.GenerateExpression(" ", Node.ExprNode(), ")");
+	}
+
+	@Override public void VisitGetFieldNode(GetFieldNode Node) {
+		this.GenerateExpression(Node.RecvNode());
+		this.Source.Append(".", Node.GetName());
+	}
+
+	@Override public void VisitSetFieldNode(SetFieldNode Node) {
+		this.GenerateExpression(Node.RecvNode());
+		this.Source.Append(".", Node.GetName(), " = ");
 		this.GenerateExpression(Node.ExprNode());
-		this.Source.Append(")");
+	}
+
+	@Override public void VisitMethodCallNode(MethodCallNode Node) {
+		this.GenerateExpression(Node.RecvNode());
+		this.Source.Append(".", Node.MethodName());
+		this.GenerateListNode("(", Node, ",", ")");
+	}
+
+	@Override public void VisitFuncCallNode(FuncCallNode Node) {
+		this.Source.Append("(");
+		@Var BunFuncNameNode FuncNameNode = Node.FuncNameNode();
+		if(FuncNameNode != null) {
+			this.Source.Append(FuncNameNode.GetSignature());
+		}
+		else {
+			this.Source.Append("funcall ");
+			this.GenerateExpression(Node.FunctorNode());
+		}
+		this.GenerateListNode(" ", Node, " ", ")");
 	}
 
 	@Override public void VisitUnaryNode(UnaryOperatorNode Node) {
-		this.Source.Append("(");
-		this.Source.Append(Node.SourceToken.GetText());
-		this.Source.Append(" ");
+		this.Source.Append("(", Node.GetOperator(), " ");
 		this.GenerateExpression(Node.RecvNode());
 		this.Source.Append(")");
 	}
 
-	@Override protected void GenerateExpression(BNode Node) {
-		this.GenerateExpression(Node);
+	@Override public void VisitPlusNode(BunPlusNode Node) {
+		this.VisitUnaryNode(Node);
 	}
 
-	private String GetBinaryOperator(BToken Token) {
-		if(Token.EqualsText("==")) {
-			return "equal";
-		} else if(Token.EqualsText("%")) {
-			return "mod";
-		} else if(Token.EqualsText("/")) {
-			return "/";
-		}
-		return Token.GetText();
+	@Override public void VisitMinusNode(BunMinusNode Node) {
+		this.VisitUnaryNode(Node);
 	}
 
-	@Override public void VisitBinaryNode(BinaryOperatorNode Node) {
-		this.Source.Append("(");
-		String operator = this.GetBinaryOperator(Node.SourceToken);
-		if (operator.equals("/")) {
-			this.Source.Append("floor" + " ");
-			this.Source.Append("(");
-		}
-		this.Source.Append(operator);
-		this.Source.Append(" ");
+	@Override public void VisitComplementNode(BunComplementNode Node) {
+		this.GenerateExpression("(lognot ", Node.RecvNode(), ")");
+	}
+
+	@Override public void VisitNotNode(BunNotNode Node) {
+		this.GenerateExpression("(not ", Node.RecvNode(), ")");
+	}
+
+	@Override public void VisitCastNode(BunCastNode Node) {
+		//		if(Node.Type.IsVoidType()) {
+		this.GenerateExpression(Node.ExprNode());
+		//		}
+		//		else {
+		//			this.Source.Append("(");
+		//			this.GenerateTypeName(Node.Type);
+		//			this.Source.Append(")");
+		//			this.GenerateExpression(Node.ExprNode());
+		//		}
+	}
+
+	public void GenerateBinaryNode(String Op, BinaryOperatorNode Node, String Extra) {
+		this.Source.Append("(", Op, " ");
 		this.GenerateExpression(Node.LeftNode());
 		this.Source.Append(" ");
 		this.GenerateExpression(Node.RightNode());
-		if (operator.equals("/")) {
-			this.Source.Append(")");
+		if(Extra != null) {
+			this.Source.Append(Extra);
 		}
 		this.Source.Append(")");
 	}
 
-	@Override public void VisitComparatorNode(ComparatorNode Node) {
-		this.Source.Append("(");
-		String operator = this.GetBinaryOperator(Node.SourceToken);
-		if (operator.equals("!=")) {
-			this.Source.Append("not" + " ");
-			this.Source.Append("(equal");
-		} else {
-			this.Source.Append(operator);
-		}
-		this.Source.Append(" ");
+	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
 		this.GenerateExpression(Node.LeftNode());
-		this.Source.Append(" ");
-		this.GenerateExpression(Node.RightNode());
-		if (operator.equals("!=")) {
-			this.Source.Append(")");
-		}
-		this.Source.Append(")");
+		this.Source.Append(" instanceof ");
+		this.GenerateTypeName(Node.TargetType());
+	}
+
+	@Override public void VisitAddNode(BunAddNode Node) {
+		this.GenerateBinaryNode(Node.GetOperator(), Node, null);
+	}
+
+	@Override public void VisitSubNode(BunSubNode Node) {
+		this.GenerateBinaryNode(Node.GetOperator(), Node, null);
+	}
+
+	@Override public void VisitMulNode(BunMulNode Node) {
+		this.GenerateBinaryNode(Node.GetOperator(), Node, null);
+	}
+
+	@Override public void VisitDivNode(BunDivNode Node) {
+		this.GenerateBinaryNode(Node.GetOperator(), Node, null);
+	}
+
+	@Override public void VisitModNode(BunModNode Node) {
+		this.GenerateBinaryNode("mod", Node, null);
+	}
+
+	@Override public void VisitLeftShiftNode(BunLeftShiftNode Node) {
+		this.GenerateBinaryNode("ash", Node, null);
+	}
+
+	@Override public void VisitRightShiftNode(BunRightShiftNode Node) {
+		this.GenerateBinaryNode("ash (-", Node, ")");
+	}
+
+	@Override public void VisitBitwiseAndNode(BunBitwiseAndNode Node) {
+		this.GenerateBinaryNode("logand", Node, null);
+	}
+
+	@Override public void VisitBitwiseOrNode(BunBitwiseOrNode Node) {
+		this.GenerateBinaryNode("logor", Node, null);
+	}
+
+	@Override public void VisitBitwiseXorNode(BunBitwiseXorNode Node) {
+		this.GenerateBinaryNode("logxor", Node, null);
+	}
+
+	@Override public void VisitEqualsNode(BunEqualsNode Node) {
+		this.GenerateBinaryNode("equal", Node, null);
+	}
+
+	@Override public void VisitNotEqualsNode(BunNotEqualsNode Node) {
+		this.GenerateBinaryNode("not (equal", Node, ")");
+	}
+
+	@Override public void VisitLessThanNode(BunLessThanNode Node) {
+		this.GenerateBinaryNode(Node.GetOperator(), Node, null);
+	}
+
+	@Override public void VisitLessThanEqualsNode(BunLessThanEqualsNode Node) {
+		this.GenerateBinaryNode(Node.GetOperator(), Node, null);
+	}
+
+	@Override public void VisitGreaterThanNode(BunGreaterThanNode Node) {
+		this.GenerateBinaryNode(Node.GetOperator(), Node, null);
+	}
+
+	@Override public void VisitGreaterThanEqualsNode(BunGreaterThanEqualsNode Node) {
+		this.GenerateBinaryNode(Node.GetOperator(), Node, null);
 	}
 
 	@Override public void VisitAndNode(BunAndNode Node) {
-		this.Source.Append("(and ");
-		this.GenerateExpression(Node.LeftNode());
-		this.Source.Append(" ");
-		this.GenerateExpression(Node.RightNode());
-		this.Source.Append(")");
+		this.GenerateBinaryNode("and", Node, null);
 	}
 
 	@Override public void VisitOrNode(BunOrNode Node) {
-		this.Source.Append("(or ");
-		this.GenerateExpression(Node.LeftNode());
-		this.Source.Append(" ");
-		this.GenerateExpression(Node.RightNode());
-		this.Source.Append(")");
+		this.GenerateBinaryNode("or", Node, null);
 	}
 
-	//
-	// Visitor API
-	//
-	@Override public void VisitWhileNode(BunWhileNode Node) {
-		this.Source.Append("(loop while ");
-		this.GenerateExpression(Node.CondNode());
-		this.Source.AppendNewLine();
-		this.Source.Append("do");
-		this.Source.AppendNewLine();
-		this.GenerateExpression(Node.BlockNode());
-		this.Source.Append(")");
+
+	@Override protected void GenerateStatementEnd(BNode Node) {
 	}
 
-	@Override
-	protected void VisitVarDeclNode(BunLetVarNode Node) {
-		this.Source.Append("(", this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " ");
-		this.GenerateExpression(Node.InitValueNode());
-		this.Source.Append(")");
-		if(Node.HasNextVarNode()) {
-			this.VisitVarDeclNode(Node.NextVarNode());
-		}
-	}
-
-	@Override
 	protected void GenerateStmtListNode(BunBlockNode BlockNode) {
 		@Var int Size = BlockNode.GetListSize();
 		if(Size == 0) {
@@ -216,22 +389,12 @@ public class CommonLispGenerator extends OldSourceGenerator {
 
 	@Override public void VisitVarBlockNode(BunVarBlockNode Node) {
 		this.Source.Append("(let (");
-		this.VisitVarDeclNode(Node.VarDeclNode());
-		this.Source.Append(")");
+		this.Source.Append("(", Node.VarDeclNode().GetUniqueName(this), " ");
+		this.GenerateExpression(Node.VarDeclNode().InitValueNode());
+		this.Source.Append("))");
 		this.GenerateStmtListNode(Node);
 		this.Source.Append(")");
 	}
-
-
-	//	@Override public void VisitTrinaryNode(ZenTrinaryNode Node) {
-	//		this.CurrentBuilder.Append("(if  ");
-	//		Node.AST[ZIfNode.Cond].Accept(this);
-	//		this.CurrentBuilder.Append(" ");
-	//		Node.AST[ZIfNode.Then].Accept(this);
-	//		this.CurrentBuilder.Append(" ");
-	//		Node.AST[ZIfNode.Else].Accept(this);
-	//		this.CurrentBuilder.Append(")");
-	//	}
 
 	@Override public void VisitIfNode(BunIfNode Node) {
 		this.Source.Append("(if  ");
@@ -248,42 +411,12 @@ public class CommonLispGenerator extends OldSourceGenerator {
 		this.Source.Append(")");
 	}
 
-	@Override public void VisitFuncCallNode(FuncCallNode Node) {
-		this.Source.Append("(");
-		@Var BunFuncNameNode FuncNameNode = Node.FuncNameNode();
-		if(FuncNameNode != null) {
-			this.GenerateFuncName(FuncNameNode);
-		}
-		else {
-			this.Source.Append("funcall ");
-			this.GenerateExpression(Node.FunctorNode());
-		}
-		this.GenerateListNode(" ", Node, " ");
+	@Override public void VisitWhileNode(BunWhileNode Node) {
+		this.Source.Append("(loop while ");
+		this.GenerateExpression(Node.CondNode());
+		this.Source.AppendNewLine("do");
+		this.GenerateExpression(Node.BlockNode());
 		this.Source.Append(")");
-	}
-
-	private BunFunctionNode LookupFunctionNode(BNode Node) {
-		while(Node != null) {
-			if(Node instanceof BunFunctionNode) {
-				return (BunFunctionNode)Node;
-			}
-			Node = Node.ParentNode;
-		}
-		return null;
-	}
-
-	private String ClFunctionName(BunFunctionNode FuncNode) {
-		String FuncName = FuncNode.FuncName();
-		if (FuncName != null) {
-			if (FuncName.equals("main")) {
-				return "main";
-			} else {
-				return FuncNode.GetSignature();
-			}
-		} else {
-			// wrapped nil block
-			return "nil";
-		}
 	}
 
 	@Override public void VisitReturnNode(BunReturnNode Node) {
@@ -303,42 +436,38 @@ public class CommonLispGenerator extends OldSourceGenerator {
 		this.Source.Append(")");
 	}
 
-	@Override protected void VisitParamNode(BunLetVarNode Node) {
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+	private BunFunctionNode LookupFunctionNode(BNode Node) {
+		while(Node != null) {
+			if(Node instanceof BunFunctionNode) {
+				return (BunFunctionNode)Node;
+			}
+			Node = Node.ParentNode;
+		}
+		return null;
 	}
 
-	@Override public void VisitFunctionNode(BunFunctionNode Node) {
-		if(!Node.IsTopLevelDefineFunction()) {
-			this.Source.Append("#'(lambda ");
-			this.VisitFuncParamNode("(", Node, ")");
-			this.Source.Append("(block nil ");
-			this.GenerateExpression(Node.BlockNode());
-			this.Source.Append("))");
+	private String ClFunctionName(BunFunctionNode FuncNode) {
+		String FuncName = FuncNode.FuncName();
+		if (FuncName != null) {
+			if (FuncName.equals("main")) {
+				return "main";
+			}
+			else {
+				return FuncNode.GetSignature();
+			}
 		}
 		else {
-			@Var BFuncType FuncType = Node.GetFuncType();
-			this.Source.Append("(defun ");
-			this.Source.Append(this.ClFunctionName(Node));
-			this.VisitFuncParamNode(" (", Node, ")");
-			this.GenerateExpression(Node.BlockNode());
-			this.Source.Append(")");
-			if(Node.IsExport) {
-				if(Node.FuncName().equals("main")) {
-					this.hasMain = true;
-				}
-			}
-			if(this.IsMethod(Node.FuncName(), FuncType)) {
-				//				this.CurrentBuilder.Append(this.NameMethod(FuncType.GetRecvType(), Node.FuncName));
-				//				this.CurrentBuilder.Append(" = ", FuncType.StringfySignature(Node.FuncName));
-				//				this.CurrentBuilder.AppendLineFeed();
-			}
+			return "nil";
 		}
 	}
 
+	@Override public void VisitBreakNode(BunBreakNode Node) {
+		this.Source.Append("(return)");
+	}
 
-	@Override public void VisitErrorNode(ErrorNode Node) {
-		this.Source.Append("(error ");
-		this.Source.Append(Node.ErrorMessage);
+	@Override public void VisitThrowNode(BunThrowNode Node) {
+		this.Source.Append("(throw nil ");
+		this.GenerateExpression(Node.ExprNode());
 		this.Source.Append(")");
 	}
 
@@ -360,6 +489,81 @@ public class CommonLispGenerator extends OldSourceGenerator {
 	}
 
 
+	protected void GenerateTypeAnnotation(BType Type) {
+		if(!Type.IsVarType()) {
+			this.Source.Append(": ");
+			this.GenerateTypeName(Type);
+		}
+	}
+
+
+	@Override public void VisitLetNode(BunLetVarNode Node) {
+		if(Node.IsParamNode()) {
+			this.Source.Append(Node.GetUniqueName(this));
+		}
+		else {
+			this.Source.AppendNewLine("(setf ", Node.GetUniqueName(this), "");
+			this.Source.Append(" ");
+			this.GenerateExpression(Node.InitValueNode());
+			this.Source.Append(")");
+
+		}
+	}
+
+	@Override public void VisitFunctionNode(BunFunctionNode Node) {
+		if(!Node.IsTopLevelDefineFunction()) {
+			this.Source.Append("#'(lambda ");
+			this.GenerateListNode("(", Node, " ", ")");
+			this.Source.Append("(block nil ");
+			this.GenerateExpression(Node.BlockNode());
+			this.Source.Append("))");
+		}
+		else {
+			@Var BFuncType FuncType = Node.GetFuncType();
+			this.Source.Append("(defun ");
+			this.Source.Append(this.ClFunctionName(Node));
+			this.GenerateListNode("(", Node, " ", ")");
+			this.GenerateExpression(Node.BlockNode());
+			this.Source.Append(")");
+			if(Node.IsExport) {
+				if(Node.FuncName().equals("main")) {
+					this.hasMain = true;
+				}
+			}
+			if(this.IsMethod(Node.FuncName(), FuncType)) {
+				//				this.CurrentBuilder.Append(this.NameMethod(FuncType.GetRecvType(), Node.FuncName));
+				//				this.CurrentBuilder.Append(" = ", FuncType.StringfySignature(Node.FuncName));
+				//				this.CurrentBuilder.AppendLineFeed();
+			}
+		}
+	}
+
+
+	@Override public void VisitClassNode(BunClassNode Node) {
+		this.Source.AppendNewLine("class ", Node.ClassName());
+		if(Node.SuperType() != null) {
+			this.Source.Append(" extends ");
+			this.GenerateTypeName(Node.SuperType());
+		}
+		this.Source.OpenIndent(" {");
+		@Var int i = 0;
+		while (i < Node.GetListSize()) {
+			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
+			this.Source.AppendNewLine("var ", FieldNode.GetGivenName());
+			this.GenerateTypeAnnotation(FieldNode.DeclType());
+			this.Source.Append(" = ");
+			this.GenerateExpression(FieldNode.InitValueNode());
+			this.GenerateStatementEnd(FieldNode);
+			i = i + 1;
+		}
+		this.Source.CloseIndent("}");
+	}
+
+	@Override public void VisitErrorNode(ErrorNode Node) {
+		@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
+		this.Source.Append("/*", Message, "*/");
+	}
+
 	@Override @ZenMethod protected void Finish(String FileName) {
 		if(this.hasMain) {
 			this.Source.AppendNewLine("(main)");
@@ -367,62 +571,19 @@ public class CommonLispGenerator extends OldSourceGenerator {
 		}
 	}
 
-	@Override public void VisitGroupNode(GroupNode Node) {
-		this.GenerateExpression("", Node.ExprNode(), "");
+	@Override
+	protected void VisitParamNode(BunLetVarNode Node) {
+		// TODO Auto-generated method stub
+
 	}
 
-	@Override public void VisitNotNode(BunNotNode Node) {
-		this.Source.Append("(", this.NotOperator, " ");
-		this.GenerateExpression(Node.RecvNode());
-		this.Source.Append(") ");
+	@Override
+	public void VisitBinaryNode(BinaryOperatorNode Node) {
+		// TODO Auto-generated method stub
+
 	}
 
-	@Override public void VisitLetNode(BunLetVarNode Node) {
-		this.Source.AppendNewLine("(setf ", Node.GetUniqueName(this), "");
-		this.Source.Append(" ");
-		this.GenerateExpression(Node.InitValueNode());
-		this.Source.Append(")");
-	}
 
-	@Override public void VisitThrowNode(BunThrowNode Node) {
-		this.Source.Append("(throw nil ");
-		this.GenerateExpression(Node.ExprNode());
-		this.Source.Append(")");
-	}
 
-	@Override public void VisitBreakNode(BunBreakNode Node) {
-		this.Source.Append("(return)");
-	}
 
-	@Override public void VisitArrayLiteralNode(BunArrayLiteralNode Node) {
-		this.GenerateListNode("'(", Node, ")");
-	}
-
-	@Override public void VisitGetIndexNode(GetIndexNode Node) {
-		this.Source.Append("(");
-		if (Node.RecvNode().Type == BType.StringType) {
-			this.Source.Append("string (");
-			this.Source.Append("aref ");
-			this.GenerateExpression(Node.RecvNode());
-			this.Source.Append(" ");
-			this.GenerateExpression(Node.IndexNode());
-			this.Source.Append(") ");
-		} else {
-			this.Source.Append("nth ");
-			this.GenerateExpression(Node.IndexNode());
-			this.Source.Append(" ");
-			this.GenerateExpression(Node.RecvNode());
-		}
-		this.Source.Append(")");
-	}
-
-	@Override public void VisitSetIndexNode(SetIndexNode Node) {
-		this.Source.Append("(setf (nth ");
-		this.GenerateExpression(Node.IndexNode());
-		this.Source.Append(" ");
-		this.GenerateExpression(Node.RecvNode());
-		this.Source.Append(") ");
-		this.GenerateExpression(Node.ExprNode());
-		this.Source.Append(")");
-	}
 }

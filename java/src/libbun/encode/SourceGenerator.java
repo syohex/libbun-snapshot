@@ -158,6 +158,16 @@ public abstract class SourceGenerator extends AbstractGenerator {
 		}
 	}
 
+	protected final void GenerateExpression(String Text1, BNode Node1, String Text2, BNode Node2, String Text3, BNode Node3, String Text4) {
+		this.Source.Append(Text1);
+		this.GenerateExpression(Node1);
+		this.Source.Append(Text2);
+		this.GenerateExpression(Node2);
+		this.Source.Append(Text3);
+		this.GenerateExpression(Node3);
+		this.Source.Append(Text4);
+	}
+
 	protected abstract void GenerateStatementEnd(BNode Node);
 
 	@Override protected void GenerateStatement(BNode Node) {
