@@ -24,8 +24,8 @@ define trim "$[0].trim()": Func<String,String>
 define _ "": Func<α[],String>
 define size "": Func<α[],int>
 define size "": Func<α[],int,void>
-define get "": Func<a[],int,a>
-define set "": Func<a[],int,a,void>
+define get "$[0].get($[1])": Func<a[],int,a>
+define set "$[0].set($[1], $[2])": Func<a[],int,a,void>
 define add "": Func<α[],α,void>
 define insert "": Func<α[],int,α,void>
 define remove "": Func<α[],int,α>

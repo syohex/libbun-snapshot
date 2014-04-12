@@ -198,9 +198,11 @@ size: Func<α[],int,void>
 get: Func<a[],int,a>
  #: a.$$() tests the existence of the specified key in this array
  bun,py,js,cs: $[0][$[1]]
+ java: $[0].get($[1])
  
 set: Func<a[],int,a,void>
  bun,py,js,cs: $[0][$[1]] = $[2]
+ java: $[0].set($[1], $[2])
 
 add: Func<α[],α,void>
  #: a.$$(x) adds a new element to the end of this array
@@ -252,38 +254,38 @@ size: Func<float[],int,void>
 _: Func<Map<α>,String>
  #: Converts this map to a string
  bun: ((String)$[0])
- py:  unicode($[0])
  js:  JSON.stringify($[0])
+ py:  unicode($[0])
 
 hasKey: Func<Map<a>,String,boolean>
  #: a.$$() tests the existence of the specified key in this array
  bun: $[0].hasKey($[1])
  cl:  (gethash $[1] $[0])
- js:  ($[1] in $[0])
  py:  $[0].has_key($[1])
+ js:  ($[1] in $[0])
  
 get: Func<Map<a>,String,a>
  #: a.$$() tests the existence of the specified key in this array
  bun: $[0][$[1]]
  cl:  (gethash $[1] $[0])
- js:  $[0][$[1]] 
  py:  $[0][$[1]]
+ js:  $[0][$[1]] 
 
 get: Func<Map<a>,String,a,a>
  #: a.$$() tests the existence of the specified key in this array
  bun: $[0].get($[1],$[2])
- py:  @mapget~libbun_mapget($[0],$[1],$[2])
  js:  @mapget~libbun_mapget($[0],$[1],$[2])
+ py:  @mapget~libbun_mapget($[0],$[1],$[2])
 
 set: Func<Map<a>,String,a,void>
  bun: $[0][$[1]] = $[2]
- py:  $[0][$[1]] = $[2]
  js:  $[0][$[1]] = $[2]
+ py:  $[0][$[1]] = $[2]
 
 keys: Func<Map<a>,String[]>
  bun: $[0].keys()
- py:  $[0].keys()
  js:  Object.keys($[0])
+ py:  $[0].keys()
 
 
  

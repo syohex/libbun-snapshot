@@ -72,6 +72,9 @@ public class PythonGenerator extends SourceGenerator {
 	public PythonGenerator() {
 		super(new BLangInfo("Python-2.7", "py"));
 		this.LoadInlineLibrary("inline.py", "##");
+		this.Header.Append("#! /usr/bin/env python");
+		this.Header.AppendNewLine("# -*- coding: utf-8 -*-");
+		this.Source.AppendNewLine("## end of header", this.LineFeed);
 	}
 
 	@Override protected void GenerateImportLibrary(String LibName) {
@@ -100,6 +103,7 @@ public class PythonGenerator extends SourceGenerator {
 	}
 
 	@Override public void VisitStringNode(BunStringNode Node) {
+		this.Source.Append("u");
 		this.Source.AppendQuotedText(Node.StringValue);
 	}
 
