@@ -52,9 +52,7 @@
 	<!--               CLEAN                -->
 	<!-- ================================== -->
 	<target name="clean">
-		<delete>
-			<fileset dir="${build_dir}" includes="**/*.class"/>
-		</delete>
+		<delete dir="${build_dir}" />
 		<delete file="${BinaryName}.jar" />
 	</target>
 
