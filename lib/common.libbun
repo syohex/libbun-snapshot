@@ -2,102 +2,141 @@
 
 assert: Func<boolean,String,void>
  bun,java: assert($[0])
+ c:   assert.h~assert($[0])
+ cl:  (assert $[0])
+ cs:  Debug.Assert($[0])
  py:  assert $[0], $[1]
- js: onsole.assert($[0], $[1])
- cs: Debug.Assert($[0])
+ js:  onsole.assert($[0], $[1])
 
 println: Func<String,void>
  bun:  println($[0])
+ c:    stdio.h~printf("%s\n", $[0])
+ cl:   ~(format t "~a~%" $[0])
+ cs:   Console.WriteLine($[0])
  java: System.out.println($[0])
  js:   console.log($[0])
  py:   print $[0]
- cs:   Console.WriteLine($[0])
 
 print: Func<String,void>
  bun: print($[0])
+ c:   stdio.h~puts($[0])
+ cl:  ~(format t "~a" $[0])
+ cs:  Console.Write($[0])
  java: System.out.print($[0])
  js:  console.log($[0])
  py:  print $[0],
- cs:  Console.Write($[0])
 
 ## boolean
 _: Func<boolean,String>
- bun: ((String)$[0])
+ bun:  ((String)$[0])
+ c:    @S~(($[0])?S("true"):S("false"))
+ cl:  ~(format nil "~a" $[0])
+ cs:   ($[0]).ToString()
  java: String.valueOf($[0])
- py:  (u'true' if $[0] else u'false')
- js: String($[0])
- cs: ($[0]).ToString()
+ js:   String($[0])
+ py:   (u'true' if $[0] else u'false')
 
 ## int
 _: Func<int,float>
  bun: ((float)$[0])
- java,cs: ((long)$[0])
+ c:   ((double)$[0])
+ cl:  (coerce $[0] 'float)
+ cs:  ((double)$[0])
+ java: ((double)$[0])
+ js:  $[0]
  py:  float($[0])
- js: $[0]
 
 _: Func<int,String>
  bun: ((String)$[0])
- java: String.valueOf($[0])
- py:  unicode($[0])
- js: String($[0])
+ c:   @i2s~libbun_i2s($[0])
+ cl:  ~(format nil "~a" $[0])
  cs: ($[0]).ToString()
+ java: String.valueOf($[0])
+ js: String($[0])
+ py:  unicode($[0])
 
 ## float
 _: Func<float,int>
- bun: ((int)$[0])
- bun,cs: ((double)$[0])
- py:  int($[0])
- js: ($[0])
+ bun:  ((int)$[0])
+ c:    ((double)$[0])
+ cl:   (round $[0])
+ cs:   ((long)$[0])
+ java: ((long)$[0])
+ js:   $[0]
+ py:   int($[0])
 
 _: Func<float,String>
- bun: ((String)$[0])
+ bun:   ((String)$[0])
+ c:    @f2s~libbun_f2s($[0])
+ cl:   ~(format nil "~a" $[0])
  java: String.valueOf($[0])
- py:  (u'%.5f' % ($[0]))
- js: String($[0])
- cs: ($[0]).ToString()
+ py:   (u'%.5f' % ($[0]))
+ js:   String($[0])
+ cs:   ($[0]).ToString()
 
 ## String
+
+_: Func<String,int>
+ bun: ((int)$[0])
+ c:   @s2i~libbun_s2i($[0])
+ cl:  (parse-integer $[0])
+
+_: Func<String,float>
+ bun: ((float)$[0])
+ c:   @s2f~libbun_s2f($[0])
+ cl:  (read-from-string $[0])
+ 
++: Func<String,String,String>
+ cl: ~(format nil "~a~a" $[0] $[1])
 
 size: Func<String,int>
  #: s.size() returns the length of a string $s
  bun:  $[0].size()
+ cl:   (length $[0])
+ cs:   $[0].Length
  java: $[0].length()
  js:   $[0].length 
  py:   len($[0])
- cs:   $[0].Length
 
 equals: Func<String,String,boolean>
  bun,py,js,cs:  $[0] == $[1]
+ cl: (string= $[0] $[1])
+ java: $[0].equals($[1])
 
 startsWith: Func<String,String,boolean>
  bun,java:  $[0].startsWith($[1])
- py:   $[0].startswith($[1])
- js:   ($[0].lastIndexOf($[1], 0) === 0)
+ cl:   (and (>= (length $[0]) (length $[1])) (string= (subseq $[0] 0 (length $[1])) $[1]))
  cs:   $[0].StartsWith($[1])
+ js:   ($[0].lastIndexOf($[1], 0) === 0)
+ py:   $[0].startswith($[1])
 
 endsWith: Func<String,String,boolean>
  bun,java:  $[0].endsWith($[1])
- py:   $[0].endswith($[1])
- js:   ($[0].slice(- $[1].length) === $[1])
+ cl:   (let ((spos (- (length $[0]) (length $[1])))) (and (>= spos 0) (string= (subseq $[0] spos (length $[0])) $[1])))
  cs:   $[0].EndsWith($[1])
+ js:   ($[0].slice(- $[1].length) === $[1])
+ py:   $[0].endswith($[1])
 
 substring: Func<String,int,String>
  #: s.substring(x) extracts the substring from a string $s, between $x and the end of $s
  bun,java,js: $[0].substring($[1])
- py:  $[0][$[1]:] 
+ cl: (subseq $[0] $[1])
  cs: $[0].Substring($[1])
+ py:  $[0][$[1]:] 
 
 substring: Func<String,int,int,String>
  #: s.substring(x,y) extracts the substring from a string $s, between $x and $y
  bun,java,js: $[0].substring($[1],$[2])
- py:  $[0][$[1]:$[2]]
+ cl: (subseq $[0] $[1] $[2])
  cs: $[0].Substring($[1], $[2])
+ py:  $[0][$[1]:$[2]]
 
 indexOf: Func<String,String,int>
  #: s.indexOf(x) returns the position of the first found occurrence of $x
- bun,java,js: $[0].indexOf($[1]) 
- py:  $[0].find($[1])
+ bun,java,js: $[0].indexOf($[1])
+ cl:  (or (search $[1] $[0]) -1)
  cs:  $[0].IndexOf($[1])
+ py:  $[0].find($[1])
 
 lastIndexOf: Func<String,String,int>
  #: s.lastIndexOf(x) returns the position of the last found occurrence of $x
@@ -108,61 +147,75 @@ lastIndexOf: Func<String,String,int>
 toLowerCase: Func<String,String>
  #: s.toLowerCase() converts a string $s to lowercase letters
  bun,java,js: $[0].toLowerCase($[1]) 
- py:  $[0].lower()
+ cl:  (string-uppercase $[0])
  cs:  $[0].ToLowerCase($[1]) 
+ py:  $[0].lower()
 
 toUpperCase: Func<String,String>
  #: s.toUpperCase() converts a string $s to uppercase letters
  bun,java,js: $[0].toUpperCase($[1]) 
- py:  $[0].upper()
+ cl:  (string-downcase $[0])
  cs:  $[0].ToUpperCase($[1]) 
+ py:  $[0].upper()
 
 #codeAt
-#replace
+
+replace: Func<String,String,String,String>
+ bun: $[0].replace($[1], $[2])
+ cl:  cl-ppcre~(cl-ppcre:regex-replace-all $[1] $[0] $[2])
+ java: $[0].replaceAll($[1], $[2])
+ 
 #split
-#trim
+trim: Func<String,String>
+ bun: $[0].trim()
+ cl: (string-trim '(#\Space) $[0])
+ java: $[0].trim()
 
 ## Array
 _: Func<α[],String>
  #: Converts an array to a string
  bun: ((String)$[0])
+ cl:  ~(format nil "~a" $[0])
+ cs:  string.Join("", $[0])
  py:  unicode($[0])
  js:  $[0].join("")
- cs:  string.Join("", $[0])
   
 size: Func<α[],int>
  #: a.$$() returns the number of elements in this array
  bun: $[0].size()
- py:  len($[0])
- js:  $[0].length
+ cl:  (length $[0])
  cs:  $[0].Count
+ js:  $[0].length
+ py:  len($[0])
 
 size: Func<α[],int,void>
  #: a.$$(n) sets the number of elements in this array
  bun: $[0].size($[1])
- py: @arraysize~libbun_arraysize($[0], $[1], None)
+ cl: (FIXME)
  js: $[0].size
+ py: @arraysize~libbun_arraysize($[0], $[1], None)
  
 get: Func<a[],int,a>
  #: a.$$() tests the existence of the specified key in this array
  bun,py,js,cs: $[0][$[1]]
-
+ 
 set: Func<a[],int,a,void>
  bun,py,js,cs: $[0][$[1]] = $[2]
 
 add: Func<α[],α,void>
  #: a.$$(x) adds a new element to the end of this array
  bun: $[0].add($[1])
- py: $[0].append($[1])
- js: $[0].push($[1])
+ cl: (vector-push $[1])
  cs: $[0].Add($[1])
+ js: $[0].push($[1])
+ py: $[0].append($[1])
 
 insert: Func<α[],int,α,void>
  #: a.$$(n,x) inserts a new element at the specified position in this array
  bun: $[0].insert($[1], $[2])
- py:  $[0].insert($[1], $[2])
- js:  $[0].splice($[1], 0, $[2])
  cs:  $[0].Insert($[1], $[2])
+ js:  $[0].splice($[1], 0, $[2])
+ py:  $[0].insert($[1], $[2])
 
 remove: Func<α[],int,α>
  #: a.$$(n) removes the element at the specified position in this array
@@ -174,25 +227,26 @@ remove: Func<α[],int,α>
 pop: Func<α[],α>
  #: a.$$(n) removes the last element in this array
  bun,py,js: $[0].pop($[1])
+ cl:  (vector-pop $[0])
  cs:  ((list) => { var ret = list[list.Count - 1]; list.RemoveAt(list.Count -1 ); return ret; })($[0])
 
 # boolean[]
 size: Func<boolean[],int,void>
  #: a.$$(n) sets the number of elements in this array
+ js: @arraysize~libbun_arraysize($[0], $[1], false)
  py: @arraysize~libbun_arraysize($[0], $[1], False)
- js: @arraysize~libbun_arraysize($[0], $[1], False)
 
 # int[]
 size: Func<int[],int,void>
  #: a.$$(n) sets the number of elements in this array
- py: @arraysize~libbun_arraysize($[0], $[1], 0)
  js: @arraysize~libbun_arraysize($[0], $[1], 0)
+ py: @arraysize~libbun_arraysize($[0], $[1], 0)
 
 # float[]
 size: Func<float[],int,void>
  #: a.$$(n) sets the number of elements in this array
- py: @arraysize~libbun_arraysize($[0], $[1], 0.0)
  js: @arraysize~libbun_arraysize($[0], $[1], 0.0)
+ py: @arraysize~libbun_arraysize($[0], $[1], 0.0)
 
 ## Map
 _: Func<Map<α>,String>
@@ -204,14 +258,16 @@ _: Func<Map<α>,String>
 hasKey: Func<Map<a>,String,boolean>
  #: a.$$() tests the existence of the specified key in this array
  bun: $[0].hasKey($[1])
- py:  $[0].has_key($[1])
+ cl:  (gethash $[1] $[0])
  js:  ($[1] in $[0])
+ py:  $[0].has_key($[1])
  
 get: Func<Map<a>,String,a>
  #: a.$$() tests the existence of the specified key in this array
  bun: $[0][$[1]]
- py:  $[0][$[1]]
+ cl:  (gethash $[1] $[0])
  js:  $[0][$[1]] 
+ py:  $[0][$[1]]
 
 get: Func<Map<a>,String,a,a>
  #: a.$$() tests the existence of the specified key in this array
@@ -229,5 +285,5 @@ keys: Func<Map<a>,String[]>
  py:  $[0].keys()
  js:  Object.keys($[0])
 
- 
+
  

@@ -1,62 +1,23 @@
-// math common library
-// based on EcmaScript Math Object
-
-//E	Returns Euler's number (approx. 2.718)
-//TODO: LN2	Returns the natural logarithm of 2 (approx. 0.693)
-//TODO: LN10	Returns the natural logarithm of 10 (approx. 2.302)
-//TODO: LOG2E	Returns the base-2 logarithm of E (approx. 1.442)
-//TODO: LOG10E	Returns the base-10 logarithm of E (approx. 0.434)
-//PI	Returns PI (approx. 3.14)
-//TODO: SQRT1_2	Returns the square root of 1/2 (approx. 0.707)
-//TODO: SQRT2	Returns the square root of 2 (approx. 1.414)
-
-define Math.E   "math~math.e": float;
-define Math.PI  "math~math.pi": float;
-
-// abs(x)	Returns the absolute value of x
-define Math.abs  "math~math.abs($[0])": Func<float,float>;
-
-//sin(x)	Returns the sine of x (x is in radians)
-//cos(x)	Returns the cosine of x (x is in radians)
-//tan(x)	Returns the tangent of an angle
-define Math.cos   "math~math.cos($[0])" : Func<float,float>;
-define Math.sin   "math~math.sin($[0])" : Func<float,float>;
-define Math.tan   "math~math.tan($[0])" : Func<float,float>;
-
-//sqrt(x)	Returns the square root of x
-define Math.sqrt "math~math.sqrt($[0])" : Func<float,float>;
-
-//acos(x)	Returns the arccosine of x, in radians
-//asin(x)	Returns the arcsine of x, in radians
-//atan(x)	Returns the arctangent of x as a numeric value between -PI/2 and PI/2 radians
-//atan2(y,x)	Returns the arctangent of the quotient of its arguments
-
-define Math.acos "math~math.acos($[0])" : Func<float,float>;
-define Math.asin "math~math.asin($[0])" : Func<float,float>;
-define Math.atan "math~math.atan($[0])" : Func<float,float>;
-define Math.atan2 "math~math.atan2($[0], $[1])" : Func<float,float,float>;
-
-//ceil(x)	Returns x, rounded upwards to the nearest integer
-//exp(x)	Returns the value of Ex
-//floor(x)	Returns x, rounded downwards to the nearest integer
-//log(x)	Returns the natural logarithm (base E) of x
-
-define Math.ceil "math~math.ceil($[0])" : Func<float,float>;
-define Math.exp "math~math.exp($[0])" : Func<float,float>;
-define Math.floor "math~math.floor($[0])" : Func<float,float>;
-define Math.log "math~math.log($[0])" : Func<float,float>;
-
-//TODO: max(x,y,z,...,n)	Returns the number with the highest value
-//TODO: min(x,y,z,...,n)	Returns the number with the lowest value
-define Math.max "math~math.max($[0], $[1])" : Func<float,float,float>;
-define Math.min "math~math.min($[0], $[1])" : Func<float,float,float>;
-define Math.max "math~math.max($[0], $[1])" : Func<int,int,int>;
-define Math.min "math~math.min($[0], $[1])" : Func<int,int,int>;
-
-//pow(x,y)	Returns the value of x to the power of y
-define Math.pow "math~math.pow($[0], $[1])" : Func<float,float,float>;
-
-//random()	Returns a random number between 0 and 1
-define Math.round "math~math.round($[0])" : Func<float,float>;
-
-define Math.random "math~math.random()" :Func<float>;
+define math::E "math~math.e": float
+define math::PI "math~math.pi": float
+define math::abs "math~math.abs($[0])": Func<int,int>
+define math::abs "math~math.abs($[0])": Func<float,float>
+define math::sin "math~math.sin($[0])": Func<float,float>
+define math::cos "math~math.cos($[0])": Func<float,float>
+define math::tan "math~math.tan($[0])": Func<float,float>
+define math::sqrt "math~math.sqrt($[0])": Func<float,float>
+define math::acos "math~math.acos($[0])": Func<float,float>
+define math::asin "math~math.asin($[0])": Func<float,float>
+define math::atan "math~math.atan($[0])": Func<float,float>
+define math::atan2 "math~math.atan2($[0], $[1])": Func<float,float>
+define math::ceil "math~math.ceil($[0])": Func<float,float>
+define math::round "math~math.round($[0])": Func<float,float>
+define math::floor "math~math.floor($[0])": Func<float,float>
+define math::exp "math~math.exp($[0])": Func<float,float>
+define math::log "math~math.log($[0])": Func<float,float>
+define math::max "math~math.max($[0], $[1])": Func<float,float,float>
+define math::min "math~math.min($[0], $[1])": Func<float,float,float>
+define math::max "math~math.max($[0], $[1])": Func<int,int,int>
+define math::min "math~math.min($[0], $[1])": Func<int,int,int>
+define math::pow "math~math.pow($[0], $[1]) ": Func<float,float,float>
+define math::random "math~math.round($[0])": Func<float,float>

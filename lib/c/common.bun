@@ -1,36 +1,41 @@
-
-define assert  "assert.h~assert($[0])": Func<boolean,String,void>;
-define print   "stdio.h~puts($[0])" : Func<String,void>;
-define println "stdio.h~printf(\"%s\\n\", $[0])" : Func<String,void>;
-
-// converter
-define _ "(double)($[0])" : Func<int,float>;
-define _ "(long)($[0])" : Func<float,int>;
-define _ "(($[0])?\"true\":\"false\")" : Func<boolean,String>;
-define _ "libzen.h~zIntToStr($[0])" : Func<int,String>;
-define _ "libzen.h~zFloatToStr($[0])" : Func<float,String>;
-
-// String
-define "+" "libzen.h~zStrCat($[0],$[1])" : Func<String,String,String>;
-define size "stdlib.h~strlen($[0])" : Func<String,int>;
-define substring "libzen.h~zStrSub($[0],$[1])" : Func<String,int,String>;
-define substring "libzen.h~zStrSub2($[0],$[1],$[2])" : Func<String,int,int,String>;
-define indexOf "libzen.h~zStrIndexOf($[0],$[1])" : Func<String,String,int>;
-define indexOf "libzen.h~zStrIndexOf2($[0],$[1],$[2])" : Func<String,int,String,int>;
-define equals "libzen.h~zEqualsString($[0],$[1])" : Func<String,String,boolean>;
-define startsWith "libzen.h~zStartWith($[0],$[1])" : Func<String,String,boolean>;
-define endsWith "libzen.h~zEndWith($[0],$[1])" : Func<String,String,boolean>;
-
-// Array
-define size "libzen.h~zArraySize($[0])" : Func<α[],int>;
-define clear "libzen.h~zArrayClear($[0], $[1])" : Func<α[],int,void>;
-define add "libzen.h~zArrayAdd($[0], $[1])" : Func<α[],α,void>;
-define add "libzen.h~zArrayInsert($[0], $[1], $[2])" : Func<α[],int,α,void>;
-
-define add "libzen.h~zIntArrayAdd($[0], $[1])" : Func<int[],int,void>;
-define add "libzen.h~zIntArrayInsert($[0], $[1], $[2])" : Func<int[],int,int,void>;
-
-define add "libzen.h~zStringArrayAdd($[0], $[1])" : Func<String[],String,void>;
-define add "libzen.h~zStringArrayInsert($[0], $[1], $[2])" : Func<String[],int,String,void>;
-
-
+define assert "assert.h~assert($[0])": Func<boolean,String,void>
+define println "stdio.h~printf(\\"%s\\n\\", $[0])": Func<String,void>
+define print "stdio.h~puts($[0])": Func<String,void>
+define _ "@S~(($[0])?S(\\"true\\"):S(\\"false\\"))": Func<boolean,String>
+define _ "((double)$[0])": Func<int,float>
+define _ "@i2s~libbun_i2s($[0])": Func<int,String>
+define _ "((double)$[0])": Func<float,int>
+define _ "@f2s~libbun_f2s($[0])": Func<float,String>
+define _ "@s2i~libbun_s2i($[0])": Func<String,int>
+define _ "@s2f~libbun_s2f($[0])": Func<String,float>
+define + "": Func<String,String,String>
+define size "": Func<String,int>
+define equals "": Func<String,String,boolean>
+define startsWith "": Func<String,String,boolean>
+define endsWith "": Func<String,String,boolean>
+define substring "": Func<String,int,String>
+define substring "": Func<String,int,int,String>
+define indexOf "": Func<String,String,int>
+define lastIndexOf "": Func<String,String,int>
+define toLowerCase "": Func<String,String>
+define toUpperCase "": Func<String,String>
+define replace "": Func<String,String,String,String>
+define trim "": Func<String,String>
+define _ "": Func<α[],String>
+define size "": Func<α[],int>
+define size "": Func<α[],int,void>
+define get "": Func<a[],int,a>
+define set "": Func<a[],int,a,void>
+define add "": Func<α[],α,void>
+define insert "": Func<α[],int,α,void>
+define remove "": Func<α[],int,α>
+define pop "": Func<α[],α>
+define size "": Func<boolean[],int,void>
+define size "": Func<int[],int,void>
+define size "": Func<float[],int,void>
+define _ "": Func<Map<α>,String>
+define hasKey "": Func<Map<a>,String,boolean>
+define get "": Func<Map<a>,String,a>
+define get "": Func<Map<a>,String,a,a>
+define set "": Func<Map<a>,String,a,void>
+define keys "": Func<Map<a>,String[]>

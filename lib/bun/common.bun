@@ -1,31 +1,41 @@
-define assert  "assert($[0],$[1])": Func<boolean,String,void>;
-define print   "print($[0])" : Func<String,void>;
-define println "println($[0])" : Func<String,void>;
-
-// converter
-define _ "(float)($[0])" : Func<int,float>;
-define _ "(int)($[0])" : Func<float,int>;
-define _ "(String)($[0])" : Func<boolean,String>;
-define _ "(String)($[0])" : Func<int,String>;
-define _ "(String)($[0])" : Func<float,String>;
-
-// String
-//define + "zstr($[0]) + zstr($[1])" : Func<String,String,String>;
-define size "$[0].size()" : Func<String,int>;
-define substring "$[0].substring($[1])" : Func<String,int,String>;
-define substring "$[0].substring($[1],$[2])" : Func<String,int,int,String>;
-define indexOf "$[0].indexOf($[1])" : Func<String,String,int>;
-define indexOf "$[0].indexOf($[1],$[2])" : Func<String,int,String,int>;
-define equals "$[0] == $[1]" : Func<String,String,boolean>;
-define startsWith "$[0].startsWith($[1])" : Func<String,String,boolean>;
-define endsWith "$[0].endsWith($[1])" : Func<String,String,boolean>;
-
-// Array
-define size "$[0].size()" : Func<α[],int>;
-define clear "$[0].clear($[0], $[1])" : Func<α[],int,void>;
-define add "$[0].add($[1])" : Func<α[],α,void>;
-define add "$[0].add($[1], $[2])" : Func<α[],int,α,void>;
-define _ "(String)($[0])" : Func<α[],String>;
-
-// Object
-define _ "(String)($[0])" : Func<Object,String>;
+define assert "assert($[0])": Func<boolean,String,void>
+define println "println($[0])": Func<String,void>
+define print "print($[0])": Func<String,void>
+define _ "((String)$[0])": Func<boolean,String>
+define _ "((float)$[0])": Func<int,float>
+define _ "((String)$[0])": Func<int,String>
+define _ "((int)$[0])": Func<float,int>
+define _ "((String)$[0])": Func<float,String>
+define _ "((int)$[0])": Func<String,int>
+define _ "((float)$[0])": Func<String,float>
+define + "": Func<String,String,String>
+define size "$[0].size()": Func<String,int>
+define equals "$[0] == $[1]": Func<String,String,boolean>
+define startsWith "$[0].startsWith($[1])": Func<String,String,boolean>
+define endsWith "$[0].endsWith($[1])": Func<String,String,boolean>
+define substring "$[0].substring($[1])": Func<String,int,String>
+define substring "$[0].substring($[1],$[2])": Func<String,int,int,String>
+define indexOf "$[0].indexOf($[1])": Func<String,String,int>
+define lastIndexOf "$[0].lastIndexOf($[1]) ": Func<String,String,int>
+define toLowerCase "$[0].toLowerCase($[1]) ": Func<String,String>
+define toUpperCase "$[0].toUpperCase($[1]) ": Func<String,String>
+define replace "$[0].replace($[1], $[2])": Func<String,String,String,String>
+define trim "$[0].trim()": Func<String,String>
+define _ "((String)$[0])": Func<α[],String>
+define size "$[0].size()": Func<α[],int>
+define size "$[0].size($[1])": Func<α[],int,void>
+define get "$[0][$[1]]": Func<a[],int,a>
+define set "$[0][$[1]] = $[2]": Func<a[],int,a,void>
+define add "$[0].add($[1])": Func<α[],α,void>
+define insert "$[0].insert($[1], $[2])": Func<α[],int,α,void>
+define remove "$[0].remove($[1])": Func<α[],int,α>
+define pop "$[0].pop($[1])": Func<α[],α>
+define size "": Func<boolean[],int,void>
+define size "": Func<int[],int,void>
+define size "": Func<float[],int,void>
+define _ "((String)$[0])": Func<Map<α>,String>
+define hasKey "$[0].hasKey($[1])": Func<Map<a>,String,boolean>
+define get "$[0][$[1]]": Func<Map<a>,String,a>
+define get "$[0].get($[1],$[2])": Func<Map<a>,String,a,a>
+define set "$[0][$[1]] = $[2]": Func<Map<a>,String,a,void>
+define keys "$[0].keys()": Func<Map<a>,String[]>
