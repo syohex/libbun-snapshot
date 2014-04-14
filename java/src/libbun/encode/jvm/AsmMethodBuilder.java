@@ -213,11 +213,11 @@ class AsmMethodBuilder extends MethodNode {
 		}
 	}
 
-	void CheckParamCast(Class<?> TaargetClass, BNode Node) {
+	void CheckParamCast(Class<?> TargetClass, BNode Node) {
 		Class<?> SourceClass = this.Generator.GetJavaClass(Node.Type);
-		if(TaargetClass != SourceClass) {
+		if(TargetClass != SourceClass) {
 			this.Generator.Debug("C2="+Node + ": " + Node.Type);
-			this.CheckCast(TaargetClass, SourceClass);
+			this.CheckCast(TargetClass, SourceClass);
 		}
 	}
 
@@ -229,10 +229,10 @@ class AsmMethodBuilder extends MethodNode {
 		}
 	}
 
-	void PushNode(Class<?> TagetClass, BNode Node) {
+	void PushNode(Class<?> TargetClass, BNode Node) {
 		Node.Accept(this.Generator);
-		if(TagetClass != null) {
-			this.CheckParamCast(TagetClass, Node);
+		if(TargetClass != null) {
+			this.CheckParamCast(TargetClass, Node);
 		}
 	}
 

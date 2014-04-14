@@ -825,6 +825,13 @@ public class BunTypeSafer extends BTypeChecker {
 	}
 
 	@Override public void VisitThrowNode(BunThrowNode Node) {
+		if(Node.ParentNode != null && Node.ParentNode.ParentNode != null && 
+				Node.ParentNode.ParentNode instanceof BunFunctionNode) {
+			@Var BunFunctionNode FuncNode = (BunFunctionNode) Node.ParentNode.ParentNode;
+			if(FuncNode == Node.GetDefiningFunctionNode()) {
+				this.CurrentFunctionNode.SetReturnType(BType.VoidType);
+			}
+		}
 		this.CheckTypeAt(Node, BunThrowNode._Expr, BType.VarType);
 		this.ReturnTypeNode(Node, BType.VoidType);
 	}
