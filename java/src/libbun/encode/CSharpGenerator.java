@@ -292,7 +292,6 @@ public class CSharpGenerator extends OldSourceGenerator {
 		this.Source.Append(" = ");
 		this.GenerateExpression(Node.InitValueNode());
 		this.Source.Append(this.SemiColon);
-		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 	}
 
 	@Override public void VisitLetNode(BunLetVarNode Node) {

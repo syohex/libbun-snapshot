@@ -205,10 +205,6 @@ public class OldSourceGenerator extends SourceGenerator {
 		this.Source.Append("var ", this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
 		this.GenerateTypeAnnotation(Node.DeclType());
 		this.GenerateExpression(" = ", Node.InitValueNode(), this.SemiColon);
-		if(Node.HasNextVarNode()) {
-			this.Source.AppendNewLine();
-			this.VisitVarDeclNode(Node.NextVarNode());
-		}
 	}
 
 	@Override public void VisitVarBlockNode(BunVarBlockNode Node) {

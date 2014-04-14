@@ -302,9 +302,6 @@ public class SSACGenerator extends OldSourceGenerator {
 		this.Source.Append(" ");
 		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName() + "0"));
 		this.GenerateExpression(" = ", Node.InitValueNode(), this.SemiColon);
-		if(Node.HasNextVarNode()) {
-			this.VisitVarDeclNode(Node.NextVarNode());
-		}
 	}
 
 	@Override public void VisitLetNode(BunLetVarNode Node) {

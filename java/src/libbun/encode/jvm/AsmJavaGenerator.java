@@ -490,17 +490,9 @@ public class AsmJavaGenerator extends AbstractGenerator {
 		this.AsmBuilder.AddLocal(DeclClass, Node.GetGivenName());
 		this.AsmBuilder.PushNode(DeclClass, Node.InitValueNode());
 		this.AsmBuilder.StoreLocal(Node.GetGivenName());
-		if(Node.HasNextVarNode()) {
-			this.VisitVarDeclNode(Node.NextVarNode());
-		}
-		//		this.VisitBlockNode(Node);
-		//		this.AsmBuilder.RemoveLocal(DeclClass, Node.GetName());
 	}
 
 	protected void VisitVarDeclNode2(BunLetVarNode Node) {
-		if(Node.HasNextVarNode()) {
-			this.VisitVarDeclNode(Node.NextVarNode());
-		}
 		Class<?> DeclClass = this.GetJavaClass(Node.DeclType());
 		this.AsmBuilder.RemoveLocal(DeclClass, Node.GetGivenName());
 	}

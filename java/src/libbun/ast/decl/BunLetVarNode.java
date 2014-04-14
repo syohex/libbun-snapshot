@@ -108,33 +108,11 @@ public class BunLetVarNode extends AbstractListNode {
 		return this.InitValueNode() instanceof ConstNode;
 	}
 
-	//		public final boolean HasNextVarNode() {
-	//			return BunLetVarNode._NextVar < this.GetAstSize();
-	//		}
-	//
-	//		public final BunLetVarNode NextVarNode() {
-	//			if(BunLetVarNode._NextVar < this.GetAstSize()) {
-	//				@Var BNode VarNode = this.AST[BunLetVarNode._NextVar];
-	//				if(VarNode instanceof BunLetVarNode) {
-	//					return (BunLetVarNode)VarNode;
-	//				}
-	//			}
-	//			return null;
-	//		}
-	//
-	//		public final boolean AppendVarNode(BunLetVarNode VarNode) {
-	//			if(this.HasNextVarNode()) {
-	//				return this.NextVarNode().AppendVarNode(VarNode);
-	//			}
-	//			this.Append(VarNode, BNode._EnforcedParent);
-	//			return true;
-	//		}
-
-	public final boolean HasNextVarNode() {
+	@Deprecated public final boolean HasNextVarNode() {
 		return false;
 	}
 
-	public final BunLetVarNode NextVarNode() {
+	@Deprecated public final BunLetVarNode NextVarNode() {
 		return null;
 	}
 

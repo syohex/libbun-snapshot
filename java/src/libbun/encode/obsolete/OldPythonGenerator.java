@@ -119,9 +119,6 @@ public class OldPythonGenerator extends OldSourceGenerator {
 	@Override protected void VisitVarDeclNode(BunLetVarNode Node) {
 		this.Source.AppendNewLine(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = ");
 		this.GenerateExpression(Node.InitValueNode());
-		if(Node.HasNextVarNode()) {
-			this.VisitVarDeclNode(Node.NextVarNode());
-		}
 	}
 
 	@Override public void VisitVarBlockNode(BunVarBlockNode Node) {

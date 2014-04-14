@@ -1523,9 +1523,6 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		this.Source.Append(this.GetTypeExpr(Node.DeclType()) + "*");
 		this.Source.Append(" ");
 		this.Source.Append(VarSymbol);
-		if(Node.HasNextVarNode()) {
-			this.VisitVarDeclNode(Node.NextVarNode());
-		}
 	}
 
 	@Override protected void GenerateListNode(String OpenToken, AbstractListNode VargNode, String DelimToken, String CloseToken) {

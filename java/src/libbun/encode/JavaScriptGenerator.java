@@ -123,7 +123,6 @@ public class JavaScriptGenerator extends OldSourceGenerator {
 		this.Source.Append(" = ");
 		this.GenerateExpression(Node.InitValueNode());
 		this.Source.Append(this.SemiColon);
-		if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
 	}
 
 	@Override protected void VisitParamNode(BunLetVarNode Node) {

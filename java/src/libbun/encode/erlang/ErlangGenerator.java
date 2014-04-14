@@ -484,9 +484,6 @@ public class ErlangGenerator extends OldSourceGenerator {
 		this.AppendLazy(mark, this.VarMgr.GenVariableName(VarName) + " = ");
 
 		this.Source.Append(",");
-		if (Node.GetListSize() > 0) {
-			if(Node.HasNextVarNode()) { this.VisitVarDeclNode(Node.NextVarNode()); }
-		}
 		this.Source.AppendLineFeed();
 		this.Source.AppendNewLine("pad");
 	}
