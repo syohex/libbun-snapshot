@@ -925,7 +925,7 @@ public class AsmJavaGenerator extends AbstractGenerator {
 	}
 
 	@Override public void VisitThrowNode(BunThrowNode Node) {
-		String ClassName = Type.getInternalName(Exception.class);
+		String ClassName = Type.getInternalName(RuntimeException.class);
 		this.AsmBuilder.SetLineNumber(Node);
 		this.AsmBuilder.visitTypeInsn(NEW, ClassName);
 		this.AsmBuilder.visitInsn(DUP);
