@@ -10,6 +10,7 @@ import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Nullable;
+import libbun.util.Var;
 
 public class BunLetVarNode extends AbstractListNode {
 	public static final int _NameInfo = 0;
@@ -81,10 +82,11 @@ public class BunLetVarNode extends AbstractListNode {
 	}
 
 	public final String GetUniqueName(AbstractGenerator Generator) {
+		@Var String Name = Generator.GetNonKeyword(this.GetGivenName());
 		if(this.NameIndex == 0 || this.IsExport()) {
-			return this.GetGivenName();
+			return Name;
 		}
-		return Generator.NameUniqueSymbol(this.GetGivenName(), this.NameIndex);
+		return Generator.NameUniqueSymbol(Name, this.NameIndex);
 	}
 
 	public final BNode InitValueNode() {

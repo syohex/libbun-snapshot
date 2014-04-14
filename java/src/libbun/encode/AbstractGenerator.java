@@ -90,6 +90,10 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 		this.SymbolMap.put(Keyword, AnotherName);
 	}
 
+	public final String GetNonKeyword(String Text) {
+		return this.SymbolMap.GetValue(Text, Text);
+	}
+
 	public final int GetUniqueNumber() {
 		@Var int UniqueNumber = this.UniqueNumber;
 		this.UniqueNumber = this.UniqueNumber + 1;

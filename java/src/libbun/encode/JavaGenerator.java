@@ -554,13 +554,15 @@ public class JavaGenerator extends SourceGenerator {
 			this.Source.Append(" ", Node.GetUniqueName(this));
 		}
 		else {
-			@Var String ClassName = this.NameGlobalNameClass(Node.GetUniqueName(this));
+			@Var String ClassName = this.NameGlobalNameClass(Node.GetGivenName());
 			//		this.CurrentBuilder = this.InsertNewSourceBuilder();
 			this.Source.AppendNewLine("final class ", ClassName, "");
 			this.Source.OpenIndent(" {");
 			this.GenerateClassField("static", Node.GetAstType(BunLetVarNode._InitValue), "_");
 			this.GenerateExpression(" = ", Node.InitValueNode(), ";");
 			this.Source.CloseIndent("}");
+			Node.GivenName = ClassName+"._";
+			Node.NameIndex = 0;
 		}
 		//		this.CurrentBuilder = this.CurrentBuilder.Pop();
 		//			Node.GlobalName = ClassName + "._";
