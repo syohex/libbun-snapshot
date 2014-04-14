@@ -32,6 +32,7 @@ import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
 import static org.objectweb.asm.Opcodes.ACC_STATIC;
 import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.ANEWARRAY;
+import static org.objectweb.asm.Opcodes.ATHROW;
 import static org.objectweb.asm.Opcodes.CHECKCAST;
 import static org.objectweb.asm.Opcodes.DUP;
 import static org.objectweb.asm.Opcodes.GETFIELD;
@@ -40,6 +41,7 @@ import static org.objectweb.asm.Opcodes.GOTO;
 import static org.objectweb.asm.Opcodes.IFEQ;
 import static org.objectweb.asm.Opcodes.IFNE;
 import static org.objectweb.asm.Opcodes.ILOAD;
+import static org.objectweb.asm.Opcodes.INSTANCEOF;
 import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
 import static org.objectweb.asm.Opcodes.INVOKESPECIAL;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
@@ -143,10 +145,8 @@ import libbun.util.Var;
 import libbun.util.ZObjectMap;
 
 import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-
 
 public class AsmJavaGenerator extends AbstractGenerator {
 	private final BMap<Class<?>> GeneratedClassMap = new BMap<Class<?>>(null);
@@ -735,8 +735,13 @@ public class AsmJavaGenerator extends AbstractGenerator {
 	}
 
 	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
-		// TODO Auto-generated method stub
-
+		if(!(Node.TargetType() instanceof BClassType) || !(Node.LeftNode().Type instanceof BClassType)) {
+			this.VisitErrorNode(new ErrorNode(Node, "require Class Type"));
+			return;
+		}
+		Class<?> JavaClass = this.GetJavaClass(Node.TargetType());
+		Node.LeftNode().Accept(this);
+		this.AsmBuilder.visitTypeInsn(INSTANCEOF, JavaClass);
 	}
 
 	@Override public void VisitBinaryNode(BinaryOperatorNode Node) {
@@ -920,19 +925,17 @@ public class AsmJavaGenerator extends AbstractGenerator {
 	}
 
 	@Override public void VisitThrowNode(BunThrowNode Node) {
-		// use wrapper
-		//String name = Type.getInternalName(ZenThrowableWrapper.class);
-		//this.CurrentVisitor.MethodVisitor.visitTypeInsn(NEW, name);
-		//this.CurrentVisitor.MethodVisitor.visitInsn(DUP);
-		//Node.Expr.Accept(this);
-		//this.box();
-		//this.CurrentVisitor.typeStack.pop();
-		//this.CurrentVisitor.MethodVisitor.visitMethodInsn(INVOKESPECIAL, name, "<init>", "(Ljava/lang/Object;)V");
-		//this.CurrentVisitor.MethodVisitor.visitInsn(ATHROW);
+		String ClassName = Type.getInternalName(Exception.class);
+		this.AsmBuilder.SetLineNumber(Node);
+		this.AsmBuilder.visitTypeInsn(NEW, ClassName);
+		this.AsmBuilder.visitInsn(DUP);
+		this.AsmBuilder.PushNode(this.GetJavaClass(BType.StringType), Node.ExprNode());
+		String Desc = Type.getMethodDescriptor(Type.getType(void.class), new Type[] { Type.getType(String.class)});
+		this.AsmBuilder.visitMethodInsn(INVOKESPECIAL, ClassName, "<init>", Desc);
+		this.AsmBuilder.visitInsn(ATHROW);
 	}
 
-	@Override public void VisitTryNode(BunTryNode Node) {
-		MethodVisitor mv = this.AsmBuilder;
+	@Override public void VisitTryNode(BunTryNode Node) {	//TODO: finally behavior
 		AsmTryCatchLabel TryCatchLabel = new AsmTryCatchLabel();
 		this.TryCatchLabel.push(TryCatchLabel); // push
 
@@ -940,9 +943,20 @@ public class AsmJavaGenerator extends AbstractGenerator {
 		this.AsmBuilder.visitLabel(TryCatchLabel.BeginTryLabel);
 		Node.TryBlockNode().Accept(this);
 		this.AsmBuilder.visitLabel(TryCatchLabel.EndTryLabel);
-		mv.visitJumpInsn(GOTO, TryCatchLabel.FinallyLabel);
-		if(Node.HasCatchBlockNode()) {
-
+		this.AsmBuilder.visitJumpInsn(GOTO, TryCatchLabel.FinallyLabel);
+		// catch block
+		if(Node.HasCatchBlockNode()) {	//TODO: exception variable
+			Label CatchLabel = new Label();
+			AsmTryCatchLabel Label = this.TryCatchLabel.peek();
+			Class<?> ExceptionClass = Exception.class;
+			String ThrowType = this.AsmType(JavaTypeTable.GetZenType(ExceptionClass)).getInternalName();
+			this.AsmBuilder.visitTryCatchBlock(Label.BeginTryLabel, Label.EndTryLabel, CatchLabel, ThrowType);
+			this.AsmBuilder.AddLocal(ExceptionClass, Node.ExceptionName());
+			this.AsmBuilder.visitLabel(CatchLabel);
+			this.AsmBuilder.StoreLocal(Node.ExceptionName());
+			Node.CatchBlockNode().Accept(this);
+			this.AsmBuilder.visitJumpInsn(GOTO, Label.FinallyLabel);
+			this.AsmBuilder.RemoveLocal(ExceptionClass, Node.ExceptionName());
 		}
 
 		// finally block
@@ -952,26 +966,6 @@ public class AsmJavaGenerator extends AbstractGenerator {
 		}
 		this.TryCatchLabel.pop();
 	}
-
-	//	public void VisitCatchNode(ZCatchNode Node) {
-	//		MethodVisitor mv = this.AsmBuilder;
-	//		Label catchLabel = new Label();
-	//		TryCatchLabel Label = this.TryCatchLabel.peek();
-	//
-	//		// prepare
-	//		//TODO: add exception class name
-	//		String throwType = this.AsmType(Node.GivenType).getInternalName();
-	//		mv.visitTryCatchBlock(Label.beginTryLabel, Label.endTryLabel, catchLabel, throwType);
-	//
-	//		// catch block
-	//		this.AsmBuilder.AddLocal(this.GetJavaClass(Node.GivenType), Node.GivenName);
-	//		mv.visitLabel(catchLabel);
-	//		this.AsmBuilder.StoreLocal(Node.GivenName);
-	//		Node.AST[ZCatchNode._Block].Accept(this);
-	//		mv.visitJumpInsn(GOTO, Label.finallyLabel);
-	//
-	//		this.AsmBuilder.RemoveLocal(this.GetJavaClass(Node.GivenType), Node.GivenName);
-	//	}
 
 	@Override public void VisitLetNode(BunLetVarNode Node) {
 		//		if(Node.InitValueNode().HasUntypedNode()) {
@@ -1149,7 +1143,7 @@ public class AsmJavaGenerator extends AbstractGenerator {
 			AsmMethodBuilder InitMethod = ClassBuilder.NewMethod(ACC_PUBLIC, "<init>", "(L"+Type.getInternalName(SourceClass)+";)V");
 			InitMethod.visitVarInsn(Opcodes.ALOAD, 0);
 			InitMethod.PushInt(FuncType.TypeId);
-			InitMethod.visitLdcInsn(SourceFuncType.ShortName);
+			InitMethod.visitLdcInsn(SourceFuncType.GetName());
 			InitMethod.visitMethodInsn(INVOKESPECIAL, Type.getInternalName(FuncClass), "<init>", "(ILjava/lang/String;)V");
 			InitMethod.visitVarInsn(Opcodes.ALOAD, 0);
 			InitMethod.visitVarInsn(Opcodes.ALOAD, 1);
@@ -1235,12 +1229,12 @@ public class AsmJavaGenerator extends AbstractGenerator {
 	@Override public void VisitClassNode(BunClassNode Node) {
 		@Var Class<?> SuperClass = this.GetSuperClass(Node.SuperType());
 		@Var AsmClassBuilder ClassBuilder = this.AsmLoader.NewClass(ACC_PUBLIC, Node, Node.ClassName(), SuperClass);
-		// add class field (not function)
+		// add class field
 		for(int i = 0; i < Node.GetListSize(); i++) {
 			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
 			ClassBuilder.AddField(ACC_PUBLIC, FieldNode.GetGivenName(), FieldNode.DeclType(), this.GetConstValue(FieldNode.InitValueNode()));
 		}
-		// add class field (function)
+		// add static field (only function)
 		for(int i = 0; i < Node.ClassType.GetFieldSize(); i++) {
 			@Var BClassField Field = Node.ClassType.GetFieldAt(i);
 			if(Field.FieldType.IsFuncType()) {
