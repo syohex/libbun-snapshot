@@ -16,7 +16,6 @@ define endsWith "(let ((spos (- (length $[0]) (length $[1])))) (and (>= spos 0) 
 define substring "(subseq $[0] $[1])": Func<String,int,String>
 define substring "(subseq $[0] $[1] $[2])": Func<String,int,int,String>
 define indexOf "(or (search $[1] $[0]) -1)": Func<String,String,int>
-define lastIndexOf "": Func<String,String,int>
 define toLowerCase "(string-uppercase $[0])": Func<String,String>
 define toUpperCase "(string-downcase $[0])": Func<String,String>
 define replace "cl-ppcre~(cl-ppcre:regex-replace-all $[1] $[0] $[2])": Func<String,String,String,String>
@@ -24,18 +23,8 @@ define trim "(string-trim '(#\\Space) $[0])": Func<String,String>
 define _ "~(format nil \\"~a\\" $[0])": Func<α[],String>
 define size "(length $[0])": Func<α[],int>
 define size "(FIXME)": Func<α[],int,void>
-define get "": Func<a[],int,a>
-define set "": Func<a[],int,a,void>
 define add "(vector-push $[1])": Func<α[],α,void>
-define insert "": Func<α[],int,α,void>
-define remove "": Func<α[],int,α>
 define pop "(vector-pop $[0])": Func<α[],α>
-define size "": Func<boolean[],int,void>
-define size "": Func<int[],int,void>
-define size "": Func<float[],int,void>
-define _ "": Func<Map<α>,String>
 define hasKey "(gethash $[1] $[0])": Func<Map<a>,String,boolean>
 define get "(gethash $[1] $[0])": Func<Map<a>,String,a>
-define get "": Func<Map<a>,String,a,a>
-define set "": Func<Map<a>,String,a,void>
-define keys "": Func<Map<a>,String[]>
+define _ "~(format nil \\"~a\\" $[0])": Func<Object,String>

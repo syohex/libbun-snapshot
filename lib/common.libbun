@@ -18,19 +18,19 @@ println: Func<String,void>
  py:   print $[0]
 
 print: Func<String,void>
- bun: print($[0])
- c:   stdio.h~puts($[0])
- cl:  ~(format t "~a" $[0])
- cs:  Console.Write($[0])
+ bun:  print($[0])
+ c:    stdio.h~puts($[0])
+ cl:   ~(format t "~a" $[0])
+ cs:   Console.Write($[0])
  java: System.out.print($[0])
- js:  console.log($[0])
- py:  print $[0],
+ js:   console.log($[0])
+ py:   print $[0],
 
 ## boolean
 _: Func<boolean,String>
  bun:  ((String)$[0])
  c:    @S~(($[0])?S("true"):S("false"))
- cl:  ~(format nil "~a" $[0])
+ cl:   ~(format nil "~a" $[0])
  cs:   ($[0]).ToString()
  java: String.valueOf($[0])
  js:   String($[0])
@@ -38,19 +38,19 @@ _: Func<boolean,String>
 
 ## int
 _: Func<int,float>
- bun: ((float)$[0])
- c:   ((double)$[0])
- cl:  (coerce $[0] 'float)
- cs:  ((double)$[0])
+ bun:  ((float)$[0])
+ c:    ((double)$[0])
+ cl:   (coerce $[0] 'float)
+ cs:   ((double)$[0])
  java: ((double)$[0])
- js:  $[0]
- py:  float($[0])
+ js:   $[0]
+ py:   float($[0])
 
 _: Func<int,String>
  bun: ((String)$[0])
  c:   @i2s~libbun_i2s($[0])
  cl:  ~(format nil "~a" $[0])
- cs: ($[0]).ToString()
+ cs:  ($[0]).ToString()
  java: String.valueOf($[0])
  js: String($[0])
  py:  unicode($[0])
@@ -85,7 +85,7 @@ _: Func<String,float>
  bun: ((float)$[0])
  c:   @s2f~libbun_s2f($[0])
  cl:  (read-from-string $[0])
- 
+
 +: Func<String,String,String>
  cl: ~(format nil "~a~a" $[0] $[1])
 
@@ -166,6 +166,7 @@ replace: Func<String,String,String,String>
  java: $[0].replaceAll($[1], $[2])
  
 #split
+
 trim: Func<String,String>
  bun: $[0].trim()
  cl: (string-trim '(#\Space) $[0])
@@ -287,5 +288,14 @@ keys: Func<Map<a>,String[]>
  js:  Object.keys($[0])
  py:  $[0].keys()
 
+#Object
+_: Func<Object,String>
+ #: Converts an object to a string
+ bun:  ((String)$[0])
+ cl:   ~(format nil "~a" $[0])
+ cs:   $[0].ToString()
+ java: $[0].toString()
+ py:   unicode($[0])
+ js:   $[0].join("")
 
  

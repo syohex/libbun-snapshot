@@ -8,7 +8,6 @@ define _ "((int)$[0])": Func<float,int>
 define _ "((String)$[0])": Func<float,String>
 define _ "((int)$[0])": Func<String,int>
 define _ "((float)$[0])": Func<String,float>
-define + "": Func<String,String,String>
 define size "$[0].size()": Func<String,int>
 define equals "$[0] == $[1]": Func<String,String,boolean>
 define startsWith "$[0].startsWith($[1])": Func<String,String,boolean>
@@ -30,12 +29,10 @@ define add "$[0].add($[1])": Func<α[],α,void>
 define insert "$[0].insert($[1], $[2])": Func<α[],int,α,void>
 define remove "$[0].remove($[1])": Func<α[],int,α>
 define pop "$[0].pop($[1])": Func<α[],α>
-define size "": Func<boolean[],int,void>
-define size "": Func<int[],int,void>
-define size "": Func<float[],int,void>
 define _ "((String)$[0])": Func<Map<α>,String>
 define hasKey "$[0].hasKey($[1])": Func<Map<a>,String,boolean>
 define get "$[0][$[1]]": Func<Map<a>,String,a>
 define get "$[0].get($[1],$[2])": Func<Map<a>,String,a,a>
 define set "$[0][$[1]] = $[2]": Func<Map<a>,String,a,void>
 define keys "$[0].keys()": Func<Map<a>,String[]>
+define _ "((String)$[0])": Func<Object,String>

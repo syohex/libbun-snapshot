@@ -14,14 +14,17 @@ class Fault:
 ## @SoftwareFault;@Fault
 class SoftwareFault(Fault):
 	def __init__(self, msg):
-		self.msg = msg
+		self.msg = unicode(msg)
+## @null
+def libbun_null(s) : 
+	return s if s != None else u'null'
 
-## @strnull
-def libbun_strnull(s) : 
-	return s if s != None else "null"
-
-## @catch
+## @catch;@SoftwareFault
 def libbun_catch(e):
+	#if isinstance(e, ZeroDevisionError):
+	#	return SoftwareFault(str(e));
+	#if isinstance(e, KeyError):
+	#	return SoftwareFault(str(e));
 	return e
 
 ## @arraysize

@@ -116,16 +116,16 @@ public final class SourceBuilder {
 		return Level;
 	}
 
-	private final String GetIndentString() {
+	private final void AppendIndentString() {
 		if (this.CurrentIndentString == null) {
 			this.CurrentIndentString = BLib._JoinStrings(this.Template.Tab, this.IndentLevel);
 		}
-		return this.CurrentIndentString;
+		this.SourceList.add(this.CurrentIndentString);
 	}
 
 	public final void AppendNewLine() {
 		this.AppendLineFeed();
-		this.SourceList.add(this.GetIndentString());
+		this.AppendIndentString();
 	}
 
 	public final void AppendNewLine(String Text) {

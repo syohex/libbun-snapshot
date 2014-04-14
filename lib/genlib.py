@@ -34,8 +34,8 @@ class Data:
 			macro = ""
 			if self.LangMap[lang].has_key(func):
 				macro = self.LangMap[lang][func]
-			line = 'define %s "%s": %s\n' % (t[0].replace('-', '::'), macro, t[1])
-			f.write(line)
+				line = 'define %s "%s": %s\n' % (t[0].replace('-', '::'), macro, t[1])
+				f.write(line)
 		f.close()
 		
 	def GenLib(self):

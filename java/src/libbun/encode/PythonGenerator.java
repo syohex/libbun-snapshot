@@ -30,6 +30,7 @@ import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.error.StupidCastErrorNode;
 import libbun.ast.expression.BunFuncNameNode;
+import libbun.ast.expression.BunMacroNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
@@ -139,6 +140,27 @@ public class PythonGenerator extends SourceGenerator {
 		}
 	}
 
+	private void GenerateConcatNullString(BNode Node) {
+		if(Node instanceof BunStringNode || Node instanceof BunMacroNode) {
+			this.GenerateExpression(Node);
+		}
+		else {
+			this.GenerateExpression("libbun_null(", Node, ")");
+			this.ImportLibrary("@null");
+		}
+	}
+
+	private void GenerateConcatString(BinaryOperatorNode Node) {
+		this.GenerateConcatNullString(Node.LeftNode());  // convert None => "null";
+		this.Source.AppendWhiteSpace("+ ");
+		this.GenerateConcatNullString(Node.RightNode());
+	}
+
+
+	@Override public void VisitBinaryNode(BinaryOperatorNode Node) {
+		this.GenerateBinaryOperatorExpression(Node, Node.GetOperator());
+	}
+
 	@Override public void VisitAndNode(BunAndNode Node) {
 		this.GenerateBinaryOperatorExpression(Node, "and");
 	}
@@ -148,7 +170,12 @@ public class PythonGenerator extends SourceGenerator {
 	}
 
 	@Override public void VisitAddNode(BunAddNode Node) {
-		this.GenerateBinaryOperatorExpression(Node, "+");
+		if(Node.Type.IsStringType()) {
+			this.GenerateConcatString(Node);
+		}
+		else {
+			this.GenerateBinaryOperatorExpression(Node, "+");
+		}
 	}
 
 	@Override public void VisitSubNode(BunSubNode Node) {
@@ -260,7 +287,7 @@ public class PythonGenerator extends SourceGenerator {
 		if(ResolvedNode == null && !this.LangInfo.AllowUndefinedSymbol) {
 			BLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GivenName);
 		}
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetUniqueName(this)));
+		this.Source.Append(Node.GetUniqueName(this));
 	}
 
 	@Override public void VisitSetNameNode(SetNameNode Node) {
@@ -282,20 +309,21 @@ public class PythonGenerator extends SourceGenerator {
 
 	@Override public void VisitGetIndexNode(GetIndexNode Node) {
 		@Var BType RecvType = Node.GetAstType(GetIndexNode._Recv);
-		if(RecvType.IsMapType()) {
-			this.ImportLibrary("@mapget");
-			this.GenerateExpression("libbun_mapget(", Node.RecvNode(), ", ", Node.IndexNode(), ")");
-		}
-		else {
-			this.GenerateExpression(Node.RecvNode());
-			this.GenerateExpression("[", Node.IndexNode(), "]");
-		}
+		//		if(RecvType.IsMapType()) {
+		//			this.ImportLibrary("@mapget");
+		//			this.GenerateExpression("libbun_mapget(", Node.RecvNode(), ", ", Node.IndexNode(), ")");
+		//		}
+		//		else {
+		this.GenerateExpression(Node.RecvNode());
+		this.GenerateExpression("[", Node.IndexNode(), "]");
+		//		}
 	}
 
 	@Override
 	public void VisitSetIndexNode(SetIndexNode Node) {
-		// TODO Auto-generated method stub
-
+		this.GenerateExpression(Node.RecvNode());
+		this.GenerateExpression("[", Node.IndexNode(), "] = ");
+		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override public void VisitMethodCallNode(MethodCallNode Node) {
@@ -326,11 +354,6 @@ public class PythonGenerator extends SourceGenerator {
 		this.Source.Append(")");
 	}
 
-	@Override
-	public void VisitBinaryNode(BinaryOperatorNode Node) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override protected void GenerateStatementEnd(BNode Node) {
 	}
@@ -355,7 +378,7 @@ public class PythonGenerator extends SourceGenerator {
 
 	@Override public void VisitVarBlockNode(BunVarBlockNode Node) {
 		@Var BunLetVarNode VarNode = Node.VarDeclNode();
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), VarNode.GetGivenName()), " = ");
+		this.Source.Append(VarNode.GetUniqueName(this), " = ");
 		this.GenerateExpression(VarNode.InitValueNode());
 		this.GenerateStmtList(Node);
 	}
@@ -409,6 +432,7 @@ public class PythonGenerator extends SourceGenerator {
 			this.Source.Append(" = libbun_catch(", VarName, ")");
 			this.GenerateStmtList(Node.CatchBlockNode());
 			this.Source.CloseIndent("");
+			this.ImportLibrary("@catch");
 		}
 		if(Node.HasFinallyBlockNode()) {
 			this.Source.AppendNewLine("finally");
@@ -417,7 +441,7 @@ public class PythonGenerator extends SourceGenerator {
 	}
 
 	@Override public void VisitLetNode(BunLetVarNode Node) {
-		this.Source.AppendNewLine(Node.GetUniqueName(this));
+		this.Source.Append(Node.GetUniqueName(this));
 		this.Source.Append(" = ");
 		this.GenerateExpression(Node.InitValueNode());
 	}
@@ -473,6 +497,9 @@ public class PythonGenerator extends SourceGenerator {
 				this.Source.Append(" = None");
 			}
 			i = i + 1;
+		}
+		if(i > 0) {
+			this.Source.AppendNewLine();
 		}
 	}
 

@@ -6,9 +6,6 @@ define _ "float($[0])": Func<int,float>
 define _ "unicode($[0])": Func<int,String>
 define _ "int($[0])": Func<float,int>
 define _ "(u'%.5f' % ($[0]))": Func<float,String>
-define _ "": Func<String,int>
-define _ "": Func<String,float>
-define + "": Func<String,String,String>
 define size "len($[0])": Func<String,int>
 define equals "$[0] == $[1]": Func<String,String,boolean>
 define startsWith "$[0].startswith($[1])": Func<String,String,boolean>
@@ -19,8 +16,6 @@ define indexOf "$[0].find($[1])": Func<String,String,int>
 define lastIndexOf "$[0].rfind($[1])": Func<String,String,int>
 define toLowerCase "$[0].lower()": Func<String,String>
 define toUpperCase "$[0].upper()": Func<String,String>
-define replace "": Func<String,String,String,String>
-define trim "": Func<String,String>
 define _ "unicode($[0])": Func<α[],String>
 define size "len($[0])": Func<α[],int>
 define size "@arraysize~libbun_arraysize($[0], $[1], None)": Func<α[],int,void>
@@ -39,3 +34,4 @@ define get "$[0][$[1]]": Func<Map<a>,String,a>
 define get "@mapget~libbun_mapget($[0],$[1],$[2])": Func<Map<a>,String,a,a>
 define set "$[0][$[1]] = $[2]": Func<Map<a>,String,a,void>
 define keys "$[0].keys()": Func<Map<a>,String[]>
+define _ "unicode($[0])": Func<Object,String>

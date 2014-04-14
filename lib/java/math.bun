@@ -1,4 +1,3 @@
-define math::E "": float
 define math::PI "java.lang.Math~Math.PI": float
 define math::abs "java.lang.Math~Math.abs($[0])": Func<int,int>
 define math::abs "java.lang.Math~Math.abs($[0])": Func<float,float>

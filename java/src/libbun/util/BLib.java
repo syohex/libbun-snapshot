@@ -89,14 +89,12 @@ public class BLib {
 		//}
 	}
 
-
 	@BIgnored public final static void _FixMe(Exception e) {
 		if(DebugMode) {
 			System.err.println("FIXME " + BLib._GetStackInfo(3) + ": " + e);
 			e.printStackTrace();
 		}
 	}
-
 
 	public final static void _Assert(boolean TestResult) {
 		if (!TestResult) {
@@ -574,19 +572,20 @@ public class BLib {
 
 	static {
 		// source code by file extension
-		GenMap.put("c", libbun.encode.CGenerator.class);
-		GenMap.put("cl", libbun.encode.CommonLispGenerator.class);
-		GenMap.put("cs", libbun.encode.CSharpGenerator.class);
+		GenMap.put("bun", libbun.encode.BunGenerator.class);
+		GenMap.put("c",   libbun.encode.CGenerator.class);
+		GenMap.put("cl",  libbun.encode.CommonLispGenerator.class);
+		GenMap.put("cs",  libbun.encode.CSharpGenerator.class);
 		GenMap.put("erl", libbun.encode.erlang.ErlangGenerator.class);
 
-		GenMap.put("hs", libbun.encode.haskell.HaskellSourceGenerator.class);
+		GenMap.put("hs",  libbun.encode.haskell.HaskellSourceGenerator.class);
 		GenMap.put("java", libbun.encode.JavaGenerator.class);
-		GenMap.put("js", libbun.encode.JavaScriptGenerator.class);
+		GenMap.put("js",  libbun.encode.JavaScriptGenerator.class);
 
-		GenMap.put("pl", libbun.encode.obsolete.PerlGenerator.class);
+		GenMap.put("pl",  libbun.encode.obsolete.PerlGenerator.class);
 		//GenMap.put("py", libbun.encode.obsolete.OldPythonGenerator.class);
-		GenMap.put("py", libbun.encode.PythonGenerator.class);
-		GenMap.put("rb", libbun.encode.RubyGenerator.class);
+		GenMap.put("py",  libbun.encode.PythonGenerator.class);
+		GenMap.put("rb",  libbun.encode.RubyGenerator.class);
 
 		GenMap.put("zen", libbun.encode.BunGenerator.class);
 

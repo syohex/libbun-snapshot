@@ -17,7 +17,7 @@ function Test(a: int[]) {
 function ArrayOperation() {
 	var a: int[] = [0,1,2];
 	a.add(3);
-	a.add(1, 9);
+	a.insert(1, 9);
 	assert(a.size() == 5);
 	assert(a[0] == 0);
 	assert(a[1] == 9);

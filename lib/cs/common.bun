@@ -6,9 +6,6 @@ define _ "((double)$[0])": Func<int,float>
 define _ "($[0]).ToString()": Func<int,String>
 define _ "((long)$[0])": Func<float,int>
 define _ "($[0]).ToString()": Func<float,String>
-define _ "": Func<String,int>
-define _ "": Func<String,float>
-define + "": Func<String,String,String>
 define size "$[0].Length": Func<String,int>
 define equals "$[0] == $[1]": Func<String,String,boolean>
 define startsWith "$[0].StartsWith($[1])": Func<String,String,boolean>
@@ -19,23 +16,12 @@ define indexOf "$[0].IndexOf($[1])": Func<String,String,int>
 define lastIndexOf "$[0].LastIndexOf($[1])": Func<String,String,int>
 define toLowerCase "$[0].ToLowerCase($[1]) ": Func<String,String>
 define toUpperCase "$[0].ToUpperCase($[1]) ": Func<String,String>
-define replace "": Func<String,String,String,String>
-define trim "": Func<String,String>
 define _ "string.Join(\\"\\", $[0])": Func<α[],String>
 define size "$[0].Count": Func<α[],int>
-define size "": Func<α[],int,void>
 define get "$[0][$[1]]": Func<a[],int,a>
 define set "$[0][$[1]] = $[2]": Func<a[],int,a,void>
 define add "$[0].Add($[1])": Func<α[],α,void>
 define insert "$[0].Insert($[1], $[2])": Func<α[],int,α,void>
 define remove "$[0].RemoveAt($[1])": Func<α[],int,α>
 define pop "((list) => { var ret = list[list.Count - 1]; list.RemoveAt(list.Count -1 ); return ret; })($[0])": Func<α[],α>
-define size "": Func<boolean[],int,void>
-define size "": Func<int[],int,void>
-define size "": Func<float[],int,void>
-define _ "": Func<Map<α>,String>
-define hasKey "": Func<Map<a>,String,boolean>
-define get "": Func<Map<a>,String,a>
-define get "": Func<Map<a>,String,a,a>
-define set "": Func<Map<a>,String,a,void>
-define keys "": Func<Map<a>,String[]>
+define _ "$[0].ToString()": Func<Object,String>
