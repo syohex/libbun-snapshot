@@ -109,7 +109,6 @@ import libbun.type.BVarScope;
 import libbun.type.BVarType;
 import libbun.util.BField;
 import libbun.util.BLib;
-import libbun.util.Nullable;
 import libbun.util.Var;
 
 public class BunTypeSafer extends BTypeChecker {
@@ -730,18 +729,14 @@ public class BunTypeSafer extends BTypeChecker {
 
 	}
 
-	protected void VisitVarDeclNode(BNameSpace NameSpace, BunLetVarNode Node1) {
-		@Var @Nullable BunLetVarNode CurNode = Node1;
-		while(CurNode != null) {
-			CurNode.InitValueNode();
-			this.CheckTypeAt(CurNode, BunLetVarNode._InitValue, CurNode.DeclType());
-			if(CurNode.DeclType().IsVarType()) {
-				CurNode.SetDeclType(CurNode.GetAstType(BunLetVarNode._InitValue));
-			}
-			CurNode.SetDeclType(this.VarScope.NewVarType(CurNode.DeclType(), CurNode.GetGivenName(), CurNode.SourceToken));
-			NameSpace.SetSymbol(CurNode.GetGivenName(), CurNode);
-			CurNode = CurNode.NextVarNode();
+	protected void VisitVarDeclNode(BNameSpace NameSpace, BunLetVarNode CurNode) {
+		CurNode.InitValueNode();
+		this.CheckTypeAt(CurNode, BunLetVarNode._InitValue, CurNode.DeclType());
+		if(CurNode.DeclType().IsVarType()) {
+			CurNode.SetDeclType(CurNode.GetAstType(BunLetVarNode._InitValue));
 		}
+		CurNode.SetDeclType(this.VarScope.NewVarType(CurNode.DeclType(), CurNode.GetGivenName(), CurNode.SourceToken));
+		NameSpace.SetSymbol(CurNode.GetGivenName(), CurNode);
 	}
 
 	@Override public void VisitBlockNode(BunBlockNode Node) {
@@ -825,7 +820,7 @@ public class BunTypeSafer extends BTypeChecker {
 	}
 
 	@Override public void VisitThrowNode(BunThrowNode Node) {
-		if(Node.ParentNode != null && Node.ParentNode.ParentNode != null && 
+		if(Node.ParentNode != null && Node.ParentNode.ParentNode != null &&
 				Node.ParentNode.ParentNode instanceof BunFunctionNode) {
 			@Var BunFunctionNode FuncNode = (BunFunctionNode) Node.ParentNode.ParentNode;
 			if(FuncNode == Node.GetDefiningFunctionNode()) {
