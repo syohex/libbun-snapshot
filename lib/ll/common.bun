@@ -7,11 +7,11 @@ define println "call void (%BString*)* @BString_println ($[0])" : Func<String,vo
 // define _ "(double)($[0])" : Func<int,float>;
 // define _ "(long)($[0])" : Func<float,int>;
 define _ "call %BString* (i1)* @BString_boolean_toString ($[0])" : Func<boolean,String>;
-define toString "call %BString* (i1)* @BString_boolean_toString ($[0])" : Func<boolean,String>;
+define _ "call %BString* (%BArray*)* @BBooleanArray_toString ($[0])" : Func<boolean[],String>;
 define _ "call %BString* (i64)* @BString_int_toString ($[0])" : Func<int,String>;
-define toString "call %BString* (i64)* @BString_int_toString ($[0])": Func<int,String>;
+define _ "call %BString* (%BArray*)* @BIntArray_toString ($[0])" : Func<int[],String>;
 define _ "call %BString* (double)* @BString_float_toString ($[0])" : Func<float,String>;
-define toString "call %BString* (double)* @BString_float_toString ($[0])" : Func<float,String>;
+define _ "call %BString* (%BArray*)* @BFloatArray_toString ($[0])" : Func<float[],String>;
 
 // String
 define "+" "call %BString* (%BString*, %BString*)* @BString_StrCat ($[0], $[1])" : Func<String,String,String>;
@@ -45,3 +45,5 @@ define clear "call void (%BArray*, i64)* @BBooleanArray_Clear ($[0], $[1])" : Fu
 define add "call void (%BArray*, i1)* @BBooleanArray_Add ($[0], $[1])" : Func<boolean[],boolean,void>;
 define add "call void (%BArray*, i64, i1)* B@BooleanArray_Insert ($[0], $[1], $[2])" : Func<boolean[],int,boolean,void>;
 
+// Map
+define containsKey "call i1 (%BMap*, %BString)* @BMap_ContainsKey ($[0], $[1])" : Func<Map<α>,String,boolean>;
