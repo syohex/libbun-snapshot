@@ -302,7 +302,7 @@ public class BunGenerator extends SourceGenerator {
 
 	@Override
 	protected void GenerateStatementEnd(BNode Node) {
-		if(Node instanceof BunIfNode || Node instanceof BunWhileNode) {
+		if(Node instanceof BunIfNode || Node instanceof BunWhileNode || Node instanceof BunTryNode || Node instanceof BunFunctionNode || Node instanceof BunClassNode) {
 			return;
 		}
 		if(!this.Source.EndsWith(';')) {
@@ -327,13 +327,12 @@ public class BunGenerator extends SourceGenerator {
 	}
 
 	protected void VisitVarDeclNode(BunLetVarNode Node) {
-		this.Source.Append("var ", this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+		this.Source.Append("var ", Node.GetGivenName());
 		this.GenerateTypeAnnotation(Node.DeclType());
 		this.GenerateExpression(" = ", Node.InitValueNode(), ";");
 	}
 
 	@Override public void VisitVarBlockNode(BunVarBlockNode Node) {
-		this.Source.AppendWhiteSpace();
 		this.VisitVarDeclNode(Node.VarDeclNode());
 		this.GenerateStmtListNode(Node);
 	}
@@ -394,9 +393,10 @@ public class BunGenerator extends SourceGenerator {
 	@Override public void VisitLetNode(BunLetVarNode Node) {
 		if(Node.IsParamNode()) {
 			this.VisitParamNode(Node);
+			this.GenerateTypeAnnotation(Node.DeclType());
 		}
 		else {
-			this.Source.AppendNewLine("let ", Node.GetGivenName());
+			this.Source.Append("let ", Node.GetGivenName());
 			this.GenerateTypeAnnotation(Node.DeclType());
 			this.Source.Append(" = ");
 			this.GenerateExpression(Node.InitValueNode());

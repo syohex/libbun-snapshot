@@ -23,16 +23,16 @@ define trim "$[0].trim()": Func<String,String>
 define _ "((String)$[0])": Func<α[],String>
 define size "$[0].size()": Func<α[],int>
 define size "$[0].size($[1])": Func<α[],int,void>
-define get "$[0][$[1]]": Func<a[],int,a>
-define set "$[0][$[1]] = $[2]": Func<a[],int,a,void>
+define get "$[0][$[1]]": Func<α[],int,α>
+define set "$[0][$[1]] = $[2]": Func<α[],int,α,void>
 define add "$[0].add($[1])": Func<α[],α,void>
 define insert "$[0].insert($[1], $[2])": Func<α[],int,α,void>
 define remove "$[0].remove($[1])": Func<α[],int,α>
 define pop "$[0].pop($[1])": Func<α[],α>
 define _ "((String)$[0])": Func<Map<α>,String>
-define hasKey "$[0].hasKey($[1])": Func<Map<a>,String,boolean>
-define get "$[0][$[1]]": Func<Map<a>,String,a>
-define get "$[0].get($[1],$[2])": Func<Map<a>,String,a,a>
-define set "$[0][$[1]] = $[2]": Func<Map<a>,String,a,void>
-define keys "$[0].keys()": Func<Map<a>,String[]>
+define hasKey "$[0].hasKey($[1])": Func<Map<α>,String,boolean>
+define get "$[0][$[1]]": Func<Map<α>,String,α>
+define get "$[0].get($[1],$[2])": Func<Map<α>,String,α,α>
+define set "$[0][$[1]] = $[2]": Func<Map<α>,String,α,void>
+define keys "$[0].keys()": Func<Map<α>,String[]>
 define _ "((String)$[0])": Func<Object,String>

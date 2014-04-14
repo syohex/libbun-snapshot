@@ -25,6 +25,6 @@ define size "(length $[0])": Func<α[],int>
 define size "(FIXME)": Func<α[],int,void>
 define add "(vector-push $[1])": Func<α[],α,void>
 define pop "(vector-pop $[0])": Func<α[],α>
-define hasKey "(gethash $[1] $[0])": Func<Map<a>,String,boolean>
-define get "(gethash $[1] $[0])": Func<Map<a>,String,a>
+define hasKey "(gethash $[1] $[0])": Func<Map<α>,String,boolean>
+define get "(gethash $[1] $[0])": Func<Map<α>,String,α>
 define _ "~(format nil \\"~a\\" $[0])": Func<Object,String>

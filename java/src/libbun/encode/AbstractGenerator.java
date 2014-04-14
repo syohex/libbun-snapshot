@@ -125,7 +125,7 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 		@Var String Key = "" + Type.TypeId;
 		@Var String TypeName = this.SymbolMap.GetOrNull(Key);
 		if (TypeName == null) {
-			return Type.ShortName;
+			return Type.GetName();
 		}
 		return TypeName;
 	}
@@ -135,7 +135,7 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 	}
 
 	public final String NameClass(BType ClassType) {
-		return ClassType.ShortName /*+ "" + ClassType.TypeId*/;
+		return ClassType.GetName() /*+ "" + ClassType.TypeId*/;
 	}
 
 	public final String NameFunctionClass(String FuncName, BFuncType FuncType) {

@@ -18,6 +18,6 @@ define toLowerCase "$[0].toLowerCase($[1]) ": Func<String,String>
 define toUpperCase "$[0].toUpperCase($[1]) ": Func<String,String>
 define replace "$[0].replaceAll($[1], $[2])": Func<String,String,String,String>
 define trim "$[0].trim()": Func<String,String>
-define get "$[0].get($[1])": Func<a[],int,a>
-define set "$[0].set($[1], $[2])": Func<a[],int,a,void>
+define get "$[0].get($[1])": Func<α[],int,α>
+define set "$[0].set($[1], $[2])": Func<α[],int,α,void>
 define _ "$[0].toString()": Func<Object,String>
