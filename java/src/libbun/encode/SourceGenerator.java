@@ -267,6 +267,20 @@ public abstract class SourceGenerator extends AbstractGenerator {
 		this.Source.Append(CloseToken);
 	}
 
+	protected void GenerateWrapperCall(String OpenToken, BunFunctionNode FuncNode, String CommaToken, String CloseToken) {
+		this.Source.Append(OpenToken);
+		@Var int i = 0;
+		while(i < FuncNode.GetListSize()) {
+			@Var BunLetVarNode ParamNode = FuncNode.GetParamNode(i);
+			if (i > 0) {
+				this.Source.Append(CommaToken);
+			}
+			this.Source.Append(ParamNode.GetUniqueName(this));
+			i = i + 1;
+		}
+		this.Source.Append(CloseToken);
+	}
+
 
 
 }
