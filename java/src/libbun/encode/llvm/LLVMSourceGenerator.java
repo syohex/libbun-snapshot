@@ -740,6 +740,22 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 				this.DeclareExtrnalFunction("BString_EqualString", "i1", "(%BString*, %BString*)");
 				this.CallExternalFunction("BString_EqualString", "(" + this.GetTypeExpr(Node.LeftNode().Type) + " " + Left + ", " + this.GetTypeExpr(Node.RightNode().Type) + " " + Right + ")");
 			}
+			else if(Node.SourceToken.EqualsText("!=") && Node.RightNode().Type.IsStringType()) {
+				this.DeclareExtrnalFunction("BString_EqualString", "i1", "(%BString*, %BString*)");
+				this.CallExternalFunction("BString_EqualString", "(" + this.GetTypeExpr(Node.LeftNode().Type) + " " + Left + ", " + this.GetTypeExpr(Node.RightNode().Type) + " " + Right + ")");
+				@Var String CmpResult = this.CurrentScope.PopValue();
+
+				@Var String NotResult = this.CurrentScope.CreateTempLocalSymbol();
+				this.Source.AppendNewLine(NotResult);
+				this.Source.Append(" = ");
+				this.Source.Append("xor");
+				this.Source.Append(" ");
+				this.Source.Append(this.GetTypeExpr(BType.BooleanType));
+				this.Source.Append(" 1, ");
+				this.Source.Append(CmpResult);
+
+				this.CurrentScope.PushValue(NotResult);
+			}
 		}
 		else {
 			@Var String LeftAddress = this.CurrentScope.CreateTempLocalSymbol();
@@ -1439,14 +1455,13 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 
 
 	@Override protected void GenerateExpression(BNode Node) {
-		if(this.IsNeededSurroud(Node)) {
-			//this.Source.Append("(");
-			this.GenerateExpression(Node);
-			//this.Source.Append(")");
+		Node.Accept(this);
+		/* if(this.IsNeededSurroud(Node)) {
+			this.GenerateExpression("", Node, "");
 		}
 		else {
 			this.GenerateExpression(Node);
-		}
+		} */
 	}
 
 	@Override public void GenerateStmtListNode(BunBlockNode BlockNode) {
