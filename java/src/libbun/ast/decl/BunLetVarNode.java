@@ -108,12 +108,4 @@ public class BunLetVarNode extends AbstractListNode {
 		return this.InitValueNode() instanceof ConstNode;
 	}
 
-	@Deprecated public final boolean HasNextVarNode() {
-		return false;
-	}
-
-	@Deprecated public final BunLetVarNode NextVarNode() {
-		return null;
-	}
-
 }
