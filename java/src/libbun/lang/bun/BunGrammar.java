@@ -176,7 +176,15 @@ class NameTokenFunction extends BTokenFunction {
 		@Var int StartIndex = SourceContext.GetPosition();
 		while(SourceContext.HasChar()) {
 			@Var char ch = SourceContext.GetCurrentChar();
-			if(!BLib._IsSymbol(ch) && !BLib._IsDigit(ch)) {
+			if(ch == ':') {
+				if(SourceContext.GetCharAtFromCurrentPosition(+1) == ':') {
+					SourceContext.MoveNext();
+				}
+				else {
+					break;
+				}
+			}
+			else if(!BLib._IsSymbol(ch) && !BLib._IsDigit(ch)) {
 				break;
 			}
 			SourceContext.MoveNext();
@@ -184,7 +192,6 @@ class NameTokenFunction extends BTokenFunction {
 		SourceContext.Tokenize(StartIndex, SourceContext.GetPosition());
 		return true;
 	}
-
 }
 
 class OperatorTokenFunction extends BTokenFunction {
@@ -1026,7 +1033,7 @@ class AsmPatternFunction extends BMatchFunction {
 class BunDefineNamePatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		@Var BToken NameToken = TokenContext.ParseLargeToken();
-		//System.out.println("'"+ NameToken.GetText() + "'");
+		//		System.out.println("'"+ NameToken.GetText() + "'");
 		return new GetNameNode(ParentNode, NameToken, NameToken.GetText());
 	}
 }

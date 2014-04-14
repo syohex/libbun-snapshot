@@ -69,6 +69,7 @@ import libbun.ast.expression.SetFieldNode;
 import libbun.ast.expression.SetIndexNode;
 import libbun.ast.expression.SetNameNode;
 import libbun.ast.literal.BunArrayLiteralNode;
+import libbun.ast.literal.BunAsmNode;
 import libbun.ast.literal.BunBooleanNode;
 import libbun.ast.literal.BunFloatNode;
 import libbun.ast.literal.BunIntNode;
@@ -227,7 +228,12 @@ public class BunTypeSafer extends BTypeChecker {
 		Node.ResolvedNode = VarNode;
 		if(VarNode != null) {
 			VarNode.Used();
-			this.ReturnTypeNode(Node, VarNode.DeclType());
+			if(VarNode.InitValueNode() instanceof BunAsmNode) {
+				this.ReturnTypeNode(VarNode.InitValueNode(), VarNode.DeclType());
+			}
+			else {
+				this.ReturnTypeNode(Node, VarNode.DeclType());
+			}
 		}
 		else {
 			this.ReturnTypeNode(Node, BType.VarType);

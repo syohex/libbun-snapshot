@@ -54,8 +54,10 @@ public class BunDefineNode extends TopLevelNode {
 			@Var BunAsmNode AsmNode = new BunAsmNode(null, LibName, MacroText, MacroType);
 			AsmNode.SourceToken = this.DefineNode.GetAstToken(BunLetVarNode._NameInfo);
 			AsmNode.Type = MacroType;
+			this.DefineNode.GivenType = MacroType;
+			this.DefineNode.GivenName = MacroText;
 			this.DefineNode.SetNode(BunLetVarNode._InitValue, AsmNode);
-			NameSpace.SetSymbol(Symbol, this.DefineNode);
+			NameSpace.SetDebugSymbol(Symbol, this.DefineNode);
 		}
 	}
 }

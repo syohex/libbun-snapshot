@@ -24,8 +24,8 @@
 
 
 package libbun.parser;
-import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.encode.AbstractGenerator;
 import libbun.type.BClassType;
@@ -204,28 +204,16 @@ public final class BNameSpace {
 		return null;
 	}
 
-	//	public final void SetDebugSymbol(String Symbol, BNode EntryNode) {
-	//		if(this.SymbolTable2 == null) {
-	//			this.SymbolTable2 = new ZMap<BLetVarNode>(null);
-	//		}
-	//		//System.out.println("SetSymbol: " + Symbol + " @" + this);
-	//		this.SymbolTable2.put(Symbol, EntryNode);
-	//	}
-	//
-	//	public final BNode GetDebugSymbol(String Symbol) {
-	//		@Var ZNameSpace NameSpace = this;
-	//		while(NameSpace != null) {
-	//			//System.out.println("GetSymbol: " + Symbol + " @" + NameSpace);
-	//			if(NameSpace.SymbolTable2 != null) {
-	//				@Var BNode EntryNode = NameSpace.SymbolTable2.GetOrNull(Symbol);
-	//				if(EntryNode != null) {
-	//					return EntryNode;
-	//				}
-	//			}
-	//			NameSpace = NameSpace.GetParentNameSpace();
-	//		}
-	//		return null;
-	//	}
+	public final void SetDebugSymbol(String Symbol, BunLetVarNode EntryNode) {
+		this.SetSymbol(Symbol, EntryNode);
+		BLib._PrintLine("SetSymbol: " + Symbol + " @" + this);
+	}
+
+	public final BunLetVarNode GetDebugSymbol(String Symbol) {
+		@Var BunLetVarNode Node = this.GetSymbol(Symbol);
+		BLib._PrintLine("GetSymbol: " + Symbol + " => " + Node);
+		return Node;
+	}
 
 	public final int GetNameIndex(String Name) {
 		@Var int NameIndex = -1;
