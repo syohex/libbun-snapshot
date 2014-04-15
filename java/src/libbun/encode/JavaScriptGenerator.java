@@ -128,18 +128,21 @@ public class JavaScriptGenerator extends SourceGenerator {
 	}
 
 	@Override public void VisitThrowNode(BunThrowNode Node) {
-		this.Source.Append("(function(){ throw ");
+		this.Source.Append("throw ");
 		this.GenerateExpression(Node.ExprNode());
-		this.Source.Append("; })()");
 	}
 
 	@Override public void VisitTryNode(BunTryNode Node) {
 		this.Source.Append("try");
 		this.GenerateExpression(Node.TryBlockNode());
 		if(Node.HasCatchBlockNode()){
-			@Var String VarName = this.NameUniqueSymbol("e");
-			this.Source.Append("catch(", VarName, ")");
+			@Var String VarName = this.NameLocalVariable(Node.GetNameSpace(), "e");
+			this.ImportLibrary("@catch");
+			this.Source.Append("catch(", VarName, "){ ");
+			this.Source.Append(VarName, " = libbun_catch(", VarName);
+			this.Source.Append("); ");
 			this.GenerateExpression(Node.CatchBlockNode());
+			this.Source.Append("}");
 		}
 		if (Node.HasFinallyBlockNode()) {
 			this.Source.Append("finally");
@@ -277,9 +280,9 @@ public class JavaScriptGenerator extends SourceGenerator {
 		else {
 			@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 			this.Source.AppendWhiteSpace();
-			this.Source.Append("throw new Error(");
+			this.Source.Append("(function(){ throw new Error(");
 			this.Source.Append(BLib._QuoteString(Message));
-			this.Source.Append(")");
+			this.Source.Append("); })()");
 		}
 	}
 
@@ -471,6 +474,10 @@ public class JavaScriptGenerator extends SourceGenerator {
 		if(RecvType.IsMapType()) {
 			this.ImportLibrary("@mapget");
 			this.GenerateExpression("libbun_mapget(", Node.RecvNode(), ", ", Node.IndexNode(), ")");
+		}
+		else if(RecvType.IsArrayType()) {
+			this.ImportLibrary("@arrayget");
+			this.GenerateExpression("libbun_arrayget(", Node.RecvNode(), ", ", Node.IndexNode(), ")");
 		}
 		else {
 			this.GenerateExpression(Node.RecvNode());

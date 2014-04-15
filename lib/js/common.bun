@@ -1,9 +1,10 @@
-define assert "onsole.assert($[0], $[1])": Func<boolean,String,void>
+define assert "console.assert($[0], $[1])": Func<boolean,String,void>
 define println "console.log($[0])": Func<String,void>
 define print "console.log($[0])": Func<String,void>
 define _ "String($[0])": Func<boolean,String>
 define _ "$[0]": Func<int,float>
 define _ "String($[0])": Func<int,String>
+define / "@intdiv~libbun_intdiv($[0], $[1])": Func<int,int,int>
 define _ "$[0]": Func<float,int>
 define _ "String($[0])": Func<float,String>
 define size "$[0].length ": Func<String,int>
@@ -16,7 +17,7 @@ define indexOf "$[0].indexOf($[1])": Func<String,String,int>
 define lastIndexOf "$[0].lastIndexOf($[1]) ": Func<String,String,int>
 define toLowerCase "$[0].toLowerCase($[1]) ": Func<String,String>
 define toUpperCase "$[0].toUpperCase($[1]) ": Func<String,String>
-define _ "$[0].join(\\"\\")": Func<α[],String>
+define _ "$[0].join('')": Func<α[],String>
 define size "$[0].length": Func<α[],int>
 define size "$[0].size": Func<α[],int,void>
 define get "$[0][$[1]]": Func<α[],int,α>
@@ -34,4 +35,4 @@ define get "$[0][$[1]] ": Func<Map<α>,String,α>
 define get "@mapget~libbun_mapget($[0],$[1],$[2])": Func<Map<α>,String,α,α>
 define set "$[0][$[1]] = $[2]": Func<Map<α>,String,α,void>
 define keys "Object.keys($[0])": Func<Map<α>,String[]>
-define _ "$[0].join(\\"\\")": Func<Object,String>
+define _ "String($[0])": Func<Object,String>
