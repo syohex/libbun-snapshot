@@ -28,7 +28,7 @@ import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
 import libbun.parser.BVisitor;
 import libbun.type.BFuncType;
-import libbun.type.BMacroFunc;
+import libbun.type.BFormFunc;
 import libbun.type.BType;
 import libbun.util.Nullable;
 import libbun.util.Var;
@@ -77,8 +77,8 @@ public final class FuncCallNode extends AbstractListNode {
 		return null;
 	}
 
-	public BunMacroNode ToMacroNode(BMacroFunc MacroFunc) {
-		@Var BunMacroNode MacroNode = new BunMacroNode(this.ParentNode, this.FunctorNode().SourceToken, MacroFunc);
+	public FormNode ToFormNode(BFormFunc FormFunc) {
+		@Var FormNode MacroNode = new FormNode(this.ParentNode, this.FunctorNode().SourceToken, FormFunc);
 		@Var int i = 0;
 		while(i < this.GetListSize()) {
 			MacroNode.Append(this.GetListAt(i));

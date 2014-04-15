@@ -228,7 +228,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 	// }
 
 	// @Override public void VisitMacroNode(ZMacroNode Node) {
-	// 	@Var String Macro = Node.GetMacroText();
+	// 	@Var String Macro = Node.GetFormText();
 	// 	@Var ZFuncType FuncType = Node.GetFuncType();
 	// 	@Var int fromIndex = 0;
 	// 	@Var int BeginNum = Macro.indexOf("$[", fromIndex);

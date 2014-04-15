@@ -43,7 +43,7 @@ import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.BunFuncNameNode;
-import libbun.ast.expression.BunMacroNode;
+import libbun.ast.expression.FormNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
@@ -1083,11 +1083,11 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		}
 	}
 
-	@Override public void VisitMacroNode(BunMacroNode Node) {
+	@Override public void VisitFormNode(FormNode Node) {
 		@Var StringBuilder sb = new StringBuilder();
 
 		@Var String TempVar = "";
-		@Var String Macro = Node.GetMacroText();
+		@Var String Macro = Node.GetFormText();
 		@Var BFuncType FuncType = Node.GetFuncType();
 		if(!FuncType.GetReturnType().IsVoidType()) {
 			TempVar = this.CurrentScope.CreateTempLocalSymbol();

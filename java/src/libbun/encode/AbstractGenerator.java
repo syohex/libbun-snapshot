@@ -47,7 +47,7 @@ import libbun.parser.BTypeChecker;
 import libbun.type.BClassType;
 import libbun.type.BFunc;
 import libbun.type.BFuncType;
-import libbun.type.BMacroFunc;
+import libbun.type.BFormFunc;
 import libbun.type.BPrototype;
 import libbun.type.BType;
 import libbun.util.BField;
@@ -276,10 +276,10 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 		return Func;
 	}
 
-	public final BMacroFunc GetMacroFunc(String FuncName, BType RecvType, int FuncParamSize) {
+	public final BFormFunc GetFormFunc(String FuncName, BType RecvType, int FuncParamSize) {
 		@Var BFunc Func = this.GetDefinedFunc(BFunc._StringfySignature(FuncName, FuncParamSize, RecvType));
-		if(Func instanceof BMacroFunc) {
-			return ((BMacroFunc)Func);
+		if(Func instanceof BFormFunc) {
+			return ((BFormFunc)Func);
 		}
 		return null;
 	}

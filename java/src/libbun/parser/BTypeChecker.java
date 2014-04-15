@@ -36,7 +36,7 @@ import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.error.StupidCastErrorNode;
 import libbun.ast.expression.BunFuncNameNode;
-import libbun.ast.expression.BunMacroNode;
+import libbun.ast.expression.FormNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetNameNode;
 import libbun.ast.literal.BunAsmNode;
@@ -46,7 +46,7 @@ import libbun.encode.AbstractGenerator;
 import libbun.type.BFunc;
 import libbun.type.BFuncType;
 import libbun.type.BGreekType;
-import libbun.type.BMacroFunc;
+import libbun.type.BFormFunc;
 import libbun.type.BType;
 import libbun.type.BVarScope;
 import libbun.util.BField;
@@ -95,11 +95,11 @@ public abstract class BTypeChecker extends BOperatorVisitor {
 		if(!Node.GetAstType(BinaryOperatorNode._Left).IsVarType() && !Node.GetAstType(BinaryOperatorNode._Right).IsVarType()) {
 			@Var String Op = Node.GetOperator();
 			@Var BFunc Func = this.Generator.GetDefinedFunc(Op, Node.GetAstType(BinaryOperatorNode._Left), 2);
-			if(Func instanceof BMacroFunc) {
-				@Var BunMacroNode MacroNode = new BunMacroNode(Node.ParentNode, Node.SourceToken, (BMacroFunc)Func);
-				MacroNode.Append(Node.LeftNode());
-				MacroNode.Append(Node.RightNode());
-				this.ReturnTypeNode(MacroNode, Type);
+			if(Func instanceof BFormFunc) {
+				@Var FormNode NewNode = new FormNode(Node.ParentNode, Node.SourceToken, (BFormFunc)Func);
+				NewNode.Append(Node.LeftNode());
+				NewNode.Append(Node.RightNode());
+				this.ReturnTypeNode(NewNode, Type);
 				return;
 			}
 		}
@@ -276,7 +276,7 @@ public abstract class BTypeChecker extends BOperatorVisitor {
 	}
 
 	@Override public void VisitAsmNode(BunAsmNode Node) {
-		this.ReturnTypeNode(Node, Node.MacroType());
+		this.ReturnTypeNode(Node, Node.FormType());
 	}
 
 	// ----------------------------------------------------------------------
@@ -341,8 +341,8 @@ public abstract class BTypeChecker extends BOperatorVisitor {
 
 	public final AbstractListNode CreateDefinedFuncCallNode(BNode ParentNode, BToken SourceToken, BFunc Func) {
 		@Var AbstractListNode FuncNode = null;
-		if(Func instanceof BMacroFunc) {
-			FuncNode = new BunMacroNode(ParentNode, SourceToken, (BMacroFunc)Func);
+		if(Func instanceof BFormFunc) {
+			FuncNode = new FormNode(ParentNode, SourceToken, (BFormFunc)Func);
 		}
 		else {
 			FuncNode = this.CreateFuncCallNode(ParentNode, SourceToken, Func.FuncName, Func.GetFuncType());

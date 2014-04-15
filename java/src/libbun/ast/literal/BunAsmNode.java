@@ -7,35 +7,35 @@ import libbun.util.BField;
 import libbun.util.Var;
 
 public class BunAsmNode extends BNode {
-	public final static int _Macro = 0;
+	public final static int _Form = 0;
 	public static final int _TypeInfo = 1;
 	@BField public String RequiredLibrary = null;
 	
-	@BField String MacroText = null;
-	@BField BType  MacroType = null;
+	@BField String FormText = null;
+	@BField BType  FormType = null;
 
-	public BunAsmNode(BNode ParentNode, String LibName, String MacroText, BType MacroType) {
+	public BunAsmNode(BNode ParentNode, String LibName, String FormText, BType FormType) {
 		super(ParentNode, null, 2);
 		this.RequiredLibrary = LibName;
-		this.MacroText = MacroText;
-		this.MacroType = MacroType;
+		this.FormText = FormText;
+		this.FormType = FormType;
 	}
 
-	public final BType MacroType() {
-		if(this.MacroType == null) {
-			this.MacroType = this.AST[BunAsmNode._TypeInfo].Type;
+	public final BType FormType() {
+		if(this.FormType == null) {
+			this.FormType = this.AST[BunAsmNode._TypeInfo].Type;
 		}
-		return this.MacroType;
+		return this.FormType;
 	}
 
-	public final String GetMacroText() {
-		if(this.MacroText == null) {
-			@Var BNode Node = this.AST[BunAsmNode._Macro];
+	public final String GetFormText() {
+		if(this.FormText == null) {
+			@Var BNode Node = this.AST[BunAsmNode._Form];
 			if(Node instanceof BunStringNode) {
-				this.MacroText = ((BunStringNode)Node).StringValue;
+				this.FormText = ((BunStringNode)Node).StringValue;
 			}
 		}
-		return this.MacroText;
+		return this.FormText;
 	}
 
 	@Override public void Accept(BVisitor Visitor) {

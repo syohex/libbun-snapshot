@@ -90,7 +90,7 @@ import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.BunFuncNameNode;
-import libbun.ast.expression.BunMacroNode;
+import libbun.ast.expression.FormNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
@@ -653,19 +653,19 @@ public class AsmJavaGenerator extends AbstractGenerator {
 		}
 	}
 
-	@Override public void VisitMacroNode(BunMacroNode Node) {
+	@Override public void VisitFormNode(FormNode Node) {
 		for(int i = 0; i < Node.GetListSize(); i++) {
 			this.AsmBuilder.PushNode(null, Node.GetListAt(i));
 		}
-		@Var String MacroText = Node.MacroFunc.MacroText;
-		@Var int ClassEnd = MacroText.indexOf(".");
-		@Var int MethodEnd = MacroText.indexOf("(");
-		//System.out.println("MacroText: " + MacroText + " " + ClassEnd + ", " + MethodEnd);
-		@Var String ClassName = MacroText.substring(0, ClassEnd);
-		@Var String MethodName = MacroText.substring(ClassEnd+1, MethodEnd);
+		@Var String FormText = Node.FormFunc.FormText;
+		@Var int ClassEnd = FormText.indexOf(".");
+		@Var int MethodEnd = FormText.indexOf("(");
+		//System.out.println("FormText: " + FormText + " " + ClassEnd + ", " + MethodEnd);
+		@Var String ClassName = FormText.substring(0, ClassEnd);
+		@Var String MethodName = FormText.substring(ClassEnd+1, MethodEnd);
 		this.AsmBuilder.SetLineNumber(Node);
 		//System.out.println("debug: " + ClassName + ", " + MethodName);
-		this.AsmBuilder.visitMethodInsn(INVOKESTATIC, ClassName, MethodName, Node.MacroFunc.FuncType);
+		this.AsmBuilder.visitMethodInsn(INVOKESTATIC, ClassName, MethodName, Node.FormFunc.FuncType);
 	}
 
 	@Override public void VisitFuncCallNode(FuncCallNode Node) {

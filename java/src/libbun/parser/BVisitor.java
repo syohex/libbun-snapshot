@@ -36,7 +36,7 @@ import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
-import libbun.ast.expression.BunMacroNode;
+import libbun.ast.expression.FormNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
@@ -72,7 +72,7 @@ public abstract class BVisitor {
 	//	public abstract void VisitNewArrayNode(ZNewArrayNode Node);
 
 	public abstract void VisitFuncCallNode(FuncCallNode Node);
-	public abstract void VisitMacroNode(BunMacroNode FuncNode);
+	public abstract void VisitFormNode(FormNode FuncNode);
 
 	public abstract void VisitGetNameNode(GetNameNode Node);
 	public abstract void VisitSetNameNode(SetNameNode Node);

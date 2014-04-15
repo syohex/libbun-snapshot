@@ -14,7 +14,7 @@ import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
-import libbun.ast.expression.BunMacroNode;
+import libbun.ast.expression.FormNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
@@ -241,7 +241,7 @@ public class ZASTTransformer extends BVisitor {
 	}
 
 	@Override
-	public void VisitMacroNode(BunMacroNode Node) {
+	public void VisitFormNode(FormNode Node) {
 		this.GenerateListNode(Node);
 	}
 

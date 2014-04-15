@@ -58,7 +58,7 @@ import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.BunFuncNameNode;
-import libbun.ast.expression.BunMacroNode;
+import libbun.ast.expression.FormNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
@@ -102,7 +102,7 @@ import libbun.type.BClassType;
 import libbun.type.BFunc;
 import libbun.type.BFuncType;
 import libbun.type.BGenericType;
-import libbun.type.BMacroFunc;
+import libbun.type.BFormFunc;
 import libbun.type.BPrototype;
 import libbun.type.BType;
 import libbun.type.BTypePool;
@@ -292,7 +292,7 @@ public class BunTypeSafer extends BTypeChecker {
 		this.ReturnTypeNode(Node, Node.GetAstType(GroupNode._Expr));
 	}
 
-	@Override public void VisitMacroNode(BunMacroNode FuncNode) {
+	@Override public void VisitFormNode(FormNode FuncNode) {
 		this.ReturnNode(this.TypeListNodeAsFuncCall(FuncNode, FuncNode.GetFuncType()));
 	}
 
@@ -322,8 +322,8 @@ public class BunTypeSafer extends BTypeChecker {
 			if(Func != null) {
 				this.VarScope.TypeNode(FuncNameNode, Func.GetFuncType());
 			}
-			if(Func instanceof BMacroFunc) {
-				@Var BunMacroNode MacroNode = Node.ToMacroNode((BMacroFunc)Func);
+			if(Func instanceof BFormFunc) {
+				@Var FormNode MacroNode = Node.ToFormNode((BFormFunc)Func);
 				this.ReturnNode(this.TypeListNodeAsFuncCall(MacroNode, Func.GetFuncType()));
 				return;
 			}

@@ -182,7 +182,7 @@ public class BashGenerator extends OldSourceGenerator {
 	//
 	//	private boolean FindAssert(ZenFunc Func) {
 	//		@Var boolean isAssert = false;
-	//		if(Func != null && Func.Is(ZenConsts.NativeMacroFunc)) {
+	//		if(Func != null && Func.Is(ZenConsts.NativeFormFunc)) {
 	//			if(LibZen.EqualsString(Func.FuncName, "assert")) {
 	//				isAssert = true;
 	//			}
@@ -208,7 +208,7 @@ public class BashGenerator extends OldSourceGenerator {
 	//		@Var String Macro = null;
 	//		if(Func != null) {
 	//			FuncName = Func.GetNativeFuncName();
-	//			if(ZenUtils.IsFlag(Func.FuncFlag, ZenConsts.NativeMacroFunc)) {
+	//			if(ZenUtils.IsFlag(Func.FuncFlag, ZenConsts.NativeFormFunc)) {
 	//				Macro = Func.GetNativeMacro();
 	//			}
 	//		}
@@ -226,7 +226,7 @@ public class BashGenerator extends OldSourceGenerator {
 	//		@Var String Macro = null;
 	//		if(Func != null) {
 	//			FuncName = Func.GetNativeFuncName();
-	//			if(ZenUtils.IsFlag(Func.FuncFlag, ZenConsts.NativeMacroFunc)) {
+	//			if(ZenUtils.IsFlag(Func.FuncFlag, ZenConsts.NativeFormFunc)) {
 	//				Macro = Func.GetNativeMacro();
 	//			}
 	//		}
@@ -275,7 +275,7 @@ public class BashGenerator extends OldSourceGenerator {
 	////		@Var String Macro = null;
 	////		if(Func != null) {
 	////			FuncName = Func.GetNativeFuncName();
-	////			if(IsFlag(Func.FuncFlag, NativeMacroFunc)) {
+	////			if(IsFlag(Func.FuncFlag, NativeFormFunc)) {
 	////				Macro = Func.GetNativeMacro();
 	////			}
 	////		}

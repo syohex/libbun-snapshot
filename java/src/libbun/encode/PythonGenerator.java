@@ -30,7 +30,7 @@ import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.error.StupidCastErrorNode;
 import libbun.ast.expression.BunFuncNameNode;
-import libbun.ast.expression.BunMacroNode;
+import libbun.ast.expression.FormNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
@@ -141,7 +141,7 @@ public class PythonGenerator extends SourceGenerator {
 	}
 
 	private void GenerateConcatNullString(BNode Node) {
-		if(Node instanceof BunStringNode || Node instanceof BunMacroNode) {
+		if(Node instanceof BunStringNode || Node instanceof FormNode) {
 			this.GenerateExpression(Node);
 		}
 		else {

@@ -8,7 +8,7 @@ import libbun.ast.SyntaxSugarNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.TopLevelNode;
-import libbun.ast.expression.BunMacroNode;
+import libbun.ast.expression.FormNode;
 import libbun.ast.literal.BunAsmNode;
 import libbun.ast.literal.LiteralNode;
 import libbun.ast.unary.BunCastNode;
@@ -177,38 +177,35 @@ public abstract class SourceGenerator extends AbstractGenerator {
 		}
 		Node.Accept(this);
 		this.GenerateStatementEnd(Node);
-		//		if(SemiColon != null && (!this.Source.EndsWith('}') || !this.Source.EndsWith(';'))) {
-		//			this.Source.Append(SemiColon);
-		//		}
 	}
 
 	@Override public final void VisitAsmNode(BunAsmNode Node) {
 		this.ImportLibrary(Node.RequiredLibrary);
-		this.Source.Append(Node.GetMacroText());
+		this.Source.Append(Node.GetFormText());
 	}
 
-	@Override public void VisitMacroNode(BunMacroNode Node) {
-		@Var String Macro = Node.GetMacroText();
+	@Override public void VisitFormNode(FormNode Node) {
+		@Var String FormText = Node.GetFormText();
 		//		@Var BFuncType FuncType = Node.GetFuncType();
 		@Var int fromIndex = 0;
-		@Var int BeginNum = Macro.indexOf("$[", fromIndex);
+		@Var int BeginNum = FormText.indexOf("$[", fromIndex);
 		while(BeginNum != -1) {
-			@Var int EndNum = Macro.indexOf("]", BeginNum + 2);
+			@Var int EndNum = FormText.indexOf("]", BeginNum + 2);
 			if(EndNum == -1) {
 				break;
 			}
-			this.Source.Append(Macro.substring(fromIndex, BeginNum));
-			@Var int Index = (int)BLib._ParseInt(Macro.substring(BeginNum+2, EndNum));
+			this.Source.Append(FormText.substring(fromIndex, BeginNum));
+			@Var int Index = (int)BLib._ParseInt(FormText.substring(BeginNum+2, EndNum));
 			if(Node.AST[Index] != null) {
 				//this.GenerateCode(FuncType.GetFuncParamType(Index), Node.AST[Index]);
 				this.GenerateExpression(Node.AST[Index]);
 			}
 			fromIndex = EndNum + 1;
-			BeginNum = Macro.indexOf("$[", fromIndex);
+			BeginNum = FormText.indexOf("$[", fromIndex);
 		}
-		this.Source.Append(Macro.substring(fromIndex));
-		if(Node.MacroFunc.RequiredLibrary != null) {
-			this.ImportLibrary(Node.MacroFunc.RequiredLibrary);
+		this.Source.Append(FormText.substring(fromIndex));
+		if(Node.FormFunc.RequiredLibrary != null) {
+			this.ImportLibrary(Node.FormFunc.RequiredLibrary);
 		}
 	}
 

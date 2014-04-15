@@ -9,7 +9,7 @@ import libbun.ast.literal.BunStringNode;
 import libbun.encode.AbstractGenerator;
 import libbun.parser.BTypeChecker;
 import libbun.type.BFuncType;
-import libbun.type.BMacroFunc;
+import libbun.type.BFormFunc;
 import libbun.type.BType;
 import libbun.util.Var;
 
@@ -21,7 +21,7 @@ public class BunAssertNode extends SyntaxSugarNode {
 	}
 
 	@Override public DesugarNode DeSugar(AbstractGenerator Generator, BTypeChecker TypeChecker) {
-		@Var BMacroFunc Func = Generator.GetMacroFunc("assert", BType.BooleanType, 2);
+		@Var BFormFunc Func = Generator.GetFormFunc("assert", BType.BooleanType, 2);
 		if(Func != null) {
 			@Var AbstractListNode FuncNode = TypeChecker.CreateDefinedFuncCallNode(this.ParentNode, this.SourceToken, Func);
 			FuncNode.Append(this.AST[BunAssertNode._Expr]);
