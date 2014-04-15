@@ -392,7 +392,7 @@ public class BunGenerator extends SourceGenerator {
 
 	@Override public void VisitLetNode(BunLetVarNode Node) {
 		if(Node.IsParamNode()) {
-			this.VisitParamNode(Node);
+			this.Source.Append(Node.GetGivenName());
 			this.GenerateTypeAnnotation(Node.DeclType());
 		}
 		else {
@@ -402,26 +402,6 @@ public class BunGenerator extends SourceGenerator {
 			this.GenerateExpression(Node.InitValueNode());
 		}
 	}
-
-	@Override
-	protected void VisitParamNode(BunLetVarNode Node) {
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
-		this.GenerateTypeAnnotation(Node.Type);
-	}
-
-	//	protected void VisitFuncParamNode(String OpenToken, BunFunctionNode VargNode, String CloseToken) {
-	//		this.Source.Append(OpenToken);
-	//		@Var int i = 0;
-	//		while(i < VargNode.GetListSize()) {
-	//			@Var BunLetVarNode ParamNode = VargNode.GetParamNode(i);
-	//			if (i > 0) {
-	//				this.Source.Append(this.Camma);
-	//			}
-	//			this.VisitParamNode(ParamNode);
-	//			i = i + 1;
-	//		}
-	//		this.Source.Append(CloseToken);
-	//	}
 
 	@Override public void VisitFunctionNode(BunFunctionNode Node) {
 		if(Node.IsExport) {

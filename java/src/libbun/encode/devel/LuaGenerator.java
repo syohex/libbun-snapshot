@@ -386,11 +386,6 @@ public class LuaGenerator extends SourceGenerator {
 
 	}
 
-	@Override
-	protected void VisitParamNode(BunLetVarNode Node) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void VisitFunctionNode(BunFunctionNode Node) {

@@ -595,22 +595,22 @@ public class CGenerator extends SourceGenerator {
 	}
 
 	@Override public void VisitLetNode(BunLetVarNode Node) {
-		this.Source.Append("static ");
-		this.GenerateTypeName(Node.GetAstType(BunLetVarNode._InitValue));
-		this.Source.Append(" ");
-		this.Source.Append(Node.GetUniqueName(this));
-		this.GenerateExpression(" = ", Node.InitValueNode(), ";");
-	}
-
-	@Override
-	protected void VisitParamNode(BunLetVarNode Node) {
-		if(Node.Type.IsFuncType()) {
-			this.GenerateFuncTypeName(Node.DeclType(), this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+		if(Node.IsParamNode()) {
+			if(Node.DeclType().IsFuncType()) {
+				this.GenerateFuncTypeName(Node.DeclType(), this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+			}
+			else {
+				this.GenerateTypeName(Node.DeclType());
+				this.Source.Append(" ");
+				this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+			}
 		}
 		else {
-			this.GenerateTypeName(Node.DeclType());
+			this.Source.Append("static ");
+			this.GenerateTypeName(Node.GetAstType(BunLetVarNode._InitValue));
 			this.Source.Append(" ");
-			this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+			this.Source.Append(Node.GetUniqueName(this));
+			this.GenerateExpression(" = ", Node.InitValueNode(), ";");
 		}
 	}
 
@@ -621,7 +621,7 @@ public class CGenerator extends SourceGenerator {
 			this.Source.AppendNewLine("static ");
 			this.GenerateTypeName(Node.ReturnType());
 			this.Source.Append(" ", FuncName);
-			this.GenerateParamNode("(", Node, ",", ")");
+			this.GenerateListNode("(", Node, ",", ")");
 			this.GenerateExpression(Node.BlockNode());
 			//			this.CurrentBuilder.AppendLineFeed();
 			this.Source = this.Source.Pop();
@@ -632,7 +632,7 @@ public class CGenerator extends SourceGenerator {
 			this.Source.AppendNewLine("static ");
 			this.GenerateTypeName(Node.ReturnType());
 			this.Source.Append(" ", Node.GetSignature());
-			this.GenerateParamNode("(", Node, ",", ")");
+			this.GenerateListNode("(", Node, ",", ")");
 			@Var String Prototype = this.Source.CopyString(StartIndex, this.Source.GetPosition());
 			this.GenerateExpression(Node.BlockNode());
 
@@ -671,7 +671,7 @@ public class CGenerator extends SourceGenerator {
 			this.GenerateTypeName(Node.ReturnType());
 		}
 		this.Source.Append(" ", Node.FuncName());
-		this.GenerateParamNode("(", Node, ",", ")");
+		this.GenerateListNode("(", Node, ",", ")");
 		this.Source.OpenIndent(" {");
 		if(!Node.ReturnType().IsVoidType()) {
 			this.Source.AppendNewLine("return ", Node.GetSignature());

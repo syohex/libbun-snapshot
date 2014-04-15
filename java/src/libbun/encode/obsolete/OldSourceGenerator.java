@@ -523,24 +523,13 @@ public class OldSourceGenerator extends SourceGenerator {
 		}
 	}
 
-	@Override
 	protected void VisitParamNode(BunLetVarNode Node) {
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
-		this.GenerateTypeAnnotation(Node.Type);
+		this.Source.Append(Node.GetUniqueName(this));
+		this.GenerateTypeAnnotation(Node.DeclType());
 	}
 
 	protected void VisitFuncParamNode(String OpenToken, BunFunctionNode VargNode, String CloseToken) {
-		this.Source.Append(OpenToken);
-		@Var int i = 0;
-		while(i < VargNode.GetListSize()) {
-			@Var BunLetVarNode ParamNode = VargNode.GetParamNode(i);
-			if (i > 0) {
-				this.Source.Append(this.Camma);
-			}
-			this.VisitParamNode(ParamNode);
-			i = i + 1;
-		}
-		this.Source.Append(CloseToken);
+		this.GenerateListNode(OpenToken, VargNode, this.Camma, CloseToken);
 	}
 
 	@Override public void VisitFunctionNode(BunFunctionNode Node) {
@@ -551,7 +540,7 @@ public class OldSourceGenerator extends SourceGenerator {
 		if(Node.FuncName() != null) {
 			this.Source.Append(Node.FuncName());
 		}
-		this.VisitFuncParamNode("(", Node, ")");
+		this.GenerateListNode("(", Node, ",", ")");
 		this.GenerateTypeAnnotation(Node.ReturnType());
 		this.GenerateExpression(Node.BlockNode());
 	}

@@ -441,13 +441,14 @@ public class PythonGenerator extends SourceGenerator {
 	}
 
 	@Override public void VisitLetNode(BunLetVarNode Node) {
-		this.Source.Append(Node.GetUniqueName(this));
-		this.Source.Append(" = ");
-		this.GenerateExpression(Node.InitValueNode());
-	}
-
-	@Override protected void VisitParamNode(BunLetVarNode Node) {
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+		if(Node.IsParamNode()) {
+			this.Source.Append(Node.GetUniqueName(this));
+		}
+		else {
+			this.Source.Append(Node.GetUniqueName(this));
+			this.Source.Append(" = ");
+			this.GenerateExpression(Node.InitValueNode());
+		}
 	}
 
 	/**
@@ -465,7 +466,7 @@ public class PythonGenerator extends SourceGenerator {
 			@Var String FuncName = Node.GetUniqueName(this);
 			this.Source = this.InsertNewSourceBuilder();
 			this.Source.AppendNewLine("def ", FuncName);
-			this.GenerateParamNode("(", Node, ", ", ")");
+			this.GenerateListNode("(", Node, ", ", ")");
 			this.GenerateExpression(Node.BlockNode());
 			this.Source = this.Source.Pop();
 			this.Source.Append(FuncName);
@@ -473,7 +474,7 @@ public class PythonGenerator extends SourceGenerator {
 		else {
 			@Var BFuncType FuncType = Node.GetFuncType();
 			this.Source.AppendNewLine("def ", Node.GetSignature());
-			this.GenerateParamNode("(", Node, ", ", ")");
+			this.GenerateListNode("(", Node, ", ", ")");
 			this.GenerateExpression(Node.BlockNode());
 			if(Node.IsExport) {
 				this.Source.AppendNewLine(Node.FuncName(), " = ", FuncType.StringfySignature(Node.FuncName()));

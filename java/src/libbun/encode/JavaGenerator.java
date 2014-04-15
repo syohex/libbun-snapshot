@@ -569,12 +569,6 @@ public class JavaGenerator extends SourceGenerator {
 		//			Node.GetNameSpace().SetLocalSymbol(Node.GetName(), Node.ToGlobalNameNode());
 	}
 
-	@Override protected void VisitParamNode(BunLetVarNode Node) {
-		this.GenerateTypeName(Node.Type);
-		this.Source.Append(" ");
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
-	}
-
 	@Override public void VisitFunctionNode(BunFunctionNode Node) {
 		if(!Node.Type.IsVoidType()) {
 			@Var String FuncName = Node.GetUniqueName(this);

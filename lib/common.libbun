@@ -6,7 +6,7 @@ assert: Func<boolean,String,void>
  cl:  (assert $[0])
  cs:  Debug.Assert($[0])
  py:  assert $[0], $[1]
- js:  onsole.assert($[0], $[1])
+ js:  console.assert($[0], $[1])
 
 println: Func<String,void>
  bun:  println($[0])
@@ -54,6 +54,9 @@ _: Func<int,String>
  java: String.valueOf($[0])
  js: String($[0])
  py:  unicode($[0])
+
+/: Func<int,int,int>
+ js: @intdiv~libbun_intdiv($[0], $[1])
 
 ## float
 _: Func<float,int>
@@ -177,9 +180,9 @@ _: Func<α[],String>
  #: Converts an array to a string
  bun: ((String)$[0])
  cl:  ~(format nil "~a" $[0])
- cs:  string.Join("", $[0])
+ cs:  string.Join(string.Empty, $[0])
  py:  unicode($[0])
- js:  $[0].join("")
+ js:  $[0].join('')
   
 size: Func<α[],int>
  #: a.$$() returns the number of elements in this array
@@ -231,7 +234,7 @@ pop: Func<α[],α>
  #: a.$$(n) removes the last element in this array
  bun,py,js: $[0].pop($[1])
  cl:  (vector-pop $[0])
- cs:  ((list) => { var ret = list[list.Count - 1]; list.RemoveAt(list.Count -1 ); return ret; })($[0])
+ cs:  ((list) => { var ret = list[list.Count - 1]; list.RemoveAt(list.Count - 1); return ret; })($[0])
 
 # boolean[]
 size: Func<boolean[],int,void>
@@ -295,7 +298,7 @@ _: Func<Object,String>
  cl:   ~(format nil "~a" $[0])
  cs:   $[0].ToString()
  java: $[0].toString()
- js:   $[0].join("")
+ js:   String($[0])
  py:   unicode($[0])
 
  

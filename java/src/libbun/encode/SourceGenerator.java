@@ -182,22 +182,6 @@ public abstract class SourceGenerator extends AbstractGenerator {
 		//		}
 	}
 
-	protected abstract void VisitParamNode(BunLetVarNode Node);
-
-	protected final void GenerateParamNode(String OpenToken, BunFunctionNode VargNode, String Comma, String CloseToken) {
-		this.Source.Append(OpenToken);
-		@Var int i = 0;
-		while(i < VargNode.GetListSize()) {
-			@Var BunLetVarNode ParamNode = VargNode.GetParamNode(i);
-			if (i > 0) {
-				this.Source.Append(Comma);
-			}
-			this.VisitParamNode(ParamNode);
-			i = i + 1;
-		}
-		this.Source.Append(CloseToken);
-	}
-
 	@Override public final void VisitAsmNode(BunAsmNode Node) {
 		this.ImportLibrary(Node.RequiredLibrary);
 		this.Source.Append(Node.GetMacroText());

@@ -57,7 +57,7 @@ public class BunDefineNode extends TopLevelNode {
 			this.DefineNode.GivenType = MacroType;
 			this.DefineNode.GivenName = MacroText;
 			this.DefineNode.SetNode(BunLetVarNode._InitValue, AsmNode);
-			NameSpace.SetDebugSymbol(Symbol, this.DefineNode);
+			NameSpace.SetSymbol(Symbol, this.DefineNode);
 		}
 	}
 }
