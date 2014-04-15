@@ -45,9 +45,9 @@ import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
 import libbun.parser.BTypeChecker;
 import libbun.type.BClassType;
+import libbun.type.BFormFunc;
 import libbun.type.BFunc;
 import libbun.type.BFuncType;
-import libbun.type.BFormFunc;
 import libbun.type.BPrototype;
 import libbun.type.BType;
 import libbun.util.BField;
@@ -108,17 +108,6 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 		return this.NameUniqueSymbol(Symbol, this.GetUniqueNumber());
 	}
 
-	public String NameLocalVariable(BNameSpace NameSpace, String Name) {
-		@Var String SafeName = this.SymbolMap.GetOrNull(Name);
-		if(SafeName != null) {
-			Name = SafeName;
-		}
-		@Var int NameIndex = NameSpace.GetNameIndex(Name);
-		if(NameIndex > 0) {
-			Name = Name + "__" + NameIndex;
-		}
-		return Name;
-	}
 
 	protected void SetNativeType(BType Type, String TypeName) {
 		@Var String Key = "" + Type.TypeId;
@@ -339,8 +328,7 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 		Node.Accept(this);
 	}
 
-	protected boolean ExecStatement(BNode Node, boolean IsInteractive) {
-		//this.InteractiveContext = IsInteractive;
+	protected boolean ExecStatement(BNode Node) {
 		this.EnableVisitor();
 		this.TopLevelSymbol = null;
 		if(Node instanceof TopLevelNode) {
@@ -368,7 +356,7 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 		return this.IsVisitable();
 	}
 
-	public final boolean LoadScript(String ScriptText, String FileName, int LineNumber, boolean IsInteractive) {
+	public final boolean LoadScript(String ScriptText, String FileName, int LineNumber) {
 		@Var boolean Result = true;
 		@Var BunBlockNode TopBlockNode = new BunBlockNode(null, this.RootNameSpace);
 		@Var BTokenContext TokenContext = new BTokenContext(this, this.RootNameSpace, FileName, LineNumber, ScriptText);
@@ -382,7 +370,7 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 			if(StmtNode.IsErrorNode()) {
 				TokenContext.SkipError(SkipToken);
 			}
-			if(!this.ExecStatement(StmtNode, IsInteractive)) {
+			if(!this.ExecStatement(StmtNode)) {
 				Result = false;
 				break;
 			}
@@ -400,7 +388,7 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 			BLogger._LogErrorExit(SourceToken, "file not found: " + FileName);
 			return false;
 		}
-		return this.LoadScript(ScriptText, FileName, 1, false);
+		return this.LoadScript(ScriptText, FileName, 1);
 	}
 
 	public final boolean RequireLibrary(String LibName, @Nullable BToken SourceToken) {
@@ -413,7 +401,7 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 				BLogger._LogErrorExit(SourceToken, "library not found: " + LibName + " as " + Path);
 				return false;
 			}
-			@Var boolean Result = this.LoadScript(Script, Path, 1, false);
+			@Var boolean Result = this.LoadScript(Script, Path, 1);
 			this.ImportedLibraryMap.put(Key, Path);
 			return Result;
 		}

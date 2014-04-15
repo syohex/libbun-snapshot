@@ -314,12 +314,12 @@ public class SSACGenerator extends OldSourceGenerator {
 
 	@Override protected void VisitParamNode(BunLetVarNode Node) {
 		if(Node.Type.IsFuncType()) {
-			this.GenerateFuncTypeName(Node.DeclType(), this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+			this.GenerateFuncTypeName(Node.DeclType(), Node.GetUniqueName(this));
 		}
 		else {
 			this.GenerateTypeName(Node.DeclType());
 			this.Source.Append(" ");
-			this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+			this.Source.Append(Node.GetUniqueName(this));
 		}
 	}
 

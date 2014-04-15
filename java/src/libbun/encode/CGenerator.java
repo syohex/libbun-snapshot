@@ -363,7 +363,7 @@ public class CGenerator extends SourceGenerator {
 		if(ResolvedNode == null && !this.LangInfo.AllowUndefinedSymbol) {
 			BLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GivenName);
 		}
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetUniqueName(this)));
+		this.Source.Append(Node.GetUniqueName(this));
 	}
 
 	@Override
@@ -469,7 +469,7 @@ public class CGenerator extends SourceGenerator {
 		@Var BunLetVarNode VarNode = Node.VarDeclNode();
 		this.GenerateTypeName(VarNode.GivenType);
 		this.Source.Append(" ");
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), VarNode.GetGivenName()), " = ");
+		this.Source.Append(VarNode.GetUniqueName(this), " = ");
 		this.GenerateExpression(VarNode.InitValueNode());
 		this.GenerateStmtListNode(Node);
 	}
@@ -597,12 +597,12 @@ public class CGenerator extends SourceGenerator {
 	@Override public void VisitLetNode(BunLetVarNode Node) {
 		if(Node.IsParamNode()) {
 			if(Node.DeclType().IsFuncType()) {
-				this.GenerateFuncTypeName(Node.DeclType(), this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+				this.GenerateFuncTypeName(Node.DeclType(), Node.GetUniqueName(this));
 			}
 			else {
 				this.GenerateTypeName(Node.DeclType());
 				this.Source.Append(" ");
-				this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+				this.Source.Append(Node.GetUniqueName(this));
 			}
 		}
 		else {
@@ -656,7 +656,7 @@ public class CGenerator extends SourceGenerator {
 			if (i > 0) {
 				this.Source.Append(",");
 			}
-			this.Source.Append(this.NameLocalVariable(ParamNode.GetNameSpace(), ParamNode.GetGivenName()));
+			this.Source.Append(ParamNode.GetUniqueName(this));
 			i = i + 1;
 		}
 		this.Source.Append(CloseToken);

@@ -1502,7 +1502,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		//@Var SourceBuilder EntryBlockBuilder = this.Source.Pop();
 		@Var SourceBuilder VarDeclBuilder = this.Source; //FIXME
 
-		@Var String VarName = this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName());
+		@Var String VarName = Node.GetUniqueName(this);
 		this.CurrentScope.DefineLocalVar(VarName);
 		@Var String VarSymbol = this.ToLocalSymbol(VarName);
 		VarDeclBuilder.AppendNewLine(VarSymbol);

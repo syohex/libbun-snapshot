@@ -288,7 +288,7 @@ public class CSharpGenerator extends OldSourceGenerator {
 		}else{
 			this.Source.Append("var ");
 		}
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+		this.Source.Append(Node.GetUniqueName(this));
 		this.Source.Append(" = ");
 		this.GenerateExpression(Node.InitValueNode());
 		this.Source.Append(this.SemiColon);
@@ -305,7 +305,7 @@ public class CSharpGenerator extends OldSourceGenerator {
 	@Override protected void VisitParamNode(BunLetVarNode Node) {
 		this.GenerateTypeName(Node.Type);
 		this.Source.Append(" ");
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+		this.Source.Append(Node.GetUniqueName(this));
 	}
 
 	@Override public void VisitFunctionNode(BunFunctionNode Node) {

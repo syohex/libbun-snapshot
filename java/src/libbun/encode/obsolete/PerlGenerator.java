@@ -120,7 +120,7 @@ public class PerlGenerator extends OldSourceGenerator {
 	@Override
 	protected void VisitVarDeclNode(BunLetVarNode Node) {
 		this.Source.Append("my ", this.VariablePrefix(Node.DeclType().GetRealType()));
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = ");
+		this.Source.Append(Node.GetUniqueName(this), " = ");
 		this.GenerateExpression(Node.InitValueNode());
 		this.Source.Append(this.SemiColon);
 	}
@@ -155,7 +155,7 @@ public class PerlGenerator extends OldSourceGenerator {
 
 	@Override protected void VisitParamNode(BunLetVarNode Node) {
 		this.Source.Append("my ", this.VariablePrefix(Node.Type));
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = shift");
+		this.Source.Append(Node.GetUniqueName(this), " = shift");
 	}
 
 	@Override public void VisitFunctionNode(BunFunctionNode Node) {

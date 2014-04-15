@@ -97,6 +97,8 @@ public class OldPythonGenerator extends OldSourceGenerator {
 		}
 	}
 
+
+
 	@Override
 	public void GenerateStmtListNode(BunBlockNode BlockNode) {
 		@Var int i = 0;
@@ -117,7 +119,7 @@ public class OldPythonGenerator extends OldSourceGenerator {
 	}
 
 	@Override protected void VisitVarDeclNode(BunLetVarNode Node) {
-		this.Source.AppendNewLine(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()), " = ");
+		this.Source.AppendNewLine(Node.GetUniqueName(this), " = ");
 		this.GenerateExpression(Node.InitValueNode());
 	}
 
@@ -186,7 +188,7 @@ public class OldPythonGenerator extends OldSourceGenerator {
 	}
 
 	@Override protected void VisitParamNode(BunLetVarNode Node) {
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+		this.Source.Append(Node.GetUniqueName(this));
 	}
 
 	/**

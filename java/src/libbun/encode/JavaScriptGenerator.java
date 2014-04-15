@@ -136,10 +136,10 @@ public class JavaScriptGenerator extends SourceGenerator {
 		this.Source.Append("try");
 		this.GenerateExpression(Node.TryBlockNode());
 		if(Node.HasCatchBlockNode()){
-			@Var String VarName = this.NameLocalVariable(Node.GetNameSpace(), "e");
+			@Var String VarName = this.NameUniqueSymbol("e");
 			this.ImportLibrary("@catch");
 			this.Source.Append("catch(", VarName, "){ ");
-			this.Source.Append(VarName, " = libbun_catch(", VarName);
+			this.Source.Append(Node.ExceptionName(), " = libbun_catch(", VarName);
 			this.Source.Append("); ");
 			this.GenerateExpression(Node.CatchBlockNode());
 			this.Source.Append("}");
@@ -451,7 +451,7 @@ public class JavaScriptGenerator extends SourceGenerator {
 		if(ResolvedNode == null && !this.LangInfo.AllowUndefinedSymbol) {
 			BLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GivenName);
 		}
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetUniqueName(this)));
+		this.Source.Append(Node.GetUniqueName(this));
 	}
 
 	@Override public void VisitSetNameNode(SetNameNode Node) {
@@ -531,7 +531,7 @@ public class JavaScriptGenerator extends SourceGenerator {
 	@Override
 	public void VisitVarBlockNode(BunVarBlockNode Node) {
 		@Var BunLetVarNode VarNode = Node.VarDeclNode();
-		this.Source.AppendNewLine(this.NameLocalVariable(Node.GetNameSpace(), VarNode.GetGivenName()), " = ");
+		this.Source.AppendNewLine(VarNode.GetUniqueName(this), " = ");
 		this.GenerateExpression(VarNode.InitValueNode());
 		this.Source.Append(";");
 		this.VisitStmtList(Node);

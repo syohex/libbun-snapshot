@@ -28,7 +28,6 @@ import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
-import libbun.ast.error.StupidCastErrorNode;
 import libbun.ast.expression.BunFuncNameNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetFieldNode;
@@ -43,7 +42,6 @@ import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.ast.literal.BunBooleanNode;
 import libbun.ast.literal.BunFloatNode;
 import libbun.ast.literal.BunIntNode;
-import libbun.ast.literal.BunMapEntryNode;
 import libbun.ast.literal.BunMapLiteralNode;
 import libbun.ast.literal.BunNullNode;
 import libbun.ast.literal.BunStringNode;
@@ -61,21 +59,15 @@ import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
 import libbun.parser.BLangInfo;
 import libbun.parser.BLogger;
-import libbun.type.BClassField;
-import libbun.type.BClassType;
-import libbun.type.BFuncType;
 import libbun.type.BType;
-import libbun.util.BArray;
 import libbun.util.BField;
-import libbun.util.BLib;
-import libbun.util.Nullable;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
 public class RGenerator extends SourceGenerator {
 
 	@BField private BunFunctionNode MainFuncNode = null;
-	
+
 	public RGenerator() {
 		super(new BLangInfo("R-3.0.3", "r"));
 		this.Source.OpenIndent("assert <- function(condition) {");
@@ -134,7 +126,7 @@ public class RGenerator extends SourceGenerator {
 			this.Source.CloseIndent(")");
 		}
 	}
-	
+
 	@Override protected void GenerateTypeName(BType Type) {
 	}
 
@@ -148,31 +140,33 @@ public class RGenerator extends SourceGenerator {
 		if (i == 0) {
 		}
 	}
-	
+
 	@Override public void VisitVarBlockNode(BunVarBlockNode Node) {
 		@Var BunLetVarNode VarNode = Node.VarDeclNode();
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), VarNode.GetGivenName()), " <- ");
+		this.Source.Append(VarNode.GetUniqueName(this), " <- ");
 		this.GenerateExpression(VarNode.InitValueNode());
 		this.GenerateStmtList(Node);
 	}
 
 	@Override public void VisitLetNode(BunLetVarNode Node) {
-		this.Source.Append(Node.GetUniqueName(this));
-		this.Source.Append(" <- ");
-		this.GenerateExpression(Node.InitValueNode());
+		if(Node.IsParamNode()) {
+			this.GenerateTypeName(Node.Type);
+			this.Source.Append(Node.GetUniqueName(this));
+		}
+		else {
+			this.Source.Append(Node.GetUniqueName(this));
+			this.Source.Append(" <- ");
+			this.GenerateExpression(Node.InitValueNode());
+		}
 	}
 
-	@Override protected void VisitParamNode(BunLetVarNode Node) {
-		this.GenerateTypeName(Node.Type);
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
-	}
 
 	@Override public void VisitFunctionNode(BunFunctionNode Node) {
 		if(!Node.IsTopLevelDefineFunction()) {
 			@Var String FuncName = Node.GetUniqueName(this);
 			this.Source.Append(FuncName);
 			this.Source.Append(" <- function");
-			this.GenerateParamNode("(", Node, ", ", ")");
+			this.GenerateListNode("(", Node, ", ", ")");
 			this.GenerateExpression(Node.BlockNode());
 		}
 		else {
@@ -181,7 +175,7 @@ public class RGenerator extends SourceGenerator {
 			}
 			this.Source.Append(Node.GetSignature());
 			this.Source.Append(" <- function");
-			this.GenerateParamNode("(", Node, ", ", ")");
+			this.GenerateListNode("(", Node, ", ", ")");
 			this.GenerateExpression(Node.BlockNode());
 		}
 	}
@@ -337,7 +331,7 @@ public class RGenerator extends SourceGenerator {
 			this.Source.Append(Node.GetSignature());
 		}
 	}
-	
+
 	@Override
 	public void VisitFuncCallNode(FuncCallNode Node) {
 		@Var BunFuncNameNode FuncNameNode = Node.FuncNameNode();
@@ -349,13 +343,13 @@ public class RGenerator extends SourceGenerator {
 		}
 		this.GenerateListNode("(", Node, ", ", ")");
 	}
-	
+
 	@Override public void VisitGetNameNode(GetNameNode Node) {
 		@Var BNode ResolvedNode = Node.ResolvedNode;
 		if(ResolvedNode == null && !this.LangInfo.AllowUndefinedSymbol) {
 			BLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GivenName);
 		}
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetUniqueName(this)));
+		this.Source.Append(Node.GetUniqueName(this));
 	}
 
 	@Override public void VisitSetNameNode(SetNameNode Node) {

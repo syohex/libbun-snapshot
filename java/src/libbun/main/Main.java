@@ -157,7 +157,7 @@ public class Main {
 		@Var String Line = null;
 		while ((Line = Main.ReadLine2(">>> ", "    ")) != null) {
 			try {
-				if(Generator.LoadScript(Line, "(stdin)", linenum, true)) {
+				if(Generator.LoadScript(Line, "(stdin)", linenum)) {
 					Generator.Perform();
 				}
 				linenum = linenum + 1;

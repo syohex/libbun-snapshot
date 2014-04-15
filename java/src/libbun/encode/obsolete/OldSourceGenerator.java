@@ -90,6 +90,7 @@ import libbun.encode.SourceGenerator;
 import libbun.lang.bun.BunTypeSafer;
 import libbun.parser.BLangInfo;
 import libbun.parser.BLogger;
+import libbun.parser.BNameSpace;
 import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BLib;
@@ -127,6 +128,18 @@ public class OldSourceGenerator extends SourceGenerator {
 
 	@Override protected void GenerateImportLibrary(String LibName) {
 		this.Header.AppendNewLine("require ", LibName, this.SemiColon);
+	}
+
+	public String NameLocalVariable(BNameSpace NameSpace, String Name) {
+		@Var String SafeName = this.SymbolMap.GetOrNull(Name);
+		if(SafeName != null) {
+			Name = SafeName;
+		}
+		@Var int NameIndex = NameSpace.GetNameIndex(Name);
+		if(NameIndex > 0) {
+			Name = Name + "__" + NameIndex;
+		}
+		return Name;
 	}
 
 	@Override
@@ -202,7 +215,7 @@ public class OldSourceGenerator extends SourceGenerator {
 	}
 
 	protected void VisitVarDeclNode(BunLetVarNode Node) {
-		this.Source.Append("var ", this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName()));
+		this.Source.Append("var ", Node.GetUniqueName(this));
 		this.GenerateTypeAnnotation(Node.DeclType());
 		this.GenerateExpression(" = ", Node.InitValueNode(), this.SemiColon);
 	}
