@@ -130,7 +130,7 @@ public class CGenerator extends SourceGenerator {
 		if (Node.BooleanValue) {
 			this.Source.Append("1/*true*/");
 		} else {
-			this.Source.Append("1/*false*/");
+			this.Source.Append("0/*false*/");
 		}
 	}
 
@@ -636,7 +636,7 @@ public class CGenerator extends SourceGenerator {
 			@Var String Prototype = this.Source.CopyString(StartIndex, this.Source.GetPosition());
 			this.GenerateExpression(Node.BlockNode());
 
-			this.Header.Append(Prototype);
+			this.Header.AppendNewLine(Prototype);
 			this.Header.Append(";");
 			@Var BFuncType FuncType = Node.GetFuncType();
 			if(Node.IsExport) {
