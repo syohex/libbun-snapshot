@@ -1,0 +1,3 @@
+#!/bin/bash
+
+OUTDIR=test/w TARGET=r CHECK=Rscript test/bin/buntest test/bun/*.bun
