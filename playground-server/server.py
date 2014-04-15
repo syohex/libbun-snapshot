@@ -20,8 +20,8 @@ def createSourceFile(name, contents):
     f.write(contents)
     f.close()
 
-def compileCommand(name, target):
-    return commands.getoutput('java -jar {0}/../libbun-0.1.jar -t {1} {2}'.format(rootPath, target, name))
+def compileCommand(name, target, parser):
+    return commands.getoutput('java -jar {0}/../libbun-0.1.jar -t {1} -p {2} {3}'.format(rootPath, target, parser, name))
 
 def readCompiledFile(name):
     if os.path.exists(name):
@@ -49,7 +49,7 @@ def compile():
     req = request.json
 
     createSourceFile(name, req["source"])
-    message = compileCommand(name, req["option"])
+    message = compileCommand(name, req["target"], req["parser"])
 
     #filecontent = readCompiledFile(name)
     return createResponseJson(message, '', message)

@@ -3,6 +3,7 @@
 var Playground;
 (function (Playground) {
     Playground.CodeGenTarget = "js";
+    Playground.ParserTarget = "konoha";
 
     function CreateEditor(query) {
         var editor = ace.edit(query);
@@ -32,11 +33,25 @@ $(function () {
     //    outputViewer.setValue(zenEditor.getValue());
     //    outputViewer.clearSelection();
     //};
+    var GetSample = function (sampleName) {
+        $.ajax({
+            type: "GET",
+            url: "/samples/" + sampleName + ".bun",
+            success: function (res) {
+                zenEditor.setValue(res);
+                zenEditor.clearSelection();
+            },
+            error: function () {
+                console.log("error");
+            }
+        });
+    };
+
     var GenerateServer = function () {
         $.ajax({
             type: "POST",
             url: "/compile",
-            data: JSON.stringify({ source: zenEditor.getValue(), option: Playground.CodeGenTarget }),
+            data: JSON.stringify({ source: zenEditor.getValue(), target: Playground.CodeGenTarget, parser: Playground.ParserTarget }),
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
             success: function (res) {
@@ -58,9 +73,13 @@ $(function () {
         timer = setTimeout(GenerateServer, 400);
     });
 
-    var TargetNames = ["JavaScript", "Python", "Erlang", "C", "LLVM"];
-    var TargetOptions = ["js", "py", "erl", "c", "ll"];
-    var TargetMode = ["javascript", "python", "erlang", "c_cpp", "assembly_x86"];
+    var TargetNames = ["JavaScript", "Python", "R", "Erlang", "CommonLisp", "Java", "JVM", "C", "LLVM"];
+    var TargetOptions = ["js", "py", "r", "erl", "cl", "java", "dump-jvm", "c", "ll"];
+    var TargetMode = ["javascript", "python", "r", "erlang", "lisp", "java", "assembly_x86", "c_cpp", "assembly_x86"];
+
+    var ParserNames = ["Bun", "Python"];
+    var ParserOptions = ["konoha", "py"];
+    var ParserMode = ["typescript", "python"];
 
     var bind = function (n) {
         var Target = $('#Target-' + TargetNames[n]);
@@ -84,19 +103,40 @@ $(function () {
         bind(i);
     }
 
-    var Samples = ["function", "if", "while", "class", "fibo", "binarytrees"];
+    var Samples = ["HelloWorld", "BinaryTrees", "Fibonacci"];
 
     var sample_bind = function (n) {
         $('#sample-' + Samples[n]).click(function () {
-            zenEditor.setValue($("#" + Samples[n]).html());
-            zenEditor.clearSelection();
-            zenEditor.gotoLine(0);
+            GetSample(Samples[n]);
+            //zenEditor.setValue($("#"+ Samples[n]).html());
+            //zenEditor.clearSelection();
+            //zenEditor.gotoLine(0);
         });
     };
 
     for (var i = 0; i < Samples.length; i++) {
         $("#zen-sample").append('<li id="sample-' + Samples[i] + '-li"><a href="#" id="sample-' + Samples[i] + '">' + Samples[i] + '</a></li>');
         sample_bind(i);
+    }
+
+    var parser_bind = function (n) {
+        var Target = $('#Parser-' + ParserNames[n]);
+        Target.click(function () {
+            Playground.ParserTarget = ParserOptions[n];
+            $('#parse-lang').text(ParserNames[n]);
+            $('#parse-lang').append('<b class="caret"></b>');
+            Playground.ChangeSyntaxHighlight(zenEditor, ParserMode[n]);
+            if (timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+            GenerateServer();
+        });
+    };
+
+    for (var i = 0; i < ParserNames.length; i++) {
+        $("#Parser").append('<li id="Parser-' + ParserNames[i] + '-li"><a href="#" id="Parser-' + ParserNames[i] + '">' + ParserNames[i] + '</a></li>');
+        parser_bind(i);
     }
 
     $("#Target-JavaScript-li").addClass("active");

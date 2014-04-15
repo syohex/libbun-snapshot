@@ -4,7 +4,7 @@ html(lang='en')
   head
     meta(charset='utf-8')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
-    title Zen Playground
+    title Bun Playground
     +css('css/bootstrap.css')
     style(type='text/css', media='screen').
       #zen-editor {
@@ -25,8 +25,11 @@ html(lang='en')
       .col-lg-6.col-md-6.col-sm-6.col-xs-6
         nav.navbar.navbar-default(role='navigation')
           .container-fluid
-            .navbar-header.navbar-left
-              a.navbar-brand(href='#') Bun
+            ul.nav.navbar-nav.navbar-left
+              li.dropdown
+                a#parse-lang.dropdown-toggle(href='#', data-toggle='dropdown') Bun
+                  b.caret
+                ul#Parser.dropdown-menu
             ul.nav.navbar-nav.navbar-right
               li.dropdown
                 a.dropdown-toggle(href='#', data-toggle='dropdown') Sample
