@@ -107,13 +107,15 @@ public class CGenerator extends SourceGenerator {
 	}
 
 	@Override protected void GenerateExpression(BNode Node) {
-		if(Node.IsUntyped() && !Node.IsErrorNode() && !(Node instanceof BunFuncNameNode)) {
+		if(Node.IsUntyped() &&
+				!Node.IsErrorNode() &&
+				!(Node instanceof BunFuncNameNode) &&
+				!(Node instanceof BunLetVarNode && ((BunLetVarNode)(Node)).IsParamNode())) {
 			this.Source.Append("/*untyped*/NULL");
 			BLogger._LogError(Node.SourceToken, "untyped error: " + Node);
+			return;
 		}
-		else {
-			Node.Accept(this);
-		}
+		Node.Accept(this);
 	}
 
 	@Override protected void GenerateImportLibrary(String LibName) {
@@ -479,8 +481,8 @@ public class CGenerator extends SourceGenerator {
 		@Var BunLetVarNode VarNode = Node.VarDeclNode();
 		this.GenerateTypeName(VarNode.GivenType);
 		this.Source.Append(" ");
-		this.Source.Append(VarNode.GetUniqueName(this), " = ");
-		this.GenerateExpression(VarNode.InitValueNode());
+		this.Source.Append(VarNode.GetUniqueName(this));
+		this.GenerateExpression(" = ", VarNode.InitValueNode(), ";");
 		this.GenerateStmtListNode(Node);
 	}
 
@@ -726,6 +728,8 @@ public class CGenerator extends SourceGenerator {
 	}
 
 	@Override public void VisitClassNode(BunClassNode Node) {
+		this.ImportLibrary("libbun.h");
+
 		this.Source.AppendNewLine("struct ", this.NameClass(Node.ClassType));
 		this.Source.OpenIndent(" {");
 		this.GenerateFields(Node.ClassType, Node.ClassType);
