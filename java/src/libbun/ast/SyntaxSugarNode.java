@@ -18,6 +18,4 @@ public abstract class SyntaxSugarNode extends BNode {
 
 	public abstract DesugarNode DeSugar(AbstractGenerator Generator, BTypeChecker TypeChekcer);
 
-
-
 }

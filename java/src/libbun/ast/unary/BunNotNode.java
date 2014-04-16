@@ -26,13 +26,16 @@ package libbun.ast.unary;
 
 import libbun.ast.BNode;
 import libbun.parser.BOperatorVisitor;
-import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 
 public class BunNotNode extends UnaryOperatorNode {
-	public BunNotNode(BNode ParentNode, BToken Token) {
-		super(ParentNode, Token);
+	public BunNotNode(BNode ParentNode) {
+		super(ParentNode);
 	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunNotNode(ParentNode));
+	}
+
 	@Override public final String GetOperator() {
 		return "!";
 	}

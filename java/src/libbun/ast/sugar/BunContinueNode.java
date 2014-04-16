@@ -1,7 +1,7 @@
 package libbun.ast.sugar;
 
-import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.DesugarNode;
 import libbun.ast.SyntaxSugarNode;
 import libbun.ast.decl.BunVarBlockNode;
@@ -20,6 +20,10 @@ public class BunContinueNode extends SyntaxSugarNode {
 
 	public BunContinueNode(BNode ParentNode) {
 		super(ParentNode, null, 0);
+	}
+
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunContinueNode(ParentNode));
 	}
 
 	/**

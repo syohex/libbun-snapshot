@@ -3,7 +3,6 @@ package libbun.lang.bun.shell;
 import java.io.File;
 
 import libbun.ast.BNode;
-import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAddNode;
 import libbun.ast.literal.BunStringNode;
 import libbun.parser.BToken;
@@ -42,8 +41,9 @@ public class ShellUtils {
 		int size = NodeList.size();
 		for(int i = 0; i < size; i++) {
 			BNode CurrentNode = BArray.GetIndex(NodeList, i);
-			BunAddNode BinaryNode = new BunAddNode(ParentNode, null, Node);
-			BinaryNode.SetNode(BinaryOperatorNode._Right, CurrentNode);
+			BunAddNode BinaryNode = new BunAddNode(ParentNode);
+			BinaryNode.SetLeftNode(Node);
+			BinaryNode.SetRightNode(CurrentNode);
 			Node = BinaryNode;
 		}
 		return Node;

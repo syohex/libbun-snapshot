@@ -31,6 +31,11 @@ public final class GroupNode extends BNode {
 	public GroupNode(BNode ParentNode) {
 		super(ParentNode, null, 1);
 	}
+
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new GroupNode(ParentNode));
+	}
+
 	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitGroupNode(this);
 	}

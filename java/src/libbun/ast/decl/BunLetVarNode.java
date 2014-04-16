@@ -1,6 +1,5 @@
 package libbun.ast.decl;
 
-import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
 import libbun.ast.literal.ConstNode;
 import libbun.ast.literal.DefaultValueNode;
@@ -12,7 +11,7 @@ import libbun.util.BLib;
 import libbun.util.Nullable;
 import libbun.util.Var;
 
-public class BunLetVarNode extends AbstractListNode {
+public class BunLetVarNode extends BNode {
 	public static final int _NameInfo = 0;
 	public static final int _TypeInfo = 1;
 	public final static int _InitValue = 2;
@@ -32,6 +31,12 @@ public class BunLetVarNode extends AbstractListNode {
 		this.NameFlag = NameFlag;
 		this.GivenType = GivenType;
 		this.GivenName = GivenName;
+	}
+
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		@Var BunLetVarNode NewNode = new BunLetVarNode(ParentNode, this.NameFlag, this.GivenType, this.GivenName);
+		NewNode.NameIndex = this.NameIndex;
+		return this.DupField(TypedClone, NewNode);
 	}
 
 	public final boolean IsExport() {  // export let at top level
@@ -91,7 +96,7 @@ public class BunLetVarNode extends AbstractListNode {
 
 	public final BNode InitValueNode() {
 		if(this.AST[BunLetVarNode._InitValue] == null) {
-			this.SetNode(BunLetVarNode._InitValue, new DefaultValueNode());
+			this.SetNode(BunLetVarNode._InitValue, new DefaultValueNode(this));
 		}
 		return this.AST[BunLetVarNode._InitValue];
 	}

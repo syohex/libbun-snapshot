@@ -25,23 +25,26 @@
 package libbun.ast.binary;
 
 import libbun.ast.BNode;
-import libbun.parser.BToken;
+import libbun.lang.bun.BunPrecedence;
 import libbun.parser.BVisitor;
 import libbun.type.BType;
 
 //E.g., $ExprNode instanceof TypeInfo
 
-public final class BInstanceOfNode extends BNode {
+public final class BInstanceOfNode extends BinaryOperatorNode {
 	public final static int _Left = 0;
 	public final static int _TypeInfo = 1;
 
-	public BInstanceOfNode(BNode ParentNode, BToken Token, BNode LeftNode) {
-		super(ParentNode, Token, 2);
-		this.SetNode(BInstanceOfNode._Left, LeftNode);
+	public BInstanceOfNode(BNode ParentNode) {
+		super(ParentNode, BunPrecedence._Instanceof);
 	}
 
-	public final BNode LeftNode() {
-		return this.AST[BInstanceOfNode._Left ];
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BInstanceOfNode(ParentNode));
+	}
+
+	@Override public String GetOperator() {
+		return "instanceof";
 	}
 
 	public final BType TargetType() {
@@ -51,4 +54,5 @@ public final class BInstanceOfNode extends BNode {
 	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitInstanceOfNode(this);
 	}
+
 }

@@ -43,6 +43,9 @@ public class BunCastNode extends BNode {
 			this.SetNode(BunCastNode._Expr, Node);
 		}
 	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunCastNode(ParentNode, this.Type, null));
+	}
 
 	public final BNode ExprNode() {
 		return this.AST[BunCastNode._Expr ];

@@ -42,6 +42,10 @@ public final class NewObjectNode extends AbstractListNode {
 		super(ParentNode, null, 1);
 	}
 
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new NewObjectNode(ParentNode));
+	}
+
 	public final BType ClassType() {
 		if(this.GivenType == null) {
 			if(this.AST[NewObjectNode._TypeInfo] != null) {

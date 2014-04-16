@@ -35,8 +35,13 @@ public final class SetIndexNode extends BNode {
 
 	public SetIndexNode(BNode ParentNode, BNode LeftNode) {
 		super(ParentNode, null, 3);
-		this.SetNode(SetIndexNode._Recv, LeftNode);
+		this.SetNullableNode(SetIndexNode._Recv, LeftNode);
 	}
+
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new SetIndexNode(ParentNode, null));
+	}
+
 	public final BNode RecvNode() {
 		return this.AST[SetIndexNode._Recv ];
 	}

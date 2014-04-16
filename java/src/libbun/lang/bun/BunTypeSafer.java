@@ -792,7 +792,7 @@ public class BunTypeSafer extends BTypeChecker {
 		}
 		else if(!Node.HasReturnExpr() && !ReturnType.IsVarType() && !ReturnType.IsVoidType()) {
 			BLogger._LogWarning(Node.SourceToken, "returning default value of " + ReturnType);
-			Node.SetNode(BunReturnNode._Expr, new DefaultValueNode());
+			Node.SetNode(BunReturnNode._Expr, new DefaultValueNode(Node));
 		}
 		if(Node.HasReturnExpr()) {
 			this.CheckTypeAt(Node, BunReturnNode._Expr, ReturnType);

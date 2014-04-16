@@ -38,6 +38,9 @@ public final class BunFloatNode extends LiteralNode {
 		this.Type = BType.FloatType;
 		this.FloatValue = Value;
 	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunFloatNode(ParentNode, this.SourceToken, this.FloatValue));
+	}
 	@Override public final void Accept(BVisitor Visitor) {
 		if(Visitor instanceof BOperatorVisitor) {
 			((BOperatorVisitor)Visitor).VisitFloatNode(this);

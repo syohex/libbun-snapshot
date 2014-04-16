@@ -28,12 +28,14 @@ package libbun.ast.binary;
 import libbun.ast.BNode;
 import libbun.lang.bun.BunPrecedence;
 import libbun.parser.BOperatorVisitor;
-import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 
 public final class BunAndNode extends BinaryOperatorNode {
-	public BunAndNode(BNode ParentNode, BToken Token, BNode Left) {
-		super(ParentNode, Token, Left, BunPrecedence._CStyleAND);
+	public BunAndNode(BNode ParentNode) {
+		super(ParentNode, BunPrecedence._CStyleAND);
+	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunAndNode(ParentNode));
 	}
 	@Override public final String GetOperator() {
 		return "&&";

@@ -40,9 +40,14 @@ public final class MethodCallNode extends AbstractListNode {
 
 	@BField public String  GivenName = null;
 
-	public MethodCallNode(BNode ParentNode, BNode RecvNode) {
+	public MethodCallNode(BNode ParentNode, BNode RecvNode, String MethodName) {
 		super(ParentNode, null, 2);
-		this.SetNode(MethodCallNode._Recv, RecvNode);
+		this.SetNullableNode(MethodCallNode._Recv, RecvNode);
+		this.GivenName = MethodName;
+	}
+
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new MethodCallNode(ParentNode, null, this.GivenName));
 	}
 
 	public final BNode RecvNode() {

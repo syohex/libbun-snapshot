@@ -4,8 +4,8 @@ import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
 import libbun.parser.BToken;
 import libbun.parser.BVisitor;
-import libbun.type.BFuncType;
 import libbun.type.BFormFunc;
+import libbun.type.BFuncType;
 import libbun.util.BField;
 
 public class FormNode extends AbstractListNode {
@@ -15,6 +15,9 @@ public class FormNode extends AbstractListNode {
 		super(ParentNode, SourceToken, 0);
 		this.FormFunc = FormFunc;
 		assert(FormFunc != null);
+	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new FormNode(ParentNode, this.SourceToken, this.FormFunc));
 	}
 
 	public final BFuncType GetFuncType() {

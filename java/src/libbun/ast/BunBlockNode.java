@@ -50,6 +50,10 @@ public class BunBlockNode extends AbstractListNode {
 		this.SetNode(0, VarNode);
 	}
 
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunBlockNode(ParentNode, this.NullableNameSpace));
+	}
+
 	public final BNameSpace GetBlockNameSpace() {
 		if(this.NullableNameSpace == null) {
 			@Var BNameSpace NameSpace = this.GetNameSpace();

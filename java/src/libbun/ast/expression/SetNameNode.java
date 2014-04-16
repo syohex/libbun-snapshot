@@ -37,7 +37,7 @@ public class SetNameNode extends BNode {
 
 	public SetNameNode(BNode ParentNode, BToken Token, GetNameNode NameNode) {
 		super(ParentNode, Token, 2);
-		this.SetNode(SetNameNode._NameInfo, NameNode);
+		this.SetNullableNode(SetNameNode._NameInfo, NameNode);
 	}
 
 	public SetNameNode(String Name, BNode ExprNode) {
@@ -48,9 +48,9 @@ public class SetNameNode extends BNode {
 		}
 	}
 
-	//	public final String GetName() {
-	//		return this.GivenName;
-	//	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new SetNameNode(ParentNode, this.SourceToken, null));
+	}
 
 	public final GetNameNode NameNode() {
 		@Var BNode NameNode = this.AST[SetNameNode._NameInfo ];

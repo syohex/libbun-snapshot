@@ -26,6 +26,7 @@ package libbun.ast.expression;
 
 import libbun.ast.BNode;
 import libbun.parser.BVisitor;
+import libbun.util.Var;
 
 public final class SetFieldNode extends GetFieldNode {
 	public final static int _Recv = 0;
@@ -34,6 +35,12 @@ public final class SetFieldNode extends GetFieldNode {
 
 	public SetFieldNode(BNode ParentNode, BNode RecvNode) {
 		super(ParentNode, RecvNode, 3);
+	}
+
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		@Var SetFieldNode NewNode = new SetFieldNode(ParentNode, null);
+		NewNode.GivenName = this.GivenName;
+		return this.DupField(TypedClone, NewNode);
 	}
 
 	public final BNode ExprNode() {

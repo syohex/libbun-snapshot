@@ -28,6 +28,15 @@ public class BunFuncNameNode extends LocalDefinedNode {
 		this.FuncParamSize = FuncParamSize;
 	}
 
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		if(TypedClone) {
+			return this;
+		}
+		else {
+			return this.DupField(TypedClone, new GetNameNode(ParentNode, null, this.FuncName));
+		}
+	}
+
 	public final String GetSignature() {
 		return BFunc._StringfySignature(this.FuncName, this.FuncParamSize, this.RecvType);
 	}

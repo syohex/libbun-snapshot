@@ -24,8 +24,8 @@
 
 package libbun.ast.statement;
 
-import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
+import libbun.ast.BunBlockNode;
 import libbun.parser.BVisitor;
 import libbun.type.BType;
 import libbun.util.Var;
@@ -37,6 +37,10 @@ public final class BunWhileNode extends BNode {
 
 	public BunWhileNode(BNode ParentNode) {
 		super(ParentNode, null, 3);
+	}
+
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunWhileNode(ParentNode));
 	}
 
 	public BunWhileNode(BNode CondNode, BunBlockNode BlockNode) {

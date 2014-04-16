@@ -35,6 +35,9 @@ public final class BunIfNode extends BNode {
 	public BunIfNode(BNode ParentNode) {
 		super(ParentNode, null, 3);
 	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunIfNode(ParentNode));
+	}
 
 	public final BNode CondNode() {
 		return this.AST[BunIfNode._Cond ];

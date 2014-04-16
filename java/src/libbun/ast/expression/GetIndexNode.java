@@ -34,8 +34,14 @@ public final class GetIndexNode extends BNode {
 
 	public GetIndexNode(BNode ParentNode, BNode RecvNode) {
 		super(ParentNode, null, 2);
-		this.SetNode(GetIndexNode._Recv, RecvNode);
+		this.SetNullableNode(GetIndexNode._Recv, RecvNode);
 	}
+
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new GetIndexNode(ParentNode, null));
+	}
+
+
 	public final BNode RecvNode() {
 		return this.AST[GetIndexNode._Recv ];
 	}

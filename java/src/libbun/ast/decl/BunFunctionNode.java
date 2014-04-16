@@ -24,17 +24,17 @@
 
 package libbun.ast.decl;
 
-import libbun.ast.BunBlockNode;
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
+import libbun.ast.BunBlockNode;
 import libbun.encode.AbstractGenerator;
 import libbun.parser.BVisitor;
 import libbun.type.BFuncType;
 import libbun.type.BType;
 import libbun.type.BTypePool;
+import libbun.util.BArray;
 import libbun.util.BField;
 import libbun.util.Var;
-import libbun.util.BArray;
 
 public class BunFunctionNode extends AbstractListNode {
 	public static final int _NameInfo = 0;
@@ -50,6 +50,16 @@ public class BunFunctionNode extends AbstractListNode {
 
 	public BunFunctionNode(BNode ParentNode) {
 		super(ParentNode, null, 3);
+	}
+
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		@Var BunFunctionNode NewNode = new BunFunctionNode(ParentNode);
+		NewNode.GivenType = this.GivenType;
+		NewNode.GivenName = this.GivenName;
+		NewNode.IsExport  = this.IsExport;
+		NewNode.ParentFunctionNode = this.ParentFunctionNode;
+		NewNode.ResolvedFuncType = this.ResolvedFuncType;
+		return this.DupField(TypedClone, NewNode);
 	}
 
 	public final BType ReturnType() {

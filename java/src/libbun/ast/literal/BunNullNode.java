@@ -33,6 +33,9 @@ public final class BunNullNode extends LiteralNode {
 	public BunNullNode(BNode ParentNode, BToken SourceToken) {
 		super(ParentNode, SourceToken);
 	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunNullNode(ParentNode, this.SourceToken));
+	}
 	@Override public final void Accept(BVisitor Visitor) {
 		if(Visitor instanceof BOperatorVisitor) {
 			((BOperatorVisitor)Visitor).VisitNullNode(this);

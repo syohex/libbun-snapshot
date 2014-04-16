@@ -5,6 +5,7 @@ import libbun.ast.literal.DefaultValueNode;
 import libbun.type.BType;
 import libbun.util.BField;
 
+@Deprecated
 public abstract class DefineNameNode extends BNode {
 	public static final int _NameInfo = 0;
 	public static final int _TypeInfo = 1;
@@ -16,6 +17,10 @@ public abstract class DefineNameNode extends BNode {
 
 	protected DefineNameNode(BNode ParentNode, int Size) {
 		super(ParentNode, null, Size);
+	}
+
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return null; // FIXME
 	}
 
 	public final BType DeclType() {
@@ -44,7 +49,7 @@ public abstract class DefineNameNode extends BNode {
 
 	public final BNode InitValueNode() {
 		if(this.AST[BunLetVarNode._InitValue] == null) {
-			this.SetNode(BunLetVarNode._InitValue, new DefaultValueNode());
+			this.SetNode(BunLetVarNode._InitValue, new DefaultValueNode(null));
 		}
 		return this.AST[BunLetVarNode._InitValue];
 	}

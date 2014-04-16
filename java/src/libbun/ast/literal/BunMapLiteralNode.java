@@ -33,6 +33,9 @@ public final class BunMapLiteralNode extends AbstractListNode {
 	public BunMapLiteralNode(BNode ParentNode) {
 		super(ParentNode, null, 0);
 	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunMapLiteralNode(ParentNode));
+	}
 	public final BunMapEntryNode GetMapEntryNode(int Index) {
 		@Var BNode Node = this.GetListAt(Index);
 		if(Node instanceof BunMapEntryNode) {

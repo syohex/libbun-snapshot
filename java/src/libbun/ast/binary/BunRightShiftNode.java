@@ -7,9 +7,13 @@ import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 
 public class BunRightShiftNode extends BitwiseOperatorNode {
-	public BunRightShiftNode(BNode ParentNode, BToken SourceToken, BNode Left) {
-		super(ParentNode, SourceToken, Left, BunPrecedence._CStyleSHIFT);
+	public BunRightShiftNode(BNode ParentNode) {
+		super(ParentNode, BunPrecedence._CStyleSHIFT);
 	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunRightShiftNode(ParentNode));
+	}
+
 	@Override public final String GetOperator() {
 		return ">>";
 	}

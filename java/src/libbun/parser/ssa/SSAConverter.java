@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
-import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAndNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
@@ -272,8 +271,9 @@ public class SSAConverter extends ZASTTransformer {
 			@Var int i = JNode.size() - 1;
 			while(i >= 0) {
 				@Var PHINode phi = JNode.ListAt(i);
-				@Var BunAndNode And = new BunAndNode(Parent, null, phi);
-				And.SetNode(BinaryOperatorNode._Right, CondNode);
+				@Var BunAndNode And = new BunAndNode(Parent);
+				And.SetLeftNode(phi);
+				And.SetRightNode(CondNode);
 				And.Type = BType.BooleanType;
 				CondNode = And;
 				this.ReplaceNodeWith(TargetNode, phi.VarRef, phi);

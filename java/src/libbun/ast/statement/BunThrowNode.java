@@ -32,6 +32,11 @@ public final class BunThrowNode extends BNode {
 	public BunThrowNode(BNode ParentNode) {
 		super(ParentNode, null, 1);
 	}
+
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunThrowNode(ParentNode));
+	}
+
 	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitThrowNode(this);
 	}

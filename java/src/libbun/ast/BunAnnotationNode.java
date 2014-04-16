@@ -28,7 +28,7 @@ import libbun.parser.BVisitor;
 import libbun.util.BField;
 import libbun.util.BMap;
 
-public final class BunAnnotationNode extends BNode {
+public abstract class BunAnnotationNode extends BNode {
 	//@Field public ZenMap<Object> Annotation;
 	@BField public BNode AnnotatedNode = null;
 

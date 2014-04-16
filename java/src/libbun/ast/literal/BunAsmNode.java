@@ -10,7 +10,7 @@ public class BunAsmNode extends BNode {
 	public final static int _Form = 0;
 	public static final int _TypeInfo = 1;
 	@BField public String RequiredLibrary = null;
-	
+
 	@BField String FormText = null;
 	@BField BType  FormType = null;
 
@@ -19,6 +19,10 @@ public class BunAsmNode extends BNode {
 		this.RequiredLibrary = LibName;
 		this.FormText = FormText;
 		this.FormType = FormType;
+	}
+
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunAsmNode(ParentNode, this.RequiredLibrary, this.FormText, this.FormType));
 	}
 
 	public final BType FormType() {

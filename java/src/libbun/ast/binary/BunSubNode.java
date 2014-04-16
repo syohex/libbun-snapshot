@@ -7,9 +7,13 @@ import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 
 public class BunSubNode extends ArithmeticOperatorNode {
-	public BunSubNode(BNode ParentNode, BToken SourceToken, BNode Left) {
-		super(ParentNode, SourceToken, Left, BunPrecedence._CStyleADD);
+	public BunSubNode(BNode ParentNode) {
+		super(ParentNode, BunPrecedence._CStyleADD);
 	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunSubNode(ParentNode));
+	}
+
 	@Override public final String GetOperator() {
 		return "-";
 	}

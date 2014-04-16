@@ -27,8 +27,8 @@ package libbun.ast.expression;
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
 import libbun.parser.BVisitor;
-import libbun.type.BFuncType;
 import libbun.type.BFormFunc;
+import libbun.type.BFuncType;
 import libbun.type.BType;
 import libbun.util.Nullable;
 import libbun.util.Var;
@@ -38,13 +38,12 @@ public final class FuncCallNode extends AbstractListNode {
 
 	public FuncCallNode(BNode ParentNode, BNode FuncNode) {
 		super(ParentNode, null, 1);
-		this.SetNode(FuncCallNode._Functor, FuncNode);
+		this.SetNullableNode(FuncCallNode._Functor, FuncNode);
 	}
 
-	//	@Deprecated public ZFuncCallNode(ZNode ParentNode, String FuncName, ZFuncType FuncType) {
-	//		super(ParentNode, null, 1);
-	//		this.SetNode(ZFuncCallNode._Func, new ZFuncNameNode(this, null, FuncName, FuncType));
-	//	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new FuncCallNode(ParentNode, null));
+	}
 
 	public final BNode FunctorNode() {
 		return this.AST[FuncCallNode._Functor];

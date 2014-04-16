@@ -25,10 +25,9 @@
 package libbun.ast.binary;
 
 import libbun.ast.BNode;
-import libbun.parser.BToken;
 
 public abstract class ComparatorNode extends BinaryOperatorNode {
-	public ComparatorNode(BNode ParentNode, BToken SourceToken, BNode Left, int Precedence) {
-		super(ParentNode, SourceToken, Left, Precedence);
+	public ComparatorNode(BNode ParentNode, int Precedence) {
+		super(ParentNode, Precedence);
 	}
 }

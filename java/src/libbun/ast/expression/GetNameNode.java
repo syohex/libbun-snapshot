@@ -32,12 +32,13 @@ import libbun.parser.BVisitor;
 import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.Nullable;
+import libbun.util.Var;
 
 public class GetNameNode extends BNode {
 	@BField public boolean IsCaptured = false;
 	@BField public String  GivenName;
-	@BField public int     VarIndex = 0;
 	@BField @Nullable public BunLetVarNode ResolvedNode = null;
+	@BField public int     VarIndex = 0;
 
 	public GetNameNode(BNode ParentNode, BToken SourceToken, String GivenName) {
 		super(ParentNode, SourceToken, 0);
@@ -45,25 +46,18 @@ public class GetNameNode extends BNode {
 		this.Type = BType.VarType; // FIXME
 	}
 
-	//	public final boolean IsGlobalName() {
-	//		if(this.ResolvedNode != null) {
-	//			return this.ResolvedNode.GetDefiningFunctionNode() == null;
-	//		}
-	//		return false;
-	//	}
-	//
-	//	public final String GetName() {
-	//		@Var BNode ResolvedNode = this.ResolvedNode;
-	//		if(ResolvedNode != null) {
-	//			@Var ZFunctionNode DefNode = this.ResolvedNode.GetDefiningFunctionNode();
-	//			if(DefNode == null) {
-	//				if(ResolvedNode instanceof BLetVarNode) {
-	//					return ((BLetVarNode)ResolvedNode).UniqueName;
-	//				}
-	//			}
-	//		}
-	//		return this.GivenName;
-	//	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		@Var GetNameNode NewNode = new GetNameNode(ParentNode, this.SourceToken, this.GivenName);
+		if(TypedClone) {
+			NewNode.IsCaptured = this.IsCaptured;
+			NewNode.ResolvedNode = this.ResolvedNode;
+		}
+		return this.DupField(TypedClone, NewNode);
+	}
+
+	@Override public void Accept(BVisitor Visitor) {
+		Visitor.VisitGetNameNode(this);
+	}
 
 	public final String GetUniqueName(AbstractGenerator Generator) {
 		if(this.ResolvedNode != null) {
@@ -72,9 +66,5 @@ public class GetNameNode extends BNode {
 		return this.GivenName;
 	}
 
-
-	@Override public void Accept(BVisitor Visitor) {
-		Visitor.VisitGetNameNode(this);
-	}
 
 }

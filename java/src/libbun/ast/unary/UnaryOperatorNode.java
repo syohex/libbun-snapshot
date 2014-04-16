@@ -26,13 +26,12 @@ package libbun.ast.unary;
 
 
 import libbun.ast.BNode;
-import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 
 public abstract class UnaryOperatorNode extends BNode {
 	public final static int _Recv = 0;
-	public UnaryOperatorNode(BNode ParentNode, BToken Token) {
-		super(ParentNode, Token, 1);
+	public UnaryOperatorNode(BNode ParentNode) {
+		super(ParentNode, null, 1);
 	}
 
 	public abstract String GetOperator();
@@ -40,6 +39,7 @@ public abstract class UnaryOperatorNode extends BNode {
 	public final BNode RecvNode() {
 		return this.AST[UnaryOperatorNode._Recv ];
 	}
+
 	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitUnaryNode(this);
 	}

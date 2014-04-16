@@ -27,13 +27,16 @@ package libbun.ast.binary;
 import libbun.ast.BNode;
 import libbun.lang.bun.BunPrecedence;
 import libbun.parser.BOperatorVisitor;
-import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 
 public final class BunOrNode extends BinaryOperatorNode {
-	public BunOrNode(BNode ParentNode, BToken Token, BNode Left) {
-		super(ParentNode, Token, Left, BunPrecedence._CStyleOR);
+	public BunOrNode(BNode ParentNode) {
+		super(ParentNode, BunPrecedence._CStyleOR);
 	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunOrNode(ParentNode));
+	}
+
 	@Override public final String GetOperator() {
 		return "||";
 	}

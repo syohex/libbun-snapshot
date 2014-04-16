@@ -32,6 +32,9 @@ public final class BunArrayLiteralNode extends AbstractListNode {
 	public BunArrayLiteralNode(BNode ParentNode) {
 		super(ParentNode, null, 0);
 	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunArrayLiteralNode(ParentNode));
+	}
 	@Override public void Accept(BVisitor Visitor) {
 		Visitor.VisitArrayLiteralNode(this);
 	}

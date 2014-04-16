@@ -26,7 +26,6 @@ package libbun.ast.binary;
 
 import libbun.ast.BNode;
 import libbun.parser.BSyntax;
-import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
 import libbun.util.BField;
 import libbun.util.BLib;
@@ -35,12 +34,10 @@ import libbun.util.Var;
 public abstract class BinaryOperatorNode extends BNode {
 	public final static int _Left = 0;
 	public final static int _Right = 1;
-	//	@BField public BSyntax Pattern;
 	@BField public int Precedence = 0;
 
-	public BinaryOperatorNode(BNode ParentNode, BToken SourceToken, BNode Left, int Precedence) {
-		super(ParentNode, SourceToken, 2);
-		this.SetNode(BinaryOperatorNode._Left, Left);
+	public BinaryOperatorNode(BNode ParentNode, int Precedence) {
+		super(ParentNode, null, 2);
 		this.Precedence = Precedence;
 	}
 
@@ -50,8 +47,18 @@ public abstract class BinaryOperatorNode extends BNode {
 		return this.AST[BinaryOperatorNode._Left];
 	}
 
+	public final BNode SetLeftNode(BNode LeftNode) {
+		this.SetNode(BinaryOperatorNode._Left, LeftNode);
+		return LeftNode;
+	}
+
 	public final BNode RightNode() {
 		return this.AST[BinaryOperatorNode._Right];
+	}
+
+	public final BNode SetRightNode(BNode RightNode) {
+		this.SetNode(BinaryOperatorNode._Right, RightNode);
+		return RightNode;
 	}
 
 	public final boolean IsRightJoin(int left, int right) {
@@ -77,7 +84,21 @@ public abstract class BinaryOperatorNode extends BNode {
 		return RightNode;
 	}
 
-	public final BNode AppendParsedRightNode(BNode ParentNode, BTokenContext TokenContext) {
+	//	public final BNode AppendParsedRightNode(BNode ParentNode, BTokenContext TokenContext) {
+	//		@Var BNode RightNode = TokenContext.ParsePattern(ParentNode, "$Expression$", BTokenContext._Required);
+	//		if(RightNode.IsErrorNode()) {
+	//			return RightNode;
+	//		}
+	//		if(this.IsRightJoin(RightNode)) {
+	//			return this.RightJoin(ParentNode, (BinaryOperatorNode) RightNode);
+	//		}
+	//		this.SetNode(BinaryOperatorNode._Right, RightNode);
+	//		return this;
+	//	}
+
+	public final BNode SetParsedNode(BNode ParentNode, BNode LeftNode, String Op, BTokenContext TokenContext) {
+		this.SetLeftNode(LeftNode);
+		TokenContext.MatchToken(this, Op, BTokenContext._Required);
 		@Var BNode RightNode = TokenContext.ParsePattern(ParentNode, "$Expression$", BTokenContext._Required);
 		if(RightNode.IsErrorNode()) {
 			return RightNode;
@@ -85,8 +106,9 @@ public abstract class BinaryOperatorNode extends BNode {
 		if(this.IsRightJoin(RightNode)) {
 			return this.RightJoin(ParentNode, (BinaryOperatorNode) RightNode);
 		}
-		this.SetNode(BinaryOperatorNode._Right, RightNode);
+		this.SetRightNode(RightNode);
 		return this;
+
 	}
 
 	public final boolean IsDifferentlyTyped() {

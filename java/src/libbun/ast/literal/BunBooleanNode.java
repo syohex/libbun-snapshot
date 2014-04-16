@@ -41,6 +41,9 @@ public final class BunBooleanNode extends LiteralNode {
 	public BunBooleanNode(boolean Value) {
 		this(null, null, Value);
 	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunBooleanNode(ParentNode, this.SourceToken, this.BooleanValue));
+	}
 	@Override public final void Accept(BVisitor Visitor) {
 		if(Visitor instanceof BOperatorVisitor) {
 			((BOperatorVisitor)Visitor).VisitBooleanNode(this);

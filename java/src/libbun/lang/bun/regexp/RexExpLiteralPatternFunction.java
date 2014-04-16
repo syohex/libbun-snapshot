@@ -6,8 +6,8 @@ import libbun.ast.expression.NewObjectNode;
 import libbun.ast.literal.BunStringNode;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
-import libbun.util.Var;
 import libbun.util.BMatchFunction;
+import libbun.util.Var;
 
 public class RexExpLiteralPatternFunction extends BMatchFunction {
 	// ["pattern", "flag"] => (MethodCall "RegExp_Init" (NewObject "pattern", "flag"))
@@ -17,8 +17,7 @@ public class RexExpLiteralPatternFunction extends BMatchFunction {
 		if(TokenContext.MatchToken("$RexExpLiteralFlag$")) {
 			PatternFlag = TokenContext.GetToken(BTokenContext._MoveNext).GetText();
 		}
-		MethodCallNode Node = new MethodCallNode(ParentNode, new NewObjectNode(ParentNode));
-		Node.GivenName = "RegExp_Init";
+		MethodCallNode Node = new MethodCallNode(ParentNode, new NewObjectNode(ParentNode), "RegExp_Init");
 		Node.Append(new BunStringNode(ParentNode, Token, Token.GetText()));
 		Node.Append(new BunStringNode(ParentNode, Token, PatternFlag));
 		return Node;

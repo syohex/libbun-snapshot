@@ -4,8 +4,8 @@ import libbun.ast.BNode;
 import libbun.ast.literal.BunAsmNode;
 import libbun.ast.literal.BunStringNode;
 import libbun.parser.BNameSpace;
-import libbun.type.BFuncType;
 import libbun.type.BFormFunc;
+import libbun.type.BFuncType;
 import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.Var;
@@ -14,8 +14,11 @@ public class BunDefineNode extends TopLevelNode {
 	@BField public BunLetVarNode DefineNode;
 
 	public BunDefineNode(BNode ParentNode, BunLetVarNode DefineNode) {
-		super(ParentNode, null, 3);
+		super(ParentNode, null, 0);
 		this.DefineNode = DefineNode;
+	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunDefineNode(ParentNode, this.DefineNode));
 	}
 
 	private String GetFormText() {

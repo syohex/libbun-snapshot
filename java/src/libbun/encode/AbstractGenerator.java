@@ -22,7 +22,6 @@
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // **************************************************************************
 
-
 package libbun.encode;
 
 import libbun.ast.AbstractListNode;

@@ -27,6 +27,20 @@ public class DesugarNode extends SyntaxSugarNode {
 		}
 	}
 
+	private DesugarNode(BNode ParentNode, BNode OriginalNode, int Size) {
+		super(ParentNode, null, Size);
+		this.OriginalNode = OriginalNode;
+	}
+
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		if(TypedClone) {
+			return this.DupField(TypedClone, new DesugarNode(ParentNode, this.OriginalNode.Dup(TypedClone, ParentNode), this.AST.length));
+		}
+		else {
+			return this.OriginalNode.Dup(TypedClone, ParentNode);
+		}
+	}
+
 	@Override public DesugarNode DeSugar(AbstractGenerator Generator, BTypeChecker TypeChekcer) {
 		return this;
 	}

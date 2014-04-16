@@ -8,8 +8,8 @@ import libbun.ast.expression.FuncCallNode;
 import libbun.ast.literal.BunStringNode;
 import libbun.encode.AbstractGenerator;
 import libbun.parser.BTypeChecker;
-import libbun.type.BFuncType;
 import libbun.type.BFormFunc;
+import libbun.type.BFuncType;
 import libbun.type.BType;
 import libbun.util.Var;
 
@@ -18,6 +18,10 @@ public class BunAssertNode extends SyntaxSugarNode {
 
 	public BunAssertNode(BNode ParentNode) {
 		super(ParentNode, null, 1);
+	}
+
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunAssertNode(ParentNode));
 	}
 
 	@Override public DesugarNode DeSugar(AbstractGenerator Generator, BTypeChecker TypeChecker) {

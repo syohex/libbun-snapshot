@@ -28,6 +28,7 @@ import libbun.ast.BNode;
 import libbun.ast.literal.BunTypeNode;
 import libbun.parser.BVisitor;
 import libbun.util.BField;
+import libbun.util.Var;
 
 public class GetFieldNode extends BNode {
 	public final static int _Recv = 0;
@@ -35,24 +36,20 @@ public class GetFieldNode extends BNode {
 
 	@BField public String  GivenName = null;
 
-	protected GetFieldNode(BNode ParentNode, BNode RecvNode, int Size) {
+	protected GetFieldNode(BNode ParentNode, BNode RecvNode, int Size) {  //
 		super(ParentNode, null, Size);
-		this.SetNode(GetFieldNode._Recv, RecvNode);
+		this.SetNullableNode(GetFieldNode._Recv, RecvNode);
 	}
 
 	public GetFieldNode(BNode ParentNode, BNode RecvNode) {
-		super(ParentNode, null, 2);
-		this.SetNode(GetFieldNode._Recv, RecvNode);
+		this(ParentNode, RecvNode, 2);
 	}
 
-	//	public final ZNameSpace GetPrefixNameSpace() {
-	//		@Var BNode Node = this.AST[ZGetterNode._Recv ];
-	//		if(Node instanceof BGetNameNode) {
-	//			@Var String Name = ((BGetNameNode)Node).GetName();
-	//			@Var BNode NameSpaceName = Node.GetNameSpace().GetSymbol(Name);
-	//		}
-	//		return null;
-	//	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		@Var GetFieldNode NewNode = new GetFieldNode(ParentNode, null);
+		NewNode.GivenName = this.GivenName;
+		return this.DupField(TypedClone, NewNode);
+	}
 
 	public final BNode RecvNode() {
 		return this.AST[GetFieldNode._Recv ];

@@ -38,6 +38,9 @@ public final class BunIntNode extends LiteralNode {
 		this.Type = BType.IntType;
 		this.IntValue = Value;
 	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunIntNode(ParentNode, this.SourceToken, this.IntValue));
+	}
 	@Override public final void Accept(BVisitor Visitor) {
 		if(Visitor instanceof BOperatorVisitor) {
 			((BOperatorVisitor)Visitor).VisitIntNode(this);

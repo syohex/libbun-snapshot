@@ -8,9 +8,13 @@ import libbun.parser.BVisitor;
 
 public class BunNotEqualsNode extends ComparatorNode {
 
-	public BunNotEqualsNode(BNode ParentNode, BToken SourceToken, BNode Left) {
-		super(ParentNode, SourceToken, Left, BunPrecedence._CStyleEquals);
+	public BunNotEqualsNode(BNode ParentNode) {
+		super(ParentNode, BunPrecedence._CStyleEquals);
 	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return this.DupField(TypedClone, new BunNotEqualsNode(ParentNode));
+	}
+
 	@Override public final String GetOperator() {
 		return "!=";
 	}

@@ -42,15 +42,14 @@ import libbun.util.Var;
 
 public abstract class BNode {
 	public final static int _AppendIndex = -1;
-	//	public final static int _NestedAppendIndex = -2;
 	public final static int _Nop =      -3;
 	public final static boolean _EnforcedParent = true;
 	public final static boolean _PreservedParent = false;
 
 	@BField public BNode  ParentNode;
 	@BField public BToken SourceToken;
-	@BField public BNode  AST[];
-	@BField public BType	Type = BType.VarType;
+	@BField public BNode  AST[] = null;
+	@BField public BType   Type = BType.VarType;
 	@BField public boolean HasUntyped = true;
 
 	public BNode(@Nullable BNode ParentNode, @Nullable BToken SourceToken, int Size) {
@@ -60,9 +59,34 @@ public abstract class BNode {
 		if(Size > 0) {
 			this.AST = BLib._NewNodeArray(Size);
 		}
-		else {
-			this.AST = null;
+	}
+
+	protected BNode DupField(boolean TypedClone, BNode NewNode) {
+		@Var int i = 0;
+		while(i < this.AST.length) {
+			if(this.AST[i] != null) {
+				NewNode.AST[i] = this.AST[i].Dup(TypedClone, NewNode);
+				assert(NewNode.AST[i].getClass() == this.AST[i].getClass());
+			}
+			else {
+				NewNode.AST[i] = null;
+			}
+			i = i + 1;
 		}
+		NewNode.SourceToken = this.SourceToken;
+		if(TypedClone) {
+			NewNode.Type = this.Type;
+			NewNode.HasUntyped = this.HasUntyped;
+		}
+		if(NewNode instanceof AbstractListNode) {
+			((AbstractListNode)NewNode).ListStartIndex = ((AbstractListNode)this).ListStartIndex;
+		}
+		return NewNode;
+	}
+
+	//	public abstract BNode Dup(boolean TypedClone, BNode ParentNode);
+	public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		throw new RuntimeException("TODO: Implement Dup method for " + this.getClass());
 	}
 
 	public final String GetSourceLocation() {
@@ -139,15 +163,18 @@ public abstract class BNode {
 			if(ListNode instanceof AbstractListNode) {
 				((AbstractListNode)ListNode).Append(Node);
 			}
-			else {
-				assert(ListNode instanceof AbstractListNode);
-			}
 		}
 		return Node;
 	}
 
-	public final BNode SetNode(int Index, BNode Node) {
-		return this.SetNode(Index, Node, BNode._EnforcedParent);
+	public final void SetNode(int Index, BNode Node) {
+		this.SetNode(Index, Node, BNode._EnforcedParent);
+	}
+
+	public final void SetNullableNode(int Index, @Nullable BNode Node) {
+		if(Node != null) {
+			this.SetNode(Index, Node, BNode._EnforcedParent);
+		}
 	}
 
 	public final BType GetAstType(int Index) {

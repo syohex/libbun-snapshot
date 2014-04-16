@@ -44,6 +44,14 @@ public final class BunClassNode extends AbstractListNode {
 		super(ParentNode, null, 2);
 	}
 
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		@Var BunClassNode NewNode = new BunClassNode(ParentNode);
+		NewNode.GivenName = this.GivenName;
+		NewNode.ClassType = this.ClassType;
+		NewNode.IsExport  = this.IsExport;
+		return this.DupField(TypedClone, NewNode);
+	}
+
 	public final String ClassName() {
 		if(this.GivenName == null) {
 			this.GivenName = this.AST[BunLetVarNode._NameInfo].SourceToken.GetTextAsName();

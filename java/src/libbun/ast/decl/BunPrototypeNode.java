@@ -1,5 +1,6 @@
 package libbun.ast.decl;
 
+import libbun.ast.BNode;
 import libbun.parser.BNameSpace;
 import libbun.type.BFuncType;
 import libbun.util.BField;
@@ -13,10 +14,9 @@ public class BunPrototypeNode extends TopLevelNode {
 		this.SetNode(BunPrototypeNode._FuncInfo, FunctionNode);
 		this.FunctionNode = FunctionNode;
 	}
-
-	//	public final ZLetVarNode GetParamNode(int Index) {
-	//		return this.FunctionNode.GetParamNode(Index);
-	//	}
+	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
+		return null; // FIXME
+	}
 
 	@Override public final void Perform(BNameSpace NameSpace) {
 		@Var BFuncType FuncType = this.FunctionNode.GetFuncType();
