@@ -37,7 +37,7 @@ public class GetFieldNode extends BNode {
 	@BField public String  GivenName = null;
 
 	protected GetFieldNode(BNode ParentNode, BNode RecvNode, int Size) {  //
-		super(ParentNode, null, Size);
+		super(ParentNode, Size);
 		this.SetNullableNode(GetFieldNode._Recv, RecvNode);
 	}
 

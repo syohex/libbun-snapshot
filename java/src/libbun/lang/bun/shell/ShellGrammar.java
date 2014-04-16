@@ -164,7 +164,7 @@ class ImportCommandPatternFunction extends BMatchFunction {
 			TokenContext.MoveNext();
 		}
 		this.SetCommandSymbol(ParentNode, TokenContext, TokenList);
-		return new EmptyNode(ParentNode, null);
+		return new EmptyNode(ParentNode);
 	}
 }
 
@@ -470,4 +470,4 @@ function ExecCommandInt(argsList : CommandArg[][]) : int          // return exit
 function ExecCommandBoolean(argsList : CommandArg[][]) : boolean  // return true if exit status is 0 or false if exit status is not 0
 function ExecCommandString(argsList : CommandArg[][]) : String    // return command standard out
 
-**/
+ **/

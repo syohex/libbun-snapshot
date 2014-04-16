@@ -40,7 +40,7 @@ public final class ClassMemberNode extends LocalDefinedNode {
 	@BField public BunFunctionNode ConstructorNode = null;
 
 	public ClassMemberNode(BNode ParentNode) {
-		super(ParentNode, null, 0);
+		super(ParentNode, 0);
 	}
 
 }

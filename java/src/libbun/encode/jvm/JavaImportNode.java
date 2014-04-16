@@ -11,7 +11,7 @@ public class JavaImportNode extends TopLevelNode {
 	public final static int _Path  = 0;
 
 	public JavaImportNode(BNode ParentNode) {
-		super(ParentNode, null, 1);
+		super(ParentNode, 1);
 	}
 
 	//	private String ParsePath(String Path) {

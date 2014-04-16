@@ -37,7 +37,7 @@ public abstract class BinaryOperatorNode extends BNode {
 	@BField public int Precedence = 0;
 
 	public BinaryOperatorNode(BNode ParentNode, int Precedence) {
-		super(ParentNode, null, 2);
+		super(ParentNode, 2);
 		this.Precedence = Precedence;
 	}
 

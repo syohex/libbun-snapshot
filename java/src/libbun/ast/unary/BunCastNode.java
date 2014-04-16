@@ -37,7 +37,7 @@ public class BunCastNode extends BNode {
 	public final static int _TypeInfo = 1;
 
 	public BunCastNode(BNode ParentNode, BType CastType, BNode Node) {
-		super(ParentNode, null, 2);
+		super(ParentNode, 2);
 		this.Type = CastType;
 		if(Node != null) {
 			this.SetNode(BunCastNode._Expr, Node);

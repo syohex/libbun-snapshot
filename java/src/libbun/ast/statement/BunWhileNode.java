@@ -36,7 +36,7 @@ public final class BunWhileNode extends BNode {
 	public final static int _Next  = 2;   // optional iteration statement
 
 	public BunWhileNode(BNode ParentNode) {
-		super(ParentNode, null, 3);
+		super(ParentNode, 3);
 	}
 
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
@@ -44,7 +44,7 @@ public final class BunWhileNode extends BNode {
 	}
 
 	public BunWhileNode(BNode CondNode, BunBlockNode BlockNode) {
-		super(null, null, 3);
+		super(null, 3);
 		this.SetNode(BunWhileNode._Cond, CondNode);
 		this.SetNode(BunWhileNode._Block, BlockNode);
 		this.Type = BType.VoidType;

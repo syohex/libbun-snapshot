@@ -1,15 +1,14 @@
 package libbun.ast;
 
 import libbun.encode.AbstractGenerator;
-import libbun.parser.BToken;
 import libbun.parser.BTypeChecker;
 import libbun.parser.BVisitor;
 
 
 public abstract class SyntaxSugarNode extends BNode {
 
-	public SyntaxSugarNode(BNode ParentNode, BToken SourceToken, int Size) {
-		super(ParentNode, SourceToken, Size);
+	public SyntaxSugarNode(BNode ParentNode, int Size) {
+		super(ParentNode, Size);
 	}
 
 	@Override public final void Accept(BVisitor Visitor) {

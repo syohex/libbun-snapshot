@@ -36,7 +36,7 @@ public final class BunTryNode extends BNode {
 	public final static int _Finally  = 3;
 
 	public BunTryNode(BNode ParentNode) {
-		super(ParentNode, null, 4);
+		super(ParentNode, 4);
 	}
 
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {

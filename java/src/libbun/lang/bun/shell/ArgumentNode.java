@@ -21,7 +21,7 @@ public class ArgumentNode extends SyntaxSugarNode {
 	@BField private final int ArgType;
 
 	public ArgumentNode(BNode ParentNode, int ArgType) {
-		super(ParentNode, null, 1);
+		super(ParentNode, 1);
 		this.ArgType = ArgType;
 	}
 

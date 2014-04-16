@@ -37,7 +37,7 @@ public final class FuncCallNode extends AbstractListNode {
 	public final static int _Functor = 0;
 
 	public FuncCallNode(BNode ParentNode, BNode FuncNode) {
-		super(ParentNode, null, 1);
+		super(ParentNode, 1);
 		this.SetNullableNode(FuncCallNode._Functor, FuncNode);
 	}
 

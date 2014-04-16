@@ -1,7 +1,7 @@
 package libbun.lang.bun.shell;
 
-import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.DesugarNode;
 import libbun.ast.SyntaxSugarNode;
 import libbun.ast.expression.FuncCallNode;
@@ -11,9 +11,9 @@ import libbun.encode.AbstractGenerator;
 import libbun.parser.BToken;
 import libbun.parser.BTypeChecker;
 import libbun.type.BType;
+import libbun.util.BArray;
 import libbun.util.BField;
 import libbun.util.Var;
-import libbun.util.BArray;
 
 public class CommandNode extends SyntaxSugarNode {
 	@BField private final BArray<BNode> ArgList;
@@ -21,7 +21,8 @@ public class CommandNode extends SyntaxSugarNode {
 	@BField public CommandNode PipedNextNode;
 
 	public CommandNode(BNode ParentNode, BToken Token, String Command) {
-		super(ParentNode, Token, 0);
+		super(ParentNode, 0);
+		this.SourceToken = Token;
 		this.PipedNextNode = null;
 		this.ArgList = new BArray<BNode>(new BNode[]{});
 		this.AppendArgNode(new ArgumentNode(ParentNode, Command));
@@ -34,7 +35,7 @@ public class CommandNode extends SyntaxSugarNode {
 	public BNode AppendPipedNextNode(CommandNode Node) {
 		@Var CommandNode CurrentNode = this;
 		while(CurrentNode.PipedNextNode != null) {
-			CurrentNode = (CommandNode) CurrentNode.PipedNextNode;
+			CurrentNode = CurrentNode.PipedNextNode;
 		}
 		CurrentNode.PipedNextNode = (CommandNode) CurrentNode.SetChild(Node, false);
 		return this;

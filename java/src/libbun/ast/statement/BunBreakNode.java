@@ -29,7 +29,7 @@ import libbun.parser.BVisitor;
 
 public final class BunBreakNode extends BNode {
 	public BunBreakNode(BNode ParentNode) {
-		super(ParentNode, null, 0);
+		super(ParentNode, 0);
 	}
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
 		return this.DupField(TypedClone, new BunBreakNode(ParentNode));

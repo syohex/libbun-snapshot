@@ -39,7 +39,7 @@ public final class NewObjectNode extends AbstractListNode {
 	@BField public BType GivenType = null;
 
 	public NewObjectNode(BNode ParentNode) {
-		super(ParentNode, null, 1);
+		super(ParentNode, 1);
 	}
 
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {

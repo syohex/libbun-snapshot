@@ -29,6 +29,7 @@ import libbun.parser.BToken;
 
 public abstract class ConstNode extends BNode {
 	protected ConstNode(BNode ParentNode, BToken SourceToken) {
-		super(ParentNode, SourceToken, 0);
+		super(ParentNode, 0);
+		this.SourceToken = SourceToken;
 	}
 }

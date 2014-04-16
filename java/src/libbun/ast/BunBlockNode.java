@@ -35,17 +35,17 @@ public class BunBlockNode extends AbstractListNode {
 	@BField public BNameSpace NullableNameSpace;
 
 	public BunBlockNode(BNode ParentNode, @Nullable BNameSpace NameSpace) {
-		super(ParentNode, null, 0);
+		super(ParentNode, 0);
 		this.NullableNameSpace = NameSpace;
 	}
 
 	protected BunBlockNode(BNode ParentNode, @Nullable BNameSpace NameSpace, int Init) {  // call by ZVarNode
-		super(ParentNode, null, Init);
+		super(ParentNode, Init);
 		this.NullableNameSpace = NameSpace;
 	}
 
 	public BunBlockNode(BNode ParentNode, @Nullable BNameSpace NameSpace, BunLetVarNode VarNode) {
-		super(ParentNode, null, 1);
+		super(ParentNode, 1);
 		this.NullableNameSpace = NameSpace;
 		this.SetNode(0, VarNode);
 	}

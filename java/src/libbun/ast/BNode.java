@@ -52,10 +52,9 @@ public abstract class BNode {
 	@BField public BType   Type = BType.VarType;
 	@BField public boolean HasUntyped = true;
 
-	public BNode(@Nullable BNode ParentNode, @Nullable BToken SourceToken, int Size) {
+	public BNode(@Nullable BNode ParentNode, int Size) {
 		assert(this != ParentNode);
 		this.ParentNode = ParentNode;
-		this.SourceToken = SourceToken;
 		if(Size > 0) {
 			this.AST = BLib._NewNodeArray(Size);
 		}

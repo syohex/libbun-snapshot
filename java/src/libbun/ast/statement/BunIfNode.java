@@ -33,7 +33,7 @@ public final class BunIfNode extends BNode {
 	public final static int _Else = 2;
 
 	public BunIfNode(BNode ParentNode) {
-		super(ParentNode, null, 3);
+		super(ParentNode, 3);
 	}
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
 		return this.DupField(TypedClone, new BunIfNode(ParentNode));

@@ -14,7 +14,8 @@ public class BunFuncNameNode extends LocalDefinedNode {
 	@BField public final int FuncParamSize;
 
 	public BunFuncNameNode(BNode ParentNode, BToken SourceToken, String FuncName, BFuncType FuncType) {
-		super(ParentNode, SourceToken, 0);
+		super(ParentNode, 0);
+		this.SourceToken = SourceToken;
 		this.FuncName = FuncName;
 		this.RecvType = FuncType.GetRecvType();
 		this.FuncParamSize = FuncType.GetFuncParamSize();
@@ -22,7 +23,8 @@ public class BunFuncNameNode extends LocalDefinedNode {
 	}
 
 	public BunFuncNameNode(BNode ParentNode, BToken SourceToken, String FuncName, BType RecvType, int FuncParamSize) {
-		super(ParentNode, SourceToken, 0);
+		super(ParentNode, 0);
+		this.SourceToken = SourceToken;
 		this.FuncName = FuncName;
 		this.RecvType = RecvType;
 		this.FuncParamSize = FuncParamSize;

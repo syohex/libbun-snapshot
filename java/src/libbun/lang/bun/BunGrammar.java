@@ -686,7 +686,7 @@ class StatementEndPatternFunction extends BMatchFunction {
 			}
 		}
 		TokenContext.SetParseFlag(ContextAllowance);
-		return new EmptyNode(ParentNode, Token);
+		return new EmptyNode(ParentNode);
 	}
 }
 
@@ -739,7 +739,7 @@ class SymbolStatementPatternFunction extends BMatchFunction {
 		@Var BToken NameToken = TokenContext.GetToken(BTokenContext._MoveNext);
 		@Var GetNameNode NameNode = new GetNameNode(ParentNode, NameToken, NameToken.GetText());
 		if(TokenContext.IsToken("=")) {
-			@Var BNode AssignedNode = new SetNameNode(ParentNode, null, NameNode);
+			@Var BNode AssignedNode = new SetNameNode(ParentNode, NameNode);
 			AssignedNode = TokenContext.MatchToken(AssignedNode, "=", BTokenContext._Required);
 			AssignedNode = TokenContext.MatchPattern(AssignedNode, SetNameNode._Expr, "$Expression$", BTokenContext._Required);
 			return AssignedNode;

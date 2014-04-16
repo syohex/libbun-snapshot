@@ -33,7 +33,7 @@ public final class GetIndexNode extends BNode {
 	public final static int _Index = 1;
 
 	public GetIndexNode(BNode ParentNode, BNode RecvNode) {
-		super(ParentNode, null, 2);
+		super(ParentNode, 2);
 		this.SetNullableNode(GetIndexNode._Recv, RecvNode);
 	}
 

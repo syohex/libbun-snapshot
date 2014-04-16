@@ -41,7 +41,7 @@ public final class MethodCallNode extends AbstractListNode {
 	@BField public String  GivenName = null;
 
 	public MethodCallNode(BNode ParentNode, BNode RecvNode, String MethodName) {
-		super(ParentNode, null, 2);
+		super(ParentNode, 2);
 		this.SetNullableNode(MethodCallNode._Recv, RecvNode);
 		this.GivenName = MethodName;
 	}

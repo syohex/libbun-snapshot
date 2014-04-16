@@ -17,7 +17,7 @@ public class BunAssertNode extends SyntaxSugarNode {
 	public final static int _Expr = 0;
 
 	public BunAssertNode(BNode ParentNode) {
-		super(ParentNode, null, 1);
+		super(ParentNode, 1);
 	}
 
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {

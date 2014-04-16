@@ -10,7 +10,7 @@ public class BunMapEntryNode extends LocalDefinedNode {
 	@BField public String  Name = null;
 
 	public BunMapEntryNode(BNode ParentNode, String KeySymbol) {
-		super(ParentNode, null, 2);
+		super(ParentNode, 2);
 		this.Name = KeySymbol;
 	}
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {

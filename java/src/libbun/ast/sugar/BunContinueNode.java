@@ -19,7 +19,7 @@ import libbun.util.Var;
 public class BunContinueNode extends SyntaxSugarNode {
 
 	public BunContinueNode(BNode ParentNode) {
-		super(ParentNode, null, 0);
+		super(ParentNode, 0);
 	}
 
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {

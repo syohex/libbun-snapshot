@@ -23,18 +23,15 @@
 // **************************************************************************
 
 package libbun.ast;
-import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 import libbun.util.BField;
-import libbun.util.BMap;
 
 public abstract class BunAnnotationNode extends BNode {
 	//@Field public ZenMap<Object> Annotation;
 	@BField public BNode AnnotatedNode = null;
 
-	public BunAnnotationNode(BNode ParentNode, BToken Token, BMap<Object> Anno) {
-		super(ParentNode, Token, 0);
-		//this.Annotation = Anno;
+	public BunAnnotationNode(BNode ParentNode) {
+		super(ParentNode, 0);
 	}
 
 	//	@Override public void Append(ZNode Node) {

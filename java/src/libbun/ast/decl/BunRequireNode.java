@@ -9,7 +9,7 @@ public class BunRequireNode extends TopLevelNode {
 	public final static int _Path = 0;
 
 	public BunRequireNode(BNode ParentNode) {
-		super(ParentNode, null, 1);
+		super(ParentNode, 1);
 	}
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
 		return this.DupField(TypedClone, new BunRequireNode(ParentNode));

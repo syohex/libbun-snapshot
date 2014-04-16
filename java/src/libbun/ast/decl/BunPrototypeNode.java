@@ -10,7 +10,7 @@ public class BunPrototypeNode extends TopLevelNode {
 	public final static int _FuncInfo = 0;
 	@BField BunFunctionNode FunctionNode;
 	public BunPrototypeNode(BunFunctionNode FunctionNode) {
-		super(FunctionNode.ParentNode, FunctionNode.SourceToken, 1);
+		super(FunctionNode.ParentNode, 1);
 		this.SetNode(BunPrototypeNode._FuncInfo, FunctionNode);
 		this.FunctionNode = FunctionNode;
 	}

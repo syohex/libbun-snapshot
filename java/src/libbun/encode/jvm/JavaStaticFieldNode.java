@@ -8,7 +8,7 @@ public class JavaStaticFieldNode extends LocalDefinedNode {
 	Class<?> StaticClass;
 	String FieldName;
 	JavaStaticFieldNode(BNode ParentNode, Class<?> StaticClass, BType FieldType, String FieldName) {
-		super(ParentNode, null, 0);
+		super(ParentNode, 0);
 		this.StaticClass = StaticClass;
 		this.Type = FieldType;
 		this.FieldName = FieldName;

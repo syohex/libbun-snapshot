@@ -30,7 +30,7 @@ import libbun.parser.BVisitor;
 public final class BunThrowNode extends BNode {
 	public final static int _Expr = 0;
 	public BunThrowNode(BNode ParentNode) {
-		super(ParentNode, null, 1);
+		super(ParentNode, 1);
 	}
 
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {

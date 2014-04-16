@@ -16,7 +16,7 @@ public abstract class DefineNameNode extends BNode {
 	@BField public String  GivenName = null;
 
 	protected DefineNameNode(BNode ParentNode, int Size) {
-		super(ParentNode, null, Size);
+		super(ParentNode, Size);
 	}
 
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {

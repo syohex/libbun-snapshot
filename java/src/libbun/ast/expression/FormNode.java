@@ -12,7 +12,8 @@ public class FormNode extends AbstractListNode {
 	@BField public final BFormFunc FormFunc;
 
 	public FormNode(BNode ParentNode, BToken SourceToken, BFormFunc FormFunc) {
-		super(ParentNode, SourceToken, 0);
+		super(ParentNode, 0);
+		this.SourceToken = SourceToken;
 		this.FormFunc = FormFunc;
 		assert(FormFunc != null);
 	}

@@ -14,7 +14,7 @@ public class BunDefineNode extends TopLevelNode {
 	@BField public BunLetVarNode DefineNode;
 
 	public BunDefineNode(BNode ParentNode, BunLetVarNode DefineNode) {
-		super(ParentNode, null, 0);
+		super(ParentNode, 0);
 		this.DefineNode = DefineNode;
 	}
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {

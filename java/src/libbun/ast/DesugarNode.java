@@ -10,14 +10,14 @@ public class DesugarNode extends SyntaxSugarNode {
 	@BField BNode OriginalNode;
 
 	public DesugarNode(BNode OriginalNode, BNode DesugardNode) {
-		super(OriginalNode.ParentNode, null, 1);
+		super(OriginalNode.ParentNode, 1);
 		this.OriginalNode = OriginalNode;
 		this.SetChild(OriginalNode, BNode._EnforcedParent);
 		this.SetNode(0, DesugardNode);
 	}
 
 	public DesugarNode(BNode OriginalNode, BNode[] DesugarNodes) {
-		super(OriginalNode.ParentNode, null, DesugarNodes.length);
+		super(OriginalNode.ParentNode, DesugarNodes.length);
 		this.OriginalNode = OriginalNode;
 		this.SetChild(OriginalNode, BNode._EnforcedParent);
 		@Var int i = 0;
@@ -28,7 +28,7 @@ public class DesugarNode extends SyntaxSugarNode {
 	}
 
 	private DesugarNode(BNode ParentNode, BNode OriginalNode, int Size) {
-		super(ParentNode, null, Size);
+		super(ParentNode, Size);
 		this.OriginalNode = OriginalNode;
 	}
 

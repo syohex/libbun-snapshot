@@ -41,7 +41,8 @@ public class GetNameNode extends BNode {
 	@BField public int     VarIndex = 0;
 
 	public GetNameNode(BNode ParentNode, BToken SourceToken, String GivenName) {
-		super(ParentNode, SourceToken, 0);
+		super(ParentNode, 0);
+		this.SourceToken = SourceToken;
 		this.GivenName = GivenName;
 		this.Type = BType.VarType; // FIXME
 	}

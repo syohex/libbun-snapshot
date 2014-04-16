@@ -27,7 +27,7 @@ public class BunLetVarNode extends BNode {
 	@BField public int     NameIndex = 0;
 
 	public BunLetVarNode(BNode ParentNode, int NameFlag, @Nullable BType GivenType, @Nullable String GivenName) {
-		super(ParentNode, null, 3);
+		super(ParentNode, 3);
 		this.NameFlag = NameFlag;
 		this.GivenType = GivenType;
 		this.GivenName = GivenName;

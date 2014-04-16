@@ -2,14 +2,14 @@ package libbun.parser.ssa;
 
 import libbun.ast.BNode;
 import libbun.ast.LocalDefinedNode;
-import libbun.util.Var;
 import libbun.util.BArray;
+import libbun.util.Var;
 
 public class JoinNode extends LocalDefinedNode {
 	private final BArray<PHINode> PHIs;
 
 	public JoinNode(BNode Parent) {
-		super(null, null, 0);
+		super(null, 0);
 		Parent.SetChild(this, true);
 		this.PHIs = new BArray<PHINode>(new PHINode[0]);
 	}

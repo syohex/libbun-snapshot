@@ -49,7 +49,7 @@ public class BunFunctionNode extends AbstractListNode {
 	@BField public BFuncType     ResolvedFuncType = null;
 
 	public BunFunctionNode(BNode ParentNode) {
-		super(ParentNode, null, 3);
+		super(ParentNode, 3);
 	}
 
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {

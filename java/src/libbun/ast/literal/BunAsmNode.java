@@ -15,7 +15,7 @@ public class BunAsmNode extends BNode {
 	@BField BType  FormType = null;
 
 	public BunAsmNode(BNode ParentNode, String LibName, String FormText, BType FormType) {
-		super(ParentNode, null, 2);
+		super(ParentNode, 2);
 		this.RequiredLibrary = LibName;
 		this.FormText = FormText;
 		this.FormType = FormType;

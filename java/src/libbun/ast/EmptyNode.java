@@ -24,14 +24,13 @@
 
 package libbun.ast;
 
-import libbun.parser.BToken;
 
 public final class EmptyNode extends LocalDefinedNode {
-	public EmptyNode(BNode ParentNode, BToken Token) {
-		super(ParentNode, Token, 0);
+	public EmptyNode(BNode ParentNode) {
+		super(ParentNode, 0);
 	}
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
-		return this.DupField(TypedClone, new EmptyNode(ParentNode, this.SourceToken));
+		return this.DupField(TypedClone, new EmptyNode(ParentNode));
 	}
 
 }

@@ -1,7 +1,7 @@
 package libbun.parser.ssa;
 
-import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
+import libbun.ast.BunBlockNode;
 import libbun.ast.LocalDefinedNode;
 import libbun.ast.expression.GetNameNode;
 import libbun.encode.AbstractGenerator;
@@ -16,7 +16,7 @@ public class PHINode extends LocalDefinedNode {
 	public String VariableName;
 
 	public PHINode(Variable BackupValue, String VariableName) {
-		super(null, null, 0);
+		super(null, 0);
 		this.BackupValue = BackupValue;
 		this.VariableName = VariableName;
 		this.Args = new BArray<BNode>(new BNode[0]);

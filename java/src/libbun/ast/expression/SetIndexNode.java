@@ -34,7 +34,7 @@ public final class SetIndexNode extends BNode {
 	public final static int _Expr  = 2;
 
 	public SetIndexNode(BNode ParentNode, BNode LeftNode) {
-		super(ParentNode, null, 3);
+		super(ParentNode, 3);
 		this.SetNullableNode(SetIndexNode._Recv, LeftNode);
 	}
 

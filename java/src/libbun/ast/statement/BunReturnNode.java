@@ -31,7 +31,7 @@ public final class BunReturnNode extends BNode {
 	public final static int _Expr = 0;  // optional
 
 	public BunReturnNode(BNode ParentNode) {
-		super(ParentNode, null, 1);
+		super(ParentNode, 1);
 	}
 
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {

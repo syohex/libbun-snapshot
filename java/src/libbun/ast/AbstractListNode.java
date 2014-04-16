@@ -1,14 +1,13 @@
 package libbun.ast;
 
-import libbun.parser.BToken;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
 
 public abstract class AbstractListNode extends BNode {
 	@BField public int ListStartIndex;
-	public AbstractListNode(BNode ParentNode, BToken SourceToken, int Size) {
-		super(ParentNode, SourceToken, Size);
+	public AbstractListNode(BNode ParentNode, int Size) {
+		super(ParentNode, Size);
 		this.ListStartIndex = Size;
 	}
 

@@ -30,7 +30,7 @@ import libbun.parser.BVisitor;
 
 public final class BunArrayLiteralNode extends AbstractListNode {
 	public BunArrayLiteralNode(BNode ParentNode) {
-		super(ParentNode, null, 0);
+		super(ParentNode, 0);
 	}
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
 		return this.DupField(TypedClone, new BunArrayLiteralNode(ParentNode));

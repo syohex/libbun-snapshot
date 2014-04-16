@@ -41,7 +41,7 @@ public final class BunClassNode extends AbstractListNode {
 	@BField public boolean IsExport = false;
 
 	public BunClassNode(BNode ParentNode) {
-		super(ParentNode, null, 2);
+		super(ParentNode, 2);
 	}
 
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {

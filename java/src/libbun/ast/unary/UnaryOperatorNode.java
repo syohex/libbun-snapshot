@@ -31,7 +31,7 @@ import libbun.parser.BVisitor;
 public abstract class UnaryOperatorNode extends BNode {
 	public final static int _Recv = 0;
 	public UnaryOperatorNode(BNode ParentNode) {
-		super(ParentNode, null, 1);
+		super(ParentNode, 1);
 	}
 
 	public abstract String GetOperator();

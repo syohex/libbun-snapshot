@@ -25,7 +25,6 @@
 package libbun.ast.expression;
 
 import libbun.ast.BNode;
-import libbun.parser.BToken;
 import libbun.parser.BVisitor;
 import libbun.type.BType;
 import libbun.util.Var;
@@ -35,13 +34,13 @@ public class SetNameNode extends BNode {
 	public final static int _NameInfo = 0;
 	public final static int _Expr = 1;
 
-	public SetNameNode(BNode ParentNode, BToken Token, GetNameNode NameNode) {
-		super(ParentNode, Token, 2);
+	public SetNameNode(BNode ParentNode, GetNameNode NameNode) {
+		super(ParentNode, 2);
 		this.SetNullableNode(SetNameNode._NameInfo, NameNode);
 	}
 
 	public SetNameNode(String Name, BNode ExprNode) {
-		this(null, null, new GetNameNode(null, null, Name));
+		this((BNode)null, new GetNameNode(null, null, Name));
 		this.SetNode(SetNameNode._Expr, ExprNode);
 		if(!ExprNode.IsUntyped()) {
 			this.Type = BType.VoidType;
@@ -49,7 +48,7 @@ public class SetNameNode extends BNode {
 	}
 
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
-		return this.DupField(TypedClone, new SetNameNode(ParentNode, this.SourceToken, null));
+		return this.DupField(TypedClone, new SetNameNode(ParentNode, null));
 	}
 
 	public final GetNameNode NameNode() {
