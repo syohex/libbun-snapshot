@@ -1,0 +1,4 @@
+#!/bin/bash
+
+OUTDIR=test/w TARGET=c CHECK="gcc -Ilib/c/" CHECKEXT=c test/bin/buntest test/bun/*.bun
+
