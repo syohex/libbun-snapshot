@@ -308,15 +308,8 @@ public class PythonGenerator extends SourceGenerator {
 	}
 
 	@Override public void VisitGetIndexNode(GetIndexNode Node) {
-		@Var BType RecvType = Node.GetAstType(GetIndexNode._Recv);
-		//		if(RecvType.IsMapType()) {
-		//			this.ImportLibrary("@mapget");
-		//			this.GenerateExpression("libbun_mapget(", Node.RecvNode(), ", ", Node.IndexNode(), ")");
-		//		}
-		//		else {
 		this.GenerateExpression(Node.RecvNode());
 		this.GenerateExpression("[", Node.IndexNode(), "]");
-		//		}
 	}
 
 	@Override

@@ -33,7 +33,6 @@ import libbun.ast.SyntaxSugarNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.literal.BunNullNode;
 import libbun.ast.literal.DefaultValueNode;
@@ -107,7 +106,6 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 	public final String NameUniqueSymbol(String Symbol) {
 		return this.NameUniqueSymbol(Symbol, this.GetUniqueNumber());
 	}
-
 
 	protected void SetNativeType(BType Type, String TypeName) {
 		@Var String Key = "" + Type.TypeId;
@@ -328,6 +326,7 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 		Node.Accept(this);
 	}
 
+	/*
 	protected boolean ExecStatement(BNode Node) {
 		this.EnableVisitor();
 		this.TopLevelSymbol = null;
@@ -356,7 +355,7 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 		return this.IsVisitable();
 	}
 
-	public final boolean LoadScript(String ScriptText, String FileName, int LineNumber) {
+	public final boolean OldLoadScript(String ScriptText, String FileName, int LineNumber) {
 		@Var boolean Result = true;
 		@Var BunBlockNode TopBlockNode = new BunBlockNode(null, this.RootNameSpace);
 		@Var BTokenContext TokenContext = new BTokenContext(this, this.RootNameSpace, FileName, LineNumber, ScriptText);
@@ -380,7 +379,56 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 		this.Logger.OutputErrorsToStdErr();
 		return Result;
 	}
+	 */
 
+	private void PreProcess(BNode Node) {
+		if(this.TypeChecker != null) {
+			Node = this.TypeChecker.CheckType(Node, BType.VoidType);
+		}
+	}
+
+	private void GenerateTopLevelStatement(BNode Node) {
+		this.TopLevelSymbol = null;
+		if(Node instanceof BunFunctionNode || Node instanceof BunClassNode || Node instanceof BunLetVarNode) {
+			Node.Type = BType.VoidType;
+		}
+		else {
+			if(!this.LangInfo.AllowTopLevelScript) {
+				@Var String FuncName = this.NameUniqueSymbol("Main");
+				Node = this.TypeChecker.CreateFunctionNode(Node.ParentNode, FuncName, Node);
+				this.TopLevelSymbol = FuncName;
+			}
+		}
+		this.GenerateStatement(Node);
+	}
+
+	public final boolean LoadScript(String ScriptText, String FileName, int LineNumber) {
+		@Var boolean Result = true;
+		@Var BunBlockNode TopBlockNode = new BunBlockNode(null, this.RootNameSpace);
+		@Var BTokenContext TokenContext = new BTokenContext(this, this.RootNameSpace, FileName, LineNumber, ScriptText);
+		TokenContext.SkipEmptyStatement();
+		@Var BToken SkipToken = null;
+		while(TokenContext.HasNext()) {
+			TokenContext.SetParseFlag(BTokenContext._NotAllowSkipIndent);
+			SkipToken = TokenContext.GetToken();
+			@Var BNode StmtNode = TokenContext.ParsePattern(TopBlockNode, "$Statement$", BTokenContext._Required);
+			if(StmtNode.IsErrorNode()) {
+				TokenContext.SkipError(SkipToken);
+			}
+			this.PreProcess(StmtNode);
+			TokenContext.SkipEmptyStatement();
+			TokenContext.Vacume();
+		}
+		this.Logger.OutputErrorsToStdErr();
+		@Var int i = 0;
+		while(i < TopBlockNode.GetListSize()) {
+			@Var BNode StmtNode = TopBlockNode.GetListAt(i);
+			this.GenerateTopLevelStatement(StmtNode);
+			i = i + 1;
+		}
+		this.Logger.OutputErrorsToStdErr();
+		return Result;
+	}
 
 	public final boolean LoadFile(String FileName, @Nullable BToken SourceToken) {
 		@Var String ScriptText = BLib._LoadTextFile(FileName);

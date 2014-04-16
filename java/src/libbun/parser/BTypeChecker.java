@@ -33,6 +33,7 @@ import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
+import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.error.StupidCastErrorNode;
 import libbun.ast.expression.BunFuncNameNode;
@@ -43,10 +44,10 @@ import libbun.ast.literal.BunAsmNode;
 import libbun.ast.statement.BunReturnNode;
 import libbun.ast.unary.BunCastNode;
 import libbun.encode.AbstractGenerator;
+import libbun.type.BFormFunc;
 import libbun.type.BFunc;
 import libbun.type.BFuncType;
 import libbun.type.BGreekType;
-import libbun.type.BFormFunc;
 import libbun.type.BType;
 import libbun.type.BVarScope;
 import libbun.util.BField;
@@ -62,7 +63,6 @@ public abstract class BTypeChecker extends BOperatorVisitor {
 
 	@BField public AbstractGenerator  Generator;
 	@BField public BLogger     Logger;
-	@BField private boolean    StoppedVisitor;
 	@BField public BVarScope   VarScope;
 	@BField public boolean     IsSupportNullable = false;
 	@BField public boolean     IsSupportMutable  = false;
@@ -251,10 +251,17 @@ public abstract class BTypeChecker extends BOperatorVisitor {
 		return FuncNode;
 	}
 
-
 	public abstract void DefineFunction(BunFunctionNode FunctionNode, boolean Enforced);
 
-	@Override public void VisitErrorNode(ErrorNode Node) {
+	@Override public final void VisitAsmNode(BunAsmNode Node) {
+		this.ReturnTypeNode(Node, Node.FormType());
+	}
+
+	@Override public final void VisitTopLevelNode(TopLevelNode Node) {
+		Node.Perform(Node.GetNameSpace());
+	}
+
+	@Override public final void VisitErrorNode(ErrorNode Node) {
 		@Var BType ContextType = this.GetContextType();
 		if(!ContextType.IsVarType()) {
 			this.ReturnTypeNode(Node, ContextType);
@@ -273,10 +280,6 @@ public abstract class BTypeChecker extends BOperatorVisitor {
 			i = i + 1;
 		}
 		this.ReturnTypeNode(DesugarNode, DesugarNode.GetAstType(DesugarNode.GetAstSize()-1));
-	}
-
-	@Override public void VisitAsmNode(BunAsmNode Node) {
-		this.ReturnTypeNode(Node, Node.FormType());
 	}
 
 	// ----------------------------------------------------------------------
