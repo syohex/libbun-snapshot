@@ -117,7 +117,7 @@ public class CGenerator extends SourceGenerator {
 	}
 
 	@Override protected void GenerateImportLibrary(String LibName) {
-		this.Header.AppendNewLine("#include<", LibName, ">");
+		this.Header.AppendNewLine("#include <", LibName, ">");
 	}
 
 	@Override
@@ -195,7 +195,17 @@ public class CGenerator extends SourceGenerator {
 
 	@Override
 	public void VisitAddNode(BunAddNode Node) {
-		this.GenerateBinaryNode(Node, Node.GetOperator());
+		if(Node.LeftNode().Type == BType.StringType) {
+			this.ImportLibrary("libbun.h");
+			this.Source.Append("libbun_concat(");
+			Node.LeftNode().Accept(this);
+			this.Source.Append(", ");
+			Node.RightNode().Accept(this);
+			this.Source.Append(")");
+		}
+		else {
+			this.GenerateBinaryNode(Node, Node.GetOperator());
+		}
 	}
 
 	@Override
