@@ -68,6 +68,7 @@ import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.ast.literal.BunBooleanNode;
 import libbun.ast.literal.BunFloatNode;
 import libbun.ast.literal.BunIntNode;
+import libbun.ast.literal.BunMapEntryNode;
 import libbun.ast.literal.BunMapLiteralNode;
 import libbun.ast.literal.BunNullNode;
 import libbun.ast.literal.BunStringNode;
@@ -181,32 +182,12 @@ public class JavaScriptGenerator extends SourceGenerator {
 	}
 
 	@Override public void VisitMapLiteralNode(BunMapLiteralNode Node) {
-		@Var int ListSize =  Node.GetListSize();
-		@Var int i = 0;
-		while(i < ListSize) {
-			@Var BNode KeyNode = Node.GetListAt(i);
-			if(KeyNode instanceof ErrorNode){
-				this.GenerateExpression(KeyNode);
-				return;
-			}
-			i = i + 1;
-		}
 		this.Source.Append("{");
-		while(i < ListSize) {
-			@Var BNode KeyNode = Node.GetListAt(i);
-			if (i > 0) {
-				this.Source.Append(", ");
-			}
-			this.GenerateExpression(KeyNode);
-			this.Source.Append(": ");
+		@Var int i = 0;
+		while(i < Node.GetListSize()) {
+			@Var BunMapEntryNode Entry = Node.GetMapEntryNode(i);
+			this.GenerateExpression("", Entry.KeyNode(), ": ", Entry.ValueNode(), ",");
 			i = i + 1;
-			if(i < Node.GetListSize()){
-				@Var BNode ValueNode = Node.GetListAt(i);
-				this.GenerateExpression(ValueNode);
-				i = i + 1;
-			}else{
-				this.Source.Append("null");
-			}
 		}
 		this.Source.Append("}");
 	}
