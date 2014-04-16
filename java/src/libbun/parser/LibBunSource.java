@@ -4,15 +4,15 @@ import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
 
-public class BSource {
+public class LibBunSource {
 
 	@BField public final BTokenContext TokenContext;
-	@BField public final BLogger Logger;
+	@BField public final LibBunLogger Logger;
 	@BField String FileName;
 	@BField int    LineNumber;
 	@BField String  SourceText;
 
-	BSource() {
+	LibBunSource() {
 		this.FileName = null;
 		this.LineNumber = 0;
 		this.TokenContext = null;
@@ -20,7 +20,7 @@ public class BSource {
 		this.Logger = null;
 	}
 
-	public BSource(String FileName, int LineNumber, String Source, BTokenContext TokenContext) {
+	public LibBunSource(String FileName, int LineNumber, String Source, BTokenContext TokenContext) {
 		this.FileName = FileName;
 		this.LineNumber = LineNumber;
 		this.TokenContext = TokenContext;

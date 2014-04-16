@@ -58,15 +58,15 @@ import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.parser.BLangInfo;
-import libbun.parser.BLogger;
+import libbun.parser.LibBunLangInfo;
+import libbun.parser.LibBunLogger;
 import libbun.type.BType;
 import libbun.util.Var;
 
 
-public class BunGenerator extends SourceGenerator {
+public class BunGenerator extends LibBunSourceGenerator {
 	public BunGenerator() {
-		super(new BLangInfo("Bun-1.0", "bun"));
+		super(new LibBunLangInfo("Bun-1.0", "bun"));
 	}
 
 	@Override
@@ -437,7 +437,7 @@ public class BunGenerator extends SourceGenerator {
 	}
 
 	@Override public void VisitErrorNode(ErrorNode Node) {
-		@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
+		@Var String Message = LibBunLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.Source.Append("/*", Message, "*/");
 	}
 

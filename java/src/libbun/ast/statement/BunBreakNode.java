@@ -25,7 +25,7 @@
 package libbun.ast.statement;
 
 import libbun.ast.BNode;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 
 public final class BunBreakNode extends BNode {
 	public BunBreakNode(BNode ParentNode) {
@@ -34,7 +34,7 @@ public final class BunBreakNode extends BNode {
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
 		return this.DupField(TypedClone, new BunBreakNode(ParentNode));
 	}
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitBreakNode(this);
 	}
 }

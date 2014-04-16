@@ -3,7 +3,7 @@ package libbun.ast.decl;
 import libbun.ast.BNode;
 import libbun.ast.literal.BunAsmNode;
 import libbun.ast.literal.BunStringNode;
-import libbun.parser.BNameSpace;
+import libbun.parser.LibBunGamma;
 import libbun.type.BFormFunc;
 import libbun.type.BFuncType;
 import libbun.type.BType;
@@ -29,7 +29,7 @@ public class BunDefineNode extends TopLevelNode {
 		return "";
 	}
 
-	@Override public final void Perform(BNameSpace NameSpace) {
+	@Override public final void Perform(LibBunGamma Gamma) {
 		@Var String Symbol = this.DefineNode.GetGivenName();
 		@Var String FormText = this.GetFormText();
 		@Var BType  FormType = this.DefineNode.DeclType();
@@ -45,11 +45,11 @@ public class BunDefineNode extends TopLevelNode {
 			@Var BFuncType FormFuncType = (BFuncType)FormType;
 			@Var BFormFunc FormFunc = new BFormFunc(Symbol, FormFuncType, LibName, FormText);
 			if(Symbol.equals("_")) {
-				NameSpace.Generator.SetConverterFunc(FormFuncType.GetRecvType(), FormFuncType.GetReturnType(), FormFunc);
+				Gamma.Generator.SetConverterFunc(FormFuncType.GetRecvType(), FormFuncType.GetReturnType(), FormFunc);
 			}
 			else {
 				//				System.out.println("Func: " + FormFunc + " by " + FormFunc.GetSignature());
-				NameSpace.Generator.SetDefinedFunc(FormFunc);
+				Gamma.Generator.SetDefinedFunc(FormFunc);
 			}
 		}
 		else {
@@ -60,7 +60,7 @@ public class BunDefineNode extends TopLevelNode {
 			this.DefineNode.GivenType = FormType;
 			this.DefineNode.GivenName = FormText;
 			this.DefineNode.SetNode(BunLetVarNode._InitValue, AsmNode);
-			NameSpace.SetSymbol(Symbol, this.DefineNode);
+			Gamma.SetSymbol(Symbol, this.DefineNode);
 		}
 	}
 }

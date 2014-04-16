@@ -25,7 +25,7 @@ import libbun.ast.statement.BunReturnNode;
 import libbun.ast.statement.BunWhileNode;
 import libbun.ast.unary.BunCastNode;
 import libbun.ast.unary.BunNotNode;
-import libbun.encode.SourceBuilder;
+import libbun.encode.LibBunSourceBuilder;
 import libbun.encode.obsolete.OldSourceGenerator;
 import libbun.parser.BToken;
 import libbun.type.BClassType;
@@ -211,8 +211,8 @@ public class ErlangGenerator extends OldSourceGenerator {
 		this.GenerateExpression(Node.ExprNode());
 		this.Source.Append("}");
 		this.VarMgr.AssignVariable(GetNameNode.GetUniqueName(this));
-		SourceBuilder LazyBuilder = new SourceBuilder(this, this.Source);
-		SourceBuilder BodyBuilder = this.Source;
+		LibBunSourceBuilder LazyBuilder = new LibBunSourceBuilder(this, this.Source);
+		LibBunSourceBuilder BodyBuilder = this.Source;
 		this.Source = LazyBuilder;
 		this.GenerateExpression(Node.RecvNode());
 		this.Source.Append(" = ");
@@ -416,8 +416,8 @@ public class ErlangGenerator extends OldSourceGenerator {
 
 		//Generate While Guard
 		this.VarMgr.ChangeFilterFlag(VarFlag.Assigned);
-		SourceBuilder LazyBuilder = new SourceBuilder(this, this.Source);
-		SourceBuilder BodyBuilder = this.Source;
+		LibBunSourceBuilder LazyBuilder = new LibBunSourceBuilder(this, this.Source);
+		LibBunSourceBuilder BodyBuilder = this.Source;
 		this.Source = LazyBuilder;
 		this.GenerateExpression(Node.CondNode());
 		this.Source = BodyBuilder;
@@ -536,7 +536,7 @@ public class ErlangGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitClassNode(BunClassNode Node) {
-		SourceBuilder BodyBuilder = this.Source;
+		LibBunSourceBuilder BodyBuilder = this.Source;
 		this.Source = this.Header;
 
 		this.Source.Append("-record(");

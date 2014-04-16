@@ -8,11 +8,11 @@ import libbun.ast.SyntaxSugarNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.TopLevelNode;
-import libbun.ast.expression.FormNode;
+import libbun.ast.expression.BunFormNode;
 import libbun.ast.literal.BunAsmNode;
 import libbun.ast.literal.LiteralNode;
 import libbun.ast.unary.BunCastNode;
-import libbun.parser.BLangInfo;
+import libbun.parser.LibBunLangInfo;
 import libbun.type.BType;
 import libbun.util.BArray;
 import libbun.util.BField;
@@ -21,15 +21,15 @@ import libbun.util.Nullable;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
-public abstract class SourceGenerator extends AbstractGenerator {
-	@BField private final BArray<SourceBuilder> BuilderList = new BArray<SourceBuilder>(new SourceBuilder[4]);
-	@BField protected SourceBuilder Header;
-	@BField protected SourceBuilder Source;
+public abstract class LibBunSourceGenerator extends LibBunGenerator {
+	@BField private final BArray<LibBunSourceBuilder> BuilderList = new BArray<LibBunSourceBuilder>(new LibBunSourceBuilder[4]);
+	@BField protected LibBunSourceBuilder Header;
+	@BField protected LibBunSourceBuilder Source;
 	@BField protected String LineFeed = "\n";
 	@BField protected String Tab = "   ";
 	@BField protected boolean HasMainFunction = false;
 
-	public SourceGenerator(BLangInfo LangInfo) {
+	public LibBunSourceGenerator(LibBunLangInfo LangInfo) {
 		super(LangInfo);
 		this.InitBuilderList();
 	}
@@ -40,14 +40,14 @@ public abstract class SourceGenerator extends AbstractGenerator {
 		this.Source = this.AppendNewSourceBuilder();
 	}
 
-	protected final SourceBuilder AppendNewSourceBuilder() {
-		@Var SourceBuilder Builder = new SourceBuilder(this, this.Source);
+	protected final LibBunSourceBuilder AppendNewSourceBuilder() {
+		@Var LibBunSourceBuilder Builder = new LibBunSourceBuilder(this, this.Source);
 		this.BuilderList.add(Builder);
 		return Builder;
 	}
 
-	protected final SourceBuilder InsertNewSourceBuilder() {
-		@Var SourceBuilder Builder = new SourceBuilder(this, this.Source);
+	protected final LibBunSourceBuilder InsertNewSourceBuilder() {
+		@Var LibBunSourceBuilder Builder = new LibBunSourceBuilder(this, this.Source);
 		@Var int i = 0;
 		while(i < this.BuilderList.size()) {
 			if(this.BuilderList.ArrayValues[i] == this.Source) {
@@ -107,10 +107,10 @@ public abstract class SourceGenerator extends AbstractGenerator {
 
 	@Override public final String GetSourceText() {
 		this.Finish(null);
-		@Var SourceBuilder sb = new SourceBuilder(this, null);
+		@Var LibBunSourceBuilder sb = new LibBunSourceBuilder(this, null);
 		@Var int i = 0;
 		while(i < this.BuilderList.size()) {
-			@Var SourceBuilder Builder = this.BuilderList.ArrayValues[i];
+			@Var LibBunSourceBuilder Builder = this.BuilderList.ArrayValues[i];
 			sb.Append(Builder.toString());
 			Builder.Clear();
 			sb.Append(this.LineFeed);
@@ -184,7 +184,7 @@ public abstract class SourceGenerator extends AbstractGenerator {
 		this.Source.Append(Node.GetFormText());
 	}
 
-	@Override public void VisitFormNode(FormNode Node) {
+	@Override public void VisitFormNode(BunFormNode Node) {
 		@Var String FormText = Node.GetFormText();
 		//		@Var BFuncType FuncType = Node.GetFuncType();
 		@Var int fromIndex = 0;

@@ -25,7 +25,7 @@
 package libbun.ast.binary;
 
 import libbun.ast.BNode;
-import libbun.parser.BSyntax;
+import libbun.parser.LibBunSyntax;
 import libbun.parser.BTokenContext;
 import libbun.util.BField;
 import libbun.util.BLib;
@@ -62,7 +62,7 @@ public abstract class BinaryOperatorNode extends BNode {
 	}
 
 	public final boolean IsRightJoin(int left, int right) {
-		return (left < right || (left == right && !BLib._IsFlag(left, BSyntax._LeftJoin) && !BLib._IsFlag(right, BSyntax._LeftJoin)));
+		return (left < right || (left == right && !BLib._IsFlag(left, LibBunSyntax._LeftJoin) && !BLib._IsFlag(right, LibBunSyntax._LeftJoin)));
 	}
 
 	private final boolean IsRightJoin(BNode RightNode) {

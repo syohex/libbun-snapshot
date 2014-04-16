@@ -1,8 +1,8 @@
 package libbun.ast.literal;
 
 import libbun.ast.BNode;
-import libbun.parser.BOperatorVisitor;
-import libbun.parser.BVisitor;
+import libbun.parser.BunVisitor;
+import libbun.parser.LibBunVisitor;
 
 
 public class DefaultValueNode extends LiteralNode {
@@ -12,9 +12,9 @@ public class DefaultValueNode extends LiteralNode {
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
 		return this.DupField(TypedClone, new DefaultValueNode(ParentNode));
 	}
-	@Override public final void Accept(BVisitor Visitor) {
-		if(Visitor instanceof BOperatorVisitor) {
-			((BOperatorVisitor)Visitor).VisitDefaultValueNode(this);
+	@Override public final void Accept(LibBunVisitor Visitor) {
+		if(Visitor instanceof BunVisitor) {
+			((BunVisitor)Visitor).VisitDefaultValueNode(this);
 		}
 		else {
 			Visitor.VisitLiteralNode(this);

@@ -90,7 +90,7 @@ import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.BunFuncNameNode;
-import libbun.ast.expression.FormNode;
+import libbun.ast.expression.BunFormNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
@@ -123,10 +123,10 @@ import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.encode.AbstractGenerator;
-import libbun.parser.BLangInfo;
-import libbun.parser.BLogger;
-import libbun.parser.BNameSpace;
+import libbun.encode.LibBunGenerator;
+import libbun.parser.LibBunLangInfo;
+import libbun.parser.LibBunLogger;
+import libbun.parser.LibBunGamma;
 import libbun.parser.BSourceContext;
 import libbun.parser.BTokenContext;
 import libbun.type.BClassField;
@@ -148,7 +148,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
-public class AsmJavaGenerator extends AbstractGenerator {
+public class AsmJavaGenerator extends LibBunGenerator {
 	private final BMap<Class<?>> GeneratedClassMap = new BMap<Class<?>>(null);
 	public JavaStaticFieldNode MainFuncNode = null;
 	AsmClassLoader AsmLoader = null;
@@ -156,16 +156,16 @@ public class AsmJavaGenerator extends AbstractGenerator {
 	AsmMethodBuilder AsmBuilder;
 
 	public AsmJavaGenerator() {
-		super(new BLangInfo("Java1.6", "jvm"));
+		super(new LibBunLangInfo("Java1.6", "jvm"));
 		this.InitFuncClass();
-		this.ImportLocalGrammar(this.RootNameSpace);
+		this.ImportLocalGrammar(this.RootGamma);
 		this.TryCatchLabel = new Stack<AsmTryCatchLabel>();
 		this.AsmLoader = new AsmClassLoader(this);
 	}
 
-	private void ImportLocalGrammar(BNameSpace NameSpace) {
-		NameSpace.DefineStatement("import", new JavaImportPattern());
-		NameSpace.DefineExpression("$JavaClassPath$", new JavaClassPathPattern());
+	private void ImportLocalGrammar(LibBunGamma Gamma) {
+		Gamma.DefineStatement("import", new JavaImportPattern());
+		Gamma.DefineExpression("$JavaClassPath$", new JavaClassPathPattern());
 	}
 
 	private void InitFuncClass() {
@@ -653,7 +653,7 @@ public class AsmJavaGenerator extends AbstractGenerator {
 		}
 	}
 
-	@Override public void VisitFormNode(FormNode Node) {
+	@Override public void VisitFormNode(BunFormNode Node) {
 		for(int i = 0; i < Node.GetListSize(); i++) {
 			this.AsmBuilder.PushNode(null, Node.GetListAt(i));
 		}
@@ -976,7 +976,7 @@ public class AsmJavaGenerator extends AbstractGenerator {
 		StaticInitMethod.Finish();
 		this.AsmLoader.LoadGeneratedClass(ClassName);
 		//Class<?> StaticClass = this.AsmLoader.LoadGeneratedClass(ClassName);
-		//		Node.GetNameSpace().SetLocalSymbol(Node.GetName(), new JavaStaticFieldNode(Node, StaticClass, Node.InitValueNode().Type, "_"));
+		//		Node.GetGamma().SetLocalSymbol(Node.GetName(), new JavaStaticFieldNode(Node, StaticClass, Node.InitValueNode().Type, "_"));
 	}
 
 	Class<?> LoadFuncClass(BFuncType FuncType) {
@@ -1276,7 +1276,7 @@ public class AsmJavaGenerator extends AbstractGenerator {
 	}
 
 	@Override public void VisitErrorNode(ErrorNode Node) {
-		@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
+		@Var String Message = LibBunLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.AsmBuilder.PushConst(Message);
 		@Var Method sMethod = JavaMethodTable.GetStaticMethod("ThrowError");
 		this.AsmBuilder.ApplyStaticMethod(Node, sMethod);

@@ -86,17 +86,17 @@ import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.encode.SourceGenerator;
+import libbun.encode.LibBunSourceGenerator;
 import libbun.lang.bun.BunTypeSafer;
-import libbun.parser.BLangInfo;
-import libbun.parser.BLogger;
-import libbun.parser.BNameSpace;
+import libbun.parser.LibBunLangInfo;
+import libbun.parser.LibBunLogger;
+import libbun.parser.LibBunGamma;
 import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
 
-public class OldSourceGenerator extends SourceGenerator {
+public class OldSourceGenerator extends LibBunSourceGenerator {
 
 	@BField public boolean IsDynamicLanguage = false;
 	@BField public String LineComment = "//";
@@ -122,7 +122,7 @@ public class OldSourceGenerator extends SourceGenerator {
 	@BField public boolean ReadableCode = true;
 
 	public OldSourceGenerator(String Extension, String LangVersion) {
-		super(new BLangInfo(LangVersion, Extension));
+		super(new LibBunLangInfo(LangVersion, Extension));
 		this.SetTypeChecker(new BunTypeSafer(this));
 	}
 
@@ -130,12 +130,12 @@ public class OldSourceGenerator extends SourceGenerator {
 		this.Header.AppendNewLine("require ", LibName, this.SemiColon);
 	}
 
-	public String NameLocalVariable(BNameSpace NameSpace, String Name) {
+	public String NameLocalVariable(LibBunGamma Gamma, String Name) {
 		@Var String SafeName = this.SymbolMap.GetOrNull(Name);
 		if(SafeName != null) {
 			Name = SafeName;
 		}
-		@Var int NameIndex = NameSpace.GetNameIndex(Name);
+		@Var int NameIndex = Gamma.GetNameIndex(Name);
 		if(NameIndex > 0) {
 			Name = Name + "__" + NameIndex;
 		}
@@ -289,9 +289,9 @@ public class OldSourceGenerator extends SourceGenerator {
 	@Override public void VisitGetNameNode(GetNameNode Node) {
 		@Var BNode ResolvedNode = Node.ResolvedNode;
 		if(ResolvedNode == null && !this.LangInfo.AllowUndefinedSymbol) {
-			BLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GivenName);
+			LibBunLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GivenName);
 		}
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetUniqueName(this)));
+		this.Source.Append(this.NameLocalVariable(Node.GetGamma(), Node.GetUniqueName(this)));
 	}
 
 	@Override public void VisitSetNameNode(SetNameNode Node) {
@@ -579,7 +579,7 @@ public class OldSourceGenerator extends SourceGenerator {
 	}
 
 	@Override public void VisitErrorNode(ErrorNode Node) {
-		@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
+		@Var String Message = LibBunLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.Source.Append(this.ErrorFunc, "(");
 		this.Source.Append(BLib._QuoteString(Message));
 		this.Source.Append(")");
@@ -630,7 +630,7 @@ public class OldSourceGenerator extends SourceGenerator {
 			if (i > 0) {
 				this.Source.Append(this.Camma);
 			}
-			this.Source.Append(this.NameLocalVariable(ParamNode.GetNameSpace(), ParamNode.GetGivenName()));
+			this.Source.Append(this.NameLocalVariable(ParamNode.GetGamma(), ParamNode.GetGivenName()));
 			i = i + 1;
 		}
 		this.Source.Append(CloseToken);

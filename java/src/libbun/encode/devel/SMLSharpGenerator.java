@@ -56,13 +56,13 @@ import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.encode.SourceGenerator;
-import libbun.parser.BLangInfo;
+import libbun.encode.LibBunSourceGenerator;
+import libbun.parser.LibBunLangInfo;
 
-public class SMLSharpGenerator extends SourceGenerator {
+public class SMLSharpGenerator extends LibBunSourceGenerator {
 
 	public SMLSharpGenerator() {
-		super(new BLangInfo("SML#-2.0", "sml"));
+		super(new LibBunLangInfo("SML#-2.0", "sml"));
 		// TODO Auto-generated constructor stub
 	}
 

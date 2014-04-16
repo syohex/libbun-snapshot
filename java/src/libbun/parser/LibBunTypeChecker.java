@@ -37,13 +37,13 @@ import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.error.StupidCastErrorNode;
 import libbun.ast.expression.BunFuncNameNode;
-import libbun.ast.expression.FormNode;
+import libbun.ast.expression.BunFormNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetNameNode;
 import libbun.ast.literal.BunAsmNode;
 import libbun.ast.statement.BunReturnNode;
 import libbun.ast.unary.BunCastNode;
-import libbun.encode.AbstractGenerator;
+import libbun.encode.LibBunGenerator;
 import libbun.type.BFormFunc;
 import libbun.type.BFunc;
 import libbun.type.BFuncType;
@@ -54,20 +54,20 @@ import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
 
-public abstract class BTypeChecker extends BOperatorVisitor {
+public abstract class LibBunTypeChecker extends BunVisitor {
 	public final static int _DefaultTypeCheckPolicy			= 0;
 	public final static int _NoCheckPolicy                  = 1;
 
 	@BField private BType      StackedContextType;
 	@BField private BNode      ReturnedNode;
 
-	@BField public AbstractGenerator  Generator;
-	@BField public BLogger     Logger;
+	@BField public LibBunGenerator  Generator;
+	@BField public LibBunLogger     Logger;
 	@BField public BVarScope   VarScope;
 	@BField public boolean     IsSupportNullable = false;
 	@BField public boolean     IsSupportMutable  = false;
 
-	public BTypeChecker(AbstractGenerator Generator) {
+	public LibBunTypeChecker(LibBunGenerator Generator) {
 		this.Generator = Generator;
 		this.Logger = Generator.Logger;
 		this.StackedContextType = null;
@@ -96,7 +96,7 @@ public abstract class BTypeChecker extends BOperatorVisitor {
 			@Var String Op = Node.GetOperator();
 			@Var BFunc Func = this.Generator.GetDefinedFunc(Op, Node.GetAstType(BinaryOperatorNode._Left), 2);
 			if(Func instanceof BFormFunc) {
-				@Var FormNode NewNode = new FormNode(Node.ParentNode, Node.SourceToken, (BFormFunc)Func);
+				@Var BunFormNode NewNode = new BunFormNode(Node.ParentNode, Node.SourceToken, (BFormFunc)Func);
 				NewNode.Append(Node.LeftNode());
 				NewNode.Append(Node.RightNode());
 				this.ReturnTypeNode(NewNode, Type);
@@ -143,7 +143,7 @@ public abstract class BTypeChecker extends BOperatorVisitor {
 			}
 			return Node;
 		}
-		if(Node.IsUntyped() || ContextType.IsVarType() || BLib._IsFlag(TypeCheckPolicy, BTypeChecker._NoCheckPolicy)) {
+		if(Node.IsUntyped() || ContextType.IsVarType() || BLib._IsFlag(TypeCheckPolicy, LibBunTypeChecker._NoCheckPolicy)) {
 			return Node;
 		}
 		if(Node.Type == ContextType || ContextType.Accept(Node.Type)) {
@@ -196,24 +196,24 @@ public abstract class BTypeChecker extends BOperatorVisitor {
 
 
 	public final BNode TryType(BNode Node, BType ContextType) {
-		return this.TypeCheck(Node, ContextType, BTypeChecker._NoCheckPolicy);
+		return this.TypeCheck(Node, ContextType, LibBunTypeChecker._NoCheckPolicy);
 	}
 
 	public final void TryTypeAt(BNode Node, int Index, BType ContextType) {
 		//		@Var ZNode N = Node.AST[Index];
-		Node.SetNode(Index, this.TypeCheck(Node.AST[Index], ContextType, BTypeChecker._NoCheckPolicy));
+		Node.SetNode(Index, this.TypeCheck(Node.AST[Index], ContextType, LibBunTypeChecker._NoCheckPolicy));
 		//		if(N != Node.AST[Index]) {
 		//			System.out.println("Node="+Node+"\n\tFrom="+N+"\n\tTo="+Node.AST[Index]);
 		//		}
 	}
 
 	public final BNode CheckType(BNode Node, BType ContextType) {
-		return this.TypeCheck(Node, ContextType, BTypeChecker._DefaultTypeCheckPolicy);
+		return this.TypeCheck(Node, ContextType, LibBunTypeChecker._DefaultTypeCheckPolicy);
 	}
 
 	public final void CheckTypeAt(BNode Node, int Index, BType ContextType) {
 		//		@Var ZNode N = Node.AST[Index];
-		Node.SetNode(Index, this.TypeCheck(Node.AST[Index], ContextType, BTypeChecker._DefaultTypeCheckPolicy));
+		Node.SetNode(Index, this.TypeCheck(Node.AST[Index], ContextType, LibBunTypeChecker._DefaultTypeCheckPolicy));
 		//		if(N != Node.AST[Index]) {
 		//			System.out.println("Node="+Node+"\n\tFrom="+N+"\n\tTo="+Node.AST[Index]);
 		//		}
@@ -258,7 +258,7 @@ public abstract class BTypeChecker extends BOperatorVisitor {
 	}
 
 	@Override public final void VisitTopLevelNode(TopLevelNode Node) {
-		Node.Perform(Node.GetNameSpace());
+		Node.Perform(Node.GetGamma());
 	}
 
 	@Override public final void VisitErrorNode(ErrorNode Node) {
@@ -345,7 +345,7 @@ public abstract class BTypeChecker extends BOperatorVisitor {
 	public final AbstractListNode CreateDefinedFuncCallNode(BNode ParentNode, BToken SourceToken, BFunc Func) {
 		@Var AbstractListNode FuncNode = null;
 		if(Func instanceof BFormFunc) {
-			FuncNode = new FormNode(ParentNode, SourceToken, (BFormFunc)Func);
+			FuncNode = new BunFormNode(ParentNode, SourceToken, (BFormFunc)Func);
 		}
 		else {
 			FuncNode = this.CreateFuncCallNode(ParentNode, SourceToken, Func.FuncName, Func.GetFuncType());

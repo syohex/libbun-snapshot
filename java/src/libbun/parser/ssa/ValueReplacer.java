@@ -2,13 +2,13 @@ package libbun.parser.ssa;
 
 import libbun.ast.BNode;
 import libbun.ast.expression.GetNameNode;
-import libbun.encode.AbstractGenerator;
+import libbun.encode.LibBunGenerator;
 
 public class ValueReplacer extends ZASTTransformer {
 	//private BNode OldNode;
 	private BNode NewNode;
-	private final AbstractGenerator Generator;
-	public ValueReplacer(AbstractGenerator Generator) {
+	private final LibBunGenerator Generator;
+	public ValueReplacer(LibBunGenerator Generator) {
 		this.SetTarget(null, null);
 		this.Generator = Generator;
 	}

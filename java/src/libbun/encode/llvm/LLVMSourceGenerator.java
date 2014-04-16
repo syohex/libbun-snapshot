@@ -43,7 +43,7 @@ import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.BunFuncNameNode;
-import libbun.ast.expression.FormNode;
+import libbun.ast.expression.BunFormNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
@@ -70,9 +70,9 @@ import libbun.ast.statement.BunWhileNode;
 import libbun.ast.unary.BunCastNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.encode.SourceBuilder;
+import libbun.encode.LibBunSourceBuilder;
 import libbun.encode.obsolete.OldSourceGenerator;
-import libbun.parser.BLogger;
+import libbun.parser.LibBunLogger;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
 import libbun.type.BGenericType;
@@ -319,7 +319,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 
 	private String GetBinaryOpcode(BinaryOperatorNode Node) {
 		if(Node.IsUntyped()) {
-			BLogger._LogError(Node.SourceToken, "Binary is untyped");
+			LibBunLogger._LogError(Node.SourceToken, "Binary is untyped");
 			return null;
 		}
 		@Var String Binary = Node.SourceToken.GetText();
@@ -389,12 +389,12 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 				return "xor";
 			}
 		}
-		BLogger._LogError(Node.SourceToken, "Unknown binary \"" + Binary + "\" for this type");
+		LibBunLogger._LogError(Node.SourceToken, "Unknown binary \"" + Binary + "\" for this type");
 		return null;
 	}
 	private String GetCompareOpCodeAndCondition(ComparatorNode Node) {
 		if(Node.IsUntyped()) {
-			BLogger._LogError(Node.SourceToken, "Comparator is untyped");
+			LibBunLogger._LogError(Node.SourceToken, "Comparator is untyped");
 			return null;
 		}
 		@Var String Comparator = Node.SourceToken.GetText();
@@ -446,7 +446,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 				return "fcmp oge";
 			}
 		}
-		BLogger._LogError(Node.SourceToken, "Unknown comparator \"" + Comparator + "\" for this type");
+		LibBunLogger._LogError(Node.SourceToken, "Unknown comparator \"" + Comparator + "\" for this type");
 		return null;
 	}
 	private String GetCastOpCode(BType BeforeType, BType AfterType) {
@@ -629,7 +629,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 			}
 		}
 		else {
-			BLogger._LogError(Node.SourceToken, "Unknown binary \"" + Node.SourceToken.GetText() + "\" for this type");
+			LibBunLogger._LogError(Node.SourceToken, "Unknown binary \"" + Node.SourceToken.GetText() + "\" for this type");
 		}
 	}
 
@@ -798,7 +798,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 	@Override public void VisitFuncCallNode(FuncCallNode Node) {
 		@Var BFuncType FuncType = Node.GetFuncType();
 		if(FuncType == null) {
-			BLogger._LogError(Node.SourceToken, "Can't interpret this function call");
+			LibBunLogger._LogError(Node.SourceToken, "Can't interpret this function call");
 			return;
 		}
 		@Var BType ReturnType = FuncType.GetReturnType();
@@ -1060,7 +1060,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 				return;
 			}
 			else if(!(InitNode instanceof ConstNode)) {
-				BLogger._LogError(Node.SourceToken, "Init value is not a constant");
+				LibBunLogger._LogError(Node.SourceToken, "Init value is not a constant");
 				return;
 			}
 
@@ -1083,7 +1083,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		}
 	}
 
-	@Override public void VisitFormNode(FormNode Node) {
+	@Override public void VisitFormNode(BunFormNode Node) {
 		@Var StringBuilder sb = new StringBuilder();
 
 		@Var String TempVar = "";
@@ -1371,7 +1371,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 				this.Source.AppendNewLine(TempVar);
 				this.Source.Append(" = ");
 				if(Node.RecvNode().IsUntyped()) {
-					BLogger._LogError(Node.SourceToken, "Unary \"-\" is untyped");
+					LibBunLogger._LogError(Node.SourceToken, "Unary \"-\" is untyped");
 				}
 				else if(Node.RecvNode().Type.IsIntType()) {
 					this.Source.Append("sub");
@@ -1382,7 +1382,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 					this.Source.Append(" double 0.0, ");
 				}
 				else {
-					BLogger._LogError(Node.SourceToken, "Unknown unary \"-\" for this type");
+					LibBunLogger._LogError(Node.SourceToken, "Unknown unary \"-\" for this type");
 				}
 				this.Source.Append(Recv);
 
@@ -1391,11 +1391,11 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		}
 		else if(Node.SourceToken.EqualsText('~')){
 			if(Node.RecvNode().IsUntyped()) {
-				BLogger._LogError(Node.SourceToken, "Unary \"~\" is untyped");
+				LibBunLogger._LogError(Node.SourceToken, "Unary \"~\" is untyped");
 				return;
 			}
 			else if(!Node.RecvNode().Type.IsIntType()){
-				BLogger._LogError(Node.SourceToken, "Unknown unary \"~\" for this type");
+				LibBunLogger._LogError(Node.SourceToken, "Unknown unary \"~\" for this type");
 				return;
 			}
 
@@ -1409,7 +1409,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 			this.CurrentScope.PushValue(TempVar);
 		}
 		else {
-			BLogger._LogError(Node.SourceToken, "Unknown unary \"" + Node.SourceToken.GetText() + "\" for this type");
+			LibBunLogger._LogError(Node.SourceToken, "Unknown unary \"" + Node.SourceToken.GetText() + "\" for this type");
 		}
 	}
 
@@ -1500,7 +1500,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 
 	@Override protected void VisitVarDeclNode(BunLetVarNode Node) {
 		//@Var SourceBuilder EntryBlockBuilder = this.Source.Pop();
-		@Var SourceBuilder VarDeclBuilder = this.Source; //FIXME
+		@Var LibBunSourceBuilder VarDeclBuilder = this.Source; //FIXME
 
 		@Var String VarName = Node.GetUniqueName(this);
 		this.CurrentScope.DefineLocalVar(VarName);

@@ -1,6 +1,6 @@
 package libbun.ast;
 
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 
 
 public abstract class LocalDefinedNode extends BNode {
@@ -9,7 +9,7 @@ public abstract class LocalDefinedNode extends BNode {
 		super(ParentNode, Size);
 	}
 
-	@Override public final void Accept(BVisitor Visitor) {
+	@Override public final void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitLocalDefinedNode(this);
 	}
 

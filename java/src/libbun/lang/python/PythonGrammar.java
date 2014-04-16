@@ -1,30 +1,30 @@
 package libbun.lang.python;
 
 import libbun.lang.bun.BunGrammar;
-import libbun.parser.BNameSpace;
+import libbun.parser.LibBunGamma;
 
 public class PythonGrammar {
-	public static void ImportGrammar(BNameSpace NameSpace) {
-		BunGrammar.ImportGrammar(NameSpace);
+	public static void ImportGrammar(LibBunGamma Gamma) {
+		BunGrammar.ImportGrammar(Gamma);
 
-		NameSpace.DefineExpression("None", BunGrammar.NullPattern);
-		NameSpace.DefineExpression("True", BunGrammar.TruePattern);
-		NameSpace.DefineExpression("False", BunGrammar.FalsePattern);
+		Gamma.DefineExpression("None", BunGrammar.NullPattern);
+		Gamma.DefineExpression("True", BunGrammar.TruePattern);
+		Gamma.DefineExpression("False", BunGrammar.FalsePattern);
 
-		NameSpace.DefineExpression("def", new PythonFunctionPatternFunction());
-		NameSpace.DefineExpression("if", new PythonIfPatternFunction());
-		NameSpace.DefineExpression("while", new PythonWhilePatternFunction());
-		NameSpace.DefineExpression("$Block$", new PythonBlockPatternFunction());
-		NameSpace.DefineExpression("$Statement$", new PythonStatementPatternFunction());
-		NameSpace.DefineExpression("$Param$", new PythonParamPatternFunction());
+		Gamma.DefineExpression("def", new PythonFunctionPatternFunction());
+		Gamma.DefineExpression("if", new PythonIfPatternFunction());
+		Gamma.DefineExpression("while", new PythonWhilePatternFunction());
+		Gamma.DefineExpression("$Block$", new PythonBlockPatternFunction());
+		Gamma.DefineExpression("$Statement$", new PythonStatementPatternFunction());
+		Gamma.DefineExpression("$Param$", new PythonParamPatternFunction());
 
-		NameSpace.DefineRightExpression("and", BunGrammar.AndPattern);
-		NameSpace.DefineRightExpression("or", BunGrammar.OrPattern);
+		Gamma.DefineRightExpression("and", BunGrammar.AndPattern);
+		Gamma.DefineRightExpression("or", BunGrammar.OrPattern);
 		//TODO is, is not
 
-		NameSpace.AppendTokenFunc("#", new PythonCommentFunction());
+		Gamma.AppendTokenFunc("#", new PythonCommentFunction());
 
 
-		NameSpace.Generator.LangInfo.AppendGrammarInfo("python");
+		Gamma.Generator.LangInfo.AppendGrammarInfo("python");
 	}
 }

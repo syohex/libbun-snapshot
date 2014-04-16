@@ -24,7 +24,7 @@
 
 package libbun.parser;
 
-public abstract class BConst {
+public abstract class LibBunConst {
 	public final static String  ProgName  = "LibBun";
 	public final static String  CodeName  = "Reference Implementation of D-Script";
 	public final static int     MajorVersion = 0;

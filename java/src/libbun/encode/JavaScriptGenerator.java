@@ -84,8 +84,8 @@ import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.parser.BLangInfo;
-import libbun.parser.BLogger;
+import libbun.parser.LibBunLangInfo;
+import libbun.parser.LibBunLogger;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
 import libbun.type.BType;
@@ -93,10 +93,10 @@ import libbun.util.BLib;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
-public class JavaScriptGenerator extends SourceGenerator {
+public class JavaScriptGenerator extends LibBunSourceGenerator {
 
 	public JavaScriptGenerator() {
-		super(new BLangInfo("JavaScript-1.4", "js"));
+		super(new LibBunLangInfo("JavaScript-1.4", "js"));
 		this.SetNativeType(BType.BooleanType, "Boolean");
 		this.SetNativeType(BType.IntType, "Number");
 		this.SetNativeType(BType.FloatType, "Number");
@@ -261,7 +261,7 @@ public class JavaScriptGenerator extends SourceGenerator {
 			this.GenerateExpression(ErrorNode.ErrorNode);
 		}
 		else {
-			@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
+			@Var String Message = LibBunLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 			this.Source.AppendWhiteSpace();
 			this.Source.Append("(function(){ throw new Error(");
 			this.Source.Append(BLib._QuoteString(Message));
@@ -430,7 +430,7 @@ public class JavaScriptGenerator extends SourceGenerator {
 	@Override public void VisitGetNameNode(GetNameNode Node) {
 		@Var BNode ResolvedNode = Node.ResolvedNode;
 		if(ResolvedNode == null && !this.LangInfo.AllowUndefinedSymbol) {
-			BLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GivenName);
+			LibBunLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GivenName);
 		}
 		this.Source.Append(Node.GetUniqueName(this));
 	}

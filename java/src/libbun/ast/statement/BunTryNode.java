@@ -26,7 +26,7 @@ package libbun.ast.statement;
 
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 import libbun.util.Var;
 
 public final class BunTryNode extends BNode {
@@ -83,7 +83,7 @@ public final class BunTryNode extends BNode {
 	}
 
 
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitTryNode(this);
 	}
 

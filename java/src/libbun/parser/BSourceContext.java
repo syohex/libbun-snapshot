@@ -4,7 +4,7 @@ import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
 
-public final class BSourceContext extends BSource {
+public final class BSourceContext extends LibBunSource {
 
 	@BField int SourcePosition = 0;
 	public BSourceContext(String FileName, int LineNumber, String Source, BTokenContext TokenContext) {
@@ -65,10 +65,10 @@ public final class BSourceContext extends BSource {
 	public final void Tokenize(String PatternName, int StartIndex, int EndIndex) {
 		this.SourcePosition = EndIndex;
 		if(StartIndex <= EndIndex && EndIndex <= this.SourceText.length()) {
-			@Var BSyntax Pattern = this.TokenContext.NameSpace.GetSyntaxPattern(PatternName);
+			@Var LibBunSyntax Pattern = this.TokenContext.Gamma.GetSyntaxPattern(PatternName);
 			if(Pattern == null) {
 				@Var BToken Token = new BToken(this, StartIndex, EndIndex);
-				BLogger._LogInfo(Token, "unregistered token pattern: " + PatternName);
+				LibBunLogger._LogInfo(Token, "unregistered token pattern: " + PatternName);
 				this.TokenContext.TokenList.add(Token);
 			}
 			else {
@@ -80,9 +80,9 @@ public final class BSourceContext extends BSource {
 
 	public final boolean IsDefinedSyntax(int StartIndex, int EndIndex) {
 		if(EndIndex < this.SourceText.length()) {
-			@Var BNameSpace NameSpace = this.TokenContext.NameSpace;
+			@Var LibBunGamma Gamma = this.TokenContext.Gamma;
 			@Var String Token = this.SourceText.substring(StartIndex, EndIndex);
-			@Var BSyntax Pattern = NameSpace.GetRightSyntaxPattern(Token);
+			@Var LibBunSyntax Pattern = Gamma.GetRightSyntaxPattern(Token);
 			if(Pattern != null) {
 				return true;
 			}
@@ -99,7 +99,7 @@ public final class BSourceContext extends BSource {
 		this.Tokenize(StartIndex, EndIndex-1);
 	}
 
-	private final void ApplyTokenFunc(BTokenFuncChain TokenFunc) {
+	private final void ApplyTokenFunc(LibBunTokenFuncChain TokenFunc) {
 		@Var int RollbackPosition = this.SourcePosition;
 		while(TokenFunc != null) {
 			this.SourcePosition = RollbackPosition;
@@ -116,7 +116,7 @@ public final class BSourceContext extends BSource {
 		@Var int CheckPosition = this.SourcePosition;
 		while(this.HasChar()) {
 			@Var int CharCode = this.GetCharCode();
-			@Var BTokenFuncChain TokenFunc = this.TokenContext.NameSpace.GetTokenFunc(CharCode);
+			@Var LibBunTokenFuncChain TokenFunc = this.TokenContext.Gamma.GetTokenFunc(CharCode);
 			this.ApplyTokenFunc(TokenFunc);
 			if(this.TokenContext.TokenList.size() > TokenSize) {
 				break;

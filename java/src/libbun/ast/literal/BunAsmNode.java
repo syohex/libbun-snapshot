@@ -1,7 +1,7 @@
 package libbun.ast.literal;
 
 import libbun.ast.BNode;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.Var;
@@ -42,7 +42,7 @@ public class BunAsmNode extends BNode {
 		return this.FormText;
 	}
 
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitAsmNode(this);
 	}
 

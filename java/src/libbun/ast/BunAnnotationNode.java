@@ -23,7 +23,7 @@
 // **************************************************************************
 
 package libbun.ast;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 import libbun.util.BField;
 
 public abstract class BunAnnotationNode extends BNode {
@@ -43,7 +43,7 @@ public abstract class BunAnnotationNode extends BNode {
 	//		this.AnnotatedNode = this.SetChild(Node);
 	//	}
 
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		this.AnnotatedNode.Accept(Visitor);
 	}
 }

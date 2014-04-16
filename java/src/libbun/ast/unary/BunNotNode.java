@@ -25,8 +25,8 @@
 package libbun.ast.unary;
 
 import libbun.ast.BNode;
-import libbun.parser.BOperatorVisitor;
-import libbun.parser.BVisitor;
+import libbun.parser.BunVisitor;
+import libbun.parser.LibBunVisitor;
 
 public class BunNotNode extends UnaryOperatorNode {
 	public BunNotNode(BNode ParentNode) {
@@ -39,9 +39,9 @@ public class BunNotNode extends UnaryOperatorNode {
 	@Override public final String GetOperator() {
 		return "!";
 	}
-	@Override public void Accept(BVisitor Visitor) {
-		if(Visitor instanceof BOperatorVisitor) {
-			((BOperatorVisitor)Visitor).VisitNotNode(this);
+	@Override public void Accept(LibBunVisitor Visitor) {
+		if(Visitor instanceof BunVisitor) {
+			((BunVisitor)Visitor).VisitNotNode(this);
 		}
 		else {
 			Visitor.VisitUnaryNode(this);

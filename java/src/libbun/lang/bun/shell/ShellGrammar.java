@@ -7,10 +7,10 @@ import libbun.ast.EmptyNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.literal.BunStringNode;
-import libbun.parser.BNameSpace;
+import libbun.parser.LibBunGamma;
 import libbun.parser.BPatternToken;
 import libbun.parser.BSourceContext;
-import libbun.parser.BSyntax;
+import libbun.parser.LibBunSyntax;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
 import libbun.type.BType;
@@ -46,7 +46,7 @@ class CommandSymbolTokenFunction extends BTokenFunction {
 			symbolBuilder.append(ch);
 			SourceContext.MoveNext();
 		}
-		if(SourceContext.TokenContext.NameSpace.GetSymbol(ShellUtils._ToCommandSymbol(symbolBuilder.toString())) != null) {
+		if(SourceContext.TokenContext.Gamma.GetSymbol(ShellUtils._ToCommandSymbol(symbolBuilder.toString())) != null) {
 			SourceContext.Tokenize(CommandSymbolPatternFunction._PatternName, startIndex, SourceContext.GetPosition());
 			return true;
 		}
@@ -97,15 +97,15 @@ class ImportCommandPatternFunction extends BMatchFunction {
 		return CommandToken;
 	}
 
-	private boolean FoundDuplicatedSymbol(BNameSpace NameSpace, String Command) {
-		@Var BSyntax Syntax = NameSpace.GetSyntaxPattern(Command);
+	private boolean FoundDuplicatedSymbol(LibBunGamma Gamma, String Command) {
+		@Var LibBunSyntax Syntax = Gamma.GetSyntaxPattern(Command);
 		if(Syntax != null) {
 			if(BLib.DebugMode) {
 				System.err.println("found duplicated syntax pattern: " + Syntax);
 			}
 			return true;
 		}
-		if(NameSpace.GetSymbol(ShellUtils._ToCommandSymbol(Command)) != null) {
+		if(Gamma.GetSymbol(ShellUtils._ToCommandSymbol(Command)) != null) {
 			if(BLib.DebugMode) {
 				System.err.println("found duplicated symbol: " + Command);
 			}
@@ -120,7 +120,7 @@ class ImportCommandPatternFunction extends BMatchFunction {
 			return;
 		}
 		@Var String CommandPath = this.ResolveHome(CommandToken.GetText());
-		@Var BNameSpace NameSpace = TokenContext.NameSpace;
+		@Var LibBunGamma Gamma = TokenContext.Gamma;
 		@Var int loc = CommandPath.lastIndexOf('/');
 		@Var String Command = CommandPath;
 		if(loc != -1) {
@@ -138,12 +138,12 @@ class ImportCommandPatternFunction extends BMatchFunction {
 			}
 			CommandPath = FullPath;
 		}
-		if(this.FoundDuplicatedSymbol(NameSpace, Command)) {
+		if(this.FoundDuplicatedSymbol(Gamma, Command)) {
 			return;
 		}
 		BunLetVarNode Node = new BunLetVarNode(ParentNode, BunLetVarNode._IsReadOnly, BType.StringType, Command);
 		Node.SetNode(BunLetVarNode._InitValue, new BunStringNode(ParentNode, null, CommandPath));
-		NameSpace.SetSymbol(ShellUtils._ToCommandSymbol(Command), Node);
+		Gamma.SetSymbol(ShellUtils._ToCommandSymbol(Command), Node);
 	}
 
 	@Override
@@ -173,7 +173,7 @@ class CommandSymbolPatternFunction extends BMatchFunction {
 
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		@Var BToken CommandToken = TokenContext.GetToken(BTokenContext._MoveNext);
-		@Var BunLetVarNode SymbolNode = ParentNode.GetNameSpace().GetSymbol(ShellUtils._ToCommandSymbol(CommandToken.GetText()));
+		@Var BunLetVarNode SymbolNode = ParentNode.GetGamma().GetSymbol(ShellUtils._ToCommandSymbol(CommandToken.GetText()));
 		if(SymbolNode == null || !(SymbolNode.InitValueNode() instanceof BunStringNode)) {
 			return new ErrorNode(ParentNode, CommandToken, "undefined command symbol");
 		}
@@ -425,23 +425,23 @@ public class ShellGrammar {
 	public final static BMatchFunction PrefixOptionPattern = new PrefixOptionPatternFunction();
 	public final static BMatchFunction SuffixOptionPattern = new SuffixOptionPatternFunction();
 
-	public static void ImportGrammar(BNameSpace NameSpace) {
-		NameSpace.AppendTokenFunc("#", ShellStyleCommentToken);
-		NameSpace.AppendTokenFunc("Aa_", CommandSymbolToken);
-		NameSpace.AppendTokenFunc("1", CommandSymbolToken);
+	public static void ImportGrammar(LibBunGamma Gamma) {
+		Gamma.AppendTokenFunc("#", ShellStyleCommentToken);
+		Gamma.AppendTokenFunc("Aa_", CommandSymbolToken);
+		Gamma.AppendTokenFunc("1", CommandSymbolToken);
 
-		NameSpace.DefineStatement("import", ImportPattern);
-		NameSpace.DefineExpression("command", ImportCommandPattern);
-		NameSpace.DefineExpression(ImportCommandPatternFunction._PatternName, ImportCommandPattern);
-		NameSpace.DefineExpression(CommandSymbolPatternFunction._PatternName, CommandSymbolPattern);
-		NameSpace.DefineExpression(SimpleArgumentPatternFunction._PatternName, SimpleArgumentPattern);
-		NameSpace.DefineExpression(RedirectPatternFunction._PatternName, RedirectPattern);
-		NameSpace.DefineExpression(ShellUtils._timeout, PrefixOptionPattern);
-		NameSpace.DefineExpression(ShellUtils._trace, PrefixOptionPattern);
-		NameSpace.DefineExpression(PrefixOptionPatternFunction._PatternName, PrefixOptionPattern);
-		NameSpace.DefineExpression(SuffixOptionPatternFunction._PatternName, SuffixOptionPattern);
+		Gamma.DefineStatement("import", ImportPattern);
+		Gamma.DefineExpression("command", ImportCommandPattern);
+		Gamma.DefineExpression(ImportCommandPatternFunction._PatternName, ImportCommandPattern);
+		Gamma.DefineExpression(CommandSymbolPatternFunction._PatternName, CommandSymbolPattern);
+		Gamma.DefineExpression(SimpleArgumentPatternFunction._PatternName, SimpleArgumentPattern);
+		Gamma.DefineExpression(RedirectPatternFunction._PatternName, RedirectPattern);
+		Gamma.DefineExpression(ShellUtils._timeout, PrefixOptionPattern);
+		Gamma.DefineExpression(ShellUtils._trace, PrefixOptionPattern);
+		Gamma.DefineExpression(PrefixOptionPatternFunction._PatternName, PrefixOptionPattern);
+		Gamma.DefineExpression(SuffixOptionPatternFunction._PatternName, SuffixOptionPattern);
 
-		NameSpace.Generator.LangInfo.AppendGrammarInfo("shell");
+		Gamma.Generator.LangInfo.AppendGrammarInfo("shell");
 	}
 }
 

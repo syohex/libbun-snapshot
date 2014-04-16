@@ -56,13 +56,13 @@ import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.encode.SourceGenerator;
-import libbun.parser.BLangInfo;
+import libbun.encode.LibBunSourceGenerator;
+import libbun.parser.LibBunLangInfo;
 
-public class PerlGenerator extends SourceGenerator {
+public class PerlGenerator extends LibBunSourceGenerator {
 
 	public PerlGenerator() {
-		super(new BLangInfo("Perl-5.16","pl"));
+		super(new LibBunLangInfo("Perl-5.16","pl"));
 	}
 
 	@Override protected void GenerateStatementEnd(BNode Node) {

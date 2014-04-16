@@ -26,7 +26,7 @@ package libbun.ast.binary;
 
 import libbun.ast.BNode;
 import libbun.lang.bun.BunPrecedence;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 import libbun.type.BType;
 
 //E.g., $ExprNode instanceof TypeInfo
@@ -51,7 +51,7 @@ public final class BInstanceOfNode extends BinaryOperatorNode {
 		return this.AST[BInstanceOfNode._TypeInfo].Type;
 	}
 
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitInstanceOfNode(this);
 	}
 

@@ -35,13 +35,13 @@ import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.literal.BunNullNode;
 import libbun.ast.literal.DefaultValueNode;
-import libbun.parser.BLangInfo;
-import libbun.parser.BLogger;
-import libbun.parser.BNameSpace;
-import libbun.parser.BOperatorVisitor;
+import libbun.parser.LibBunLangInfo;
+import libbun.parser.LibBunLogger;
+import libbun.parser.LibBunGamma;
+import libbun.parser.BunVisitor;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
-import libbun.parser.BTypeChecker;
+import libbun.parser.LibBunTypeChecker;
 import libbun.type.BClassType;
 import libbun.type.BFormFunc;
 import libbun.type.BFunc;
@@ -56,26 +56,26 @@ import libbun.util.Nullable;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
-public abstract class AbstractGenerator extends BOperatorVisitor {
+public abstract class LibBunGenerator extends BunVisitor {
 	@BField public BMap<String>        ImportedLibraryMap = new BMap<String>(null);
 	@BField public BMap<String>        SymbolMap = new BMap<String>(null);
 	@BField private final BMap<BFunc>  DefinedFuncMap = new BMap<BFunc>(null);
 
-	@BField public final BNameSpace      RootNameSpace;
-	@BField public BLogger               Logger;
-	@BField public BTypeChecker          TypeChecker;
-	@BField public BLangInfo             LangInfo;
+	@BField public final LibBunGamma      RootGamma;
+	@BField public LibBunLogger               Logger;
+	@BField public LibBunTypeChecker          TypeChecker;
+	@BField public LibBunLangInfo             LangInfo;
 	@BField protected String             TopLevelSymbol = null;
 	@BField private int                  UniqueNumber = 0;
 
-	protected AbstractGenerator(BLangInfo LangInfo) {
-		this.RootNameSpace = new BNameSpace(this, null);
-		this.Logger        = new BLogger();
+	protected LibBunGenerator(LibBunLangInfo LangInfo) {
+		this.RootGamma = new LibBunGamma(this, null);
+		this.Logger        = new LibBunLogger();
 		this.LangInfo      = LangInfo;
 		this.TypeChecker   = null;
 	}
 
-	public final void SetTypeChecker(BTypeChecker TypeChecker) {
+	public final void SetTypeChecker(LibBunTypeChecker TypeChecker) {
 		this.TypeChecker = TypeChecker;
 	}
 
@@ -215,13 +215,13 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 		@Var BFunc Func = this.GetDefinedFunc(FuncName, FuncType);
 		if(Func != null) {
 			if(!FuncType.Equals(Func.GetFuncType())) {
-				BLogger._LogError(Node.SourceToken, "function has been defined diffrently: " + Func.GetFuncType());
+				LibBunLogger._LogError(Node.SourceToken, "function has been defined diffrently: " + Func.GetFuncType());
 				return null;
 			}
 			if(Func instanceof BPrototype) {
 				return (BPrototype)Func;
 			}
-			BLogger._LogError(Node.SourceToken, "function has been defined as macro" + Func);
+			LibBunLogger._LogError(Node.SourceToken, "function has been defined as macro" + Func);
 			return null;
 		}
 		@Var BPrototype	Proto= new BPrototype(0, FuncName, FuncType, Node.SourceToken);
@@ -330,7 +330,7 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 		this.EnableVisitor();
 		this.TopLevelSymbol = null;
 		if(Node instanceof TopLevelNode) {
-			((TopLevelNode)Node).Perform(this.RootNameSpace);
+			((TopLevelNode)Node).Perform(this.RootGamma);
 		}
 		else {
 			if(this.TypeChecker != null) {
@@ -356,8 +356,8 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 
 	public final boolean OldLoadScript(String ScriptText, String FileName, int LineNumber) {
 		@Var boolean Result = true;
-		@Var BunBlockNode TopBlockNode = new BunBlockNode(null, this.RootNameSpace);
-		@Var BTokenContext TokenContext = new BTokenContext(this, this.RootNameSpace, FileName, LineNumber, ScriptText);
+		@Var BunBlockNode TopBlockNode = new BunBlockNode(null, this.RootGamma);
+		@Var BTokenContext TokenContext = new BTokenContext(this, this.RootGamma, FileName, LineNumber, ScriptText);
 		TokenContext.SkipEmptyStatement();
 		@Var BToken SkipToken = TokenContext.GetToken();
 		while(TokenContext.HasNext()) {
@@ -403,8 +403,8 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 
 	public final boolean LoadScript(String ScriptText, String FileName, int LineNumber) {
 		@Var boolean Result = true;
-		@Var BunBlockNode TopBlockNode = new BunBlockNode(null, this.RootNameSpace);
-		@Var BTokenContext TokenContext = new BTokenContext(this, this.RootNameSpace, FileName, LineNumber, ScriptText);
+		@Var BunBlockNode TopBlockNode = new BunBlockNode(null, this.RootGamma);
+		@Var BTokenContext TokenContext = new BTokenContext(this, this.RootGamma, FileName, LineNumber, ScriptText);
 		TokenContext.SkipEmptyStatement();
 		@Var BToken SkipToken = null;
 		while(TokenContext.HasNext()) {
@@ -432,7 +432,7 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 	public final boolean LoadFile(String FileName, @Nullable BToken SourceToken) {
 		@Var String ScriptText = BLib._LoadTextFile(FileName);
 		if(ScriptText == null) {
-			BLogger._LogErrorExit(SourceToken, "file not found: " + FileName);
+			LibBunLogger._LogErrorExit(SourceToken, "file not found: " + FileName);
 			return false;
 		}
 		return this.LoadScript(ScriptText, FileName, 1);
@@ -445,7 +445,7 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 			@Var String Path = this.LangInfo.GetLibPath(LibName);
 			@Var String Script = BLib._LoadTextFile(Path);
 			if(Script == null) {
-				BLogger._LogErrorExit(SourceToken, "library not found: " + LibName + " as " + Path);
+				LibBunLogger._LogErrorExit(SourceToken, "library not found: " + LibName + " as " + Path);
 				return false;
 			}
 			@Var boolean Result = this.LoadScript(Script, Path, 1);
@@ -466,8 +466,8 @@ public abstract class AbstractGenerator extends BOperatorVisitor {
 	}
 
 	//	public final String Translate(String ScriptText, String FileName, int LineNumber) {
-	//		@Var ZBlockNode TopBlockNode = new ZBlockNode(this.Generator.RootNameSpace);
-	//		@Var ZTokenContext TokenContext = new ZTokenContext(this.Generator, this.Generator.RootNameSpace, FileName, LineNumber, ScriptText);
+	//		@Var ZBlockNode TopBlockNode = new ZBlockNode(this.Generator.RootGamma);
+	//		@Var ZTokenContext TokenContext = new ZTokenContext(this.Generator, this.Generator.RootGamma, FileName, LineNumber, ScriptText);
 	//		TokenContext.SkipEmptyStatement();
 	//		@Var ZToken SkipToken = TokenContext.GetToken();
 	//		while(TokenContext.HasNext()) {

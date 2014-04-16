@@ -26,7 +26,7 @@ package libbun.ast.literal;
 
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 import libbun.util.Var;
 
 public final class BunMapLiteralNode extends AbstractListNode {
@@ -43,7 +43,7 @@ public final class BunMapLiteralNode extends AbstractListNode {
 		}
 		return null;
 	}
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitMapLiteralNode(this);
 	}
 }

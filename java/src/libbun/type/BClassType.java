@@ -112,7 +112,7 @@ public class BClassType extends BType {
 		return ClassField;
 	}
 
-	//	public ZNode CheckAllFields(ZNameSpace NameSpace) {
+	//	public ZNode CheckAllFields(ZGamma Gamma) {
 	//		// TODO Auto-generated method stub
 	//
 	//		return null;  // if no error

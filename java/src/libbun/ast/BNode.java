@@ -29,10 +29,10 @@ import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.GetNameNode;
 import libbun.ast.statement.BunWhileNode;
-import libbun.parser.BNameSpace;
+import libbun.parser.LibBunGamma;
 import libbun.parser.BToken;
-import libbun.parser.BTypeChecker;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunTypeChecker;
+import libbun.parser.LibBunVisitor;
 import libbun.type.BFuncType;
 import libbun.type.BType;
 import libbun.util.BField;
@@ -238,10 +238,10 @@ public abstract class BNode {
 		return null;
 	}
 
-	public final BNameSpace GetNameSpace() {
+	public final LibBunGamma GetGamma() {
 		@Var int SafeCount = 0;
 		@Var BunBlockNode BlockNode = this.GetScopeBlockNode();
-		while(BlockNode.NullableNameSpace == null) {
+		while(BlockNode.NullableGamma == null) {
 			@Var BunBlockNode ParentBlockNode = BlockNode.ParentNode.GetScopeBlockNode();
 			BlockNode = ParentBlockNode;
 			if(BLib.DebugMode) {
@@ -249,14 +249,14 @@ public abstract class BNode {
 				assert(SafeCount < 100);
 			}
 		}
-		return BlockNode.NullableNameSpace;
+		return BlockNode.NullableGamma;
 	}
 
 	public final boolean IsErrorNode() {
 		return (this instanceof ErrorNode);
 	}
 
-	public abstract void Accept(BVisitor Visitor);
+	public abstract void Accept(LibBunVisitor Visitor);
 
 	public final boolean IsUntyped() {
 		return !(this.Type instanceof BFuncType) && this.Type.IsVarType();
@@ -280,19 +280,19 @@ public abstract class BNode {
 	}
 
 	// Convenient short cut interface
-	public final GetNameNode SetNewGetNameNode(int Index, BTypeChecker Typer, String Name, BType Type) {
+	public final GetNameNode SetNewGetNameNode(int Index, LibBunTypeChecker Typer, String Name, BType Type) {
 		@Var GetNameNode Node = Typer.CreateGetNameNode(null, Name, Type);
 		this.SetNode(Index, Node);
 		return Node;
 	}
 
-	public final BunBlockNode SetNewBlockNode(int Index, BTypeChecker Typer) {
+	public final BunBlockNode SetNewBlockNode(int Index, LibBunTypeChecker Typer) {
 		@Var BunBlockNode Node = Typer.CreateBlockNode(null);
 		this.SetNode(Index, Node);
 		return Node;
 	}
 
-	public final BunWhileNode SetNewWhileNode(int Index, BTypeChecker Typer) {
+	public final BunWhileNode SetNewWhileNode(int Index, LibBunTypeChecker Typer) {
 		@Var BunWhileNode Node = new BunWhileNode(null);
 		this.SetNode(Index, Node);
 		return Node;

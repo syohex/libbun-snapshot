@@ -26,9 +26,9 @@ package libbun.ast.expression;
 
 import libbun.ast.BNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.encode.AbstractGenerator;
+import libbun.encode.LibBunGenerator;
 import libbun.parser.BToken;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.Nullable;
@@ -56,11 +56,11 @@ public class GetNameNode extends BNode {
 		return this.DupField(TypedClone, NewNode);
 	}
 
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitGetNameNode(this);
 	}
 
-	public final String GetUniqueName(AbstractGenerator Generator) {
+	public final String GetUniqueName(LibBunGenerator Generator) {
 		if(this.ResolvedNode != null) {
 			return this.ResolvedNode.GetUniqueName(Generator);
 		}

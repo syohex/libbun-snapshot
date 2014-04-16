@@ -51,7 +51,7 @@ public class BashGenerator extends OldSourceGenerator {
 	//		this.ParameterDelimiter = "";
 	//	}
 	//
-	//	@Override public void InitContext(ZenNameSpace Context) {
+	//	@Override public void InitContext(ZenGamma Context) {
 	//		super.InitContext(Context);
 	//		this.WriteLineHeader("#!/bin/bash");
 	//		this.WriteLineCode(this.LineFeed + "source $GREENTEA_HOME/include/bash/ZenPlus.sh" + this.LineFeed);

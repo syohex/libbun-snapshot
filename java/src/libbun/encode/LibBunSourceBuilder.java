@@ -30,20 +30,20 @@ import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
 
-public final class SourceBuilder {
+public final class LibBunSourceBuilder {
 	@BField public BArray<String> SourceList = new BArray<String>(new String[128]);
-	@BField SourceBuilder Parent;
-	@BField SourceGenerator Template;
+	@BField LibBunSourceBuilder Parent;
+	@BField LibBunSourceGenerator Template;
 	@BField int IndentLevel = 0;
 	@BField String CurrentIndentString = "";
 	@BField char LastChar = '\n';
 
-	public SourceBuilder(SourceGenerator Template, SourceBuilder Parent) {
+	public LibBunSourceBuilder(LibBunSourceGenerator Template, LibBunSourceBuilder Parent) {
 		this.Template = Template;
 		this.Parent = Parent;
 	}
 
-	public final SourceBuilder Pop() {
+	public final LibBunSourceBuilder Pop() {
 		this.AppendLineFeed();
 		return this.Parent;
 	}

@@ -38,15 +38,15 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 
 import libbun.ast.BNode;
-import libbun.encode.AbstractGenerator;
+import libbun.encode.LibBunGenerator;
 import libbun.encode.BunGenerator;
-import libbun.encode.SourceBuilder;
+import libbun.encode.LibBunSourceBuilder;
 import libbun.encode.jvm.JavaTypeTable;
 import libbun.lang.bun.BunTypeSafer;
-import libbun.parser.BNameSpace;
+import libbun.parser.LibBunGamma;
 import libbun.parser.BSourceContext;
 import libbun.parser.BTokenContext;
-import libbun.parser.BTokenFuncChain;
+import libbun.parser.LibBunTokenFuncChain;
 import libbun.type.BType;
 
 
@@ -212,8 +212,8 @@ public class BLib {
 		return UnicodeChar;
 	}
 
-	public final static BTokenFuncChain[] _NewTokenMatrix() {
-		return new BTokenFuncChain[MaxSizeOfChars];
+	public final static LibBunTokenFuncChain[] _NewTokenMatrix() {
+		return new LibBunTokenFuncChain[MaxSizeOfChars];
 	}
 
 
@@ -497,11 +497,11 @@ public class BLib {
 	}
 
 
-	public static String _SourceBuilderToString(SourceBuilder Builder) {
+	public static String _SourceBuilderToString(LibBunSourceBuilder Builder) {
 		return BLib._SourceBuilderToString(Builder, 0, Builder.SourceList.size());
 	}
 
-	public static String _SourceBuilderToString(SourceBuilder Builder, int BeginIndex, int EndIndex) {
+	public static String _SourceBuilderToString(LibBunSourceBuilder Builder, int BeginIndex, int EndIndex) {
 		StringBuilder builder = new StringBuilder();
 		for(int i = BeginIndex; i < EndIndex; i = i + 1) {
 			builder.append(Builder.SourceList.ArrayValues[i]);
@@ -509,11 +509,11 @@ public class BLib {
 		return builder.toString();
 	}
 
-	public final static void _WriteTo(String FileName, BArray<SourceBuilder> List) {
+	public final static void _WriteTo(String FileName, BArray<LibBunSourceBuilder> List) {
 		if(FileName == null) {
 			@Var int i = 0;
 			while(i < List.size()) {
-				@Var SourceBuilder Builder = List.ArrayValues[i];
+				@Var LibBunSourceBuilder Builder = List.ArrayValues[i];
 				System.out.println(Builder.toString());
 				Builder.Clear();
 				i = i + 1;
@@ -524,7 +524,7 @@ public class BLib {
 				BufferedWriter w = new BufferedWriter(new FileWriter(FileName));
 				@Var int i = 0;
 				while(i < List.size()) {
-					@Var SourceBuilder Builder = List.ArrayValues[i];
+					@Var LibBunSourceBuilder Builder = List.ArrayValues[i];
 					w.write(Builder.toString());
 					w.write("\n\n");
 					Builder.Clear();
@@ -548,11 +548,11 @@ public class BLib {
 		ParserMap.put("py", libbun.lang.python.PythonGrammar.class);
 	}
 
-	public final static boolean _ImportGrammar(BNameSpace NameSpace, String ClassName) {
+	public final static boolean _ImportGrammar(LibBunGamma Gamma, String ClassName) {
 		try {
 			@Var Class<?> NativeClass =  ParserMap.GetOrNull(ClassName.toLowerCase());
-			@Var Method LoaderMethod = NativeClass.getMethod("ImportGrammar", BNameSpace.class);
-			LoaderMethod.invoke(null, NameSpace);
+			@Var Method LoaderMethod = NativeClass.getMethod("ImportGrammar", LibBunGamma.class);
+			LoaderMethod.invoke(null, Gamma);
 			return true;
 		} catch (Exception e) { // naming
 			BLib._FixMe(e);
@@ -602,14 +602,14 @@ public class BLib {
 		GenMap.put(".bun", libbun.lang.bun.BunGrammar.class);
 	}
 
-	public final static AbstractGenerator _LoadGenerator(String ClassName, String OutputFile) {
+	public final static LibBunGenerator _LoadGenerator(String ClassName, String OutputFile) {
 		if (ClassName != null) {
 			try {
 				Class<?> GeneratorClass = GenMap.GetOrNull(ClassName.toLowerCase());
 				if(GeneratorClass == null) {
 					GeneratorClass = Class.forName(ClassName);
 				}
-				return (AbstractGenerator) GeneratorClass.newInstance();
+				return (LibBunGenerator) GeneratorClass.newInstance();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -618,9 +618,9 @@ public class BLib {
 		return new BunGenerator();
 	}
 
-	public final static AbstractGenerator _InitGenerator(@Nullable String ClassName, String GrammarClass) {
-		@Var AbstractGenerator Generator = BLib._LoadGenerator(ClassName, null);
-		BLib._ImportGrammar(Generator.RootNameSpace, GrammarClass);
+	public final static LibBunGenerator _InitGenerator(@Nullable String ClassName, String GrammarClass) {
+		@Var LibBunGenerator Generator = BLib._LoadGenerator(ClassName, null);
+		BLib._ImportGrammar(Generator.RootGamma, GrammarClass);
 		Generator.SetTypeChecker(new BunTypeSafer(Generator));
 		Generator.RequireLibrary("common", null);
 		return Generator;

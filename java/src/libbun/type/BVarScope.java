@@ -2,22 +2,22 @@ package libbun.type;
 
 import libbun.ast.BNode;
 import libbun.ast.decl.BunFunctionNode;
-import libbun.parser.BLogger;
+import libbun.parser.LibBunLogger;
 import libbun.parser.BToken;
-import libbun.parser.BTypeChecker;
+import libbun.parser.LibBunTypeChecker;
 import libbun.util.BArray;
 import libbun.util.BField;
 import libbun.util.Var;
 
 public final class BVarScope {
 	@BField public BVarScope Parent;
-	@BField public BLogger Logger;
+	@BField public LibBunLogger Logger;
 	@BField BArray<BVarType> VarList;
 	@BField int TypedNodeCount = 0;
 	@BField int VarNodeCount = 0;
 	@BField int UnresolvedSymbolCount = 0;
 
-	public BVarScope(BVarScope Parent, BLogger Logger, BArray<BVarType> VarList) {
+	public BVarScope(BVarScope Parent, LibBunLogger Logger, BArray<BVarType> VarList) {
 		this.Parent = Parent;
 		this.Logger = Logger;
 		this.VarList = VarList;
@@ -86,7 +86,7 @@ public final class BVarScope {
 	//		return false;
 	//	}
 
-	public final void TypeCheckFuncBlock(BTypeChecker TypeSafer, BunFunctionNode FunctionNode) {
+	public final void TypeCheckFuncBlock(LibBunTypeChecker TypeSafer, BunFunctionNode FunctionNode) {
 		@Var int PrevCount = -1;
 		while(true) {
 			this.VarNodeCount = 0;

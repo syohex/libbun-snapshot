@@ -1,7 +1,7 @@
 package libbun.type;
 
 import libbun.parser.BToken;
-import libbun.parser.BTypeChecker;
+import libbun.parser.LibBunTypeChecker;
 import libbun.util.Nullable;
 import libbun.util.Var;
 import libbun.util.BArray;
@@ -127,7 +127,7 @@ public class BTypePool {
 		return BTypePool._LookupFuncType2(TypeList);
 	}
 
-	public static BType _LookupMutableType(BTypeChecker Gamma, BType Type, @Nullable BToken MutableToken) {
+	public static BType _LookupMutableType(LibBunTypeChecker Gamma, BType Type, @Nullable BToken MutableToken) {
 		if(Gamma.IsSupportMutable) {
 			@Var String MangleName = "M:"+Type.TypeId;
 			@Var BType MutableType = BTypePool._ClassNameMap.GetOrNull(MangleName);
@@ -140,7 +140,7 @@ public class BTypePool {
 		return Type;
 	}
 
-	public static BType _LookupNullableType(BTypeChecker Gamma, BType Type, @Nullable BToken MaybeToken) {
+	public static BType _LookupNullableType(LibBunTypeChecker Gamma, BType Type, @Nullable BToken MaybeToken) {
 		if(Gamma.IsSupportNullable) {
 			@Var String MangleName = "N:"+Type.TypeId;
 			@Var BType NullableType = BTypePool._ClassNameMap.GetOrNull(MangleName);

@@ -25,7 +25,7 @@
 package libbun.ast.expression;
 
 import libbun.ast.BNode;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 
 //E.g., $Recv[$Index] = $ValueNode
 public final class SetIndexNode extends BNode {
@@ -52,7 +52,7 @@ public final class SetIndexNode extends BNode {
 		return this.AST[SetIndexNode._Expr ];
 	}
 
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitSetIndexNode(this);
 	}
 }

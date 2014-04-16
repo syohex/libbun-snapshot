@@ -2,8 +2,8 @@ package libbun.encode.jvm;
 
 import libbun.ast.BNode;
 import libbun.ast.decl.TopLevelNode;
-import libbun.parser.BLogger;
-import libbun.parser.BNameSpace;
+import libbun.parser.LibBunLogger;
+import libbun.parser.LibBunGamma;
 import libbun.type.BType;
 import libbun.util.Var;
 
@@ -30,16 +30,16 @@ public class JavaImportNode extends TopLevelNode {
 		return Path;
 	}
 
-	@Override public void Perform(BNameSpace NameSpace) {
+	@Override public void Perform(LibBunGamma Gamma) {
 		@Var String ResourcePath = this.AST[JavaImportNode._Path].SourceToken.GetTextAsName();
 		try {
 			Class<?> jClass = Class.forName(ResourcePath);
 			BType Type = JavaTypeTable.GetZenType(jClass);
 			String Alias = this.ParseSymbol(ResourcePath);
 
-			NameSpace.SetTypeName(Alias, Type, this.SourceToken);
+			Gamma.SetTypeName(Alias, Type, this.SourceToken);
 		} catch (ClassNotFoundException e) {
-			BLogger._LogError(this.GetAstToken(JavaImportNode._Path), "unfound resource: "+ ResourcePath);
+			LibBunLogger._LogError(this.GetAstToken(JavaImportNode._Path), "unfound resource: "+ ResourcePath);
 		}
 	}
 }

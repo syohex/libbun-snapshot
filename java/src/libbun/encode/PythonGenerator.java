@@ -30,7 +30,7 @@ import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.error.StupidCastErrorNode;
 import libbun.ast.expression.BunFuncNameNode;
-import libbun.ast.expression.FormNode;
+import libbun.ast.expression.BunFormNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
@@ -60,18 +60,18 @@ import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.parser.BLangInfo;
-import libbun.parser.BLogger;
+import libbun.parser.LibBunLangInfo;
+import libbun.parser.LibBunLogger;
 import libbun.type.BClassField;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
 import libbun.type.BType;
 import libbun.util.Var;
 
-public class PythonGenerator extends SourceGenerator {
+public class PythonGenerator extends LibBunSourceGenerator {
 
 	public PythonGenerator() {
-		super(new BLangInfo("Python-2.7", "py"));
+		super(new LibBunLangInfo("Python-2.7", "py"));
 		this.LoadInlineLibrary("inline.py", "##");
 		this.Header.Append("#! /usr/bin/env python");
 		this.Header.AppendNewLine("# -*- coding: utf-8 -*-");
@@ -141,7 +141,7 @@ public class PythonGenerator extends SourceGenerator {
 	}
 
 	private void GenerateConcatNullString(BNode Node) {
-		if(Node instanceof BunStringNode || Node instanceof FormNode) {
+		if(Node instanceof BunStringNode || Node instanceof BunFormNode) {
 			this.GenerateExpression(Node);
 		}
 		else {
@@ -285,7 +285,7 @@ public class PythonGenerator extends SourceGenerator {
 	@Override public void VisitGetNameNode(GetNameNode Node) {
 		@Var BNode ResolvedNode = Node.ResolvedNode;
 		if(ResolvedNode == null && !this.LangInfo.AllowUndefinedSymbol) {
-			BLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GivenName);
+			LibBunLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GivenName);
 		}
 		this.Source.Append(Node.GetUniqueName(this));
 	}
@@ -539,7 +539,7 @@ public class PythonGenerator extends SourceGenerator {
 			this.GenerateExpression(ErrorNode.ErrorNode);
 		}
 		else {
-			@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
+			@Var String Message = LibBunLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 			this.Source.Append("libbun_error(");
 			this.Source.AppendQuotedText(Message);
 			this.Source.Append(")");

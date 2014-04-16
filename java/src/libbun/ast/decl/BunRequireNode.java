@@ -2,7 +2,7 @@ package libbun.ast.decl;
 
 import libbun.ast.BNode;
 import libbun.encode.jvm.JavaImportNode;
-import libbun.parser.BNameSpace;
+import libbun.parser.LibBunGamma;
 import libbun.util.Var;
 
 public class BunRequireNode extends TopLevelNode {
@@ -14,9 +14,9 @@ public class BunRequireNode extends TopLevelNode {
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
 		return this.DupField(TypedClone, new BunRequireNode(ParentNode));
 	}
-	@Override public final void Perform(BNameSpace NameSpace) {
+	@Override public final void Perform(LibBunGamma Gamma) {
 		@Var String ResourcePath = this.AST[JavaImportNode._Path].SourceToken.GetTextAsName();
-		NameSpace.Generator.RequireLibrary(ResourcePath, this.GetAstToken(JavaImportNode._Path));
+		Gamma.Generator.RequireLibrary(ResourcePath, this.GetAstToken(JavaImportNode._Path));
 	}
 
 }

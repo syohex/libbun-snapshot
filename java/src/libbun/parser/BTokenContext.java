@@ -27,7 +27,7 @@ package libbun.parser;
 import libbun.ast.BNode;
 import libbun.ast.EmptyNode;
 import libbun.ast.error.ErrorNode;
-import libbun.encode.AbstractGenerator;
+import libbun.encode.LibBunGenerator;
 import libbun.util.BArray;
 import libbun.util.BField;
 import libbun.util.BLib;
@@ -41,19 +41,19 @@ public final class BTokenContext {
 	public final static boolean     _AllowNewLine   = true;
 	public final static boolean     _MoveNext       = true;
 
-	@BField public AbstractGenerator Generator;
-	@BField public BNameSpace NameSpace;
+	@BField public LibBunGenerator Generator;
+	@BField public LibBunGamma Gamma;
 	@BField public BSourceContext Source;
 	@BField public BArray<BToken> TokenList = new BArray<BToken>(new BToken[128]);
 
 	@BField private int CurrentPosition = 0;
 	@BField private boolean IsAllowSkipIndent = false;
 	@BField public BToken LatestToken = null;
-	@BField private BSyntax ApplyingPattern = null;
+	@BField private LibBunSyntax ApplyingPattern = null;
 
-	public BTokenContext(AbstractGenerator Generator, BNameSpace NameSpace, String FileName, int LineNumber, String SourceText) {
+	public BTokenContext(LibBunGenerator Generator, LibBunGamma Gamma, String FileName, int LineNumber, String SourceText) {
 		this.Generator = Generator;
-		this.NameSpace = NameSpace;
+		this.Gamma = Gamma;
 		this.Source = new BSourceContext(FileName, LineNumber, SourceText, this);
 	}
 
@@ -234,13 +234,13 @@ public final class BTokenContext {
 		return ParentNode;
 	}
 
-	public final BSyntax GetApplyingSyntax() {
+	public final LibBunSyntax GetApplyingSyntax() {
 		return this.ApplyingPattern;
 	}
 
-	public final BNode ApplyMatchPattern(BNode ParentNode, BNode LeftNode, BSyntax Pattern, boolean IsRequired) {
+	public final BNode ApplyMatchPattern(BNode ParentNode, BNode LeftNode, LibBunSyntax Pattern, boolean IsRequired) {
 		@Var int RollbackPosition = this.CurrentPosition;
-		@Var BSyntax CurrentPattern = Pattern;
+		@Var LibBunSyntax CurrentPattern = Pattern;
 		@Var BToken TopToken = this.GetToken();
 		@Var BNode ParsedNode = null;
 		while(CurrentPattern != null) {
@@ -273,7 +273,7 @@ public final class BTokenContext {
 	}
 
 	public final BNode ParsePatternAfter(BNode ParentNode, BNode LeftNode, String PatternName, boolean IsRequired) {
-		@Var BSyntax Pattern = this.NameSpace.GetSyntaxPattern(PatternName);
+		@Var LibBunSyntax Pattern = this.Gamma.GetSyntaxPattern(PatternName);
 		@Var BNode ParsedNode = this.ApplyMatchPattern(ParentNode, LeftNode, Pattern, IsRequired);
 		return ParsedNode;
 	}

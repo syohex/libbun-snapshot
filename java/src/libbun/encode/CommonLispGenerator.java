@@ -82,17 +82,17 @@ import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.parser.BLangInfo;
-import libbun.parser.BLogger;
+import libbun.parser.LibBunLangInfo;
+import libbun.parser.LibBunLogger;
 import libbun.type.BFuncType;
 import libbun.type.BType;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
-public class CommonLispGenerator extends SourceGenerator {
+public class CommonLispGenerator extends LibBunSourceGenerator {
 	private boolean hasMain = false;
 	public CommonLispGenerator() {
-		super(new BLangInfo("CommonLisp", "cl"));
+		super(new LibBunLangInfo("CommonLisp", "cl"));
 	}
 
 	@Override
@@ -560,7 +560,7 @@ public class CommonLispGenerator extends SourceGenerator {
 	}
 
 	@Override public void VisitErrorNode(ErrorNode Node) {
-		@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
+		@Var String Message = LibBunLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.Source.Append("/*", Message, "*/");
 	}
 

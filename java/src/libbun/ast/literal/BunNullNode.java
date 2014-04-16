@@ -25,9 +25,9 @@
 package libbun.ast.literal;
 
 import libbun.ast.BNode;
-import libbun.parser.BOperatorVisitor;
+import libbun.parser.BunVisitor;
 import libbun.parser.BToken;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 
 public final class BunNullNode extends LiteralNode {
 	public BunNullNode(BNode ParentNode, BToken SourceToken) {
@@ -36,9 +36,9 @@ public final class BunNullNode extends LiteralNode {
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
 		return this.DupField(TypedClone, new BunNullNode(ParentNode, this.SourceToken));
 	}
-	@Override public final void Accept(BVisitor Visitor) {
-		if(Visitor instanceof BOperatorVisitor) {
-			((BOperatorVisitor)Visitor).VisitNullNode(this);
+	@Override public final void Accept(LibBunVisitor Visitor) {
+		if(Visitor instanceof BunVisitor) {
+			((BunVisitor)Visitor).VisitNullNode(this);
 		}
 		else {
 			Visitor.VisitLiteralNode(this);

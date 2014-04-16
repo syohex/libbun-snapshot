@@ -26,8 +26,8 @@ package libbun.ast.expression;
 
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
-import libbun.parser.BTypeChecker;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunTypeChecker;
+import libbun.parser.LibBunVisitor;
 import libbun.type.BFunc;
 import libbun.type.BFuncType;
 import libbun.util.BField;
@@ -61,7 +61,7 @@ public final class MethodCallNode extends AbstractListNode {
 		return this.GivenName;
 	}
 
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitMethodCallNode(this);
 	}
 
@@ -86,7 +86,7 @@ public final class MethodCallNode extends AbstractListNode {
 		return FuncNode;
 	}
 
-	public final AbstractListNode ToFuncCallNode(BTypeChecker Gamma, BFunc Func, @Nullable BNode RecvNode) {
+	public final AbstractListNode ToFuncCallNode(LibBunTypeChecker Gamma, BFunc Func, @Nullable BNode RecvNode) {
 		@Var AbstractListNode FuncNode = Gamma.CreateDefinedFuncCallNode(this.ParentNode, this.GetAstToken(MethodCallNode._NameInfo), Func);
 		FuncNode.SourceToken = this.GetAstToken(MethodCallNode._NameInfo);
 		if(RecvNode != null) {

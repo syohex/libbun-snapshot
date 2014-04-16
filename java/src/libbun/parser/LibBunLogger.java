@@ -29,7 +29,7 @@ import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
 
-public final class BLogger {
+public final class LibBunLogger {
 
 	@BField public BArray<String>  ReportedErrorList = new BArray<String>(new String[10]);
 	//	@Field public ZenMap<ZCounter> StatMap;

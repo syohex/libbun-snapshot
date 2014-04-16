@@ -20,7 +20,7 @@ import libbun.ast.statement.BunReturnNode;
 import libbun.ast.statement.BunThrowNode;
 import libbun.ast.statement.BunTryNode;
 import libbun.encode.obsolete.OldSourceGenerator;
-import libbun.parser.BLogger;
+import libbun.parser.LibBunLogger;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
 import libbun.type.BType;
@@ -76,7 +76,7 @@ public class CSharpGenerator extends OldSourceGenerator {
 
 	@Override protected void GenerateExpression(BNode Node) {
 		if(Node.IsUntyped() && !Node.IsErrorNode() && !(Node instanceof BunFuncNameNode)) {
-			BLogger._LogError(Node.SourceToken, "untyped error: " + Node);
+			LibBunLogger._LogError(Node.SourceToken, "untyped error: " + Node);
 			Node.Accept(this);
 			this.Source.Append("/*untyped*/");
 		}
@@ -239,8 +239,8 @@ public class CSharpGenerator extends OldSourceGenerator {
 	String GetFuncTypeClass(BFuncType FuncType) {
 		@Var String ClassName = this.FuncNameMap.GetOrNull(FuncType.GetUniqueName());
 		if(ClassName == null){
-			@Var SourceBuilder MainBuilder = this.Source;
-			this.Source = new SourceBuilder(this, null);
+			@Var LibBunSourceBuilder MainBuilder = this.Source;
+			this.Source = new LibBunSourceBuilder(this, null);
 			@Var boolean HasReturnValue = !FuncType.GetReturnType().equals(BType.VoidType);
 			if(HasReturnValue){
 				this.Source.Append("Func");
@@ -471,7 +471,7 @@ public class CSharpGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitErrorNode(ErrorNode Node) {
-		BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
+		LibBunLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.Source.Append("ThrowError(");
 		this.Source.Append(BLib._QuoteString(Node.ErrorMessage));
 		this.Source.Append(")");

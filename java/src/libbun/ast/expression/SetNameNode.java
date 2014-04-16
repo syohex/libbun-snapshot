@@ -25,7 +25,7 @@
 package libbun.ast.expression;
 
 import libbun.ast.BNode;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 import libbun.type.BType;
 import libbun.util.Var;
 
@@ -63,7 +63,7 @@ public class SetNameNode extends BNode {
 		return this.AST[SetNameNode._Expr ];
 	}
 
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitSetNameNode(this);
 	}
 }

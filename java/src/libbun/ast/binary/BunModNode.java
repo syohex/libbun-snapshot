@@ -2,13 +2,14 @@ package libbun.ast.binary;
 
 import libbun.ast.BNode;
 import libbun.lang.bun.BunPrecedence;
-import libbun.parser.BOperatorVisitor;
-import libbun.parser.BVisitor;
+import libbun.parser.BunVisitor;
+import libbun.parser.LibBunVisitor;
 
 public class BunModNode extends ArithmeticOperatorNode {
 	public BunModNode(BNode ParentNode) {
 		super(ParentNode, BunPrecedence._CStyleMUL);
 	}
+
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
 		return this.DupField(TypedClone, new BunModNode(ParentNode));
 	}
@@ -16,9 +17,9 @@ public class BunModNode extends ArithmeticOperatorNode {
 	@Override public final String GetOperator() {
 		return "%";
 	}
-	@Override public final void Accept(BVisitor Visitor) {
-		if(Visitor instanceof BOperatorVisitor) {
-			((BOperatorVisitor)Visitor).VisitModNode(this);
+	@Override public final void Accept(LibBunVisitor Visitor) {
+		if(Visitor instanceof BunVisitor) {
+			((BunVisitor)Visitor).VisitModNode(this);
 		}
 		else {
 			Visitor.VisitBinaryNode(this);

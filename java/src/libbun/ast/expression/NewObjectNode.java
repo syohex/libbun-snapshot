@@ -26,8 +26,8 @@ package libbun.ast.expression;
 
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
-import libbun.parser.BTypeChecker;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunTypeChecker;
+import libbun.parser.LibBunVisitor;
 import libbun.type.BFunc;
 import libbun.type.BType;
 import libbun.util.BField;
@@ -58,11 +58,11 @@ public final class NewObjectNode extends AbstractListNode {
 		return this.GivenType;
 	}
 
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitNewObjectNode(this);
 	}
 
-	public final AbstractListNode ToFuncCallNode(BTypeChecker Gamma, BFunc Func) {
+	public final AbstractListNode ToFuncCallNode(LibBunTypeChecker Gamma, BFunc Func) {
 		@Var AbstractListNode FuncNode = Gamma.CreateDefinedFuncCallNode(this.ParentNode, this.SourceToken, Func);
 		FuncNode.Append(this);
 		@Var int i = 0;

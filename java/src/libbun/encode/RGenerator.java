@@ -57,19 +57,19 @@ import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.parser.BLangInfo;
-import libbun.parser.BLogger;
+import libbun.parser.LibBunLangInfo;
+import libbun.parser.LibBunLogger;
 import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
-public class RGenerator extends SourceGenerator {
+public class RGenerator extends LibBunSourceGenerator {
 
 	@BField private BunFunctionNode MainFuncNode = null;
 
 	public RGenerator() {
-		super(new BLangInfo("R-3.0.3", "r"));
+		super(new LibBunLangInfo("R-3.0.3", "r"));
 		this.Source.OpenIndent("assert <- function(condition) {");
 		this.Source.AppendNewLine("if (is.na(condition) || condition == FALSE) {");
 		this.Source.OpenIndent();
@@ -347,7 +347,7 @@ public class RGenerator extends SourceGenerator {
 	@Override public void VisitGetNameNode(GetNameNode Node) {
 		@Var BNode ResolvedNode = Node.ResolvedNode;
 		if(ResolvedNode == null && !this.LangInfo.AllowUndefinedSymbol) {
-			BLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GivenName);
+			LibBunLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GivenName);
 		}
 		this.Source.Append(Node.GetUniqueName(this));
 	}

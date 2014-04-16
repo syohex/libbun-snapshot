@@ -8,17 +8,17 @@ import libbun.util.BIgnored;
 public class BToken {
 	public final static BToken _NullToken = new BToken();
 
-	@BField public final BSource Source;
+	@BField public final LibBunSource Source;
 	@BField public int  StartIndex;
 	@BField public int  EndIndex;
 
 	private BToken() {
-		this.Source = new BSource();
+		this.Source = new LibBunSource();
 		this.StartIndex = 0;
 		this.EndIndex = 0;
 	}
 
-	public BToken(BSource Source, int StartIndex, int EndIndex) {
+	public BToken(LibBunSource Source, int StartIndex, int EndIndex) {
 		this.Source = Source;
 		this.StartIndex = StartIndex;
 		this.EndIndex = EndIndex;

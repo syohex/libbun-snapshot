@@ -46,7 +46,7 @@ import libbun.ast.literal.BunMapLiteralNode;
 import libbun.ast.statement.BunThrowNode;
 import libbun.ast.statement.BunTryNode;
 import libbun.encode.obsolete.OldSourceGenerator;
-import libbun.parser.BLogger;
+import libbun.parser.LibBunLogger;
 import libbun.parser.ssa.NodeLib;
 import libbun.parser.ssa.PHINode;
 import libbun.parser.ssa.SSAConverter;
@@ -83,7 +83,7 @@ public class SSACGenerator extends OldSourceGenerator {
 	@Override protected void GenerateExpression(BNode Node) {
 		if(Node.IsUntyped() && !Node.IsErrorNode() && !(Node instanceof BunFuncNameNode)) {
 			this.Source.Append("/*untyped*/" + this.NullLiteral);
-			BLogger._LogError(Node.SourceToken, "untyped error: " + Node);
+			LibBunLogger._LogError(Node.SourceToken, "untyped error: " + Node);
 		}
 		else {
 			//			if(ContextType != null && Node.Type != ContextType) {
@@ -97,7 +97,7 @@ public class SSACGenerator extends OldSourceGenerator {
 
 	@Override public void VisitGetNameNode(GetNameNode Node) {
 		if(Node.ResolvedNode == null && !this.LangInfo.AllowUndefinedSymbol) {
-			BLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GetUniqueName(this));
+			LibBunLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GetUniqueName(this));
 		}
 		this.Source.Append(Node.GetUniqueName(this) + Node.VarIndex);
 	}
@@ -300,7 +300,7 @@ public class SSACGenerator extends OldSourceGenerator {
 	@Override protected void VisitVarDeclNode(BunLetVarNode Node) {
 		this.GenerateTypeName(Node.DeclType());
 		this.Source.Append(" ");
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), Node.GetGivenName() + "0"));
+		this.Source.Append(this.NameLocalVariable(Node.GetGamma(), Node.GetGivenName() + "0"));
 		this.GenerateExpression(" = ", Node.InitValueNode(), this.SemiColon);
 	}
 
@@ -493,7 +493,7 @@ public class SSACGenerator extends OldSourceGenerator {
 			return;
 		}
 		PHINode phi = (PHINode) Node;
-		this.Source.Append(this.NameLocalVariable(Node.GetNameSpace(), phi.GetName())  + phi.GetVarIndex(), " = ");
+		this.Source.Append(this.NameLocalVariable(Node.GetGamma(), phi.GetName())  + phi.GetVarIndex(), " = ");
 		this.Source.Append("phi(");
 		@Var int i = 0;
 		while(i < phi.Args.size()) {

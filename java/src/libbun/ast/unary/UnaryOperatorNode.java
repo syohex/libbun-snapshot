@@ -26,7 +26,7 @@ package libbun.ast.unary;
 
 
 import libbun.ast.BNode;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 
 public abstract class UnaryOperatorNode extends BNode {
 	public final static int _Recv = 0;
@@ -40,7 +40,7 @@ public abstract class UnaryOperatorNode extends BNode {
 		return this.AST[UnaryOperatorNode._Recv ];
 	}
 
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitUnaryNode(this);
 	}
 }

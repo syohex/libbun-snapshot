@@ -58,8 +58,8 @@ import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.parser.BLangInfo;
-import libbun.parser.BLogger;
+import libbun.parser.LibBunLangInfo;
+import libbun.parser.LibBunLogger;
 import libbun.type.BClassField;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
@@ -71,13 +71,13 @@ import libbun.util.BMap;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
-public class JavaGenerator extends SourceGenerator {
+public class JavaGenerator extends LibBunSourceGenerator {
 
 	@BField private BunFunctionNode MainFuncNode = null;
 	@BField private final BArray<BunFunctionNode> ExportFunctionList = new BArray<BunFunctionNode>(new BunFunctionNode[4]);
 
 	public JavaGenerator() {
-		super(new BLangInfo("Java-1.6", "java"));
+		super(new LibBunLangInfo("Java-1.6", "java"));
 		//		this.IntLiteralSuffix="";
 		//		this.TopType = "Object";
 		this.SetNativeType(BType.BooleanType, "boolean");
@@ -566,7 +566,7 @@ public class JavaGenerator extends SourceGenerator {
 		}
 		//		this.CurrentBuilder = this.CurrentBuilder.Pop();
 		//			Node.GlobalName = ClassName + "._";
-		//			Node.GetNameSpace().SetLocalSymbol(Node.GetName(), Node.ToGlobalNameNode());
+		//			Node.GetGamma().SetLocalSymbol(Node.GetName(), Node.ToGlobalNameNode());
 	}
 
 	@Override public void VisitFunctionNode(BunFunctionNode Node) {
@@ -716,7 +716,7 @@ public class JavaGenerator extends SourceGenerator {
 	}
 
 	@Override public void VisitErrorNode(ErrorNode Node) {
-		BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
+		LibBunLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.Source.Append("ThrowError(");
 		this.Source.Append(BLib._QuoteString(Node.ErrorMessage));
 		this.Source.Append(")");

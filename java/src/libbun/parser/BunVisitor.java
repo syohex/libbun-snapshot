@@ -29,7 +29,7 @@ import libbun.ast.unary.BunComplementNode;
 import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunPlusNode;
 
-public abstract class BOperatorVisitor extends BVisitor {
+public abstract class BunVisitor extends LibBunVisitor {
 
 	// Literal
 	public abstract void VisitDefaultValueNode(DefaultValueNode Node);

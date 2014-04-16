@@ -26,8 +26,8 @@ package libbun.main;
 
 import java.io.IOException;
 
-import libbun.encode.AbstractGenerator;
-import libbun.parser.BConst;
+import libbun.encode.LibBunGenerator;
+import libbun.parser.LibBunConst;
 import libbun.util.BLib;
 import libbun.util.BStringArray;
 import libbun.util.Var;
@@ -133,7 +133,7 @@ public class Main {
 
 	public final static void InvokeLibBun(String[] Args) {
 		ParseCommand(Args);
-		@Var AbstractGenerator Generator = BLib._InitGenerator(Target, Parser);
+		@Var LibBunGenerator Generator = BLib._InitGenerator(Target, Parser);
 		if(InputFileName != null) {
 			Generator.LoadFile(InputFileName, null);
 		}
@@ -148,9 +148,9 @@ public class Main {
 		Main.InvokeLibBun(Args);
 	}
 
-	public final static void PerformShell(AbstractGenerator Generator) {
-		BLib._PrintLine(BConst.ProgName + BConst.Version + " (" + BConst.CodeName + ") on " + BLib._GetPlatform());
-		BLib._PrintLine(BConst.Copyright);
+	public final static void PerformShell(LibBunGenerator Generator) {
+		BLib._PrintLine(LibBunConst.ProgName + LibBunConst.Version + " (" + LibBunConst.CodeName + ") on " + BLib._GetPlatform());
+		BLib._PrintLine(LibBunConst.Copyright);
 		BLib._PrintLine("Accept: " + Generator.LangInfo.GetGrammarInfo());
 		BLib._PrintLine("Produce: " + Generator.LangInfo.LangVersion);
 		@Var int linenum = 1;

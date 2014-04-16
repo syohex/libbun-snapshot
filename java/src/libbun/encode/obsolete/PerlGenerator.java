@@ -96,7 +96,7 @@ public class PerlGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitGetNameNode(GetNameNode Node) {
-		this.Source.Append(this.VariablePrefix(Node.Type), this.NameLocalVariable(Node.GetNameSpace(), Node.GetUniqueName(this)));
+		this.Source.Append(this.VariablePrefix(Node.Type), this.NameLocalVariable(Node.GetGamma(), Node.GetUniqueName(this)));
 	}
 
 	@Override public void VisitSetNameNode(SetNameNode Node) {

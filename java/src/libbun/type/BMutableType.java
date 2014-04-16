@@ -1,6 +1,6 @@
 package libbun.type;
 
-import libbun.parser.BTypeChecker;
+import libbun.parser.LibBunTypeChecker;
 
 public class BMutableType extends BType {
 
@@ -8,7 +8,7 @@ public class BMutableType extends BType {
 		super(BType.UniqueTypeFlag, null, ParamType);
 	}
 
-	@Override public final boolean IsMutableType(BTypeChecker Gamma) {
+	@Override public final boolean IsMutableType(LibBunTypeChecker Gamma) {
 		return true;
 	}
 

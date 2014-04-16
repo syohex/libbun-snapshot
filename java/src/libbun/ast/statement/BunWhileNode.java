@@ -26,7 +26,7 @@ package libbun.ast.statement;
 
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 import libbun.type.BType;
 import libbun.util.Var;
 
@@ -50,7 +50,7 @@ public final class BunWhileNode extends BNode {
 		this.Type = BType.VoidType;
 	}
 
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitWhileNode(this);
 	}
 

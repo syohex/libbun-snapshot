@@ -87,13 +87,13 @@ import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.parser.BNameSpace;
+import libbun.parser.LibBunGamma;
 import libbun.parser.BPatternToken;
 import libbun.parser.BSourceContext;
-import libbun.parser.BSyntax;
+import libbun.parser.LibBunSyntax;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
-import libbun.parser.BTypeChecker;
+import libbun.parser.LibBunTypeChecker;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
 import libbun.type.BGenericType;
@@ -469,7 +469,7 @@ class FloatLiteralPatternFunction extends BMatchFunction {
 class DefinedTypePatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		@Var BToken Token = TokenContext.GetToken(BTokenContext._MoveNext);
-		@Var BType Type = ParentNode.GetNameSpace().GetType(Token.GetText(), Token, false/*IsCreation*/);
+		@Var BType Type = ParentNode.GetGamma().GetType(Token.GetText(), Token, false/*IsCreation*/);
 		if(Type != null) {
 			@Var BunTypeNode TypeNode = new BunTypeNode(ParentNode, Token, Type);
 			return TokenContext.ParsePatternAfter(ParentNode, TypeNode, "$TypeRight$", BTokenContext._Optional);
@@ -489,12 +489,12 @@ class OpenTypePatternFunction extends BMatchFunction {
 			MutableToken   = TokenContext.GetToken(BTokenContext._MoveNext);
 		}
 		@Var BToken Token = TokenContext.GetToken(BTokenContext._MoveNext);
-		@Var BType Type = ParentNode.GetNameSpace().GetType(Token.GetText(), Token, true/*IsCreation*/);
+		@Var BType Type = ParentNode.GetGamma().GetType(Token.GetText(), Token, true/*IsCreation*/);
 		if(Type != null) {
 			@Var BunTypeNode TypeNode = new BunTypeNode(ParentNode, Token, Type);
 			@Var BNode Node = TokenContext.ParsePatternAfter(ParentNode, TypeNode, "$TypeRight$", BTokenContext._Optional);
 			if(Node instanceof BunTypeNode) {
-				@Var BTypeChecker Gamma = ParentNode.GetNameSpace().Generator.TypeChecker;
+				@Var LibBunTypeChecker Gamma = ParentNode.GetGamma().Generator.TypeChecker;
 				if(MutableToken != null) {
 					Node.Type = BTypePool._LookupMutableType(Gamma, Node.Type, MutableToken);
 				}
@@ -1168,133 +1168,133 @@ public class BunGrammar {
 	public final static BMatchFunction DefinePattern = new BunDefinePatternFunction();
 	public final static BMatchFunction DefineNamePattern = new BunDefineNamePatternFunction();
 
-	public static void ImportGrammar(BNameSpace NameSpace) {
-		NameSpace.SetTypeName(BType.VoidType,  null);
-		NameSpace.SetTypeName(BType.BooleanType, null);
-		NameSpace.SetTypeName(BType.IntType, null);
-		NameSpace.SetTypeName(BType.FloatType, null);
-		NameSpace.SetTypeName(BType.StringType, null);
-		//NameSpace.SetTypeName(ZType.TypeType, null);
-		NameSpace.SetTypeName(BGenericType._AlphaType, null);
-		NameSpace.SetTypeName(BGenericType._ArrayType, null);
-		NameSpace.SetTypeName(BGenericType._MapType, null);
-		NameSpace.SetTypeName(BFuncType._FuncType, null);
+	public static void ImportGrammar(LibBunGamma Gamma) {
+		Gamma.SetTypeName(BType.VoidType,  null);
+		Gamma.SetTypeName(BType.BooleanType, null);
+		Gamma.SetTypeName(BType.IntType, null);
+		Gamma.SetTypeName(BType.FloatType, null);
+		Gamma.SetTypeName(BType.StringType, null);
+		//Gamma.SetTypeName(ZType.TypeType, null);
+		Gamma.SetTypeName(BGenericType._AlphaType, null);
+		Gamma.SetTypeName(BGenericType._ArrayType, null);
+		Gamma.SetTypeName(BGenericType._MapType, null);
+		Gamma.SetTypeName(BFuncType._FuncType, null);
 
-		NameSpace.AppendTokenFunc(" \t", WhiteSpaceToken);
-		NameSpace.AppendTokenFunc("\n",  NewLineToken);
-		NameSpace.AppendTokenFunc("{}()[]<>.,;?:+-*/%=&|!@~^$", OperatorToken);
-		NameSpace.AppendTokenFunc("/", BlockComment);  // overloading
-		NameSpace.AppendTokenFunc("Aa_", NameToken);
+		Gamma.AppendTokenFunc(" \t", WhiteSpaceToken);
+		Gamma.AppendTokenFunc("\n",  NewLineToken);
+		Gamma.AppendTokenFunc("{}()[]<>.,;?:+-*/%=&|!@~^$", OperatorToken);
+		Gamma.AppendTokenFunc("/", BlockComment);  // overloading
+		Gamma.AppendTokenFunc("Aa_", NameToken);
 
-		NameSpace.AppendTokenFunc("\"", StringLiteralToken);
-		NameSpace.AppendTokenFunc("1",  NumberLiteralToken);
+		Gamma.AppendTokenFunc("\"", StringLiteralToken);
+		Gamma.AppendTokenFunc("1",  NumberLiteralToken);
 
-		NameSpace.DefineExpression("null", NullPattern);
-		NameSpace.DefineExpression("true", TruePattern);
-		NameSpace.DefineExpression("false", FalsePattern);
+		Gamma.DefineExpression("null", NullPattern);
+		Gamma.DefineExpression("true", TruePattern);
+		Gamma.DefineExpression("false", FalsePattern);
 
-		NameSpace.DefineExpression("+", PlusPattern);
-		NameSpace.DefineExpression("-", MinusPattern);
-		NameSpace.DefineExpression("~", ComplementPattern);
-		NameSpace.DefineExpression("!", NotPattern);
-		//		NameSpace.AppendSyntax("++ --", new Incl"));
+		Gamma.DefineExpression("+", PlusPattern);
+		Gamma.DefineExpression("-", MinusPattern);
+		Gamma.DefineExpression("~", ComplementPattern);
+		Gamma.DefineExpression("!", NotPattern);
+		//		Gamma.AppendSyntax("++ --", new Incl"));
 
-		NameSpace.DefineRightExpression("==", EqualsPattern);
-		NameSpace.DefineRightExpression("!=", NotEqualsPattern);
-		NameSpace.DefineRightExpression("<", LessThanPattern);
-		NameSpace.DefineRightExpression("<=", LessThanEqualsPattern);
-		NameSpace.DefineRightExpression(">", GreaterThanPattern);
-		NameSpace.DefineRightExpression(">=", GreaterThanEqualsPattern);
+		Gamma.DefineRightExpression("==", EqualsPattern);
+		Gamma.DefineRightExpression("!=", NotEqualsPattern);
+		Gamma.DefineRightExpression("<", LessThanPattern);
+		Gamma.DefineRightExpression("<=", LessThanEqualsPattern);
+		Gamma.DefineRightExpression(">", GreaterThanPattern);
+		Gamma.DefineRightExpression(">=", GreaterThanEqualsPattern);
 
-		NameSpace.DefineRightExpression("+", AddPattern);
-		NameSpace.DefineRightExpression("-", SubPattern);
-		NameSpace.DefineRightExpression("*", MulPattern);
-		NameSpace.DefineRightExpression("/", DivPattern);
-		NameSpace.DefineRightExpression("%", ModPattern);
+		Gamma.DefineRightExpression("+", AddPattern);
+		Gamma.DefineRightExpression("-", SubPattern);
+		Gamma.DefineRightExpression("*", MulPattern);
+		Gamma.DefineRightExpression("/", DivPattern);
+		Gamma.DefineRightExpression("%", ModPattern);
 
-		NameSpace.DefineRightExpression("<<", LeftShiftPattern);
-		NameSpace.DefineRightExpression(">>", RightShiftPattern);
+		Gamma.DefineRightExpression("<<", LeftShiftPattern);
+		Gamma.DefineRightExpression(">>", RightShiftPattern);
 
-		NameSpace.DefineRightExpression("&", BitwiseAndPattern);
-		NameSpace.DefineRightExpression("|", BitwiseOrPattern);
-		NameSpace.DefineRightExpression("^", BitwiseXorPattern);
+		Gamma.DefineRightExpression("&", BitwiseAndPattern);
+		Gamma.DefineRightExpression("|", BitwiseOrPattern);
+		Gamma.DefineRightExpression("^", BitwiseXorPattern);
 
-		NameSpace.DefineRightExpression("&&", AndPattern);
-		NameSpace.DefineRightExpression("||", OrPattern);
+		Gamma.DefineRightExpression("&&", AndPattern);
+		Gamma.DefineRightExpression("||", OrPattern);
 
-		NameSpace.DefineExpression("$StringLiteral$", StringLiteralPattern);
-		NameSpace.DefineExpression("$IntegerLiteral$", IntLiteralPattern);
-		NameSpace.DefineExpression("$FloatLiteral$", FloatLiteralPattern);
+		Gamma.DefineExpression("$StringLiteral$", StringLiteralPattern);
+		Gamma.DefineExpression("$IntegerLiteral$", IntLiteralPattern);
+		Gamma.DefineExpression("$FloatLiteral$", FloatLiteralPattern);
 
-		NameSpace.DefineExpression("$Type$", TypePattern);
-		NameSpace.DefineExpression("$OpenType$", OpenTypePattern);
-		NameSpace.DefineExpression("$TypeRight$", TypeSuffixPattern);
-		NameSpace.DefineExpression("$TypeAnnotation$", TypeAnnotationPattern);
+		Gamma.DefineExpression("$Type$", TypePattern);
+		Gamma.DefineExpression("$OpenType$", OpenTypePattern);
+		Gamma.DefineExpression("$TypeRight$", TypeSuffixPattern);
+		Gamma.DefineExpression("$TypeAnnotation$", TypeAnnotationPattern);
 
-		NameSpace.DefineRightExpression(".", GetFieldPattern);
-		NameSpace.DefineRightExpression(".", SetFieldPattern);
-		NameSpace.DefineRightExpression(".", MethodCallPattern);
+		Gamma.DefineRightExpression(".", GetFieldPattern);
+		Gamma.DefineRightExpression(".", SetFieldPattern);
+		Gamma.DefineRightExpression(".", MethodCallPattern);
 
-		NameSpace.DefineExpression("(", GroupPattern);
-		NameSpace.DefineExpression("(", CastPattern);
-		NameSpace.DefineRightExpression("(", FuncCallPattern);
+		Gamma.DefineExpression("(", GroupPattern);
+		Gamma.DefineExpression("(", CastPattern);
+		Gamma.DefineRightExpression("(", FuncCallPattern);
 
-		NameSpace.DefineRightExpression("[", GetIndexPattern);
-		NameSpace.DefineRightExpression("[", SetIndexPattern);
-		NameSpace.DefineExpression("[", ArrayLiteralPattern);
-		NameSpace.DefineExpression("$MapEntry$", MapEntryPattern);
-		NameSpace.DefineExpression("{", MapLiteralPattern);
-		NameSpace.DefineExpression("new", NewObjectPattern);
+		Gamma.DefineRightExpression("[", GetIndexPattern);
+		Gamma.DefineRightExpression("[", SetIndexPattern);
+		Gamma.DefineExpression("[", ArrayLiteralPattern);
+		Gamma.DefineExpression("$MapEntry$", MapEntryPattern);
+		Gamma.DefineExpression("{", MapLiteralPattern);
+		Gamma.DefineExpression("new", NewObjectPattern);
 
-		NameSpace.DefineStatement(";", StatementEndPattern);
-		NameSpace.DefineExpression("$Block$", BlockPattern);
-		NameSpace.DefineExpression("$Annotation$", AnnotationPattern);
-		NameSpace.DefineExpression("$SymbolExpression$", SymbolExpressionPattern);
+		Gamma.DefineStatement(";", StatementEndPattern);
+		Gamma.DefineExpression("$Block$", BlockPattern);
+		Gamma.DefineExpression("$Annotation$", AnnotationPattern);
+		Gamma.DefineExpression("$SymbolExpression$", SymbolExpressionPattern);
 		// don't change DefineStatement for $SymbolStatement$
-		NameSpace.DefineExpression("$SymbolStatement$", SymbolStatementPattern);
-		NameSpace.DefineExpression("$Statement$", StatementPattern);
-		NameSpace.DefineExpression("$Expression$", ExpressionPattern);
-		NameSpace.DefineExpression("$RightExpression$", RightExpressionPattern);
-		NameSpace.DefineExpression("$InStatement$", InStatementPattern);
+		Gamma.DefineExpression("$SymbolStatement$", SymbolStatementPattern);
+		Gamma.DefineExpression("$Statement$", StatementPattern);
+		Gamma.DefineExpression("$Expression$", ExpressionPattern);
+		Gamma.DefineExpression("$RightExpression$", RightExpressionPattern);
+		Gamma.DefineExpression("$InStatement$", InStatementPattern);
 
-		NameSpace.DefineStatement("if", IfPattern);
-		NameSpace.DefineStatement("return", ReturnPattern);
-		NameSpace.DefineStatement("while", WhilePattern);
-		NameSpace.DefineStatement("break", BreakPattern);
+		Gamma.DefineStatement("if", IfPattern);
+		Gamma.DefineStatement("return", ReturnPattern);
+		Gamma.DefineStatement("while", WhilePattern);
+		Gamma.DefineStatement("break", BreakPattern);
 
-		NameSpace.DefineExpression("$Name$", NamePattern);
-		NameSpace.DefineStatement("var", VarPattern);
-		NameSpace.DefineExpression("$Param$", ParamPattern);
-		NameSpace.DefineExpression("function", PrototypePattern);
-		NameSpace.DefineExpression("function", FunctionPattern);
+		Gamma.DefineExpression("$Name$", NamePattern);
+		Gamma.DefineStatement("var", VarPattern);
+		Gamma.DefineExpression("$Param$", ParamPattern);
+		Gamma.DefineExpression("function", PrototypePattern);
+		Gamma.DefineExpression("function", FunctionPattern);
 
-		NameSpace.DefineStatement("let", LetPattern);
-		NameSpace.DefineStatement("export", ExportPattern);
+		Gamma.DefineStatement("let", LetPattern);
+		Gamma.DefineStatement("export", ExportPattern);
 
-		NameSpace.SetTypeName(BClassType._ObjectType, null);
-		NameSpace.DefineStatement("class", ClassPattern);
-		NameSpace.DefineExpression("$FieldDecl$", ClassFieldPattern);
-		//		NameSpace.DefineRightExpression("instanceof", BunPrecedence._Instanceof, InstanceOfPattern);
-		NameSpace.DefineRightExpression("instanceof", InstanceOfPattern);
+		Gamma.SetTypeName(BClassType._ObjectType, null);
+		Gamma.DefineStatement("class", ClassPattern);
+		Gamma.DefineExpression("$FieldDecl$", ClassFieldPattern);
+		//		Gamma.DefineRightExpression("instanceof", BunPrecedence._Instanceof, InstanceOfPattern);
+		Gamma.DefineRightExpression("instanceof", InstanceOfPattern);
 
-		NameSpace.DefineStatement("assert", AssertPattern);
-		NameSpace.DefineStatement("require", RequirePattern);
+		Gamma.DefineStatement("assert", AssertPattern);
+		Gamma.DefineStatement("require", RequirePattern);
 
-		NameSpace.DefineStatement("asm", AsmPattern);
-		NameSpace.DefineStatement("$DefineName$", DefineNamePattern);
-		NameSpace.DefineStatement("define", DefinePattern);
-		NameSpace.Generator.LangInfo.AppendGrammarInfo("zen-0.1");
+		Gamma.DefineStatement("asm", AsmPattern);
+		Gamma.DefineStatement("$DefineName$", DefineNamePattern);
+		Gamma.DefineStatement("define", DefinePattern);
+		Gamma.Generator.LangInfo.AppendGrammarInfo("zen-0.1");
 
-		NameSpace.DefineStatement("try", TryPattern);
-		NameSpace.DefineStatement("throw", ThrowPattern);
-		NameSpace.Generator.LangInfo.AppendGrammarInfo("zen-trycatch-0.1");
+		Gamma.DefineStatement("try", TryPattern);
+		Gamma.DefineStatement("throw", ThrowPattern);
+		Gamma.Generator.LangInfo.AppendGrammarInfo("zen-trycatch-0.1");
 
 	}
 
-	public final static BSyntax _GetRightPattern(BNameSpace NameSpace, BTokenContext TokenContext) {
+	public final static LibBunSyntax _GetRightPattern(LibBunGamma Gamma, BTokenContext TokenContext) {
 		@Var BToken Token = TokenContext.GetToken();
 		if(Token != BToken._NullToken) {
-			@Var BSyntax Pattern = NameSpace.GetRightSyntaxPattern(Token.GetText());
+			@Var LibBunSyntax Pattern = Gamma.GetRightSyntaxPattern(Token.GetText());
 			return Pattern;
 		}
 		return null;
@@ -1302,13 +1302,13 @@ public class BunGrammar {
 
 	public final static BNode _DispatchPattern(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode, boolean AllowStatement, boolean AllowBinary) {
 		@Var BToken Token = TokenContext.GetToken();
-		@Var BSyntax Pattern = null;
-		@Var BNameSpace NameSpace = ParentNode.GetNameSpace();
+		@Var LibBunSyntax Pattern = null;
+		@Var LibBunGamma Gamma = ParentNode.GetGamma();
 		if(Token instanceof BPatternToken) {
 			Pattern = ((BPatternToken)Token).PresetPattern;
 		}
 		else {
-			Pattern = NameSpace.GetSyntaxPattern(Token.GetText());
+			Pattern = Gamma.GetSyntaxPattern(Token.GetText());
 		}
 		//System.out.println("Pattern=" + Pattern + " by '" + Token.GetText() + "'");
 		if(Pattern != null) {
@@ -1320,10 +1320,10 @@ public class BunGrammar {
 		else {
 			if(Token.IsNameSymbol()) {
 				if(AllowStatement) {
-					Pattern = NameSpace.GetSyntaxPattern("$SymbolStatement$");
+					Pattern = Gamma.GetSyntaxPattern("$SymbolStatement$");
 				}
 				else {
-					Pattern = NameSpace.GetSyntaxPattern("$SymbolExpression$");
+					Pattern = Gamma.GetSyntaxPattern("$SymbolExpression$");
 				}
 				LeftNode = TokenContext.ApplyMatchPattern(ParentNode, LeftNode, Pattern, BTokenContext._Required);
 			}
@@ -1338,7 +1338,7 @@ public class BunGrammar {
 		}
 		if(!Pattern.IsStatement) {
 			while(LeftNode != null && !LeftNode.IsErrorNode()) {
-				@Var BSyntax RightPattern = _GetRightPattern(NameSpace, TokenContext);
+				@Var LibBunSyntax RightPattern = _GetRightPattern(Gamma, TokenContext);
 				if(RightPattern == null) {
 					break;
 				}

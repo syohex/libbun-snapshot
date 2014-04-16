@@ -1,7 +1,7 @@
 package libbun.ast.decl;
 
 import libbun.ast.BNode;
-import libbun.parser.BNameSpace;
+import libbun.parser.LibBunGamma;
 import libbun.type.BFuncType;
 import libbun.util.BField;
 import libbun.util.Var;
@@ -18,9 +18,9 @@ public class BunPrototypeNode extends TopLevelNode {
 		return null; // FIXME
 	}
 
-	@Override public final void Perform(BNameSpace NameSpace) {
+	@Override public final void Perform(LibBunGamma Gamma) {
 		@Var BFuncType FuncType = this.FunctionNode.GetFuncType();
-		NameSpace.Generator.SetPrototype(this.FunctionNode, this.FunctionNode.FuncName(), FuncType);
+		Gamma.Generator.SetPrototype(this.FunctionNode, this.FunctionNode.FuncName(), FuncType);
 
 	}
 

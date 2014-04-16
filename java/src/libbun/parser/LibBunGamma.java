@@ -27,7 +27,7 @@ package libbun.parser;
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.encode.AbstractGenerator;
+import libbun.encode.LibBunGenerator;
 import libbun.type.BClassType;
 import libbun.type.BType;
 import libbun.util.BField;
@@ -38,27 +38,27 @@ import libbun.util.BTokenFunction;
 import libbun.util.Nullable;
 import libbun.util.Var;
 
-public final class BNameSpace {
-	@BField public final AbstractGenerator   Generator;
+public final class LibBunGamma {
+	@BField public final LibBunGenerator   Generator;
 	@BField public final BunBlockNode   BlockNode;
-	@BField BTokenFuncChain[]       TokenMatrix = null;
-	@BField BMap<BSyntax>      SyntaxTable = null;
+	@BField LibBunTokenFuncChain[]       TokenMatrix = null;
+	@BField BMap<LibBunSyntax>      SyntaxTable = null;
 	@BField BMap<BunLetVarNode>  SymbolTable2 = null;
 
-	public BNameSpace(AbstractGenerator Generator, BunBlockNode BlockNode) {
+	public LibBunGamma(LibBunGenerator Generator, BunBlockNode BlockNode) {
 		this.BlockNode = BlockNode;   // rootname is null
 		this.Generator = Generator;
 		assert(this.Generator != null);
 	}
 
-	public final BNameSpace GetParentNameSpace() {
+	public final LibBunGamma GetParentGamma() {
 		if(this.BlockNode != null) {
 			@Var BNode Node = this.BlockNode.ParentNode;
 			while(Node != null) {
 				if(Node instanceof BunBlockNode) {
 					@Var BunBlockNode blockNode = (BunBlockNode)Node;
-					if(blockNode.NullableNameSpace != null) {
-						return blockNode.NullableNameSpace;
+					if(blockNode.NullableGamma != null) {
+						return blockNode.NullableGamma;
 					}
 				}
 				Node = Node.ParentNode;
@@ -71,32 +71,32 @@ public final class BNameSpace {
 		return "NS[" + this.BlockNode + "]";
 	}
 
-	public final BNameSpace GetRootNameSpace() {
-		return this.Generator.RootNameSpace;
+	public final LibBunGamma GetRootGamma() {
+		return this.Generator.RootGamma;
 	}
 
 	// TokenMatrix
-	public final BTokenFuncChain GetTokenFunc(int ZenChar) {
+	public final LibBunTokenFuncChain GetTokenFunc(int ZenChar) {
 		if(this.TokenMatrix == null) {
-			return this.GetParentNameSpace().GetTokenFunc(ZenChar);
+			return this.GetParentGamma().GetTokenFunc(ZenChar);
 		}
 		return this.TokenMatrix[ZenChar];
 	}
 
-	private final BTokenFuncChain JoinParentFunc(BTokenFunction Func, BTokenFuncChain Parent) {
+	private final LibBunTokenFuncChain JoinParentFunc(BTokenFunction Func, LibBunTokenFuncChain Parent) {
 		if(Parent != null && Parent.Func == Func) {
 			return Parent;
 		}
-		return new BTokenFuncChain(Func, Parent);
+		return new LibBunTokenFuncChain(Func, Parent);
 	}
 
 	public final void AppendTokenFunc(String keys, BTokenFunction TokenFunc) {
 		if(this.TokenMatrix == null) {
 			this.TokenMatrix = BLib._NewTokenMatrix();
-			if(this.GetParentNameSpace() != null) {
+			if(this.GetParentGamma() != null) {
 				@Var int i = 0;
 				while(i < this.TokenMatrix.length) {
-					this.TokenMatrix[i] = this.GetParentNameSpace().GetTokenFunc(i);
+					this.TokenMatrix[i] = this.GetParentGamma().GetTokenFunc(i);
 					i = i + 1;
 				}
 			}
@@ -110,20 +110,20 @@ public final class BNameSpace {
 	}
 
 	// Pattern
-	public final BSyntax GetSyntaxPattern(String PatternName) {
-		@Var BNameSpace NameSpace = this;
-		while(NameSpace != null) {
-			if(NameSpace.SyntaxTable != null) {
-				return NameSpace.SyntaxTable.GetOrNull(PatternName);
+	public final LibBunSyntax GetSyntaxPattern(String PatternName) {
+		@Var LibBunGamma Gamma = this;
+		while(Gamma != null) {
+			if(Gamma.SyntaxTable != null) {
+				return Gamma.SyntaxTable.GetOrNull(PatternName);
 			}
-			NameSpace = NameSpace.GetParentNameSpace();
+			Gamma = Gamma.GetParentGamma();
 		}
 		return null;
 	}
 
-	public final void SetSyntaxPattern(String PatternName, BSyntax Syntax) {
+	public final void SetSyntaxPattern(String PatternName, LibBunSyntax Syntax) {
 		if(this.SyntaxTable == null) {
-			this.SyntaxTable = new BMap<BSyntax>(null);
+			this.SyntaxTable = new BMap<LibBunSyntax>(null);
 		}
 		this.SyntaxTable.put(PatternName, Syntax);
 	}
@@ -132,13 +132,13 @@ public final class BNameSpace {
 		return "\t" + PatternName;
 	}
 
-	public final BSyntax GetRightSyntaxPattern(String PatternName) {
-		return this.GetSyntaxPattern(BNameSpace._RightPatternSymbol(PatternName));
+	public final LibBunSyntax GetRightSyntaxPattern(String PatternName) {
+		return this.GetSyntaxPattern(LibBunGamma._RightPatternSymbol(PatternName));
 	}
 
-	private void AppendSyntaxPattern(String PatternName, BSyntax NewPattern) {
+	private void AppendSyntaxPattern(String PatternName, LibBunSyntax NewPattern) {
 		BLib._Assert(NewPattern.ParentPattern == null);
-		@Var BSyntax ParentPattern = this.GetSyntaxPattern(PatternName);
+		@Var LibBunSyntax ParentPattern = this.GetSyntaxPattern(PatternName);
 		NewPattern.ParentPattern = ParentPattern;
 		this.SetSyntaxPattern(PatternName, NewPattern);
 	}
@@ -149,7 +149,7 @@ public final class BNameSpace {
 		if(Alias != -1) {
 			Name = PatternName.substring(0, Alias);
 		}
-		@Var BSyntax Pattern = new BSyntax(this, Name, MatchFunc);
+		@Var LibBunSyntax Pattern = new LibBunSyntax(this, Name, MatchFunc);
 		Pattern.IsStatement = true;
 		this.AppendSyntaxPattern(Name, Pattern);
 		if(Alias != -1) {
@@ -163,7 +163,7 @@ public final class BNameSpace {
 		if(Alias != -1) {
 			Name = PatternName.substring(0, Alias);
 		}
-		@Var BSyntax Pattern = new BSyntax(this, Name, MatchFunc);
+		@Var LibBunSyntax Pattern = new LibBunSyntax(this, Name, MatchFunc);
 		this.AppendSyntaxPattern(Name, Pattern);
 		if(Alias != -1) {
 			this.DefineExpression(PatternName.substring(Alias+1), MatchFunc);
@@ -176,8 +176,8 @@ public final class BNameSpace {
 		if(Alias != -1) {
 			Name = PatternName.substring(0, Alias);
 		}
-		@Var BSyntax Pattern = new BSyntax(this, Name, MatchFunc);
-		this.AppendSyntaxPattern(BNameSpace._RightPatternSymbol(Name), Pattern);
+		@Var LibBunSyntax Pattern = new LibBunSyntax(this, Name, MatchFunc);
+		this.AppendSyntaxPattern(LibBunGamma._RightPatternSymbol(Name), Pattern);
 		if(Alias != -1) {
 			this.DefineRightExpression(PatternName.substring(Alias+1), MatchFunc);
 		}
@@ -191,15 +191,15 @@ public final class BNameSpace {
 	}
 
 	public final BunLetVarNode GetSymbol(String Symbol) {
-		@Var BNameSpace NameSpace = this;
-		while(NameSpace != null) {
-			if(NameSpace.SymbolTable2 != null) {
-				@Var BunLetVarNode EntryNode = NameSpace.SymbolTable2.GetOrNull(Symbol);
+		@Var LibBunGamma Gamma = this;
+		while(Gamma != null) {
+			if(Gamma.SymbolTable2 != null) {
+				@Var BunLetVarNode EntryNode = Gamma.SymbolTable2.GetOrNull(Symbol);
 				if(EntryNode != null) {
 					return EntryNode;
 				}
 			}
-			NameSpace = NameSpace.GetParentNameSpace();
+			Gamma = Gamma.GetParentGamma();
 		}
 		return null;
 	}
@@ -217,26 +217,26 @@ public final class BNameSpace {
 
 	public final int GetNameIndex(String Name) {
 		@Var int NameIndex = -1;
-		@Var BNameSpace NameSpace = this;
-		while(NameSpace != null) {
-			if(NameSpace.SymbolTable2 != null) {
-				@Var BNode EntryNode = NameSpace.SymbolTable2.GetOrNull(Name);
+		@Var LibBunGamma Gamma = this;
+		while(Gamma != null) {
+			if(Gamma.SymbolTable2 != null) {
+				@Var BNode EntryNode = Gamma.SymbolTable2.GetOrNull(Name);
 				if(EntryNode != null) {
 					NameIndex = NameIndex + 1;
 				}
 			}
-			NameSpace = NameSpace.GetParentNameSpace();
+			Gamma = Gamma.GetParentGamma();
 		}
 		return NameIndex;
 	}
 
 	public final void SetRootSymbol(String Symbol, BunLetVarNode EntryNode) {
-		this.GetRootNameSpace().SetSymbol(Symbol, EntryNode);
+		this.GetRootGamma().SetSymbol(Symbol, EntryNode);
 	}
 
 	public final BunLetVarNode GetLocalVariable(String Name) {
 		@Var BNode EntryNode = this.GetSymbol(Name);
-		//System.out.println("var " + VarName + ", entry=" + Entry + ", NameSpace=" + this);
+		//System.out.println("var " + VarName + ", entry=" + Entry + ", Gamma=" + this);
 		if(EntryNode instanceof BunLetVarNode) {
 			return (BunLetVarNode)EntryNode;
 		}
@@ -262,7 +262,7 @@ public final class BNameSpace {
 		}
 		if(IsCreation && BLib._IsSymbol(BLib._GetChar(TypeName, 0))) {
 			@Var BType Type = new BClassType(TypeName, BType.VarType);
-			this.GetRootNameSpace().SetTypeName(TypeName, Type, SourceToken);
+			this.GetRootGamma().SetTypeName(TypeName, Type, SourceToken);
 			return Type;
 		}
 		return null;

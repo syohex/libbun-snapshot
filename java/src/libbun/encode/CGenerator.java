@@ -83,8 +83,8 @@ import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.parser.BLangInfo;
-import libbun.parser.BLogger;
+import libbun.parser.LibBunLangInfo;
+import libbun.parser.LibBunLogger;
 import libbun.type.BClassField;
 import libbun.type.BClassType;
 import libbun.type.BFunc;
@@ -93,10 +93,10 @@ import libbun.type.BType;
 import libbun.util.BLib;
 import libbun.util.Var;
 
-public class CGenerator extends SourceGenerator {
+public class CGenerator extends LibBunSourceGenerator {
 
 	public CGenerator() {
-		super(new BLangInfo("C99", "c"));
+		super(new LibBunLangInfo("C99", "c"));
 		//this.TopType = "ZObject *";
 		this.SetNativeType(BType.BooleanType, "int");
 		this.SetNativeType(BType.IntType, "long");
@@ -109,7 +109,7 @@ public class CGenerator extends SourceGenerator {
 	@Override protected void GenerateExpression(BNode Node) {
 		if(Node.IsUntyped() && !Node.IsErrorNode() && !(Node instanceof BunFuncNameNode)) {
 			this.Source.Append("/*untyped*/NULL");
-			BLogger._LogError(Node.SourceToken, "untyped error: " + Node);
+			LibBunLogger._LogError(Node.SourceToken, "untyped error: " + Node);
 		}
 		else {
 			Node.Accept(this);
@@ -361,7 +361,7 @@ public class CGenerator extends SourceGenerator {
 	public void VisitGetNameNode(GetNameNode Node) {
 		@Var BNode ResolvedNode = Node.ResolvedNode;
 		if(ResolvedNode == null && !this.LangInfo.AllowUndefinedSymbol) {
-			BLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GivenName);
+			LibBunLogger._LogError(Node.SourceToken, "undefined symbol: " + Node.GivenName);
 		}
 		this.Source.Append(Node.GetUniqueName(this));
 	}
@@ -786,7 +786,7 @@ public class CGenerator extends SourceGenerator {
 
 	@Override
 	public void VisitErrorNode(ErrorNode Node) {
-		@Var String Message = BLogger._LogError(Node.SourceToken, Node.ErrorMessage);
+		@Var String Message = LibBunLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.Source.Append("perror(");
 		this.Source.Append(BLib._QuoteString(Message));
 		this.Source.Append(")");

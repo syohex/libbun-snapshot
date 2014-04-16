@@ -3,11 +3,11 @@ package libbun.parser;
 import libbun.util.BField;
 import libbun.util.BTokenFunction;
 
-public final class BTokenFuncChain {
+public final class LibBunTokenFuncChain {
 	@BField public BTokenFunction   Func;
-	@BField public BTokenFuncChain	ParentFunc;
+	@BField public LibBunTokenFuncChain	ParentFunc;
 
-	BTokenFuncChain(BTokenFunction Func, BTokenFuncChain Parent) {
+	LibBunTokenFuncChain(BTokenFunction Func, LibBunTokenFuncChain Parent) {
 		this.Func = Func;
 		this.ParentFunc = Parent;
 	}

@@ -1,8 +1,8 @@
 package libbun.ast;
 
-import libbun.encode.AbstractGenerator;
-import libbun.parser.BTypeChecker;
-import libbun.parser.BVisitor;
+import libbun.encode.LibBunGenerator;
+import libbun.parser.LibBunTypeChecker;
+import libbun.parser.LibBunVisitor;
 
 
 public abstract class SyntaxSugarNode extends BNode {
@@ -11,10 +11,10 @@ public abstract class SyntaxSugarNode extends BNode {
 		super(ParentNode, Size);
 	}
 
-	@Override public final void Accept(BVisitor Visitor) {
+	@Override public final void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitSyntaxSugarNode(this);
 	}
 
-	public abstract DesugarNode DeSugar(AbstractGenerator Generator, BTypeChecker TypeChekcer);
+	public abstract DesugarNode DeSugar(LibBunGenerator Generator, LibBunTypeChecker TypeChekcer);
 
 }

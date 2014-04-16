@@ -1,6 +1,6 @@
 package libbun.type;
 
-import libbun.parser.BTypeChecker;
+import libbun.parser.LibBunTypeChecker;
 
 public class BNullableType extends BType {
 
@@ -8,11 +8,11 @@ public class BNullableType extends BType {
 		super(BType.UniqueTypeFlag, null, ParamType);
 	}
 
-	@Override public boolean IsNullableType(BTypeChecker Gamma) {
+	@Override public boolean IsNullableType(LibBunTypeChecker Gamma) {
 		return true;
 	}
 
-	@Override public boolean IsMutableType(BTypeChecker Gamma) {
+	@Override public boolean IsMutableType(LibBunTypeChecker Gamma) {
 		return this.RefType.IsMutableType(Gamma);
 	}
 

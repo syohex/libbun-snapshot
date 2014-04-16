@@ -25,7 +25,7 @@
 package libbun.ast.statement;
 
 import libbun.ast.BNode;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 
 public final class BunIfNode extends BNode {
 	public final static int _Cond = 0;
@@ -55,7 +55,7 @@ public final class BunIfNode extends BNode {
 		return this.AST[BunIfNode._Else ];
 	}
 
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitIfNode(this);
 	}
 }

@@ -25,44 +25,44 @@
 package libbun.ast;
 
 import libbun.ast.decl.BunLetVarNode;
-import libbun.parser.BNameSpace;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunGamma;
+import libbun.parser.LibBunVisitor;
 import libbun.util.BField;
 import libbun.util.Nullable;
 import libbun.util.Var;
 
 public class BunBlockNode extends AbstractListNode {
-	@BField public BNameSpace NullableNameSpace;
+	@BField public LibBunGamma NullableGamma;
 
-	public BunBlockNode(BNode ParentNode, @Nullable BNameSpace NameSpace) {
+	public BunBlockNode(BNode ParentNode, @Nullable LibBunGamma Gamma) {
 		super(ParentNode, 0);
-		this.NullableNameSpace = NameSpace;
+		this.NullableGamma = Gamma;
 	}
 
-	protected BunBlockNode(BNode ParentNode, @Nullable BNameSpace NameSpace, int Init) {  // call by ZVarNode
+	protected BunBlockNode(BNode ParentNode, @Nullable LibBunGamma Gamma, int Init) {  // call by ZVarNode
 		super(ParentNode, Init);
-		this.NullableNameSpace = NameSpace;
+		this.NullableGamma = Gamma;
 	}
 
-	public BunBlockNode(BNode ParentNode, @Nullable BNameSpace NameSpace, BunLetVarNode VarNode) {
+	public BunBlockNode(BNode ParentNode, @Nullable LibBunGamma Gamma, BunLetVarNode VarNode) {
 		super(ParentNode, 1);
-		this.NullableNameSpace = NameSpace;
+		this.NullableGamma = Gamma;
 		this.SetNode(0, VarNode);
 	}
 
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
-		return this.DupField(TypedClone, new BunBlockNode(ParentNode, this.NullableNameSpace));
+		return this.DupField(TypedClone, new BunBlockNode(ParentNode, this.NullableGamma));
 	}
 
-	public final BNameSpace GetBlockNameSpace() {
-		if(this.NullableNameSpace == null) {
-			@Var BNameSpace NameSpace = this.GetNameSpace();
-			this.NullableNameSpace = new BNameSpace(NameSpace.Generator, this);
+	public final LibBunGamma GetBlockGamma() {
+		if(this.NullableGamma == null) {
+			@Var LibBunGamma Gamma = this.GetGamma();
+			this.NullableGamma = new LibBunGamma(Gamma.Generator, this);
 		}
-		return this.NullableNameSpace;
+		return this.NullableGamma;
 	}
 
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitBlockNode(this);
 	}
 

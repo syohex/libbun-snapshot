@@ -56,13 +56,13 @@ import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.encode.SourceGenerator;
-import libbun.parser.BLangInfo;
+import libbun.encode.LibBunSourceGenerator;
+import libbun.parser.LibBunLangInfo;
 
-public class LuaGenerator extends SourceGenerator {
+public class LuaGenerator extends LibBunSourceGenerator {
 
 	public LuaGenerator() {
-		super(new BLangInfo("Lua-5.2", "lua"));
+		super(new LibBunLangInfo("Lua-5.2", "lua"));
 	}
 
 	@Override

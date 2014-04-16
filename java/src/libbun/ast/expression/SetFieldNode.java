@@ -25,7 +25,7 @@
 package libbun.ast.expression;
 
 import libbun.ast.BNode;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 import libbun.util.Var;
 
 public final class SetFieldNode extends GetFieldNode {
@@ -47,7 +47,7 @@ public final class SetFieldNode extends GetFieldNode {
 		return this.AST[SetFieldNode._Expr ];
 	}
 
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitSetFieldNode(this);
 	}
 

@@ -1,8 +1,8 @@
 package libbun.ast.decl;
 
 import libbun.ast.BNode;
-import libbun.parser.BNameSpace;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunGamma;
+import libbun.parser.LibBunVisitor;
 
 public abstract class TopLevelNode extends BNode {
 
@@ -10,10 +10,10 @@ public abstract class TopLevelNode extends BNode {
 		super(ParentNode, Size);
 	}
 
-	@Override public final void Accept(BVisitor Visitor) {
+	@Override public final void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitTopLevelNode(this);
 	}
 
-	public abstract void Perform(BNameSpace NameSpace);
+	public abstract void Perform(LibBunGamma Gamma);
 
 }

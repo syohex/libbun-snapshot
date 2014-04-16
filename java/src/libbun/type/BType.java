@@ -25,7 +25,7 @@
 
 package libbun.type;
 import libbun.parser.BToken;
-import libbun.parser.BTypeChecker;
+import libbun.parser.LibBunTypeChecker;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
@@ -171,7 +171,7 @@ public class BType  {
 		return BLib._IsFlag(this.TypeFlag, BType.OpenTypeFlag);
 	}
 
-	@ZenMethod public boolean IsMutableType(BTypeChecker Gamma) {
+	@ZenMethod public boolean IsMutableType(LibBunTypeChecker Gamma) {
 		//		if(Gamma.IsSupportMutable) {
 		//			return false;
 		//		}
@@ -179,7 +179,7 @@ public class BType  {
 		return !Gamma.IsSupportMutable;
 	}
 
-	@ZenMethod public boolean IsNullableType(BTypeChecker Gamma) {
+	@ZenMethod public boolean IsNullableType(LibBunTypeChecker Gamma) {
 		//		if(Gamma.IsSupportMutable) {
 		//			return false;
 		//		}

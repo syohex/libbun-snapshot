@@ -26,7 +26,7 @@ package libbun.ast.decl;
 
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 import libbun.type.BClassType;
 import libbun.type.BType;
 import libbun.util.BField;
@@ -76,7 +76,7 @@ public final class BunClassNode extends AbstractListNode {
 		return null;
 	}
 
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitClassNode(this);
 	}
 }

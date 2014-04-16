@@ -24,7 +24,7 @@
 
 package libbun.ast;
 
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 
 public final class GroupNode extends BNode {
 	public final static int _Expr = 0;
@@ -36,7 +36,7 @@ public final class GroupNode extends BNode {
 		return this.DupField(TypedClone, new GroupNode(ParentNode));
 	}
 
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitGroupNode(this);
 	}
 	public final BNode ExprNode() {

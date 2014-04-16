@@ -26,8 +26,8 @@ package libbun.ast.unary;
 
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
-import libbun.parser.BTypeChecker;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunTypeChecker;
+import libbun.parser.LibBunVisitor;
 import libbun.type.BFunc;
 import libbun.type.BType;
 import libbun.util.Var;
@@ -58,11 +58,11 @@ public class BunCastNode extends BNode {
 		return this.Type;
 	}
 
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitCastNode(this);
 	}
 
-	public final AbstractListNode ToFuncCallNode(BTypeChecker TypeChecker, BFunc ConverterFunc) {
+	public final AbstractListNode ToFuncCallNode(LibBunTypeChecker TypeChecker, BFunc ConverterFunc) {
 		@Var AbstractListNode FuncNode = TypeChecker.CreateDefinedFuncCallNode(this.ParentNode, this.SourceToken, ConverterFunc);
 		FuncNode.Append(this.ExprNode());
 		return FuncNode;

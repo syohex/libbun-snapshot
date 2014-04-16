@@ -14,7 +14,7 @@ import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
-import libbun.ast.expression.FormNode;
+import libbun.ast.expression.BunFormNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
@@ -36,10 +36,10 @@ import libbun.ast.statement.BunTryNode;
 import libbun.ast.statement.BunWhileNode;
 import libbun.ast.unary.BunCastNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 import libbun.util.Var;
 
-public class ZASTTransformer extends BVisitor {
+public class ZASTTransformer extends LibBunVisitor {
 	private BNode TransformedValue;
 	public ZASTTransformer() {
 		this.TransformedValue = null;
@@ -241,7 +241,7 @@ public class ZASTTransformer extends BVisitor {
 	}
 
 	@Override
-	public void VisitFormNode(FormNode Node) {
+	public void VisitFormNode(BunFormNode Node) {
 		this.GenerateListNode(Node);
 	}
 

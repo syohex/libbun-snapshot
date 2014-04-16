@@ -26,7 +26,7 @@ package libbun.ast.expression;
 
 import libbun.ast.BNode;
 import libbun.ast.literal.BunTypeNode;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 import libbun.util.BField;
 import libbun.util.Var;
 
@@ -62,7 +62,7 @@ public class GetFieldNode extends BNode {
 		return this.GivenName;
 	}
 
-	@Override public void Accept(BVisitor Visitor) {
+	@Override public void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitGetFieldNode(this);
 	}
 

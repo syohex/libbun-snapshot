@@ -27,7 +27,7 @@ package libbun.ast.error;
 import libbun.ast.BNode;
 import libbun.ast.literal.ConstNode;
 import libbun.parser.BToken;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 import libbun.util.BField;
 import libbun.util.BIgnored;
 
@@ -44,7 +44,7 @@ public class ErrorNode extends ConstNode {
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
 		return this.DupField(TypedClone, new ErrorNode(ParentNode, null, this.ErrorMessage));
 	}
-	@Override public final void Accept(BVisitor Visitor) {
+	@Override public final void Accept(LibBunVisitor Visitor) {
 		Visitor.VisitErrorNode(this);
 	}
 

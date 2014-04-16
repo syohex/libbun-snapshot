@@ -1,8 +1,8 @@
 package libbun.ast.unary;
 
 import libbun.ast.BNode;
-import libbun.parser.BOperatorVisitor;
-import libbun.parser.BVisitor;
+import libbun.parser.BunVisitor;
+import libbun.parser.LibBunVisitor;
 
 public class BunComplementNode extends UnaryOperatorNode {
 	public BunComplementNode(BNode ParentNode) {
@@ -15,9 +15,9 @@ public class BunComplementNode extends UnaryOperatorNode {
 	@Override public final String GetOperator() {
 		return "~";
 	}
-	@Override public final void Accept(BVisitor Visitor) {
-		if(Visitor instanceof BOperatorVisitor) {
-			((BOperatorVisitor)Visitor).VisitComplementNode(this);
+	@Override public final void Accept(LibBunVisitor Visitor) {
+		if(Visitor instanceof BunVisitor) {
+			((BunVisitor)Visitor).VisitComplementNode(this);
 		}
 		else {
 			Visitor.VisitUnaryNode(this);

@@ -41,7 +41,7 @@ import libbun.ast.statement.BunThrowNode;
 import libbun.ast.statement.BunTryNode;
 import libbun.ast.statement.BunWhileNode;
 import libbun.ast.unary.BunCastNode;
-import libbun.encode.SourceBuilder;
+import libbun.encode.LibBunSourceBuilder;
 import libbun.encode.obsolete.OldSourceGenerator;
 import libbun.parser.BNodeUtils;
 import libbun.type.BType;
@@ -85,12 +85,12 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 		this.Header.AppendNewLine("import ", LibName, this.SemiColon);
 	}
 
-	private void Indent(SourceBuilder builder) {
+	private void Indent(LibBunSourceBuilder builder) {
 		IndentLevel = IndentLevel + 1;
 		builder.OpenIndent();
 	}
 
-	private void UnIndent(SourceBuilder builder) {
+	private void UnIndent(LibBunSourceBuilder builder) {
 		IndentLevel = IndentLevel - 1;
 		builder.CloseIndent();
 	}

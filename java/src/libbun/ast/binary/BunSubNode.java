@@ -2,9 +2,9 @@ package libbun.ast.binary;
 
 import libbun.ast.BNode;
 import libbun.lang.bun.BunPrecedence;
-import libbun.parser.BOperatorVisitor;
+import libbun.parser.BunVisitor;
 import libbun.parser.BToken;
-import libbun.parser.BVisitor;
+import libbun.parser.LibBunVisitor;
 
 public class BunSubNode extends ArithmeticOperatorNode {
 	public BunSubNode(BNode ParentNode) {
@@ -17,9 +17,9 @@ public class BunSubNode extends ArithmeticOperatorNode {
 	@Override public final String GetOperator() {
 		return "-";
 	}
-	@Override public final void Accept(BVisitor Visitor) {
-		if(Visitor instanceof BOperatorVisitor) {
-			((BOperatorVisitor)Visitor).VisitSubNode(this);
+	@Override public final void Accept(LibBunVisitor Visitor) {
+		if(Visitor instanceof BunVisitor) {
+			((BunVisitor)Visitor).VisitSubNode(this);
 		}
 		else {
 			Visitor.VisitBinaryNode(this);
