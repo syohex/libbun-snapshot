@@ -1,0 +1,3 @@
+#!/bin/bash
+
+OUTDIR=test/w TARGET=java CHECK=test/bin/check_java test/bin/buntest test/bun/*.bun
