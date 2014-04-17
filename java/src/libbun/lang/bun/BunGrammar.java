@@ -52,7 +52,6 @@ import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunDefineNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
-import libbun.ast.decl.BunPrototypeNode;
 import libbun.ast.decl.BunRequireNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.expression.FuncCallNode;
@@ -87,12 +86,12 @@ import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
-import libbun.parser.LibBunGamma;
 import libbun.parser.BPatternToken;
 import libbun.parser.BSourceContext;
-import libbun.parser.LibBunSyntax;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
+import libbun.parser.LibBunGamma;
+import libbun.parser.LibBunSyntax;
 import libbun.parser.LibBunTypeChecker;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
@@ -917,19 +916,19 @@ class FunctionPatternFunction extends BMatchFunction {
 	}
 }
 
-class PrototypePatternFunction extends BMatchFunction {
-	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
-		@Var BNode FuncNode = new BunFunctionNode(ParentNode);
-		FuncNode = TokenContext.MatchToken(FuncNode, "function", BTokenContext._Required);
-		FuncNode = TokenContext.MatchPattern(FuncNode, BunFunctionNode._NameInfo, "$Name$", BTokenContext._Required);
-		FuncNode = TokenContext.MatchNtimes(FuncNode, "(", "$Param$", ",", ")");
-		FuncNode = TokenContext.MatchPattern(FuncNode, BunFunctionNode._TypeInfo, "$TypeAnnotation$", BTokenContext._Required);
-		if(FuncNode instanceof BunFunctionNode) {
-			return new BunPrototypeNode((BunFunctionNode)FuncNode);
-		}
-		return FuncNode;
-	}
-}
+//class PrototypePatternFunction extends BMatchFunction {
+//	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+//		@Var BNode FuncNode = new BunFunctionNode(ParentNode);
+//		FuncNode = TokenContext.MatchToken(FuncNode, "function", BTokenContext._Required);
+//		FuncNode = TokenContext.MatchPattern(FuncNode, BunFunctionNode._NameInfo, "$Name$", BTokenContext._Required);
+//		FuncNode = TokenContext.MatchNtimes(FuncNode, "(", "$Param$", ",", ")");
+//		FuncNode = TokenContext.MatchPattern(FuncNode, BunFunctionNode._TypeInfo, "$TypeAnnotation$", BTokenContext._Required);
+//		if(FuncNode instanceof BunFunctionNode) {
+//			return new BunPrototypeNode((BunFunctionNode)FuncNode);
+//		}
+//		return FuncNode;
+//	}
+//}
 
 class LetPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
@@ -1151,7 +1150,7 @@ public class BunGrammar {
 	public final static BMatchFunction VarPattern = new VarPatternFunction();
 	public final static BMatchFunction ParamPattern = new ParamPatternFunction();
 	public final static BMatchFunction FunctionPattern = new FunctionPatternFunction();
-	public final static BMatchFunction PrototypePattern = new PrototypePatternFunction();
+	//	public final static BMatchFunction PrototypePattern = new PrototypePatternFunction();
 
 	public final static BMatchFunction LetPattern = new LetPatternFunction();
 	public final static BMatchFunction ExportPattern = new ExportPatternFunction();
@@ -1265,7 +1264,7 @@ public class BunGrammar {
 		Gamma.DefineExpression("$Name$", NamePattern);
 		Gamma.DefineStatement("var", VarPattern);
 		Gamma.DefineExpression("$Param$", ParamPattern);
-		Gamma.DefineExpression("function", PrototypePattern);
+		//		Gamma.DefineExpression("function", PrototypePattern);
 		Gamma.DefineExpression("function", FunctionPattern);
 
 		Gamma.DefineStatement("let", LetPattern);
