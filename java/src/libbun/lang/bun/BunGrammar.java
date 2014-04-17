@@ -700,7 +700,7 @@ class StatementEndPatternFunction extends BMatchFunction {
 class BlockPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		@Var BNode BlockNode = new BunBlockNode(ParentNode, null);
-		@Var BToken SkipToken = TokenContext.GetToken();
+		@Var int SkipStopIndent = TokenContext.GetToken().GetIndentSize();
 		BlockNode = TokenContext.MatchToken(BlockNode, "{", BTokenContext._Required);
 		if(!BlockNode.IsErrorNode()) {
 			@Var boolean Remembered = TokenContext.SetParseFlag(BTokenContext._AllowSkipIndent); // init
@@ -709,12 +709,21 @@ class BlockPatternFunction extends BMatchFunction {
 				if(TokenContext.MatchToken("}")) {
 					break;
 				}
-				BlockNode = TokenContext.MatchPattern(BlockNode, BNode._AppendIndex, "$Statement$", BTokenContext._Required);
-				if(BlockNode.IsErrorNode()) {
-					TokenContext.SkipError(SkipToken);
-					TokenContext.MatchToken("}");
+				@Var BNode BlockNode2 = TokenContext.MatchPattern(BlockNode, BNode._AppendIndex, "$Statement$", BTokenContext._Required);
+				if(BlockNode2.IsErrorNode()) {
+					BlockNode.SetNode(BNode._AppendIndex, BlockNode2);
+					while(TokenContext.HasNext()) {
+						@Var BToken Token = TokenContext.GetToken(BTokenContext._MoveNext);
+						if(Token.EqualsText('}')) {
+							//System.out.println("INDENT: " + Token.GetIndentSize());
+							if(Token.GetIndentSize() == SkipStopIndent) {
+								break;
+							}
+						}
+					}
 					break;
 				}
+				BlockNode = BlockNode2;
 			}
 			TokenContext.SetParseFlag(Remembered);
 		}
