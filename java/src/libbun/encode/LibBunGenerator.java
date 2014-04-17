@@ -32,15 +32,16 @@ import libbun.ast.SyntaxSugarNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
+import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.literal.BunNullNode;
 import libbun.ast.literal.DefaultValueNode;
-import libbun.parser.LibBunLangInfo;
-import libbun.parser.LibBunLogger;
-import libbun.parser.LibBunGamma;
-import libbun.parser.BunVisitor;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
+import libbun.parser.BunVisitor;
+import libbun.parser.LibBunGamma;
+import libbun.parser.LibBunLangInfo;
+import libbun.parser.LibBunLogger;
 import libbun.parser.LibBunTypeChecker;
 import libbun.type.BClassType;
 import libbun.type.BFormFunc;
@@ -392,6 +393,7 @@ public abstract class LibBunGenerator extends BunVisitor {
 			Node.Type = BType.VoidType;
 		}
 		else {
+			System.out.println("Node: " + Node);
 			if(!this.LangInfo.AllowTopLevelScript) {
 				@Var String FuncName = this.NameUniqueSymbol("Main");
 				Node = this.TypeChecker.CreateFunctionNode(Node.ParentNode, FuncName, Node);
@@ -415,6 +417,9 @@ public abstract class LibBunGenerator extends BunVisitor {
 				TokenContext.SkipError(SkipToken);
 			}
 			this.PreProcess(StmtNode);
+			if(!(StmtNode instanceof TopLevelNode)) {
+				TopBlockNode.Append(StmtNode);
+			}
 			TokenContext.SkipEmptyStatement();
 			TokenContext.Vacume();
 		}

@@ -260,6 +260,7 @@ public abstract class LibBunTypeChecker extends BunVisitor {
 
 	@Override public final void VisitTopLevelNode(TopLevelNode Node) {
 		Node.Perform(Node.GetGamma());
+		this.ReturnTypeNode(Node, BType.VoidType);
 	}
 
 	@Override public final void VisitErrorNode(ErrorNode Node) {
