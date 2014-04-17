@@ -28,7 +28,6 @@ import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.EmptyNode;
 import libbun.ast.GroupNode;
-import libbun.ast.binary.BInstanceOfNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAddNode;
 import libbun.ast.binary.BunAndNode;
@@ -39,6 +38,7 @@ import libbun.ast.binary.BunDivNode;
 import libbun.ast.binary.BunEqualsNode;
 import libbun.ast.binary.BunGreaterThanEqualsNode;
 import libbun.ast.binary.BunGreaterThanNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.binary.BunLeftShiftNode;
 import libbun.ast.binary.BunLessThanEqualsNode;
 import libbun.ast.binary.BunLessThanNode;
@@ -443,6 +443,14 @@ class BunGreaterThanEqualsPatternFunction extends BMatchFunction {
 		return BinaryNode.SetParsedNode(ParentNode, LeftNode, BinaryNode.GetOperator(), TokenContext);
 	}
 }
+
+class InstanceOfPatternFunction extends BMatchFunction {
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		@Var BinaryOperatorNode BinaryNode = new BunInstanceOfNode(ParentNode);
+		return BinaryNode.SetParsedNode(ParentNode, LeftNode, BinaryNode.GetOperator(), TokenContext, "$OpenType$");
+	}
+}
+
 
 class StringLiteralPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
@@ -1000,13 +1008,6 @@ class FieldPatternFunction extends BMatchFunction {
 	}
 }
 
-class InstanceOfPatternFunction extends BMatchFunction {
-	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
-		@Var BNode BinaryNode = new BInstanceOfNode(ParentNode);
-		BinaryNode = TokenContext.MatchPattern(BinaryNode, BInstanceOfNode._TypeInfo, "$OpenType$", BTokenContext._Required);
-		return BinaryNode;
-	}
-}
 
 class AssertPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {

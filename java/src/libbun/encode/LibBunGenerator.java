@@ -387,24 +387,29 @@ public abstract class LibBunGenerator extends BunVisitor {
 		}
 	}
 
-	private void GenerateTopLevelStatement(BNode Node) {
+	private boolean GenerateTopLevelStatement(BNode Node) {
 		this.TopLevelSymbol = null;
 		if(Node instanceof BunFunctionNode || Node instanceof BunClassNode || Node instanceof BunLetVarNode) {
-			Node.Type = BType.VoidType;
+			//Node.Type = BType.VoidType;
+			this.GenerateStatement(Node);
+			return true;
 		}
-		else {
-			System.out.println("Node: " + Node);
-			if(!this.LangInfo.AllowTopLevelScript) {
-				@Var String FuncName = this.NameUniqueSymbol("Main");
-				Node = this.TypeChecker.CreateFunctionNode(Node.ParentNode, FuncName, Node);
-				this.TopLevelSymbol = FuncName;
-			}
+		if(Node instanceof ErrorNode) {
+			this.GenerateStatement(Node);
+			return false;
+		}
+		//System.out.println("Node: " + Node);
+		if(!this.LangInfo.AllowTopLevelScript) {
+			@Var String FuncName = this.NameUniqueSymbol("Main");
+			Node = this.TypeChecker.CreateFunctionNode(Node.ParentNode, FuncName, Node);
+			this.TopLevelSymbol = FuncName;
 		}
 		this.GenerateStatement(Node);
+		return true;
 	}
 
 	public final boolean LoadScript(String ScriptText, String FileName, int LineNumber) {
-		@Var boolean Result = true;
+		@Var boolean AllPassed = true;
 		@Var BunBlockNode TopBlockNode = new BunBlockNode(null, this.RootGamma);
 		@Var BTokenContext TokenContext = new BTokenContext(this, this.RootGamma, FileName, LineNumber, ScriptText);
 		TokenContext.SkipEmptyStatement();
@@ -427,11 +432,13 @@ public abstract class LibBunGenerator extends BunVisitor {
 		@Var int i = 0;
 		while(i < TopBlockNode.GetListSize()) {
 			@Var BNode StmtNode = TopBlockNode.GetListAt(i);
-			this.GenerateTopLevelStatement(StmtNode);
+			if(!this.GenerateTopLevelStatement(StmtNode)) {
+				AllPassed = false;
+			}
 			i = i + 1;
 		}
 		this.Logger.OutputErrorsToStdErr();
-		return Result;
+		return AllPassed;
 	}
 
 	public final boolean LoadFile(String FileName, @Nullable BToken SourceToken) {
@@ -440,7 +447,11 @@ public abstract class LibBunGenerator extends BunVisitor {
 			LibBunLogger._LogErrorExit(SourceToken, "file not found: " + FileName);
 			return false;
 		}
-		return this.LoadScript(ScriptText, FileName, 1);
+		if(!this.LoadScript(ScriptText, FileName, 1)) {
+			BLib._Exit(1, "found top level error: " + FileName);
+			return false;
+		}
+		return true;
 	}
 
 	public final boolean RequireLibrary(String LibName, @Nullable BToken SourceToken) {

@@ -29,7 +29,7 @@ import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
 import libbun.ast.LocalDefinedNode;
-import libbun.ast.binary.BInstanceOfNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BitwiseOperatorNode;
 import libbun.ast.binary.BunAddNode;
@@ -545,10 +545,10 @@ public class BunTypeSafer extends LibBunTypeChecker {
 		this.ReturnNode(this.CreateStupidCastNode(Node.Type, Node.ExprNode(), Node.GetAstToken(BunCastNode._TypeInfo), "undefined converter"));
 	}
 
-	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
+	@Override public void VisitInstanceOfNode(BunInstanceOfNode Node) {
 		this.CheckTypeAt(Node, BinaryOperatorNode._Left, BType.VarType);
 		if(!(Node.TargetType() instanceof BClassType)) {
-			LibBunLogger._LogWarning(Node.GetAstToken(BInstanceOfNode._TypeInfo), "instanceof takes a class type; the result is implementation-dependant.");
+			LibBunLogger._LogWarning(Node.GetAstToken(BunInstanceOfNode._TypeInfo), "instanceof takes a class type; the result is implementation-dependant.");
 		}
 		this.ReturnTypeNode(Node, BType.BooleanType);
 	}

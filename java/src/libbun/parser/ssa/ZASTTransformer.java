@@ -6,7 +6,7 @@ import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
 import libbun.ast.LocalDefinedNode;
 import libbun.ast.SyntaxSugarNode;
-import libbun.ast.binary.BInstanceOfNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
@@ -156,8 +156,8 @@ public class ZASTTransformer extends LibBunVisitor {
 	}
 
 	@Override
-	public void VisitInstanceOfNode(BInstanceOfNode Node) {
-		this.Transform(Node, BInstanceOfNode._Left);
+	public void VisitInstanceOfNode(BunInstanceOfNode Node) {
+		this.Transform(Node, BunInstanceOfNode._Left);
 	}
 
 	@Override

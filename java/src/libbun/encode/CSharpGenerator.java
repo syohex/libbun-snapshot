@@ -1,7 +1,7 @@
 package libbun.encode;
 
 import libbun.ast.BNode;
-import libbun.ast.binary.BInstanceOfNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
@@ -383,8 +383,8 @@ public class CSharpGenerator extends OldSourceGenerator {
 		return FuncName;
 	}
 
-	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
-		this.GenerateExpression(Node.AST[BInstanceOfNode._Left]);
+	@Override public void VisitInstanceOfNode(BunInstanceOfNode Node) {
+		this.GenerateExpression(Node.AST[BunInstanceOfNode._Left]);
 		this.Source.Append(" is ");
 		this.GenerateTypeName(Node.TargetType());
 	}

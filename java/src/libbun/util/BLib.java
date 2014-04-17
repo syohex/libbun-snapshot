@@ -38,14 +38,14 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 
 import libbun.ast.BNode;
-import libbun.encode.LibBunGenerator;
 import libbun.encode.BunGenerator;
+import libbun.encode.LibBunGenerator;
 import libbun.encode.LibBunSourceBuilder;
 import libbun.encode.jvm.JavaTypeTable;
 import libbun.lang.bun.BunTypeSafer;
-import libbun.parser.LibBunGamma;
 import libbun.parser.BSourceContext;
 import libbun.parser.BTokenContext;
+import libbun.parser.LibBunGamma;
 import libbun.parser.LibBunTokenFuncChain;
 import libbun.type.BType;
 
@@ -104,7 +104,7 @@ public class BLib {
 	}
 
 	public final static void _Exit(int status, String Message) {
-		System.err.println("EXIT " + BLib._GetStackInfo(3) + Message);
+		System.err.println("EXIT " + BLib._GetStackInfo(3) + " " + Message);
 		System.exit(status);
 	}
 

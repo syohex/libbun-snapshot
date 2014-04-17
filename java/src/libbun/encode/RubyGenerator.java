@@ -4,7 +4,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 import libbun.ast.BunBlockNode;
-import libbun.ast.binary.BInstanceOfNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.statement.BunThrowNode;
@@ -76,7 +76,7 @@ public class RubyGenerator extends OldSourceGenerator {
 		// Use method (like 1.to_s) in Ruby.
 	}
 
-	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
+	@Override public void VisitInstanceOfNode(BunInstanceOfNode Node) {
 		// Use method (like "a".is_a?(Object)) in Ruby.
 	}
 

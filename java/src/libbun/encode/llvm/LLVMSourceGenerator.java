@@ -32,7 +32,7 @@ import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
-import libbun.ast.binary.BInstanceOfNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAndNode;
 import libbun.ast.binary.BunOrNode;
@@ -1036,7 +1036,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 		}
 	}
 
-	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
+	@Override public void VisitInstanceOfNode(BunInstanceOfNode Node) {
 		// TODO
 	}
 

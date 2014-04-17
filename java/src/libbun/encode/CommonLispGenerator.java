@@ -27,7 +27,7 @@ package libbun.encode;
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
-import libbun.ast.binary.BInstanceOfNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAddNode;
 import libbun.ast.binary.BunAndNode;
@@ -281,7 +281,7 @@ public class CommonLispGenerator extends LibBunSourceGenerator {
 		this.Source.Append(")");
 	}
 
-	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
+	@Override public void VisitInstanceOfNode(BunInstanceOfNode Node) {
 		this.GenerateExpression(Node.LeftNode());
 		this.Source.Append(" instanceof ");
 		this.GenerateTypeName(Node.TargetType());

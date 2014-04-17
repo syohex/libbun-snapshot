@@ -27,7 +27,7 @@ package libbun.encode;
 
 import libbun.ast.BNode;
 import libbun.ast.LocalDefinedNode;
-import libbun.ast.binary.BInstanceOfNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
@@ -384,9 +384,9 @@ public class SSACGenerator extends OldSourceGenerator {
 		this.Source.CloseIndent("}");
 	}
 
-	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
+	@Override public void VisitInstanceOfNode(BunInstanceOfNode Node) {
 		this.Source.Append("LibZen_Is(");
-		this.GenerateExpression(Node.AST[BInstanceOfNode._Left]);
+		this.GenerateExpression(Node.AST[BunInstanceOfNode._Left]);
 		this.Source.Append(this.Camma);
 		this.Source.AppendInt(Node.TargetType().TypeId);
 		this.Source.Append(")");

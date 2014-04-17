@@ -25,8 +25,8 @@
 package libbun.ast.binary;
 
 import libbun.ast.BNode;
-import libbun.parser.LibBunSyntax;
 import libbun.parser.BTokenContext;
+import libbun.parser.LibBunSyntax;
 import libbun.util.BField;
 import libbun.util.BLib;
 import libbun.util.Var;
@@ -97,9 +97,13 @@ public abstract class BinaryOperatorNode extends BNode {
 	//	}
 
 	public final BNode SetParsedNode(BNode ParentNode, BNode LeftNode, String Op, BTokenContext TokenContext) {
+		return this.SetParsedNode(ParentNode, LeftNode, Op, TokenContext, "$Expression$");
+	}
+
+	public final BNode SetParsedNode(BNode ParentNode, BNode LeftNode, String Op, BTokenContext TokenContext, String Pattern) {
 		this.SetLeftNode(LeftNode);
 		TokenContext.MatchToken(this, Op, BTokenContext._Required);
-		@Var BNode RightNode = TokenContext.ParsePattern(ParentNode, "$Expression$", BTokenContext._Required);
+		@Var BNode RightNode = TokenContext.ParsePattern(ParentNode, Pattern, BTokenContext._Required);
 		if(RightNode.IsErrorNode()) {
 			return RightNode;
 		}
@@ -108,7 +112,6 @@ public abstract class BinaryOperatorNode extends BNode {
 		}
 		this.SetRightNode(RightNode);
 		return this;
-
 	}
 
 	public final boolean IsDifferentlyTyped() {

@@ -31,16 +31,16 @@ import libbun.type.BType;
 
 //E.g., $ExprNode instanceof TypeInfo
 
-public final class BInstanceOfNode extends BinaryOperatorNode {
+public final class BunInstanceOfNode extends BinaryOperatorNode {
 	public final static int _Left = 0;
 	public final static int _TypeInfo = 1;
 
-	public BInstanceOfNode(BNode ParentNode) {
+	public BunInstanceOfNode(BNode ParentNode) {
 		super(ParentNode, BunPrecedence._Instanceof);
 	}
 
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
-		return this.DupField(TypedClone, new BInstanceOfNode(ParentNode));
+		return this.DupField(TypedClone, new BunInstanceOfNode(ParentNode));
 	}
 
 	@Override public String GetOperator() {
@@ -48,7 +48,7 @@ public final class BInstanceOfNode extends BinaryOperatorNode {
 	}
 
 	public final BType TargetType() {
-		return this.AST[BInstanceOfNode._TypeInfo].Type;
+		return this.AST[BunInstanceOfNode._TypeInfo].Type;
 	}
 
 	@Override public void Accept(LibBunVisitor Visitor) {

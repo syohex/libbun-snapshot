@@ -28,7 +28,7 @@ import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
 import libbun.ast.LocalDefinedNode;
 import libbun.ast.SyntaxSugarNode;
-import libbun.ast.binary.BInstanceOfNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
@@ -84,7 +84,7 @@ public abstract class LibBunVisitor {
 
 	public abstract void VisitUnaryNode(UnaryOperatorNode Node);
 	public abstract void VisitCastNode(BunCastNode Node);
-	public abstract void VisitInstanceOfNode(BInstanceOfNode Node);
+	public abstract void VisitInstanceOfNode(BunInstanceOfNode Node);
 	public abstract void VisitBinaryNode(BinaryOperatorNode Node);
 
 	public abstract void VisitBlockNode(BunBlockNode Node);

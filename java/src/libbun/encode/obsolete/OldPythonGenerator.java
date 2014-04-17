@@ -27,7 +27,7 @@ package libbun.encode.obsolete;
 
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
-import libbun.ast.binary.BInstanceOfNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
@@ -150,7 +150,7 @@ public class OldPythonGenerator extends OldSourceGenerator {
 		}
 	}
 
-	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
+	@Override public void VisitInstanceOfNode(BunInstanceOfNode Node) {
 		this.Source.Append("isinstance(");
 		this.GenerateExpression(Node.LeftNode());
 		if(Node.TargetType() instanceof BClassType) {

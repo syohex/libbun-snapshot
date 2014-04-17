@@ -63,7 +63,7 @@ import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
 import libbun.ast.LocalDefinedNode;
-import libbun.ast.binary.BInstanceOfNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAddNode;
 import libbun.ast.binary.BunAndNode;
@@ -726,7 +726,7 @@ public class AsmJavaGenerator extends LibBunGenerator {
 		}
 	}
 
-	@Override public void VisitInstanceOfNode(BInstanceOfNode Node) {
+	@Override public void VisitInstanceOfNode(BunInstanceOfNode Node) {
 		if(!(Node.TargetType() instanceof BClassType) || !(Node.LeftNode().Type instanceof BClassType)) {
 			this.VisitErrorNode(new ErrorNode(Node, "require Class Type"));
 			return;
