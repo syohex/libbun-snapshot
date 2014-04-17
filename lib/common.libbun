@@ -7,6 +7,7 @@ assert: Func<boolean,String,void>
  cs:  Debug.Assert($[0])
  py:  assert $[0], $[1]
  js:  console.assert($[0], $[1])
+ lua: assert($[0], $[1])
 
 println: Func<String,void>
  bun:  println($[0])
@@ -16,6 +17,7 @@ println: Func<String,void>
  java: System.out.println($[0])
  js:   console.log($[0])
  py:   print $[0]
+ lua:  print($[0])
 
 print: Func<String,void>
  bun:  print($[0])
@@ -25,6 +27,7 @@ print: Func<String,void>
  java: System.out.print($[0])
  js:   console.log($[0])
  py:   print $[0],
+ lua:  print($[0])
 
 ## boolean
 _: Func<boolean,String>
@@ -35,6 +38,7 @@ _: Func<boolean,String>
  java: String.valueOf($[0])
  js:   String($[0])
  py:   (u'true' if $[0] else u'false')
+ lua:  tostring($[0])
 
 ## int
 _: Func<int,float>
@@ -45,6 +49,7 @@ _: Func<int,float>
  java: ((double)$[0])
  js:   $[0]
  py:   float($[0])
+ lua:  $[0]
 
 _: Func<int,String>
  bun: ((String)$[0])
@@ -54,6 +59,7 @@ _: Func<int,String>
  java: String.valueOf($[0])
  js: String($[0])
  py:  unicode($[0])
+ lua: tostring($[0])
 
 /: Func<int,int,int>
  js: @intdiv~libbun_intdiv($[0], $[1])
@@ -67,6 +73,7 @@ _: Func<float,int>
  java: ((long)$[0])
  js:   $[0]
  py:   int($[0])
+ lua:  $[0]
 
 _: Func<float,String>
  bun:   ((String)$[0])
@@ -76,6 +83,7 @@ _: Func<float,String>
  py:   (u'%.5f' % ($[0]))
  js:   String($[0])
  cs:   ($[0]).ToString()
+ lua:  tostring($[0])
 
 ## String
 
@@ -83,14 +91,17 @@ _: Func<String,int>
  bun: ((int)$[0])
  c:   @s2i~libbun_s2i($[0])
  cl:  (parse-integer $[0])
+ lua: tonumber($[0])
 
 _: Func<String,float>
  bun: ((float)$[0])
  c:   @s2f~libbun_s2f($[0])
  cl:  (read-from-string $[0])
+ lua: tonumber($[0])
 
 +: Func<String,String,String>
  cl: ~(format nil "~a~a" $[0] $[1])
+ lua: $[0] .. $[1]
 
 size: Func<String,int>
  #: s.size() returns the length of a string $s
@@ -99,6 +110,7 @@ size: Func<String,int>
  cs:   $[0].Length
  java: $[0].length()
  js:   $[0].length 
+ lua:   table.getn($[0])
  py:   len($[0])
 
 equals: Func<String,String,boolean>
