@@ -35,13 +35,13 @@ public class BType  {
 	public final static int     UniqueTypeFlag         = 1 << 16;
 	public final static int     OpenTypeFlag           = 1 << 9;  // @Open for the future
 
-	public final static BType		VarType = new BType(BType.UniqueTypeFlag, "var", null);
-	public final static BType		VoidType = new BType(BType.UniqueTypeFlag, "void", null);
-	public final static BType		BooleanType = new BType(BType.UniqueTypeFlag, "boolean", BType.VarType);
-	public final static BType		IntType = new BType(BType.UniqueTypeFlag, "int", BType.VarType);
-	public final static BType       FloatType = new BType(BType.UniqueTypeFlag, "float", BType.VarType);
-	public final static BType		StringType = new BType(BType.UniqueTypeFlag, "String", BType.VarType);
-	public final static BType       TypeType = new BType(BType.UniqueTypeFlag, "Type", BType.VarType);
+	public final static BType	VarType = new BType(BType.UniqueTypeFlag, "var", null);
+	public final static BType	VoidType = new BType(BType.UniqueTypeFlag, "void", null);
+	public final static BType	BooleanType = new BType(BType.UniqueTypeFlag, "boolean", BType.VarType);
+	public final static BType	IntType = new BType(BType.UniqueTypeFlag, "int", BType.VarType);
+	public final static BType   FloatType = new BType(BType.UniqueTypeFlag, "float", BType.VarType);
+	public final static BType	StringType = new BType(BType.UniqueTypeFlag, "String", BType.VarType);
+	public final static BType   TypeType = new BType(BType.UniqueTypeFlag, "Type", BType.VarType);
 
 	@BField public int		   TypeFlag = 0;
 	@BField public int         TypeId = 0;

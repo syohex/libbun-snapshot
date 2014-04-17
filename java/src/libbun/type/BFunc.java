@@ -33,7 +33,7 @@ public abstract class BFunc {
 
 	@BField public int			  FuncFlag;
 	@BField public String		  FuncName;  // NativeReferenceNamr
-	@BField public BFuncType       FuncType;
+	@BField public BFuncType      FuncType;
 
 	public BFunc(int FuncFlag, String FuncName, BFuncType FuncType) {
 		this.FuncFlag = FuncFlag;
