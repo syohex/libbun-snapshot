@@ -33,7 +33,7 @@ import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
-import libbun.ast.error.StupidCastErrorNode;
+import libbun.ast.error.TypeErrorNode;
 import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.NewObjectNode;
 import libbun.ast.statement.BunIfNode;
@@ -296,8 +296,8 @@ public class OldPythonGenerator extends OldSourceGenerator {
 	}
 
 	@Override public void VisitErrorNode(ErrorNode Node) {
-		if(Node instanceof StupidCastErrorNode) {
-			@Var StupidCastErrorNode ErrorNode = (StupidCastErrorNode)Node;
+		if(Node instanceof TypeErrorNode) {
+			@Var TypeErrorNode ErrorNode = (TypeErrorNode)Node;
 			this.GenerateExpression(ErrorNode.ErrorNode);
 		}
 		else {

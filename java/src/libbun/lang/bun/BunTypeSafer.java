@@ -56,8 +56,8 @@ import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
-import libbun.ast.expression.BunFuncNameNode;
 import libbun.ast.expression.BunFormNode;
+import libbun.ast.expression.BunFuncNameNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
@@ -76,7 +76,6 @@ import libbun.ast.literal.BunMapEntryNode;
 import libbun.ast.literal.BunMapLiteralNode;
 import libbun.ast.literal.BunNullNode;
 import libbun.ast.literal.BunStringNode;
-import libbun.ast.literal.BunTypeNode;
 import libbun.ast.literal.DefaultValueNode;
 import libbun.ast.literal.LiteralNode;
 import libbun.ast.statement.BunBreakNode;
@@ -92,10 +91,10 @@ import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
 import libbun.encode.LibBunGenerator;
-import libbun.parser.LibBunLogger;
-import libbun.parser.LibBunGamma;
 import libbun.parser.BNodeUtils;
 import libbun.parser.BToken;
+import libbun.parser.LibBunGamma;
+import libbun.parser.LibBunLogger;
 import libbun.parser.LibBunTypeChecker;
 import libbun.type.BClassType;
 import libbun.type.BFormFunc;
@@ -300,11 +299,11 @@ public class BunTypeSafer extends LibBunTypeChecker {
 			this.ReturnNode(this.TypeListNodeAsFuncCall(Node, (BFuncType)FuncNodeType));
 			return;
 		}
-		if(FuncNode instanceof BunTypeNode) {   // TypeName()..;
-			@Var String FuncName = FuncNode.Type.GetName();
-			FuncNode = new BunFuncNameNode(Node, FuncNode.SourceToken, FuncName, FuncNode.Type, Node.GetListSize());
-			Node.SetNode(FuncCallNode._Functor, FuncNode);
-		}
+		//		if(FuncNode instanceof BunTypeNode) {   // TypeName()..;
+		//			@Var String FuncName = FuncNode.Type.GetName();
+		//			FuncNode = new BunFuncNameNode(Node, FuncNode.SourceToken, FuncName, FuncNode.Type, Node.GetListSize());
+		//			Node.SetNode(FuncCallNode._Functor, FuncNode);
+		//		}
 		if(FuncNode instanceof GetNameNode) {
 			@Var String FuncName = ((GetNameNode)FuncNode).GivenName;
 			FuncNode = new BunFuncNameNode(Node, FuncNode.SourceToken, FuncName, Node.GetRecvType(), Node.GetListSize());
@@ -516,7 +515,6 @@ public class BunTypeSafer extends LibBunTypeChecker {
 		this.CheckTypeAt(Node, UnaryOperatorNode._Recv, BType.IntType);
 		this.ReturnTypeNode(Node, BType.IntType);
 	}
-
 
 	@Override public void VisitCastNode(BunCastNode Node) {
 		@Var BType ContextType = this.GetContextType();
@@ -960,7 +958,7 @@ public class BunTypeSafer extends LibBunTypeChecker {
 			Node.ClassType = (BClassType)ClassType;
 		}
 		else {
-			this.ReturnNode(new ErrorNode(Node, Node.ClassName() + " is not a Zen class."));
+			this.ReturnNode(new ErrorNode(Node, Node.ClassName() + " is not a bun class."));
 			return;
 		}
 		//System.out.println(" B NodeClass.ToOpen="+Node.ClassType+", IsOpenType="+Node.ClassType.IsOpenType());
@@ -1004,7 +1002,6 @@ public class BunTypeSafer extends LibBunTypeChecker {
 		// TODO Auto-generated method stub
 		System.out.println("FIXME: " + Node);
 	}
-
 
 	// utils
 

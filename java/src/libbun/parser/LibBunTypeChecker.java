@@ -35,9 +35,9 @@ import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
-import libbun.ast.error.StupidCastErrorNode;
-import libbun.ast.expression.BunFuncNameNode;
+import libbun.ast.error.TypeErrorNode;
 import libbun.ast.expression.BunFormNode;
+import libbun.ast.expression.BunFuncNameNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetNameNode;
 import libbun.ast.literal.BunAsmNode;
@@ -114,7 +114,8 @@ public abstract class LibBunTypeChecker extends BunVisitor {
 	}
 
 	protected final BNode CreateStupidCastNode(BType Requested, BNode Node, BToken SourceToken, String Message) {
-		@Var BNode ErrorNode = new StupidCastErrorNode(Node, SourceToken,  Message + ": " + Node.Type.GetName() + " => " + Requested.GetName());
+		@Var BNode ErrorNode = new TypeErrorNode(Message + ": " + Node.Type.GetName() + " must be " + Requested.GetName(), Node);
+		ErrorNode.SourceToken = SourceToken;
 		ErrorNode.Type = Requested;
 		return ErrorNode;
 	}
