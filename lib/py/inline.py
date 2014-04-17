@@ -7,7 +7,7 @@ def libbun_error(msg):
 	raise SoftwareFault(msg)
 
 ## @Fault
-class Fault:
+class Fault(Exception):
 	def __init__(self, msg):
 		self.msg = msg
 	def __str__(self):
