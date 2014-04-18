@@ -56,6 +56,7 @@ static char *libbun_concat(char *left, char *right)
 
 static void *LibZen_Malloc(size_t size)
 {
-    return malloc(size);
+  // FIXME use libgc
+  return malloc(size);
 }
 #endif /* end of include guard */

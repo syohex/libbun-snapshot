@@ -157,11 +157,15 @@ public class CGenerator extends LibBunSourceGenerator {
 	}
 
 	private void GenerateBinaryNode(BinaryOperatorNode Node, String Operator) {
-		this.Source.Append("(");
+		if (Node.ParentNode instanceof BinaryOperatorNode) {
+			this.Source.Append("(");
+		}
 		Node.LeftNode().Accept(this);
 		this.Source.Append(" " + Operator + " ");
 		Node.RightNode().Accept(this);
-		this.Source.Append(")");
+		if (Node.ParentNode instanceof BinaryOperatorNode) {
+			this.Source.Append(")");
+		}
 	}
 
 	@Override
@@ -293,6 +297,7 @@ public class CGenerator extends LibBunSourceGenerator {
 
 	@Override
 	public void VisitArrayLiteralNode(BunArrayLiteralNode Node) {
+		this.ImportLibrary("libbun.h");
 		@Var BType ParamType = Node.Type.GetParamType(0);
 		if(ParamType.IsIntType() || ParamType.IsBooleanType()) {
 			this.Source.Append("LibZen_NewIntArray(");
@@ -315,6 +320,7 @@ public class CGenerator extends LibBunSourceGenerator {
 
 	@Override
 	public void VisitMapLiteralNode(BunMapLiteralNode Node) {
+		this.ImportLibrary("libbun.h");
 		@Var BType ParamType = Node.Type.GetParamType(0);
 		if(ParamType.IsIntType() || ParamType.IsBooleanType()) {
 			this.Source.Append("LibZen_NewIntMap(");
@@ -339,6 +345,7 @@ public class CGenerator extends LibBunSourceGenerator {
 			this.GenerateExpression("", Entry.KeyNode(), ", ", Entry.ValueNode(), ", ");
 			i = i + 1;
 		}
+		this.Source.Append(")");
 	}
 
 	@Override
@@ -711,13 +718,15 @@ public class CGenerator extends LibBunSourceGenerator {
 	@Override public void VisitClassNode(BunClassNode Node) {
 		this.ImportLibrary("libbun.h");
 
-		this.Source.AppendNewLine("struct ", this.NameClass(Node.ClassType));
+		String ClassName = this.NameClass(Node.ClassType);
+		String StructName = "struct " + ClassName;
+		this.Source.AppendNewLine(StructName);
 		this.Source.OpenIndent(" {");
 		this.GenerateFields(Node.ClassType, Node.ClassType);
 		this.GenerateCField("int", "_nextId");
-		this.Source.CloseIndent("}");
+		this.Source.CloseIndent("};");
 
-		this.Source.AppendNewLine("static void _Init", this.NameClass(Node.ClassType), "(");
+		this.Source.AppendNewLine("static void _Init", ClassName, "(");
 		this.GenerateTypeName(Node.ClassType);
 		this.Source.OpenIndent(" o) {");
 		@Var BType SuperType = Node.ClassType.GetSuperType();
@@ -727,7 +736,7 @@ public class CGenerator extends LibBunSourceGenerator {
 			this.Source.Append(")o);");
 		}
 		this.Source.AppendNewLine("o->_classId" + Node.ClassType.TypeId, " = " + Node.ClassType.TypeId, ";");
-		this.Source.AppendNewLine("o->_delta" + Node.ClassType.TypeId, " = sizeof(struct " + this.NameClass(Node.ClassType)+ ") - ");
+		this.Source.AppendNewLine("o->_delta" + Node.ClassType.TypeId, " = sizeof(" + StructName + ") - ");
 		if(SuperType.Equals(BClassType._ObjectType)) {
 			this.Source.Append("sizeof(int);");
 		}
@@ -769,12 +778,12 @@ public class CGenerator extends LibBunSourceGenerator {
 
 		this.Source.AppendNewLine("static ");
 		this.GenerateTypeName(Node.ClassType);
-		this.Source.Append(" _New", this.NameClass(Node.ClassType));
+		this.Source.Append(" _New", ClassName);
 		this.Source.OpenIndent("(void) {");
 		this.Source.AppendNewLine();
 		this.GenerateTypeName(Node.ClassType);
-		this.Source.Append("o = LibZen_Malloc(sizeof(struct ", this.NameClass(Node.ClassType), "));");
-		this.Source.AppendNewLine("_Init", this.NameClass(Node.ClassType), "(o);");
+		this.Source.Append("o =  (" + StructName + "*) LibZen_Malloc(sizeof(" + StructName + "));");
+		this.Source.AppendNewLine("_Init", ClassName, "(o);");
 		this.Source.AppendNewLine("return o;");
 		this.Source.CloseIndent("}");
 	}

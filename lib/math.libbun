@@ -157,7 +157,7 @@ math-max: Func<float,float,float>
  #: max(x,y) returns the number with the highest value
  bun: math~math::max($[0], $[1])
  js: Math.max($[0], $[1])
- c:   @fmax2~libbun_fmax($[0], $[1])
+ c:   libbun.h~libbun_fmax($[0], $[1])
  cl:  (max $[0] $[1])
  java: java.lang.Math~Math.max($[0], $[1])
  py: math~math.max($[0], $[1])
@@ -166,7 +166,7 @@ math-min: Func<float,float,float>
  #: min(x,y) returns the number with the lowest value
  bun: math~math::min($[0], $[1])
  js: Math.min($[0], $[1])
- c:   @fmin2~libbun_fmin($[0], $[1])
+ c:   libbun.h~libbun_fmin($[0], $[1])
  cl:  (min $[0] $[1])
  java: java.lang.Math~Math.min($[0], $[1])
  py: math~math.min($[0], $[1])
@@ -175,7 +175,7 @@ math-max: Func<int,int,int>
  #: max(x,y) returns the number with the highest value
  bun: math~math::max($[0], $[1])
  js: Math.max($[0], $[1])
- c:   @imax2~libbun_imax($[0], $[1])
+ c:   libbun.h~libbun_imax($[0], $[1])
  cl:  (max $[0] $[1])
  java: java.lang.Math~Math.max($[0], $[1])
  py: math~math.max($[0], $[1])
@@ -184,7 +184,7 @@ math-min: Func<int,int,int>
  #: min(x,y) returns the number with the lowest value
  bun: math~math::min($[0], $[1])
  js: Math.min($[0], $[1])
- c:   @imin2~libbun_imin($[0], $[1])
+ c:   libbun.h~libbun_imin($[0], $[1])
  cl:  (min $[0] $[1])
  java: java.lang.Math~Math.min($[0], $[1])
  py: math~math.min($[0], $[1])
@@ -202,7 +202,7 @@ math-random: Func<float,float>
  #: random() returns a random number between 0 and 1
  bun: math~math::round($[0])
  js: Math.random($[0])
- c:   @random~libbun_round($[0])
+ c:   libbun.h~libbun_random($[0])
  cl:  (random 1.0)
  java: java.lang.Math~Math.random($[0])
  py: math~math.round($[0])
