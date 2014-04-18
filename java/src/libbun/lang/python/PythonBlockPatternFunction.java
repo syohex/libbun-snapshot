@@ -24,7 +24,8 @@ public class PythonBlockPatternFunction extends BMatchFunction {
 				IndentSize = Token.GetIndentSize();
 				BlockNode = TokenContext.MatchPattern(BlockNode, BNode._AppendIndex, "$Statement$", BTokenContext._Required);
 				if(BlockNode.IsErrorNode()) {
-					TokenContext.SkipError(SkipToken);
+					//FIXME: SkipError was deprecated
+					//TokenContext.SkipError(SkipToken);
 					break;
 				}
 			}

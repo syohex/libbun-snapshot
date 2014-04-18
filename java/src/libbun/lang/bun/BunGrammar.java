@@ -705,7 +705,6 @@ class BlockPatternFunction extends BMatchFunction {
 		if(!BlockNode.IsErrorNode()) {
 			@Var boolean Remembered = TokenContext.SetParseFlag(BTokenContext._AllowSkipIndent); // init
 			while(TokenContext.HasNext()) {
-				//System.out.println("Token :" + TokenContext.GetToken());
 				if(TokenContext.MatchToken("}")) {
 					break;
 				}
@@ -1297,7 +1296,6 @@ public class BunGrammar {
 		Gamma.DefineStatement("try", TryPattern);
 		Gamma.DefineStatement("throw", ThrowPattern);
 		Gamma.Generator.LangInfo.AppendGrammarInfo("zen-trycatch-0.1");
-
 	}
 
 	public final static LibBunSyntax _GetRightPattern(LibBunGamma Gamma, BTokenContext TokenContext) {

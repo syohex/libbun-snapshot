@@ -133,25 +133,29 @@ public final class BTokenContext {
 		}
 	}
 
-	public void SkipError(BToken ErrorToken) {
-		@Var int StartIndex = ErrorToken.StartIndex;
-		@Var int EndIndex = ErrorToken.EndIndex;
-		@Var int length = ErrorToken.GetIndentSize();
-		while(this.HasNext()) {
-			@Var BToken Token = this.GetToken();
-			EndIndex = Token.EndIndex;
-			this.CurrentPosition = this.CurrentPosition + 1;
-			if(Token instanceof BIndentToken) {
-				@Var int ilength = Token.GetIndentSize();
-				if(ilength <= length) {
-					break;
-				}
-			}
-		}
-		if(StartIndex < EndIndex) {
-			BLib._PrintDebug("StartIdx="+StartIndex+", EndIndex="+EndIndex);
-			BLib._PrintDebug("skipped: \t" + ErrorToken.Source.SourceText.substring(StartIndex, EndIndex));
-		}
+	//	public void SkipError(BToken ErrorToken) {
+	//		@Var int StartIndex = ErrorToken.StartIndex;
+	//		@Var int EndIndex = ErrorToken.EndIndex;
+	//		@Var int length = ErrorToken.GetIndentSize();
+	//		while(this.HasNext()) {
+	//			@Var BToken Token = this.GetToken();
+	//			EndIndex = Token.EndIndex;
+	//			this.CurrentPosition = this.CurrentPosition + 1;
+	//			if(Token instanceof BIndentToken) {
+	//				@Var int ilength = Token.GetIndentSize();
+	//				if(ilength <= length) {
+	//					break;
+	//				}
+	//			}
+	//		}
+	//		if(StartIndex < EndIndex) {
+	//			BLib._PrintDebug("StartIdx="+StartIndex+", EndIndex="+EndIndex);
+	//			BLib._PrintDebug("skipped: \t" + ErrorToken.Source.SourceText.substring(StartIndex, EndIndex));
+	//		}
+	//	}
+
+	public final void SkipToken() {
+		this.GetToken(BTokenContext._MoveNext);
 	}
 
 	public final boolean IsToken(String TokenText) {
@@ -174,6 +178,16 @@ public final class BTokenContext {
 	}
 
 	public final boolean MatchToken(String TokenText) {
+		@Var int RollbackPos = this.CurrentPosition;
+		@Var BToken Token = this.GetToken(BTokenContext._MoveNext);
+		if(Token.EqualsText(TokenText)) {
+			return true;
+		}
+		this.CurrentPosition = RollbackPos;
+		return false;
+	}
+
+	public final boolean MatchToken(char TokenText) {
 		@Var int RollbackPos = this.CurrentPosition;
 		@Var BToken Token = this.GetToken(BTokenContext._MoveNext);
 		if(Token.EqualsText(TokenText)) {
