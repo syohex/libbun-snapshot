@@ -3,7 +3,6 @@ package libbun.encode;
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
-import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAddNode;
 import libbun.ast.binary.BunAndNode;
@@ -14,6 +13,7 @@ import libbun.ast.binary.BunDivNode;
 import libbun.ast.binary.BunEqualsNode;
 import libbun.ast.binary.BunGreaterThanEqualsNode;
 import libbun.ast.binary.BunGreaterThanNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.binary.BunLeftShiftNode;
 import libbun.ast.binary.BunLessThanEqualsNode;
 import libbun.ast.binary.BunLessThanNode;
@@ -29,8 +29,8 @@ import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.error.TypeErrorNode;
-import libbun.ast.expression.BunFuncNameNode;
 import libbun.ast.expression.BunFormNode;
+import libbun.ast.expression.BunFuncNameNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
@@ -75,6 +75,8 @@ public class PythonGenerator extends LibBunSourceGenerator {
 		this.LoadInlineLibrary("inline.py", "##");
 		this.Header.Append("#! /usr/bin/env python");
 		this.Header.AppendNewLine("# -*- coding: utf-8 -*-");
+		this.Source.AppendNewLine("import sys, codecs");
+		this.Source.AppendNewLine("sys.stdout = codecs.getwriter('utf-8')(sys.stdout)");
 		this.Source.AppendNewLine("## end of header", this.LineFeed);
 	}
 
