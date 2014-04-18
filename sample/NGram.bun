@@ -1,0 +1,39 @@
+public class Test {
+
+function concat(words: String[], start: int, end: int) {
+	var sb = "";
+	var i = start;
+	while(i < end) {
+		if(i > start) {
+			sb = sb + " ";
+		}
+		sb = sb + words[i];
+		i = i + 1;
+	}
+	return sb;
+}
+
+function ngrams(n: int, str: String) {
+	var ngrams : String[] = [];
+        String[] words = str.split(" ");
+	var i = 0;
+	while(i < words.size() - n + 1) {
+		ngrams.add(concat(words, i, i+n));
+		i = i + 1;
+	}
+	return ngrams;
+}
+
+export function main() {
+	var n = 1;
+	while(n <= 3) {
+		var ngrams = ngrams(n, "This is my car.");
+		var i = 0;
+		while(i < ngrams.size()) {
+			println(ngrams[i]);
+			i = i + 1;
+		}
+		n = n + 1;
+	}
+    }
+}

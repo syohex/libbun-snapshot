@@ -19,7 +19,9 @@ public class DesugarNode extends SyntaxSugarNode {
 	public DesugarNode(BNode OriginalNode, BNode[] DesugarNodes) {
 		super(OriginalNode.ParentNode, DesugarNodes.length);
 		this.OriginalNode = OriginalNode;
-		this.SetChild(OriginalNode, BNode._EnforcedParent);
+		if(OriginalNode != null) {
+			this.SetChild(OriginalNode, BNode._EnforcedParent);
+		}
 		@Var int i = 0;
 		while(i < DesugarNodes.length) {
 			this.SetNode(i, DesugarNodes[i]);

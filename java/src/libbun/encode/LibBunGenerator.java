@@ -326,61 +326,6 @@ public abstract class LibBunGenerator extends BunVisitor {
 		Node.Accept(this);
 	}
 
-	/*
-	protected boolean ExecStatement(BNode Node) {
-		this.EnableVisitor();
-		this.TopLevelSymbol = null;
-		if(Node instanceof TopLevelNode) {
-			((TopLevelNode)Node).Perform(this.RootGamma);
-		}
-		else {
-			if(this.TypeChecker != null) {
-				Node = this.TypeChecker.CheckType(Node, BType.VarType);
-			}
-			if(this.IsVisitable()) {
-				if(Node instanceof BunFunctionNode || Node instanceof BunClassNode || Node instanceof BunLetVarNode) {
-					Node.Type = BType.VoidType;
-					this.GenerateStatement(Node);
-				}
-				else {
-					if(!this.LangInfo.AllowTopLevelScript) {
-						@Var String FuncName = this.NameUniqueSymbol("Main");
-						Node = this.TypeChecker.CreateFunctionNode(Node.ParentNode, FuncName, Node);
-						this.TopLevelSymbol = FuncName;
-					}
-					this.GenerateStatement(Node);
-				}
-			}
-		}
-		return this.IsVisitable();
-	}
-
-	public final boolean OldLoadScript(String ScriptText, String FileName, int LineNumber) {
-		@Var boolean Result = true;
-		@Var BunBlockNode TopBlockNode = new BunBlockNode(null, this.RootGamma);
-		@Var BTokenContext TokenContext = new BTokenContext(this, this.RootGamma, FileName, LineNumber, ScriptText);
-		TokenContext.SkipEmptyStatement();
-		@Var BToken SkipToken = TokenContext.GetToken();
-		while(TokenContext.HasNext()) {
-			TokenContext.SetParseFlag(BTokenContext._NotAllowSkipIndent);
-			TopBlockNode.ClearListToSize(0);
-			SkipToken = TokenContext.GetToken();
-			@Var BNode StmtNode = TokenContext.ParsePattern(TopBlockNode, "$Statement$", BTokenContext._Required);
-			if(StmtNode.IsErrorNode()) {
-				TokenContext.SkipError(SkipToken);
-			}
-			if(!this.ExecStatement(StmtNode)) {
-				Result = false;
-				break;
-			}
-			TokenContext.SkipEmptyStatement();
-			TokenContext.Vacume();
-		}
-		this.Logger.OutputErrorsToStdErr();
-		return Result;
-	}
-	 */
-
 	private void PreProcess(BNode Node) {
 		if(this.TypeChecker != null) {
 			Node = this.TypeChecker.CheckType(Node, BType.VoidType);

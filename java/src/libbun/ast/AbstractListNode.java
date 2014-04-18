@@ -25,7 +25,17 @@ public abstract class AbstractListNode extends BNode {
 	}
 
 	public final void Append(BNode Node) {
-		this.Append(Node, BNode._EnforcedParent);
+		if(Node instanceof ContainerNode) {
+			@Var ContainerNode Container = (ContainerNode)Node;
+			@Var int i = 0;
+			while(i < Container.AST.length) {
+				this.Append(Container.AST[i], BNode._EnforcedParent);
+				i = i + 1;
+			}
+		}
+		else {
+			this.Append(Node, BNode._EnforcedParent);
+		}
 	}
 
 	public final int GetListSize() {

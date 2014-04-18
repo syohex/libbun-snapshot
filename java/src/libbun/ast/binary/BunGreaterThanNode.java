@@ -3,7 +3,6 @@ package libbun.ast.binary;
 import libbun.ast.BNode;
 import libbun.lang.bun.BunPrecedence;
 import libbun.parser.BunVisitor;
-import libbun.parser.BToken;
 import libbun.parser.LibBunVisitor;
 
 public class BunGreaterThanNode extends ComparatorNode {
