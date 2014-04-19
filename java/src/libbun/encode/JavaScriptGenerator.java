@@ -28,7 +28,6 @@ package libbun.encode;
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
-import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAddNode;
 import libbun.ast.binary.BunAndNode;
@@ -39,6 +38,7 @@ import libbun.ast.binary.BunDivNode;
 import libbun.ast.binary.BunEqualsNode;
 import libbun.ast.binary.BunGreaterThanEqualsNode;
 import libbun.ast.binary.BunGreaterThanNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.binary.BunLeftShiftNode;
 import libbun.ast.binary.BunLessThanEqualsNode;
 import libbun.ast.binary.BunLessThanNode;
@@ -137,10 +137,10 @@ public class JavaScriptGenerator extends LibBunSourceGenerator {
 		this.Source.Append("try");
 		this.GenerateExpression(Node.TryBlockNode());
 		if(Node.HasCatchBlockNode()){
-			@Var String VarName = this.NameUniqueSymbol("e");
+			@Var String VarName = Node.ExceptionName();
 			this.ImportLibrary("@catch");
 			this.Source.Append("catch(", VarName, "){ ");
-			this.Source.Append(Node.ExceptionName(), " = libbun_catch(", VarName);
+			this.Source.Append(VarName, " = libbun_catch(", VarName);
 			this.Source.Append("); ");
 			this.GenerateExpression(Node.CatchBlockNode());
 			this.Source.Append("}");
@@ -261,9 +261,10 @@ public class JavaScriptGenerator extends LibBunSourceGenerator {
 			this.GenerateExpression(ErrorNode.ErrorNode);
 		}
 		else {
+			this.ImportLibrary("@SoftwareFault");
 			@Var String Message = LibBunLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 			this.Source.AppendWhiteSpace();
-			this.Source.Append("(function(){ throw new Error(");
+			this.Source.Append("(function(){ throw new SoftwareFault(");
 			this.Source.Append(BLib._QuoteString(Message));
 			this.Source.Append("); })()");
 		}

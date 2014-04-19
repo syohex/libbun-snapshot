@@ -1,14 +1,14 @@
 define assert "(assert $[0])": Func<boolean,String,void>
-define println "~(format t \\"~a~%\\" $[0])": Func<String,void>
-define print "~(format t \\"~a\\" $[0])": Func<String,void>
-define _ "~(format nil \\"~a\\" $[0])": Func<boolean,String>
+define println "~(format t \"~a~%\" $[0])": Func<String,void>
+define print "~(format t \"~a\" $[0])": Func<String,void>
+define _ "~(format nil \"~a\" $[0])": Func<boolean,String>
 define _ "(coerce $[0] 'float)": Func<int,float>
-define _ "~(format nil \\"~a\\" $[0])": Func<int,String>
+define _ "~(format nil \"~a\" $[0])": Func<int,String>
 define _ "(round $[0])": Func<float,int>
-define _ "~(format nil \\"~a\\" $[0])": Func<float,String>
+define _ "~(format nil \"~a\" $[0])": Func<float,String>
 define _ "(parse-integer $[0])": Func<String,int>
 define _ "(read-from-string $[0])": Func<String,float>
-define + "~(format nil \\"~a~a\\" $[0] $[1])": Func<String,String,String>
+define + "~(format nil \"~a~a\" $[0] $[1])": Func<String,String,String>
 define size "(length $[0])": Func<String,int>
 define equals "(string= $[0] $[1])": Func<String,String,boolean>
 define startsWith "(and (>= (length $[0]) (length $[1])) (string= (subseq $[0] 0 (length $[1])) $[1]))": Func<String,String,boolean>
@@ -20,11 +20,11 @@ define toLowerCase "(string-uppercase $[0])": Func<String,String>
 define toUpperCase "(string-downcase $[0])": Func<String,String>
 define replace "cl-ppcre~(cl-ppcre:regex-replace-all $[1] $[0] $[2])": Func<String,String,String,String>
 define trim "(string-trim '(#\\Space) $[0])": Func<String,String>
-define _ "~(format nil \\"~a\\" $[0])": Func<α[],String>
+define _ "~(format nil \"~a\" $[0])": Func<α[],String>
 define size "(length $[0])": Func<α[],int>
 define size "(FIXME)": Func<α[],int,void>
 define add "(vector-push $[1])": Func<α[],α,void>
 define pop "(vector-pop $[0])": Func<α[],α>
 define hasKey "(gethash $[1] $[0])": Func<Map<α>,String,boolean>
 define get "(gethash $[1] $[0])": Func<Map<α>,String,α>
-define _ "~(format nil \\"~a\\" $[0])": Func<Object,String>
+define _ "~(format nil \"~a\" $[0])": Func<Object,String>

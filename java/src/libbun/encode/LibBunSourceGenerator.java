@@ -22,7 +22,7 @@ import libbun.util.Var;
 import libbun.util.ZenMethod;
 
 public abstract class LibBunSourceGenerator extends LibBunGenerator {
-	@BField private final BArray<LibBunSourceBuilder> BuilderList = new BArray<LibBunSourceBuilder>(new LibBunSourceBuilder[4]);
+	@BField protected final BArray<LibBunSourceBuilder> BuilderList = new BArray<LibBunSourceBuilder>(new LibBunSourceBuilder[4]);
 	@BField protected LibBunSourceBuilder Header;
 	@BField protected LibBunSourceBuilder Source;
 	@BField protected String LineFeed = "\n";
