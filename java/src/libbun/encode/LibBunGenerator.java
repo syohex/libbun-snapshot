@@ -42,6 +42,7 @@ import libbun.parser.BunVisitor;
 import libbun.parser.LibBunGamma;
 import libbun.parser.LibBunLangInfo;
 import libbun.parser.LibBunLogger;
+import libbun.parser.LibBunParser;
 import libbun.parser.LibBunTypeChecker;
 import libbun.type.BClassType;
 import libbun.type.BFormFunc;
@@ -51,8 +52,8 @@ import libbun.type.BPrototype;
 import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BIgnored;
-import libbun.util.LibBunSystem;
 import libbun.util.BunMap;
+import libbun.util.LibBunSystem;
 import libbun.util.Nullable;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
@@ -63,14 +64,16 @@ public abstract class LibBunGenerator extends BunVisitor {
 	@BField private final BunMap<BFunc>  DefinedFuncMap = new BunMap<BFunc>(null);
 
 	@BField public final LibBunGamma      RootGamma;
-	@BField public LibBunLogger               Logger;
-	@BField public LibBunTypeChecker          TypeChecker;
-	@BField public LibBunLangInfo             LangInfo;
-	@BField protected String             TopLevelSymbol = null;
-	@BField private int                  UniqueNumber = 0;
+	@BField public LibBunParser           RootParser;
+	@BField public LibBunLogger           Logger;
+	@BField public LibBunTypeChecker      TypeChecker;
+	@BField public LibBunLangInfo         LangInfo;
+	@BField protected String              TopLevelSymbol = null;
+	@BField private int                   UniqueNumber = 0;
 
 	protected LibBunGenerator(LibBunLangInfo LangInfo) {
-		this.RootGamma = new LibBunGamma(this, null);
+		this.RootGamma     = new LibBunGamma(this, null);
+		this.RootParser = new LibBunParser(null);
 		this.Logger        = new LibBunLogger();
 		this.LangInfo      = LangInfo;
 		this.TypeChecker   = null;
@@ -356,7 +359,7 @@ public abstract class LibBunGenerator extends BunVisitor {
 	public final boolean LoadScript(String ScriptText, String FileName, int LineNumber) {
 		@Var boolean AllPassed = true;
 		@Var BunBlockNode TopBlockNode = new BunBlockNode(null, this.RootGamma);
-		@Var BTokenContext TokenContext = new BTokenContext(this, this.RootGamma, FileName, LineNumber, ScriptText);
+		@Var BTokenContext TokenContext = new BTokenContext(this.RootParser, this, FileName, LineNumber, ScriptText);
 		TokenContext.SkipEmptyStatement();
 		while(TokenContext.HasNext()) {
 			TokenContext.SetParseFlag(BTokenContext._NotAllowSkipIndent);

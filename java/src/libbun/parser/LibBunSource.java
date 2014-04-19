@@ -6,7 +6,6 @@ import libbun.util.Var;
 
 public class LibBunSource {
 
-	@BField public final BTokenContext TokenContext;
 	@BField public final LibBunLogger Logger;
 	@BField String FileName;
 	@BField int    LineNumber;
@@ -15,7 +14,6 @@ public class LibBunSource {
 	LibBunSource() {
 		this.FileName = null;
 		this.LineNumber = 0;
-		this.TokenContext = null;
 		this.SourceText ="";
 		this.Logger = null;
 	}
@@ -23,7 +21,6 @@ public class LibBunSource {
 	public LibBunSource(String FileName, int LineNumber, String Source, BTokenContext TokenContext) {
 		this.FileName = FileName;
 		this.LineNumber = LineNumber;
-		this.TokenContext = TokenContext;
 		this.SourceText = Source;
 		this.Logger = TokenContext.Generator.Logger;
 	}

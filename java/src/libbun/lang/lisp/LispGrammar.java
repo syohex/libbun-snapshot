@@ -30,7 +30,7 @@ class GroupPatternFunction extends BMatchFunction {
 public class LispGrammar {
 	public final static BMatchFunction ContinuePattern = new ContinuePatternFunction();
 
-	public static void ImportGrammar(LibBunGamma Gamma) {
+	public static void LoadGrammar(LibBunGamma Gamma) {
 		//Gamma.SetTypeName(BType.VoidType,  null);
 		//Gamma.AppendTokenFunc(" \t", WhiteSpaceToken);
 		//Gamma.DefineExpression("null", NullPattern);

@@ -41,20 +41,20 @@ public final class BTokenContext {
 	public final static boolean     _AllowNewLine   = true;
 	public final static boolean     _MoveNext       = true;
 
+	@BField public LibBunParser    Parser;
 	@BField public LibBunGenerator Generator;
-	@BField public LibBunGamma Gamma;
-	@BField public BSourceContext Source;
-	@BField public BArray<BToken> TokenList = new BArray<BToken>(new BToken[128]);
+	@BField public BSourceContext  SourceContext;
+	@BField public BArray<BToken>  TokenList = new BArray<BToken>(new BToken[128]);
 
 	@BField private int CurrentPosition = 0;
 	@BField private boolean IsAllowSkipIndent = false;
 	@BField public BToken LatestToken = null;
 	@BField private LibBunSyntax ApplyingPattern = null;
 
-	public BTokenContext(LibBunGenerator Generator, LibBunGamma Gamma, String FileName, int LineNumber, String SourceText) {
+	public BTokenContext(LibBunParser Parser, LibBunGenerator Generator, String FileName, int LineNumber, String SourceText) {
 		this.Generator = Generator;
-		this.Gamma = Gamma;
-		this.Source = new BSourceContext(FileName, LineNumber, SourceText, this);
+		this.Parser = Parser;
+		this.SourceContext = new BSourceContext(FileName, LineNumber, SourceText, this);
 	}
 
 	public boolean SetParseFlag(boolean AllowSkipIndent) {
@@ -98,7 +98,7 @@ public final class BTokenContext {
 	public BToken GetToken(boolean EnforceMoveNext) {
 		while(true) {
 			if(!(this.CurrentPosition < this.TokenList.size())) {
-				if(!this.Source.DoTokenize()) {
+				if(!this.SourceContext.DoTokenize()) {
 					break;
 				}
 			}
@@ -287,7 +287,7 @@ public final class BTokenContext {
 	}
 
 	public final BNode ParsePatternAfter(BNode ParentNode, BNode LeftNode, String PatternName, boolean IsRequired) {
-		@Var LibBunSyntax Pattern = this.Gamma.GetSyntaxPattern(PatternName);
+		@Var LibBunSyntax Pattern = this.Parser.GetSyntaxPattern(PatternName);
 		@Var BNode ParsedNode = this.ApplyMatchPattern(ParentNode, LeftNode, Pattern, IsRequired);
 		return ParsedNode;
 	}
@@ -302,14 +302,6 @@ public final class BTokenContext {
 			@Var BNode ParsedNode = this.ParsePattern(ParentNode, PatternName, IsRequired);
 			this.SetParseFlag(Rememberd);
 			if(ParsedNode != null) {
-				//				if(Index == BNode._NestedAppendIndex) {
-				//					if(!(ParsedNode instanceof EmptyNode)) {
-				//						ParentNode.SetNode(BNode._AppendIndex, ParsedNode);
-				//					}
-				//					if(ParsedNode instanceof BunBlockNode || ParsedNode.IsErrorNode()) {
-				//						return ParsedNode;
-				//					}
-				//				}
 				if(ParsedNode.IsErrorNode()) {
 					return ParsedNode;
 				}
@@ -408,7 +400,6 @@ public final class BTokenContext {
 			DumpedToken = DumpedToken + Position+"] " + Token.toString();
 			LibBunSystem._PrintDebug(DumpedToken);
 			Position = Position + 1;
-			//			ZenLogger.VerboseLog(ZenLogger.VerboseToken,  DumpedToken);
 		}
 	}
 

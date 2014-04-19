@@ -31,24 +31,26 @@ import libbun.encode.LibBunGenerator;
 import libbun.type.BClassType;
 import libbun.type.BType;
 import libbun.util.BField;
-import libbun.util.LibBunSystem;
-import libbun.util.BunMap;
 import libbun.util.BMatchFunction;
 import libbun.util.BTokenFunction;
+import libbun.util.BunMap;
+import libbun.util.LibBunSystem;
 import libbun.util.Nullable;
 import libbun.util.Var;
 
 public final class LibBunGamma {
 	@BField public final LibBunGenerator   Generator;
-	@BField public final BunBlockNode   BlockNode;
-	@BField LibBunTokenFuncChain[]       TokenMatrix = null;
-	@BField BunMap<LibBunSyntax>      SyntaxTable = null;
-	@BField BunMap<BunLetVarNode>  SymbolTable2 = null;
+	@BField public final BunBlockNode      BlockNode;
+	@BField BunMap<BunLetVarNode>          SymbolTable = null;
 
 	public LibBunGamma(LibBunGenerator Generator, BunBlockNode BlockNode) {
 		this.BlockNode = BlockNode;   // rootname is null
 		this.Generator = Generator;
 		assert(this.Generator != null);
+	}
+
+	@Override public String toString() {
+		return "NS[" + this.BlockNode + "]";
 	}
 
 	public final LibBunGamma GetParentGamma() {
@@ -67,134 +69,22 @@ public final class LibBunGamma {
 		return null;
 	}
 
-	@Override public String toString() {
-		return "NS[" + this.BlockNode + "]";
-	}
-
 	public final LibBunGamma GetRootGamma() {
 		return this.Generator.RootGamma;
 	}
 
-	// TokenMatrix
-	public final LibBunTokenFuncChain GetTokenFunc(int ZenChar) {
-		if(this.TokenMatrix == null) {
-			return this.GetParentGamma().GetTokenFunc(ZenChar);
-		}
-		return this.TokenMatrix[ZenChar];
-	}
-
-	private final LibBunTokenFuncChain JoinParentFunc(BTokenFunction Func, LibBunTokenFuncChain Parent) {
-		if(Parent != null && Parent.Func == Func) {
-			return Parent;
-		}
-		return new LibBunTokenFuncChain(Func, Parent);
-	}
-
-	public final void AppendTokenFunc(String keys, BTokenFunction TokenFunc) {
-		if(this.TokenMatrix == null) {
-			this.TokenMatrix = LibBunSystem._NewTokenMatrix();
-			if(this.GetParentGamma() != null) {
-				@Var int i = 0;
-				while(i < this.TokenMatrix.length) {
-					this.TokenMatrix[i] = this.GetParentGamma().GetTokenFunc(i);
-					i = i + 1;
-				}
-			}
-		}
-		@Var int i = 0;
-		while(i < keys.length()) {
-			@Var int kchar = LibBunSystem._GetTokenMatrixIndex(LibBunSystem._GetChar(keys, i));
-			this.TokenMatrix[kchar] = this.JoinParentFunc(TokenFunc, this.TokenMatrix[kchar]);
-			i = i + 1;
-		}
-	}
-
-	// Pattern
-	public final LibBunSyntax GetSyntaxPattern(String PatternName) {
-		@Var LibBunGamma Gamma = this;
-		while(Gamma != null) {
-			if(Gamma.SyntaxTable != null) {
-				return Gamma.SyntaxTable.GetOrNull(PatternName);
-			}
-			Gamma = Gamma.GetParentGamma();
-		}
-		return null;
-	}
-
-	public final void SetSyntaxPattern(String PatternName, LibBunSyntax Syntax) {
-		if(this.SyntaxTable == null) {
-			this.SyntaxTable = new BunMap<LibBunSyntax>(null);
-		}
-		this.SyntaxTable.put(PatternName, Syntax);
-	}
-
-	public final static String _RightPatternSymbol(String PatternName) {
-		return "\t" + PatternName;
-	}
-
-	public final LibBunSyntax GetRightSyntaxPattern(String PatternName) {
-		return this.GetSyntaxPattern(LibBunGamma._RightPatternSymbol(PatternName));
-	}
-
-	private void AppendSyntaxPattern(String PatternName, LibBunSyntax NewPattern) {
-		LibBunSystem._Assert(NewPattern.ParentPattern == null);
-		@Var LibBunSyntax ParentPattern = this.GetSyntaxPattern(PatternName);
-		NewPattern.ParentPattern = ParentPattern;
-		this.SetSyntaxPattern(PatternName, NewPattern);
-	}
-
-	public final void DefineStatement(String PatternName, BMatchFunction MatchFunc) {
-		@Var int Alias = PatternName.indexOf(" ");
-		@Var String Name = PatternName;
-		if(Alias != -1) {
-			Name = PatternName.substring(0, Alias);
-		}
-		@Var LibBunSyntax Pattern = new LibBunSyntax(this, Name, MatchFunc);
-		Pattern.IsStatement = true;
-		this.AppendSyntaxPattern(Name, Pattern);
-		if(Alias != -1) {
-			this.DefineStatement(PatternName.substring(Alias+1), MatchFunc);
-		}
-	}
-
-	public final void DefineExpression(String PatternName, BMatchFunction MatchFunc) {
-		@Var int Alias = PatternName.indexOf(" ");
-		@Var String Name = PatternName;
-		if(Alias != -1) {
-			Name = PatternName.substring(0, Alias);
-		}
-		@Var LibBunSyntax Pattern = new LibBunSyntax(this, Name, MatchFunc);
-		this.AppendSyntaxPattern(Name, Pattern);
-		if(Alias != -1) {
-			this.DefineExpression(PatternName.substring(Alias+1), MatchFunc);
-		}
-	}
-
-	public final void DefineRightExpression(String PatternName, BMatchFunction MatchFunc) {
-		@Var int Alias = PatternName.indexOf(" ");
-		@Var String Name = PatternName;
-		if(Alias != -1) {
-			Name = PatternName.substring(0, Alias);
-		}
-		@Var LibBunSyntax Pattern = new LibBunSyntax(this, Name, MatchFunc);
-		this.AppendSyntaxPattern(LibBunGamma._RightPatternSymbol(Name), Pattern);
-		if(Alias != -1) {
-			this.DefineRightExpression(PatternName.substring(Alias+1), MatchFunc);
-		}
-	}
-
 	public final void SetSymbol(String Symbol, BunLetVarNode EntryNode) {
-		if(this.SymbolTable2 == null) {
-			this.SymbolTable2 = new BunMap<BunLetVarNode>(null);
+		if(this.SymbolTable == null) {
+			this.SymbolTable = new BunMap<BunLetVarNode>(null);
 		}
-		this.SymbolTable2.put(Symbol, EntryNode);
+		this.SymbolTable.put(Symbol, EntryNode);
 	}
 
 	public final BunLetVarNode GetSymbol(String Symbol) {
 		@Var LibBunGamma Gamma = this;
 		while(Gamma != null) {
-			if(Gamma.SymbolTable2 != null) {
-				@Var BunLetVarNode EntryNode = Gamma.SymbolTable2.GetOrNull(Symbol);
+			if(Gamma.SymbolTable != null) {
+				@Var BunLetVarNode EntryNode = Gamma.SymbolTable.GetOrNull(Symbol);
 				if(EntryNode != null) {
 					return EntryNode;
 				}
@@ -219,8 +109,8 @@ public final class LibBunGamma {
 		@Var int NameIndex = -1;
 		@Var LibBunGamma Gamma = this;
 		while(Gamma != null) {
-			if(Gamma.SymbolTable2 != null) {
-				@Var BNode EntryNode = Gamma.SymbolTable2.GetOrNull(Name);
+			if(Gamma.SymbolTable != null) {
+				@Var BNode EntryNode = Gamma.SymbolTable.GetOrNull(Name);
 				if(EntryNode != null) {
 					NameIndex = NameIndex + 1;
 				}
@@ -267,6 +157,31 @@ public final class LibBunGamma {
 		}
 		return null;
 	}
+
+	public LibBunSyntax GetSyntaxPattern(String PatternName) {
+		return this.Generator.RootParser.GetSyntaxPattern(PatternName);
+	}
+
+	public LibBunSyntax GetRightSyntaxPattern(String PatternName) {
+		return this.Generator.RootParser.GetRightSyntaxPattern(PatternName);
+	}
+
+	public final void DefineToken(String Symbol, BTokenFunction Func) {
+		this.Generator.RootParser.AppendTokenFunc(Symbol, Func);
+	}
+
+	public final void DefineExpression(String Symbol, BMatchFunction Func) {
+		this.Generator.RootParser.DefineExpression(Symbol, Func);
+	}
+
+	public final void DefineRightExpression(String Symbol, BMatchFunction Func) {
+		this.Generator.RootParser.DefineRightExpression(Symbol, Func);
+	}
+
+	public final void DefineStatement(String Symbol, BMatchFunction Func) {
+		this.Generator.RootParser.DefineExpression(Symbol, Func);
+	}
+
 
 
 }

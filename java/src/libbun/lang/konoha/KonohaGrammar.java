@@ -4,8 +4,8 @@ import libbun.lang.bun.BunGrammar;
 import libbun.parser.LibBunGamma;
 
 public class KonohaGrammar {
-	public static void ImportGrammar(LibBunGamma Gamma) {
-		BunGrammar.ImportGrammar(Gamma);
+	public static void LoadGrammar(LibBunGamma Gamma) {
+		BunGrammar.LoadGrammar(Gamma);
 		Gamma.DefineStatement("continue", new ContinuePatternFunction());
 	}
 }

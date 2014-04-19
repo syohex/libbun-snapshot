@@ -26,24 +26,21 @@
 package libbun.parser;
 
 import libbun.util.BField;
+import libbun.util.BMatchFunction;
 import libbun.util.LibBunSystem;
 import libbun.util.Var;
-import libbun.util.BMatchFunction;
 
 public final class LibBunSyntax {
 	public final static int _BinaryOperator					= 1;
 	public final static int _LeftJoin						= 1 << 1;
 
-	@BField public LibBunGamma	              PackageGamma;
 	@BField public String		              PatternName;
-	@BField public BMatchFunction              MatchFunc;
+	@BField public BMatchFunction             MatchFunc;
 	@BField public int				          SyntaxFlag = 0;
-	@BField public LibBunSyntax              ParentPattern = null;
-	@BField public boolean IsDisabled          = false;
-	@BField public boolean IsStatement         = false;
+	@BField public LibBunSyntax               ParentPattern = null;
+	@BField public boolean IsStatement        = false;
 
-	public LibBunSyntax(LibBunGamma Gamma, String PatternName, BMatchFunction MatchFunc) {
-		this.PackageGamma = Gamma;
+	public LibBunSyntax(String PatternName, BMatchFunction MatchFunc) {
 		this.PatternName = PatternName;
 		this.MatchFunc = MatchFunc;
 	}
@@ -62,15 +59,11 @@ public final class LibBunSyntax {
 		return (left < right || (left == right && !LibBunSystem._IsFlag(left, LibBunSyntax._LeftJoin) && !LibBunSystem._IsFlag(right, LibBunSyntax._LeftJoin)));
 	}
 
-	//	public final boolean EqualsName(String Name) {
-	//		return this.PatternName.equals(Name);
-	//	}
-
 	public final static LibBunSyntax MergeSyntaxPattern(LibBunSyntax Pattern, LibBunSyntax Parent) {
 		if(Parent == null) {
 			return Pattern;
 		}
-		@Var LibBunSyntax MergedPattern = new LibBunSyntax(Pattern.PackageGamma, Pattern.PatternName, Pattern.MatchFunc);
+		@Var LibBunSyntax MergedPattern = new LibBunSyntax(Pattern.PatternName, Pattern.MatchFunc);
 		MergedPattern.ParentPattern = Parent;
 		return MergedPattern;
 	}

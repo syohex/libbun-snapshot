@@ -5,9 +5,9 @@ import libbun.type.BGenericType;
 
 
 public class RegExpGrammar {
-	public static void ImportGrammar(LibBunGamma Gamma) {
+	public static void LoadGrammar(LibBunGamma Gamma) {
 		Gamma.SetTypeName(BGenericType._MapType, null);
-		Gamma.AppendTokenFunc("/", new RexExpLiteralTokenFunction());
+		Gamma.DefineToken("/", new RexExpLiteralTokenFunction());
 		Gamma.DefineExpression("$RexExpLiteral$", new RexExpLiteralPatternFunction());
 		Gamma.DefineExpression("$RexExpLiteralFlag$", null);
 		Gamma.DefineExpression("$RexExpLiteral$", new RexExpLiteralPatternFunction());

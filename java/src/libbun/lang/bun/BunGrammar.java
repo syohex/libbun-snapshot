@@ -1183,7 +1183,7 @@ public class BunGrammar {
 	public final static BMatchFunction DefinePattern = new BunDefinePatternFunction();
 	public final static BMatchFunction DefineNamePattern = new LongNamePatternFunction();
 
-	public static void ImportGrammar(LibBunGamma Gamma) {
+	public static void LoadGrammar(LibBunGamma Gamma) {
 		Gamma.SetTypeName(BType.VoidType,  null);
 		Gamma.SetTypeName(BType.BooleanType, null);
 		Gamma.SetTypeName(BType.IntType, null);
@@ -1195,14 +1195,14 @@ public class BunGrammar {
 		Gamma.SetTypeName(BGenericType._MapType, null);
 		Gamma.SetTypeName(BFuncType._FuncType, null);
 
-		Gamma.AppendTokenFunc(" \t", WhiteSpaceToken);
-		Gamma.AppendTokenFunc("\n",  NewLineToken);
-		Gamma.AppendTokenFunc("{}()[]<>.,;?:+-*/%=&|!@~^$", OperatorToken);
-		Gamma.AppendTokenFunc("/", BlockComment);  // overloading
-		Gamma.AppendTokenFunc("Aa_", NameToken);
+		Gamma.DefineToken(" \t", WhiteSpaceToken);
+		Gamma.DefineToken("\n",  NewLineToken);
+		Gamma.DefineToken("{}()[]<>.,;?:+-*/%=&|!@~^$", OperatorToken);
+		Gamma.DefineToken("/", BlockComment);  // overloading
+		Gamma.DefineToken("Aa_", NameToken);
 
-		Gamma.AppendTokenFunc("\"", StringLiteralToken);
-		Gamma.AppendTokenFunc("1",  NumberLiteralToken);
+		Gamma.DefineToken("\"", StringLiteralToken);
+		Gamma.DefineToken("1",  NumberLiteralToken);
 
 		Gamma.DefineExpression("null", NullPattern);
 		Gamma.DefineExpression("true", TruePattern);

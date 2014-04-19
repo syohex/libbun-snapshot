@@ -20,7 +20,7 @@ public class BunRequireNode extends TopLevelNode {
 		@Var BToken SourceToken = this.AST[BunRequireNode._Path].SourceToken;
 		@Var String Path = SourceToken.GetTextAsName();
 		if(Path.startsWith("syntax::")) {
-			if(!LibBunSystem._ImportGrammar(Gamma, Path)) {
+			if(!LibBunSystem._LoadGrammar(Gamma, Path)) {
 				LibBunLogger._LogErrorExit(SourceToken, "unknown syntax: " + Path.substring(8));
 			}
 		}

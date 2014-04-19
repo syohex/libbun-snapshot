@@ -11,5 +11,4 @@ public final class LibBunTokenFuncChain {
 		this.Func = Func;
 		this.ParentFunc = Parent;
 	}
-
 }

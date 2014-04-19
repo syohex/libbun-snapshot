@@ -591,13 +591,13 @@ public class LibBunSystem {
 
 	}
 
-	public final static boolean _ImportGrammar(LibBunGamma Gamma, String ClassName) {
+	public final static boolean _LoadGrammar(LibBunGamma Gamma, String ClassName) {
 		try {
 			@Var Class<?> GrammarClass =  ClassMap.GetOrNull(ClassName.toLowerCase());
 			if(GrammarClass == null) {
 				GrammarClass = Class.forName(ClassName);
 			}
-			@Var Method LoaderMethod = GrammarClass.getMethod("ImportGrammar", LibBunGamma.class);
+			@Var Method LoaderMethod = GrammarClass.getMethod("LoadGrammar", LibBunGamma.class);
 			LoaderMethod.invoke(null, Gamma);
 			return true;
 		} catch (Exception e) { // naming
@@ -624,7 +624,7 @@ public class LibBunSystem {
 
 	public final static LibBunGenerator _InitGenerator(@Nullable String ClassName, String GrammarClass) {
 		@Var LibBunGenerator Generator = LibBunSystem._LoadGenerator(ClassName, null);
-		LibBunSystem._ImportGrammar(Generator.RootGamma, GrammarClass);
+		LibBunSystem._LoadGrammar(Generator.RootGamma, GrammarClass);
 		Generator.SetTypeChecker(new BunTypeSafer(Generator));
 		Generator.RequireLibrary("common", null);
 		return Generator;

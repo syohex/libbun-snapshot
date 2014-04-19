@@ -1,14 +1,23 @@
 package libbun.parser;
 
+import libbun.util.BArray;
 import libbun.util.BField;
 import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 public final class BSourceContext extends LibBunSource {
-
+	@BField final LibBunParser Parser;
+	@BField final BArray<BToken>  ParsedTokenList;
 	@BField int SourcePosition = 0;
+
 	public BSourceContext(String FileName, int LineNumber, String Source, BTokenContext TokenContext) {
 		super(FileName, LineNumber, Source, TokenContext);
+		this.Parser = TokenContext.Parser;
+		this.ParsedTokenList = TokenContext.TokenList;
+	}
+
+	public final boolean HasChar() {
+		return this.SourceText.length() - this.SourcePosition > 0;
 	}
 
 	public final int GetCharCode() {
@@ -17,10 +26,6 @@ public final class BSourceContext extends LibBunSource {
 
 	public final int GetPosition() {
 		return this.SourcePosition;
-	}
-
-	public final boolean HasChar() {
-		return this.SourceText.length() - this.SourcePosition > 0;
 	}
 
 	public final char GetCurrentChar() {
@@ -51,38 +56,37 @@ public final class BSourceContext extends LibBunSource {
 	public final void FoundIndent(int StartIndex, int EndIndex) {
 		@Var BToken Token = new BIndentToken(this, StartIndex, EndIndex);
 		this.SourcePosition = EndIndex;
-		this.TokenContext.TokenList.add(Token);
+		this.ParsedTokenList.add(Token);
 	}
 
 	public final void Tokenize(int StartIndex, int EndIndex) {
 		this.SourcePosition = EndIndex;
 		if(StartIndex < EndIndex && EndIndex <= this.SourceText.length()) {
 			@Var BToken Token = new BToken(this, StartIndex, EndIndex);
-			this.TokenContext.TokenList.add(Token);
+			this.ParsedTokenList.add(Token);
 		}
 	}
 
 	public final void Tokenize(String PatternName, int StartIndex, int EndIndex) {
 		this.SourcePosition = EndIndex;
 		if(StartIndex <= EndIndex && EndIndex <= this.SourceText.length()) {
-			@Var LibBunSyntax Pattern = this.TokenContext.Gamma.GetSyntaxPattern(PatternName);
+			@Var LibBunSyntax Pattern = this.Parser.GetSyntaxPattern(PatternName);
 			if(Pattern == null) {
 				@Var BToken Token = new BToken(this, StartIndex, EndIndex);
 				LibBunLogger._LogInfo(Token, "unregistered token pattern: " + PatternName);
-				this.TokenContext.TokenList.add(Token);
+				this.ParsedTokenList.add(Token);
 			}
 			else {
 				@Var BToken Token = new BPatternToken(this, StartIndex, EndIndex, Pattern);
-				this.TokenContext.TokenList.add(Token);
+				this.ParsedTokenList.add(Token);
 			}
 		}
 	}
 
 	public final boolean IsDefinedSyntax(int StartIndex, int EndIndex) {
 		if(EndIndex < this.SourceText.length()) {
-			@Var LibBunGamma Gamma = this.TokenContext.Gamma;
 			@Var String Token = this.SourceText.substring(StartIndex, EndIndex);
-			@Var LibBunSyntax Pattern = Gamma.GetRightSyntaxPattern(Token);
+			@Var LibBunSyntax Pattern = this.Parser.GetRightSyntaxPattern(Token);
 			if(Pattern != null) {
 				return true;
 			}
@@ -112,13 +116,13 @@ public final class BSourceContext extends LibBunSource {
 	}
 
 	public final boolean DoTokenize() {
-		@Var int TokenSize = this.TokenContext.TokenList.size();
+		@Var int TokenSize = this.ParsedTokenList.size();
 		@Var int CheckPosition = this.SourcePosition;
 		while(this.HasChar()) {
 			@Var int CharCode = this.GetCharCode();
-			@Var LibBunTokenFuncChain TokenFunc = this.TokenContext.Gamma.GetTokenFunc(CharCode);
+			@Var LibBunTokenFuncChain TokenFunc = this.Parser.GetTokenFunc(CharCode);
 			this.ApplyTokenFunc(TokenFunc);
-			if(this.TokenContext.TokenList.size() > TokenSize) {
+			if(this.ParsedTokenList.size() > TokenSize) {
 				break;
 			}
 			if(this.SourcePosition == CheckPosition) {
@@ -127,7 +131,7 @@ public final class BSourceContext extends LibBunSource {
 			}
 		}
 		//this.Dump();
-		if(this.TokenContext.TokenList.size() > TokenSize) {
+		if(this.ParsedTokenList.size() > TokenSize) {
 			return true;
 		}
 		return false;

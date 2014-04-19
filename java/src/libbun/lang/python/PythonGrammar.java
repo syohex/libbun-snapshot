@@ -4,8 +4,8 @@ import libbun.lang.bun.BunGrammar;
 import libbun.parser.LibBunGamma;
 
 public class PythonGrammar {
-	public static void ImportGrammar(LibBunGamma Gamma) {
-		BunGrammar.ImportGrammar(Gamma);
+	public static void LoadGrammar(LibBunGamma Gamma) {
+		BunGrammar.LoadGrammar(Gamma);
 
 		Gamma.DefineExpression("None", BunGrammar.NullPattern);
 		Gamma.DefineExpression("True", BunGrammar.TruePattern);
@@ -22,7 +22,7 @@ public class PythonGrammar {
 		Gamma.DefineRightExpression("or", BunGrammar.OrPattern);
 		//TODO is, is not
 
-		Gamma.AppendTokenFunc("#", new PythonCommentFunction());
+		Gamma.DefineToken("#", new PythonCommentFunction());
 
 
 		Gamma.Generator.LangInfo.AppendGrammarInfo("python");

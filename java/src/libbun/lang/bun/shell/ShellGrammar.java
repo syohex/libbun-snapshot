@@ -7,17 +7,17 @@ import libbun.ast.EmptyNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.error.ErrorNode;
 import libbun.ast.literal.BunStringNode;
-import libbun.parser.LibBunGamma;
 import libbun.parser.BPatternToken;
 import libbun.parser.BSourceContext;
-import libbun.parser.LibBunSyntax;
 import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
+import libbun.parser.LibBunGamma;
+import libbun.parser.LibBunSyntax;
 import libbun.type.BType;
 import libbun.util.BArray;
-import libbun.util.LibBunSystem;
 import libbun.util.BMatchFunction;
 import libbun.util.BTokenFunction;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 // Token
@@ -46,10 +46,11 @@ class CommandSymbolTokenFunction extends BTokenFunction {
 			symbolBuilder.append(ch);
 			SourceContext.MoveNext();
 		}
-		if(SourceContext.TokenContext.Gamma.GetSymbol(ShellUtils._ToCommandSymbol(symbolBuilder.toString())) != null) {
-			SourceContext.Tokenize(CommandSymbolPatternFunction._PatternName, startIndex, SourceContext.GetPosition());
-			return true;
-		}
+		// FIXME: SourceContext does not have Gamma
+		//		if(SourceContext.TokenContext.Gamma.GetSymbol(ShellUtils._ToCommandSymbol(symbolBuilder.toString())) != null) {
+		//			SourceContext.Tokenize(CommandSymbolPatternFunction._PatternName, startIndex, SourceContext.GetPosition());
+		//			return true;
+		//		}
 		return false;
 	}
 }
@@ -120,7 +121,7 @@ class ImportCommandPatternFunction extends BMatchFunction {
 			return;
 		}
 		@Var String CommandPath = this.ResolveHome(CommandToken.GetText());
-		@Var LibBunGamma Gamma = TokenContext.Gamma;
+		@Var LibBunGamma Gamma = ParentNode.GetGamma();
 		@Var int loc = CommandPath.lastIndexOf('/');
 		@Var String Command = CommandPath;
 		if(loc != -1) {
@@ -271,7 +272,7 @@ class SimpleArgumentPatternFunction extends BMatchFunction {	// subset of Comman
 				EndIndex = BArray.GetIndex(TokenList, i).EndIndex;
 			}
 		}
-		@Var BToken Token = new BToken(TokenContext.Source, StartIndex, EndIndex);
+		@Var BToken Token = new BToken(TokenContext.SourceContext, StartIndex, EndIndex);
 		NodeList.add(new BunStringNode(null, Token, LibBunSystem._UnquoteString(this.ResolveHome(Token.GetText()))));
 		TokenList.clear(0);
 	}
@@ -425,10 +426,10 @@ public class ShellGrammar {
 	public final static BMatchFunction PrefixOptionPattern = new PrefixOptionPatternFunction();
 	public final static BMatchFunction SuffixOptionPattern = new SuffixOptionPatternFunction();
 
-	public static void ImportGrammar(LibBunGamma Gamma) {
-		Gamma.AppendTokenFunc("#", ShellStyleCommentToken);
-		Gamma.AppendTokenFunc("Aa_", CommandSymbolToken);
-		Gamma.AppendTokenFunc("1", CommandSymbolToken);
+	public static void LoadGrammar(LibBunGamma Gamma) {
+		Gamma.DefineToken("#", ShellStyleCommentToken);
+		Gamma.DefineToken("Aa_", CommandSymbolToken);
+		Gamma.DefineToken("1", CommandSymbolToken);
 
 		Gamma.DefineStatement("import", ImportPattern);
 		Gamma.DefineExpression("command", ImportCommandPattern);
