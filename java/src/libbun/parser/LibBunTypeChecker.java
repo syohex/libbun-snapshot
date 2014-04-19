@@ -51,7 +51,7 @@ import libbun.type.BGreekType;
 import libbun.type.BType;
 import libbun.type.BVarScope;
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 public abstract class LibBunTypeChecker extends BunVisitor {
@@ -81,7 +81,7 @@ public abstract class LibBunTypeChecker extends BunVisitor {
 
 	public final void ReturnNode(BNode Node) {
 		if(this.ReturnedNode != null) {
-			BLib._PrintDebug("previous returned node " + Node);
+			LibBunSystem._PrintDebug("previous returned node " + Node);
 		}
 		this.ReturnedNode = Node;
 	}
@@ -148,7 +148,7 @@ public abstract class LibBunTypeChecker extends BunVisitor {
 			}
 			return Node;
 		}
-		if(Node.IsUntyped() || ContextType.IsVarType() || BLib._IsFlag(TypeCheckPolicy, LibBunTypeChecker._NoCheckPolicy)) {
+		if(Node.IsUntyped() || ContextType.IsVarType() || LibBunSystem._IsFlag(TypeCheckPolicy, LibBunTypeChecker._NoCheckPolicy)) {
 			return Node;
 		}
 		if(Node.Type == ContextType || ContextType.Accept(Node.Type)) {
@@ -172,14 +172,14 @@ public abstract class LibBunTypeChecker extends BunVisitor {
 		this.ReturnedNode = null;
 		Node.Accept(this);
 		if(this.ReturnedNode == null) {  /* debug check */
-			BLib._PrintDebug("!! returns no value: " + Node);
+			LibBunSystem._PrintDebug("!! returns no value: " + Node);
 		}
 		else {
 			Node = this.ReturnedNode;
 		}
 		if(ParentNode != Node.ParentNode && ParentNode != null) {
 			if(Node.ParentNode != null) {
-				BLib._PrintDebug("Preserving parent of typed new node: " + Node);
+				LibBunSystem._PrintDebug("Preserving parent of typed new node: " + Node);
 			}
 			ParentNode.SetChild(Node, BNode._PreservedParent);
 		}

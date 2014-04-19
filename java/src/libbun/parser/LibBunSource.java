@@ -1,7 +1,7 @@
 package libbun.parser;
 
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 public class LibBunSource {
@@ -32,7 +32,7 @@ public class LibBunSource {
 		@Var int LineNumber = this.LineNumber;
 		@Var int i = 0;
 		while(i < Position) {
-			@Var char ch = BLib._GetChar(this.SourceText, i);
+			@Var char ch = LibBunSystem._GetChar(this.SourceText, i);
 			if(ch == '\n') {
 				LineNumber = LineNumber + 1;
 			}
@@ -49,7 +49,7 @@ public class LibBunSource {
 			i = s.length() - 1;
 		}
 		while(i >= 0) {
-			@Var char ch = BLib._GetChar(s, i);
+			@Var char ch = LibBunSystem._GetChar(s, i);
 			if(ch == '\n') {
 				StartIndex = i + 1;
 				break;
@@ -64,7 +64,7 @@ public class LibBunSource {
 		@Var int length = 0;
 		@Var int i = Position;
 		while(i < s.length()) {
-			@Var char ch = BLib._GetChar(s, i);
+			@Var char ch = LibBunSystem._GetChar(s, i);
 			if(ch == '\t') {
 				length = length + 8;
 			}
@@ -88,7 +88,7 @@ public class LibBunSource {
 			i = s.length() - 1;
 		}
 		while(i >= 0) {
-			@Var char ch = BLib._GetChar(s, i);
+			@Var char ch = LibBunSystem._GetChar(s, i);
 			if(ch == '\n') {
 				StartIndex = i + 1;
 				break;
@@ -97,7 +97,7 @@ public class LibBunSource {
 		}
 		i = Position;
 		while(i < s.length()) {
-			@Var char ch = BLib._GetChar(s, i);
+			@Var char ch = LibBunSystem._GetChar(s, i);
 			if(ch == '\n') {
 				EndIndex = i;
 				break;
@@ -115,7 +115,7 @@ public class LibBunSource {
 			i = s.length() - 1;
 		}
 		while(i >= 0) {
-			@Var char ch = BLib._GetChar(s, i);
+			@Var char ch = LibBunSystem._GetChar(s, i);
 			if(ch == '\n') {
 				StartIndex = i + 1;
 				break;
@@ -125,7 +125,7 @@ public class LibBunSource {
 		@Var String Line = "";
 		i = StartIndex;
 		while(i < Position) {
-			@Var char ch = BLib._GetChar(s, i);
+			@Var char ch = LibBunSystem._GetChar(s, i);
 			if(ch == '\n') {
 				break;
 			}
@@ -158,7 +158,7 @@ public class LibBunSource {
 
 	public final char GetCharAt(int n) {
 		if(0 <= n && n < this.SourceText.length()) {
-			return BLib._GetChar(this.SourceText, n);
+			return LibBunSystem._GetChar(this.SourceText, n);
 		}
 		return '\0';
 	}

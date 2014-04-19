@@ -97,9 +97,9 @@ import libbun.type.BGenericType;
 import libbun.type.BType;
 import libbun.type.BTypePool;
 import libbun.util.BArray;
-import libbun.util.BLib;
 import libbun.util.BMatchFunction;
 import libbun.util.BTokenFunction;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 // Token
@@ -181,7 +181,7 @@ class NameTokenFunction extends BTokenFunction {
 					break;
 				}
 			}
-			else if(!BLib._IsSymbol(ch) && !BLib._IsDigit(ch)) {
+			else if(!LibBunSystem._IsSymbol(ch) && !LibBunSystem._IsDigit(ch)) {
 				break;
 			}
 			SourceContext.MoveNext();
@@ -203,7 +203,7 @@ class NumberLiteralTokenFunction extends BTokenFunction {
 		@Var char ch = '\0';
 		while(SourceContext.HasChar()) {
 			ch = SourceContext.GetCurrentChar();
-			if(!BLib._IsDigit(ch)) {
+			if(!LibBunSystem._IsDigit(ch)) {
 				break;
 			}
 			SourceContext.MoveNext();
@@ -225,7 +225,7 @@ class NumberLiteralTokenFunction extends BTokenFunction {
 						SourceContext.MoveNext();
 					}
 				}
-				if(SourceContext.HasChar() && !BLib._IsDigit(SourceContext.GetCurrentChar())) {
+				if(SourceContext.HasChar() && !LibBunSystem._IsDigit(SourceContext.GetCurrentChar())) {
 					SourceContext.LogWarning(StartIndex, "exponent has no digits");
 				}
 				NumberLiteralTokenFunction._ParseDigit(SourceContext);
@@ -459,21 +459,21 @@ class AssignPatternFunction extends BMatchFunction {
 class StringLiteralPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		@Var BToken Token = TokenContext.GetToken(BTokenContext._MoveNext);
-		return new BunStringNode(ParentNode, Token, BLib._UnquoteString(Token.GetText()));
+		return new BunStringNode(ParentNode, Token, LibBunSystem._UnquoteString(Token.GetText()));
 	}
 }
 
 class IntLiteralPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		@Var BToken Token = TokenContext.GetToken(BTokenContext._MoveNext);
-		return new BunIntNode(ParentNode, Token, BLib._ParseInt(Token.GetText()));
+		return new BunIntNode(ParentNode, Token, LibBunSystem._ParseInt(Token.GetText()));
 	}
 }
 
 class FloatLiteralPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		@Var BToken Token = TokenContext.GetToken(BTokenContext._MoveNext);
-		return new BunFloatNode(ParentNode, Token, BLib._ParseFloat(Token.GetText()));
+		return new BunFloatNode(ParentNode, Token, LibBunSystem._ParseFloat(Token.GetText()));
 	}
 }
 
@@ -897,7 +897,7 @@ class ThrowPatternFunction extends BMatchFunction {
 class NamePatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		@Var BToken Token = TokenContext.GetToken(BTokenContext._MoveNext);
-		if(BLib._IsSymbol(Token.GetChar())) {
+		if(LibBunSystem._IsSymbol(Token.GetChar())) {
 			return new GetNameNode(ParentNode, Token, Token.GetText());
 		}
 		return new ErrorNode(ParentNode, Token, "illegal name: \'" + Token.GetText() + "\'");
@@ -1049,7 +1049,7 @@ class AsmPatternFunction extends BMatchFunction {
 	}
 }
 
-class BunDefineNamePatternFunction extends BMatchFunction {
+class LongNamePatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		@Var BToken NameToken = TokenContext.ParseLargeToken();
 		//		System.out.println("'"+ NameToken.GetText() + "'");
@@ -1061,7 +1061,7 @@ class BunDefinePatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		@Var BNode LetNode = new BunLetVarNode(ParentNode, BunLetVarNode._IsReadOnly, null, null);
 		LetNode = TokenContext.MatchToken(LetNode, "define", BTokenContext._Required);
-		LetNode = TokenContext.MatchPattern(LetNode, BunLetVarNode._NameInfo, "$DefineName$", BTokenContext._Required);
+		LetNode = TokenContext.MatchPattern(LetNode, BunLetVarNode._NameInfo, "$LongName$", BTokenContext._Required);
 		LetNode = TokenContext.MatchPattern(LetNode, BunLetVarNode._InitValue, "$StringLiteral$", BTokenContext._Required);
 		LetNode = TokenContext.MatchPattern(LetNode, BunLetVarNode._TypeInfo, "$TypeAnnotation$", BTokenContext._Required);
 		if(LetNode instanceof BunLetVarNode) {
@@ -1075,10 +1075,9 @@ class RequirePatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		@Var BNode RequireNode = new BunRequireNode(ParentNode);
 		RequireNode = TokenContext.MatchToken(RequireNode, "require", BTokenContext._Required);
-		RequireNode = TokenContext.MatchPattern(RequireNode, BunRequireNode._Path, "$StringLiteral$", BTokenContext._Required);
+		RequireNode = TokenContext.MatchPattern(RequireNode, BunRequireNode._Path, "$LongName$", BTokenContext._Required);
 		return RequireNode;
 	}
-
 }
 
 public class BunGrammar {
@@ -1182,7 +1181,7 @@ public class BunGrammar {
 
 	public final static BMatchFunction AsmPattern = new AsmPatternFunction();
 	public final static BMatchFunction DefinePattern = new BunDefinePatternFunction();
-	public final static BMatchFunction DefineNamePattern = new BunDefineNamePatternFunction();
+	public final static BMatchFunction DefineNamePattern = new LongNamePatternFunction();
 
 	public static void ImportGrammar(LibBunGamma Gamma) {
 		Gamma.SetTypeName(BType.VoidType,  null);
@@ -1298,7 +1297,7 @@ public class BunGrammar {
 		Gamma.DefineStatement("require", RequirePattern);
 
 		Gamma.DefineStatement("asm", AsmPattern);
-		Gamma.DefineStatement("$DefineName$", DefineNamePattern);
+		Gamma.DefineStatement("$LongName$", DefineNamePattern);
 		Gamma.DefineStatement("define", DefinePattern);
 		Gamma.Generator.LangInfo.AppendGrammarInfo("zen-0.1");
 

@@ -88,7 +88,7 @@ import libbun.parser.LibBunLogger;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
 import libbun.type.BType;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
@@ -264,7 +264,7 @@ public class JavaScriptGenerator extends LibBunSourceGenerator {
 			@Var String Message = LibBunLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 			this.Source.AppendWhiteSpace();
 			this.Source.Append("(function(){ throw new SoftwareFault(");
-			this.Source.Append(BLib._QuoteString(Message));
+			this.Source.Append(LibBunSystem._QuoteString(Message));
 			this.Source.Append("); })()");
 		}
 	}

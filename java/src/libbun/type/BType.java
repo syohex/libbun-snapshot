@@ -27,7 +27,7 @@ package libbun.type;
 import libbun.parser.BToken;
 import libbun.parser.LibBunTypeChecker;
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
@@ -52,7 +52,7 @@ public class BType  {
 		this.TypeFlag = TypeFlag;
 		this.ShortName = ShortName;
 		this.RefType = RefType;
-		if(BLib._IsFlag(TypeFlag, BType.UniqueTypeFlag)) {
+		if(LibBunSystem._IsFlag(TypeFlag, BType.UniqueTypeFlag)) {
 			this.TypeId = BTypePool._NewTypeId(this);
 		}
 	}
@@ -168,7 +168,7 @@ public class BType  {
 	}
 
 	public final boolean IsOpenType() {
-		return BLib._IsFlag(this.TypeFlag, BType.OpenTypeFlag);
+		return LibBunSystem._IsFlag(this.TypeFlag, BType.OpenTypeFlag);
 	}
 
 	@ZenMethod public boolean IsMutableType(LibBunTypeChecker Gamma) {
@@ -192,7 +192,7 @@ public class BType  {
 	}
 
 	public final String GetUniqueName() {
-		return BLib._Stringfy(this.TypeId);
+		return LibBunSystem._Stringfy(this.TypeId);
 	}
 
 	//	public final boolean AcceptValue(Object Value) {

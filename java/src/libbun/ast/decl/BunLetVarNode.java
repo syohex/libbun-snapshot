@@ -7,7 +7,7 @@ import libbun.encode.LibBunGenerator;
 import libbun.parser.LibBunVisitor;
 import libbun.type.BType;
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Nullable;
 import libbun.util.Var;
 
@@ -40,19 +40,19 @@ public class BunLetVarNode extends BNode {
 	}
 
 	public final boolean IsExport() {  // export let at top level
-		return BLib._IsFlag(this.NameFlag, BunLetVarNode._IsExport);
+		return LibBunSystem._IsFlag(this.NameFlag, BunLetVarNode._IsExport);
 	}
 
 	public final boolean IsReadOnly() {   // let readonly var writable
-		return BLib._IsFlag(this.NameFlag, BunLetVarNode._IsReadOnly);
+		return LibBunSystem._IsFlag(this.NameFlag, BunLetVarNode._IsReadOnly);
 	}
 
 	public final boolean IsDefined() {    // if assigned
-		return BLib._IsFlag(this.NameFlag, BunLetVarNode._IsDefined);
+		return LibBunSystem._IsFlag(this.NameFlag, BunLetVarNode._IsDefined);
 	}
 
 	public final boolean IsUsed() {
-		return BLib._IsFlag(this.NameFlag, BunLetVarNode._IsUsed);
+		return LibBunSystem._IsFlag(this.NameFlag, BunLetVarNode._IsUsed);
 	}
 
 	public final void Defined() {

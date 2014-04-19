@@ -15,7 +15,7 @@ import libbun.ast.statement.BunWhileNode;
 import libbun.encode.LibBunGenerator;
 import libbun.type.BType;
 import libbun.util.BArray;
-import libbun.util.BMap;
+import libbun.util.BunMap;
 import libbun.util.Var;
 
 /**
@@ -33,7 +33,7 @@ public class SSAConverter extends ZASTTransformer {
 	public SSAConverterState State;
 	public BArray<Variable> LocalVariables;
 	public ValueReplacer Replacer;
-	public BMap<Integer> ValueNumber;
+	public BunMap<Integer> ValueNumber;
 	private final HashMap<BNode, BArray<Variable>> CurVariableTableBefore;
 	private final HashMap<BNode, BArray<Variable>> CurVariableTableAfter;
 	private final LibBunGenerator Generator;
@@ -43,7 +43,7 @@ public class SSAConverter extends ZASTTransformer {
 		this.LocalVariables = null;
 		this.Replacer = new ValueReplacer(Generator);
 		this.State = new SSAConverterState(null, -1);
-		this.ValueNumber = new BMap<Integer>(BType.IntType);
+		this.ValueNumber = new BunMap<Integer>(BType.IntType);
 		this.CurVariableTableBefore = new HashMap<BNode, BArray<Variable>>();
 		this.CurVariableTableAfter = new HashMap<BNode, BArray<Variable>>();
 	}

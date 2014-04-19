@@ -1,7 +1,7 @@
 package libbun.util;
 
 
-public class BFloatArray extends BObject {
+public class BFloatArray extends BunObject {
 	@BField private int    Size;
 	@BField public double[] ArrayValues;  // don't use .length
 

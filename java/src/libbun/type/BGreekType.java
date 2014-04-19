@@ -1,7 +1,7 @@
 package libbun.type;
 
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 public class BGreekType extends BType {
@@ -9,13 +9,13 @@ public class BGreekType extends BType {
 	@BField public final int GreekId;
 
 	public BGreekType(int GreekId) {
-		super(BType.UniqueTypeFlag, BLib._GreekNames[GreekId], BType.VarType);
+		super(BType.UniqueTypeFlag, LibBunSystem._GreekNames[GreekId], BType.VarType);
 		this.GreekId = GreekId;
 	}
 
 	public final static BType[] _NewGreekTypes(BType[] GreekTypes) {
 		if(GreekTypes == null) {
-			return BLib._NewTypeArray(BLib._GreekNames.length);
+			return LibBunSystem._NewTypeArray(LibBunSystem._GreekNames.length);
 		}
 		else {
 			@Var int i = 0;

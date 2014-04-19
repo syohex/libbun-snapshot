@@ -1,6 +1,6 @@
 package libbun.util;
 
-public class ZObjectArray extends BObject {
+public class ZObjectArray extends BunObject {
 	@BField private int    Size;
 	@BField private Object[] ArrayValues;
 

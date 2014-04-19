@@ -50,7 +50,7 @@ import libbun.parser.LibBunTokenFuncChain;
 import libbun.type.BType;
 
 
-public class BLib {
+public class LibBunSystem {
 
 	public final static void _Print(Object msg) {
 		System.err.print(msg);
@@ -79,19 +79,19 @@ public class BLib {
 
 	public final static void _PrintDebug(String msg) {
 		if(DebugMode) {
-			BLib._PrintLine("DEBUG " + BLib._GetStackInfo(3) + ": " + msg);
+			LibBunSystem._PrintLine("DEBUG " + LibBunSystem._GetStackInfo(3) + ": " + msg);
 		}
 	}
 
 	public final static void DebugP(String msg) {
 		//if(LibZen.DebugMode) {
-		_PrintLine("DEBUG " + BLib._GetStackInfo(2) + ": " + msg);
+		_PrintLine("DEBUG " + LibBunSystem._GetStackInfo(2) + ": " + msg);
 		//}
 	}
 
 	@BIgnored public final static void _FixMe(Exception e) {
 		if(DebugMode) {
-			System.err.println("FIXME " + BLib._GetStackInfo(3) + ": " + e);
+			System.err.println("FIXME " + LibBunSystem._GetStackInfo(3) + ": " + e);
 			e.printStackTrace();
 		}
 	}
@@ -104,7 +104,7 @@ public class BLib {
 	}
 
 	public final static void _Exit(int status, String Message) {
-		System.err.println("EXIT " + BLib._GetStackInfo(3) + " " + Message);
+		System.err.println("EXIT " + LibBunSystem._GetStackInfo(3) + " " + Message);
 		System.exit(status);
 	}
 
@@ -397,7 +397,7 @@ public class BLib {
 	}
 
 	public final static boolean HasFile(String Path) {
-		if(BLib.class.getResource(Path) != null) {
+		if(LibBunSystem.class.getResource(Path) != null) {
 			return true;
 		}
 		return new File(Path).exists();
@@ -420,9 +420,9 @@ public class BLib {
 
 	public final static String _LoadTextFile(String FileName) {
 		//ZLogger.VerboseLog(ZLogger.VerboseFile, "loading " + FileName);
-		InputStream Stream = BLib.class.getResourceAsStream("/" + FileName);
+		InputStream Stream = LibBunSystem.class.getResourceAsStream("/" + FileName);
 		if (Stream == null) {
-			File f = new File(BLib.FormatFilePath(FileName));
+			File f = new File(LibBunSystem.FormatFilePath(FileName));
 			try {
 				Stream = new FileInputStream(f);
 			} catch (FileNotFoundException e) {
@@ -446,11 +446,11 @@ public class BLib {
 		return buffer;
 	}
 
-	public static void _LoadInlineLibrary(String Path, BMap<String> SymbolMap, String Delim) {
+	public static void _LoadInlineLibrary(String Path, BunMap<String> SymbolMap, String Delim) {
 		try {
-			InputStream Stream = BLib.class.getResourceAsStream("/" + Path);
+			InputStream Stream = LibBunSystem.class.getResourceAsStream("/" + Path);
 			if (Stream == null) {
-				File f = new File(BLib.FormatFilePath(Path));
+				File f = new File(LibBunSystem.FormatFilePath(Path));
 				Stream = new FileInputStream(f);
 			}
 			BufferedReader reader = new BufferedReader(new InputStreamReader(Stream));
@@ -492,13 +492,13 @@ public class BLib {
 		}
 		catch(Exception e) {
 			e.printStackTrace();
-			BLib._Exit(1, " Cannot load inline library: " + Path);
+			LibBunSystem._Exit(1, " Cannot load inline library: " + Path);
 		}
 	}
 
 
 	public static String _SourceBuilderToString(LibBunSourceBuilder Builder) {
-		return BLib._SourceBuilderToString(Builder, 0, Builder.SourceList.size());
+		return LibBunSystem._SourceBuilderToString(Builder, 0, Builder.SourceList.size());
 	}
 
 	public static String _SourceBuilderToString(LibBunSourceBuilder Builder, int BeginIndex, int EndIndex) {
@@ -533,32 +533,12 @@ public class BLib {
 				w.close();
 			}
 			catch(IOException e) {
-				BLib._Exit(1, "cannot to write: " + e);
+				LibBunSystem._Exit(1, "cannot to write: " + e);
 			}
 		}
 	}
 
 	// HighLevel Library
-
-	private final static BMap<Class<?>> ParserMap = new BMap<Class<?>>(null);
-
-	static {
-		// source code by file extension
-		ParserMap.put("konoha", libbun.lang.konoha.KonohaGrammar.class);
-		ParserMap.put("py", libbun.lang.python.PythonGrammar.class);
-	}
-
-	public final static boolean _ImportGrammar(LibBunGamma Gamma, String ClassName) {
-		try {
-			@Var Class<?> NativeClass =  ParserMap.GetOrNull(ClassName.toLowerCase());
-			@Var Method LoaderMethod = NativeClass.getMethod("ImportGrammar", LibBunGamma.class);
-			LoaderMethod.invoke(null, Gamma);
-			return true;
-		} catch (Exception e) { // naming
-			BLib._FixMe(e);
-		}
-		return false;
-	}
 
 	public final static boolean _ApplyTokenFunc(BTokenFunction TokenFunc, BSourceContext SourceContext) {
 		return TokenFunc.Invoke(SourceContext);
@@ -568,46 +548,64 @@ public class BLib {
 		return MatchFunc.Invoke(ParentNode, TokenContext, LeftNode);
 	}
 
-	private final static BMap<Class<?>> GenMap = new BMap<Class<?>>(null);
+	private final static BunMap<Class<?>> ClassMap = new BunMap<Class<?>>(null);
 
 	static {
+		ClassMap.put("syntax::bun", libbun.lang.bun.BunGrammar.class);
+		ClassMap.put("syntax::bun.extra", libbun.lang.bun.extra.BunExtraGrammar.class);
+		ClassMap.put("syntax::konoha", libbun.lang.konoha.KonohaGrammar.class);
+		ClassMap.put("syntax::python", libbun.lang.python.PythonGrammar.class);
+
 		// source code by file extension
-		GenMap.put("bun", libbun.encode.playground.BunGenerator.class);
-		GenMap.put("c",   libbun.encode.playground.CGenerator.class);
-		GenMap.put("cl",  libbun.encode.playground.CommonLispGenerator.class);
-		GenMap.put("cs",  libbun.encode.playground.CSharpGenerator.class);
-		GenMap.put("erl", libbun.encode.erlang.ErlangGenerator.class);
+		ClassMap.put("bun", libbun.encode.playground.BunGenerator.class);
+		ClassMap.put("c",   libbun.encode.playground.CGenerator.class);
+		ClassMap.put("cl",  libbun.encode.playground.CommonLispGenerator.class);
+		ClassMap.put("cs",  libbun.encode.playground.CSharpGenerator.class);
+		ClassMap.put("erl", libbun.encode.erlang.ErlangGenerator.class);
 
-		GenMap.put("hs",  libbun.encode.haskell.HaskellSourceGenerator.class);
-		GenMap.put("java", libbun.encode.playground.JavaGenerator.class);
-		GenMap.put("js",  libbun.encode.playground.JavaScriptGenerator.class);
+		ClassMap.put("hs",  libbun.encode.haskell.HaskellSourceGenerator.class);
+		ClassMap.put("java", libbun.encode.playground.JavaGenerator.class);
+		ClassMap.put("js",  libbun.encode.playground.JavaScriptGenerator.class);
 
-		GenMap.put("lua",  libbun.encode.devel.LuaGenerator.class);
+		ClassMap.put("lua",  libbun.encode.devel.LuaGenerator.class);
 
-		GenMap.put("pl",  libbun.encode.obsolete.PerlGenerator.class);
-		//GenMap.put("py", libbun.encode.obsolete.OldPythonGenerator.class);
-		GenMap.put("py", libbun.encode.playground.PythonGenerator.class);
-		GenMap.put("r", libbun.encode.playground.RGenerator.class);
-		GenMap.put("rb", libbun.encode.devel.RubyGenerator.class);
+		ClassMap.put("pl",  libbun.encode.obsolete.PerlGenerator.class);
+		ClassMap.put("py", libbun.encode.playground.PythonGenerator.class);
+		ClassMap.put("r", libbun.encode.playground.RGenerator.class);
+		ClassMap.put("rb", libbun.encode.devel.RubyGenerator.class);
 
-		GenMap.put("zen", libbun.encode.playground.BunGenerator.class);
+		ClassMap.put("zen", libbun.encode.playground.BunGenerator.class);
 
 		//
-		GenMap.put("ssac", libbun.encode.devel.SSACGenerator.class);
+		ClassMap.put("ssac", libbun.encode.devel.SSACGenerator.class);
 
 		// engine
-		GenMap.put("jvm", libbun.encode.jvm.AsmJavaGenerator.class);
-		GenMap.put("debug-jvm", libbun.encode.jvm.DebugAsmGenerator.class);
-		GenMap.put("dump-jvm", libbun.encode.jvm.ByteCodePrinter.class);
-		GenMap.put("ll", libbun.encode.llvm.LLVMSourceGenerator.class);
+		ClassMap.put("jvm", libbun.encode.jvm.AsmJavaGenerator.class);
+		ClassMap.put("debug-jvm", libbun.encode.jvm.DebugAsmGenerator.class);
+		ClassMap.put("dump-jvm", libbun.encode.jvm.ByteCodePrinter.class);
+		ClassMap.put("ll", libbun.encode.llvm.LLVMSourceGenerator.class);
 
-		GenMap.put(".bun", libbun.lang.bun.BunGrammar.class);
+	}
+
+	public final static boolean _ImportGrammar(LibBunGamma Gamma, String ClassName) {
+		try {
+			@Var Class<?> GrammarClass =  ClassMap.GetOrNull(ClassName.toLowerCase());
+			if(GrammarClass == null) {
+				GrammarClass = Class.forName(ClassName);
+			}
+			@Var Method LoaderMethod = GrammarClass.getMethod("ImportGrammar", LibBunGamma.class);
+			LoaderMethod.invoke(null, Gamma);
+			return true;
+		} catch (Exception e) { // naming
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	public final static LibBunGenerator _LoadGenerator(String ClassName, String OutputFile) {
 		if (ClassName != null) {
 			try {
-				Class<?> GeneratorClass = GenMap.GetOrNull(ClassName.toLowerCase());
+				Class<?> GeneratorClass = ClassMap.GetOrNull(ClassName.toLowerCase());
 				if(GeneratorClass == null) {
 					GeneratorClass = Class.forName(ClassName);
 				}
@@ -616,13 +614,13 @@ public class BLib {
 				e.printStackTrace();
 			}
 		}
-		BLib._PrintLine("unknown target: " + ClassName);
+		LibBunSystem._PrintLine("unknown target: " + ClassName);
 		return new BunGenerator();
 	}
 
 	public final static LibBunGenerator _InitGenerator(@Nullable String ClassName, String GrammarClass) {
-		@Var LibBunGenerator Generator = BLib._LoadGenerator(ClassName, null);
-		BLib._ImportGrammar(Generator.RootGamma, GrammarClass);
+		@Var LibBunGenerator Generator = LibBunSystem._LoadGenerator(ClassName, null);
+		LibBunSystem._ImportGrammar(Generator.RootGamma, GrammarClass);
 		Generator.SetTypeChecker(new BunTypeSafer(Generator));
 		Generator.RequireLibrary("common", null);
 		return Generator;

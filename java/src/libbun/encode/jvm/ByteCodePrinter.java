@@ -14,14 +14,14 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceClassVisitor;
 
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 
 public class ByteCodePrinter extends AsmJavaGenerator {
 	private final ArrayList<String> StringifiedCodeList;
 
 	public ByteCodePrinter() {
 		super();
-		BLib._SetDebugVerbose(true);
+		LibBunSystem._SetDebugVerbose(true);
 		this.StringifiedCodeList = new ArrayList<String>();
 		this.AsmLoader = new AsmClassLoader(this) {
 			@Override protected Class<?> findClass(String name) {
@@ -59,7 +59,7 @@ public class ByteCodePrinter extends AsmJavaGenerator {
 				Stream.close();
 			}
 			catch (FileNotFoundException e) {
-				BLib._Exit(1, "cannot to write: " + e);
+				LibBunSystem._Exit(1, "cannot to write: " + e);
 			}
 		}
 	}

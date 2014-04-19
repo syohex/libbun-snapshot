@@ -134,10 +134,10 @@ import libbun.type.BType;
 import libbun.type.BTypePool;
 import libbun.util.BArray;
 import libbun.util.BFunction;
-import libbun.util.BLib;
-import libbun.util.BMap;
+import libbun.util.LibBunSystem;
+import libbun.util.BunMap;
 import libbun.util.BMatchFunction;
-import libbun.util.BObject;
+import libbun.util.BunObject;
 import libbun.util.BTokenFunction;
 import libbun.util.Var;
 import libbun.util.ZObjectMap;
@@ -147,7 +147,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 public class AsmJavaGenerator extends LibBunGenerator {
-	private final BMap<Class<?>> GeneratedClassMap = new BMap<Class<?>>(null);
+	private final BunMap<Class<?>> GeneratedClassMap = new BunMap<Class<?>>(null);
 	public JavaStaticFieldNode MainFuncNode = null;
 	AsmClassLoader AsmLoader = null;
 	Stack<AsmTryCatchLabel> TryCatchLabel;
@@ -193,7 +193,7 @@ public class AsmJavaGenerator extends LibBunGenerator {
 		return this.GeneratedClassMap.GetOrNull(this.NameFunctionClass(FuncName, RecvType, FuncParamSize));
 	}
 
-	private final BMap<BNode> LazyNodeMap = new BMap<BNode>(null);
+	private final BunMap<BNode> LazyNodeMap = new BunMap<BNode>(null);
 	protected void LazyBuild(BunFunctionNode Node) {
 		this.LazyNodeMap.put(Node.GetSignature(), Node);
 	}
@@ -201,7 +201,7 @@ public class AsmJavaGenerator extends LibBunGenerator {
 	protected void LazyBuild(String Signature) {
 		BNode Node = this.LazyNodeMap.GetOrNull(Signature);
 		if(Node != null) {
-			BLib._PrintDebug("LazyBuilding: " + Signature);
+			LibBunSystem._PrintDebug("LazyBuilding: " + Signature);
 			this.LazyNodeMap.remove(Signature);
 			Node.Accept(this);
 		}
@@ -364,7 +364,7 @@ public class AsmJavaGenerator extends LibBunGenerator {
 				@Var BArray<BType> TypeList = new BArray<BType>(new BType[ParamTypes.length + 2]);
 				if (ParamTypes != null) {
 					@Var int j = 0;
-					while(j < BLib._Size(ParamTypes)) {
+					while(j < LibBunSystem._Size(ParamTypes)) {
 						TypeList.add(JavaTypeTable.GetZenType(ParamTypes[j]));
 						j = j + 1;
 					}
@@ -570,7 +570,7 @@ public class AsmJavaGenerator extends LibBunGenerator {
 		try {
 			return RecvClass.getField(Name);
 		} catch (Exception e) {
-			BLib._FixMe(e);
+			LibBunSystem._FixMe(e);
 		}
 		return null;  // type checker guarantees field exists
 	}
@@ -1097,7 +1097,7 @@ public class AsmJavaGenerator extends LibBunGenerator {
 		}
 		catch(Exception e) {
 			e.printStackTrace();
-			BLib._Exit(1, "failed: " + e);
+			LibBunSystem._Exit(1, "failed: " + e);
 		}
 		return null;
 	}
@@ -1108,7 +1108,7 @@ public class AsmJavaGenerator extends LibBunGenerator {
 			BClassType ClassType = (BClassType)RecvType;
 			BType FieldType = ClassType.GetFieldType(FuncName, null);
 			if(FieldType == null || !FieldType.IsFuncType()) {
-				FuncName = BLib._AnotherName(FuncName);
+				FuncName = LibBunSystem._AnotherName(FuncName);
 				FieldType = ClassType.GetFieldType(FuncName, null);
 				if(FieldType == null || !FieldType.IsFuncType()) {
 					return;
@@ -1188,7 +1188,7 @@ public class AsmJavaGenerator extends LibBunGenerator {
 			SuperClass = this.GetJavaClass(SuperType);
 		}
 		else {
-			SuperClass = BObject.class;
+			SuperClass = BunObject.class;
 		}
 		return SuperClass;
 	}
@@ -1205,7 +1205,7 @@ public class AsmJavaGenerator extends LibBunGenerator {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			BLib._Exit(1, "failed " + e);
+			LibBunSystem._Exit(1, "failed " + e);
 		}
 	}
 
@@ -1349,7 +1349,7 @@ public class AsmJavaGenerator extends LibBunGenerator {
 	}
 
 	public final void Debug(String Message) {
-		BLib._PrintDebug(Message);
+		LibBunSystem._PrintDebug(Message);
 	}
 
 	@Override public void VisitLiteralNode(LiteralNode Node) {

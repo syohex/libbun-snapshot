@@ -1,8 +1,10 @@
 package libbun.ast.decl;
 
 import libbun.ast.BNode;
-import libbun.encode.jvm.JavaImportNode;
+import libbun.parser.BToken;
 import libbun.parser.LibBunGamma;
+import libbun.parser.LibBunLogger;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 public class BunRequireNode extends TopLevelNode {
@@ -15,8 +17,15 @@ public class BunRequireNode extends TopLevelNode {
 		return this.DupField(TypedClone, new BunRequireNode(ParentNode));
 	}
 	@Override public final void Perform(LibBunGamma Gamma) {
-		@Var String ResourcePath = this.AST[JavaImportNode._Path].SourceToken.GetTextAsName();
-		Gamma.Generator.RequireLibrary(ResourcePath, this.GetAstToken(JavaImportNode._Path));
+		@Var BToken SourceToken = this.AST[BunRequireNode._Path].SourceToken;
+		@Var String Path = SourceToken.GetTextAsName();
+		if(Path.startsWith("syntax::")) {
+			if(!LibBunSystem._ImportGrammar(Gamma, Path)) {
+				LibBunLogger._LogErrorExit(SourceToken, "unknown syntax: " + Path.substring(8));
+			}
+		}
+		else {
+			Gamma.Generator.RequireLibrary(Path, SourceToken);
+		}
 	}
-
 }

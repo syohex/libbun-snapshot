@@ -26,7 +26,7 @@
 package libbun.parser;
 
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 import libbun.util.BMatchFunction;
 
@@ -53,13 +53,13 @@ public final class LibBunSyntax {
 	}
 
 	public final boolean IsBinaryOperator() {
-		return BLib._IsFlag(this.SyntaxFlag, LibBunSyntax._BinaryOperator);
+		return LibBunSystem._IsFlag(this.SyntaxFlag, LibBunSyntax._BinaryOperator);
 	}
 
 	public final boolean IsRightJoin(LibBunSyntax Right) {
 		@Var int left = this.SyntaxFlag;
 		@Var int right = Right.SyntaxFlag;
-		return (left < right || (left == right && !BLib._IsFlag(left, LibBunSyntax._LeftJoin) && !BLib._IsFlag(right, LibBunSyntax._LeftJoin)));
+		return (left < right || (left == right && !LibBunSystem._IsFlag(left, LibBunSyntax._LeftJoin) && !LibBunSystem._IsFlag(right, LibBunSyntax._LeftJoin)));
 	}
 
 	//	public final boolean EqualsName(String Name) {

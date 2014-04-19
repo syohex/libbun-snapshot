@@ -91,7 +91,7 @@ import libbun.parser.LibBunLangInfo;
 import libbun.parser.LibBunLogger;
 import libbun.type.BType;
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 public class OldSourceGenerator extends LibBunSourceGenerator {
@@ -245,7 +245,7 @@ public class OldSourceGenerator extends LibBunSourceGenerator {
 	}
 
 	@Override public void VisitStringNode(BunStringNode Node) {
-		this.Source.Append(this.StringLiteralPrefix, BLib._QuoteString(Node.StringValue));
+		this.Source.Append(this.StringLiteralPrefix, LibBunSystem._QuoteString(Node.StringValue));
 	}
 
 	@Override public void VisitArrayLiteralNode(BunArrayLiteralNode Node) {
@@ -567,7 +567,7 @@ public class OldSourceGenerator extends LibBunSourceGenerator {
 	@Override public void VisitErrorNode(ErrorNode Node) {
 		@Var String Message = LibBunLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.Source.Append(this.ErrorFunc, "(");
-		this.Source.Append(BLib._QuoteString(Message));
+		this.Source.Append(LibBunSystem._QuoteString(Message));
 		this.Source.Append(")");
 	}
 

@@ -29,15 +29,15 @@ import java.util.HashMap;
 import libbun.type.BType;
 
 
-public final class BMap <T> extends BObject {
+public final class BunMap <T> extends BunObject {
 	final HashMap<String, T>	Map;
 
-	public BMap(BType ElementType) {
+	public BunMap(BType ElementType) {
 		super(0);
 		this.Map = new HashMap<String, T>();
 	}
 
-	public BMap(int TypeId, T[] Literal) {
+	public BunMap(int TypeId, T[] Literal) {
 		super(TypeId);
 		this.Map = new HashMap<String, T>();
 		@Var int i = 0;
@@ -80,15 +80,15 @@ public final class BMap <T> extends BObject {
 		this.Map.remove(Key);
 	}
 
-	public void AddMap(BMap<Object> aMap) {
+	public void AddMap(BunMap<Object> aMap) {
 		throw new RuntimeException("unimplemented !!");
 	}
 
-	public final static <T> T GetIndex(BMap<T> aMap, String Key) {
+	public final static <T> T GetIndex(BunMap<T> aMap, String Key) {
 		return aMap.Map.get(Key);
 	}
 
-	public final static <T> void SetIndex(BMap<T> aMap, String Key, T Value) {
+	public final static <T> void SetIndex(BunMap<T> aMap, String Key, T Value) {
 		aMap.Map.put(Key, Value);
 	}
 }

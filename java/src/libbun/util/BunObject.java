@@ -31,37 +31,36 @@ import java.lang.reflect.Modifier;
 import libbun.type.BType;
 import libbun.type.BTypePool;
 
-
-
-public class BObject implements BTypedObject {
+public class BunObject implements BTypedObject {
 	protected BType ZenType;
 
-	protected BObject(int TypeId) {
+	protected BunObject(int TypeId) {
 		this.ZenType = BTypePool.TypeOf(TypeId);
 	}
+
 	@Override public final BType GetZenType() {
 		return this.ZenType;
 	}
 
 	private void AppendStringBuffer(StringBuilder sb, String Name) {
 		if(Name != null) {
-			sb.append(BLib._QuoteString(Name));
+			sb.append(LibBunSystem._QuoteString(Name));
 			sb.append(": ");
 		}
 	}
 
-	public void AppendStringBuffer(StringBuilder sb, Object Value) {
+	protected void AppendStringBuffer(StringBuilder sb, Object Value) {
 		this.AppendStringBuffer(sb, null, Value);
 	}
 
-	public void AppendStringBuffer(StringBuilder sb, String Key, Object Value) {
-		if(Value instanceof BObject) {
+	protected void AppendStringBuffer(StringBuilder sb, String Key, Object Value) {
+		if(Value instanceof BunObject) {
 			this.AppendStringBuffer(sb, Key);
-			((BObject)Value).Stringfy(sb);
+			((BunObject)Value).Stringfy(sb);
 		}
 		else if(Value instanceof String) {
 			this.AppendStringBuffer(sb, Key);
-			sb.append(BLib._QuoteString(Value.toString()));
+			sb.append(LibBunSystem._QuoteString(Value.toString()));
 		}
 		else if(Value instanceof Number || Value instanceof Boolean || Value == null) {
 			this.AppendStringBuffer(sb, Key);

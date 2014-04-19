@@ -32,7 +32,7 @@ import libbun.type.BFuncType;
 import libbun.type.BGenericType;
 import libbun.type.BType;
 import libbun.type.BTypePool;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 import libbun.util.BArray;
 import libbun.util.BBooleanArray;
@@ -113,7 +113,7 @@ public class JavaTypeTable {
 
 	public final static BFuncType ConvertToFuncType(Method JMethod) {
 		@Var Class<?>[] ParamTypes = JMethod.getParameterTypes();
-		@Var BArray<BType> TypeList = new BArray<BType>(new BType[BLib._Size(ParamTypes) + 2]);
+		@Var BArray<BType> TypeList = new BArray<BType>(new BType[LibBunSystem._Size(ParamTypes) + 2]);
 		if (!Modifier.isStatic(JMethod.getModifiers())) {
 			TypeList.add(JavaTypeTable.GetZenType(JMethod.getDeclaringClass()));
 		}

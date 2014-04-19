@@ -1,7 +1,7 @@
 package libbun.lang.bun.regexp;
 
 import libbun.parser.BSourceContext;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 import libbun.util.BTokenFunction;
 
@@ -34,7 +34,7 @@ public class RexExpLiteralTokenFunction extends BTokenFunction {
 		@Var int StartIndex = SourceContext.GetPosition();
 		while(SourceContext.HasChar()) {
 			@Var char ch = SourceContext.GetCurrentChar();
-			if(!BLib._IsDigitOrLetter(ch)) {
+			if(!LibBunSystem._IsDigitOrLetter(ch)) {
 				if(ch == '\\') {
 					// FIXME : we need to support "\u0000"
 					return false;

@@ -31,8 +31,8 @@ import libbun.encode.LibBunGenerator;
 import libbun.type.BClassType;
 import libbun.type.BType;
 import libbun.util.BField;
-import libbun.util.BLib;
-import libbun.util.BMap;
+import libbun.util.LibBunSystem;
+import libbun.util.BunMap;
 import libbun.util.BMatchFunction;
 import libbun.util.BTokenFunction;
 import libbun.util.Nullable;
@@ -42,8 +42,8 @@ public final class LibBunGamma {
 	@BField public final LibBunGenerator   Generator;
 	@BField public final BunBlockNode   BlockNode;
 	@BField LibBunTokenFuncChain[]       TokenMatrix = null;
-	@BField BMap<LibBunSyntax>      SyntaxTable = null;
-	@BField BMap<BunLetVarNode>  SymbolTable2 = null;
+	@BField BunMap<LibBunSyntax>      SyntaxTable = null;
+	@BField BunMap<BunLetVarNode>  SymbolTable2 = null;
 
 	public LibBunGamma(LibBunGenerator Generator, BunBlockNode BlockNode) {
 		this.BlockNode = BlockNode;   // rootname is null
@@ -92,7 +92,7 @@ public final class LibBunGamma {
 
 	public final void AppendTokenFunc(String keys, BTokenFunction TokenFunc) {
 		if(this.TokenMatrix == null) {
-			this.TokenMatrix = BLib._NewTokenMatrix();
+			this.TokenMatrix = LibBunSystem._NewTokenMatrix();
 			if(this.GetParentGamma() != null) {
 				@Var int i = 0;
 				while(i < this.TokenMatrix.length) {
@@ -103,7 +103,7 @@ public final class LibBunGamma {
 		}
 		@Var int i = 0;
 		while(i < keys.length()) {
-			@Var int kchar = BLib._GetTokenMatrixIndex(BLib._GetChar(keys, i));
+			@Var int kchar = LibBunSystem._GetTokenMatrixIndex(LibBunSystem._GetChar(keys, i));
 			this.TokenMatrix[kchar] = this.JoinParentFunc(TokenFunc, this.TokenMatrix[kchar]);
 			i = i + 1;
 		}
@@ -123,7 +123,7 @@ public final class LibBunGamma {
 
 	public final void SetSyntaxPattern(String PatternName, LibBunSyntax Syntax) {
 		if(this.SyntaxTable == null) {
-			this.SyntaxTable = new BMap<LibBunSyntax>(null);
+			this.SyntaxTable = new BunMap<LibBunSyntax>(null);
 		}
 		this.SyntaxTable.put(PatternName, Syntax);
 	}
@@ -137,7 +137,7 @@ public final class LibBunGamma {
 	}
 
 	private void AppendSyntaxPattern(String PatternName, LibBunSyntax NewPattern) {
-		BLib._Assert(NewPattern.ParentPattern == null);
+		LibBunSystem._Assert(NewPattern.ParentPattern == null);
 		@Var LibBunSyntax ParentPattern = this.GetSyntaxPattern(PatternName);
 		NewPattern.ParentPattern = ParentPattern;
 		this.SetSyntaxPattern(PatternName, NewPattern);
@@ -185,7 +185,7 @@ public final class LibBunGamma {
 
 	public final void SetSymbol(String Symbol, BunLetVarNode EntryNode) {
 		if(this.SymbolTable2 == null) {
-			this.SymbolTable2 = new BMap<BunLetVarNode>(null);
+			this.SymbolTable2 = new BunMap<BunLetVarNode>(null);
 		}
 		this.SymbolTable2.put(Symbol, EntryNode);
 	}
@@ -206,12 +206,12 @@ public final class LibBunGamma {
 
 	public final void SetDebugSymbol(String Symbol, BunLetVarNode EntryNode) {
 		this.SetSymbol(Symbol, EntryNode);
-		BLib._PrintLine("SetSymbol: " + Symbol + " @" + this);
+		LibBunSystem._PrintLine("SetSymbol: " + Symbol + " @" + this);
 	}
 
 	public final BunLetVarNode GetDebugSymbol(String Symbol) {
 		@Var BunLetVarNode Node = this.GetSymbol(Symbol);
-		BLib._PrintLine("GetSymbol: " + Symbol + " => " + Node);
+		LibBunSystem._PrintLine("GetSymbol: " + Symbol + " => " + Node);
 		return Node;
 	}
 
@@ -260,7 +260,7 @@ public final class LibBunGamma {
 		if(Node != null) {
 			return Node.DeclType();
 		}
-		if(IsCreation && BLib._IsSymbol(BLib._GetChar(TypeName, 0))) {
+		if(IsCreation && LibBunSystem._IsSymbol(LibBunSystem._GetChar(TypeName, 0))) {
 			@Var BType Type = new BClassType(TypeName, BType.VarType);
 			this.GetRootGamma().SetTypeName(TypeName, Type, SourceToken);
 			return Type;

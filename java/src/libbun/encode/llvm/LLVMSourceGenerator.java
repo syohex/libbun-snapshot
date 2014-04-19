@@ -77,7 +77,7 @@ import libbun.type.BGenericType;
 import libbun.type.BType;
 import libbun.type.BVarType;
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 
@@ -299,7 +299,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 	}
 	private String GetFuncParamTypeExpr(BFuncType FuncType) {
 		@Var int Size = FuncType.GetFuncParamSize();
-		BLib._Assert(Size >= 0);
+		LibBunSystem._Assert(Size >= 0);
 
 		@Var StringBuilder sb = new StringBuilder();
 		sb.append("(");
@@ -1100,7 +1100,7 @@ public class LLVMSourceGenerator extends OldSourceGenerator {
 				break;
 			}
 			sb.append(Macro.substring(fromIndex, BeginNum));
-			@Var int Index = (int)BLib._ParseInt(Macro.substring(BeginNum+2, EndNum));
+			@Var int Index = (int)LibBunSystem._ParseInt(Macro.substring(BeginNum+2, EndNum));
 			if(Node.AST[Index] != null) {
 				sb.append(this.GetTypeExpr(Node.AST[Index].Type));
 				sb.append(" ");

@@ -15,7 +15,7 @@ import libbun.parser.BToken;
 import libbun.parser.BTokenContext;
 import libbun.type.BType;
 import libbun.util.BArray;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.BMatchFunction;
 import libbun.util.BTokenFunction;
 import libbun.util.Var;
@@ -40,7 +40,7 @@ class CommandSymbolTokenFunction extends BTokenFunction {
 		@Var StringBuilder symbolBuilder = new StringBuilder();
 		while(SourceContext.HasChar()) {
 			@Var char ch = SourceContext.GetCurrentChar();
-			if(!BLib._IsDigitOrLetter(ch) && ch != '-' && ch != '+' && ch != '_') {
+			if(!LibBunSystem._IsDigitOrLetter(ch) && ch != '-' && ch != '+' && ch != '_') {
 				break;
 			}
 			symbolBuilder.append(ch);
@@ -100,13 +100,13 @@ class ImportCommandPatternFunction extends BMatchFunction {
 	private boolean FoundDuplicatedSymbol(LibBunGamma Gamma, String Command) {
 		@Var LibBunSyntax Syntax = Gamma.GetSyntaxPattern(Command);
 		if(Syntax != null) {
-			if(BLib.DebugMode) {
+			if(LibBunSystem.DebugMode) {
 				System.err.println("found duplicated syntax pattern: " + Syntax);
 			}
 			return true;
 		}
 		if(Gamma.GetSymbol(ShellUtils._ToCommandSymbol(Command)) != null) {
-			if(BLib.DebugMode) {
+			if(LibBunSystem.DebugMode) {
 				System.err.println("found duplicated symbol: " + Command);
 			}
 			return true;
@@ -233,7 +233,7 @@ class SimpleArgumentPatternFunction extends BMatchFunction {	// subset of Comman
 			@Var BToken Token = TokenContext.GetToken(BTokenContext._MoveNext);
 			if(Token instanceof BPatternToken && ((BPatternToken)Token).PresetPattern.equals("$StringLiteral$")) {
 				this.Flush(TokenContext, NodeList, TokenList);
-				NodeList.add(new BunStringNode(ParentNode, null, BLib._UnquoteString(Token.GetText())));
+				NodeList.add(new BunStringNode(ParentNode, null, LibBunSystem._UnquoteString(Token.GetText())));
 			}
 			else {
 				TokenList.add(Token);
@@ -272,7 +272,7 @@ class SimpleArgumentPatternFunction extends BMatchFunction {	// subset of Comman
 			}
 		}
 		@Var BToken Token = new BToken(TokenContext.Source, StartIndex, EndIndex);
-		NodeList.add(new BunStringNode(null, Token, BLib._UnquoteString(this.ResolveHome(Token.GetText()))));
+		NodeList.add(new BunStringNode(null, Token, LibBunSystem._UnquoteString(this.ResolveHome(Token.GetText()))));
 		TokenList.clear(0);
 	}
 
@@ -373,7 +373,7 @@ class PrefixOptionPatternFunction extends BMatchFunction {
 		@Var BToken NumToken = TokenContext.GetToken(BTokenContext._MoveNext);
 		if((NumToken instanceof BPatternToken)) {
 			if(((BPatternToken)NumToken).PresetPattern.PatternName.equals(("$IntegerLiteral$"))) {
-				@Var long Num = BLib._ParseInt(NumToken.GetText());
+				@Var long Num = LibBunSystem._ParseInt(NumToken.GetText());
 				if(Num > 0) {
 					if(NumToken.IsNextWhiteSpace()) {
 						return new ArgumentNode(ParentNode, Long.toString(Num));

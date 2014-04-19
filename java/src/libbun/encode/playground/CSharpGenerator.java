@@ -26,8 +26,8 @@ import libbun.type.BFuncType;
 import libbun.type.BType;
 import libbun.util.BArray;
 import libbun.util.BField;
-import libbun.util.BLib;
-import libbun.util.BMap;
+import libbun.util.LibBunSystem;
+import libbun.util.BunMap;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
@@ -228,7 +228,7 @@ public class CSharpGenerator extends OldSourceGenerator {
 	}
 
 
-	@BField private final BMap<String> FuncNameMap = new BMap<String>(null);
+	@BField private final BunMap<String> FuncNameMap = new BunMap<String>(null);
 
 	String GetFuncTypeClass(BFuncType FuncType) {
 		@Var String ClassName = this.FuncNameMap.GetOrNull(FuncType.GetUniqueName());
@@ -468,7 +468,7 @@ public class CSharpGenerator extends OldSourceGenerator {
 	@Override public void VisitErrorNode(ErrorNode Node) {
 		LibBunLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.Source.Append("ThrowError(");
-		this.Source.Append(BLib._QuoteString(Node.ErrorMessage));
+		this.Source.Append(LibBunSystem._QuoteString(Node.ErrorMessage));
 		this.Source.Append(")");
 	}
 

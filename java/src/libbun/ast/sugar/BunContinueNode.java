@@ -13,7 +13,7 @@ import libbun.ast.statement.BunWhileNode;
 import libbun.encode.LibBunGenerator;
 import libbun.parser.LibBunTypeChecker;
 import libbun.type.BType;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 public class BunContinueNode extends SyntaxSugarNode {
@@ -92,13 +92,13 @@ public class BunContinueNode extends SyntaxSugarNode {
 
 		@Var BNode[] Nodes = null;
 		if(WhileNode.HasNextNode()) {
-			Nodes = BLib._NewNodeArray(3);
+			Nodes = LibBunSystem._NewNodeArray(3);
 			Nodes[0] = new AssignNode(VarName, new BunBooleanNode(true));
 			Nodes[1] = WhileNode.NextNode();
 			Nodes[2] = new BunBreakNode(null);
 		}
 		else {
-			Nodes = BLib._NewNodeArray(2);
+			Nodes = LibBunSystem._NewNodeArray(2);
 			Nodes[0] = new AssignNode(VarName, new BunBooleanNode(true));
 			Nodes[1] = new BunBreakNode(null);
 		}

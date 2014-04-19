@@ -46,7 +46,7 @@ import libbun.type.BClassType;
 import libbun.type.BFuncType;
 import libbun.type.BType;
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
@@ -304,7 +304,7 @@ public class OldPythonGenerator extends OldSourceGenerator {
 			@Var String Message = LibBunLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 			this.Source.AppendWhiteSpace();
 			this.Source.Append("LibZen.ThrowError(");
-			this.Source.Append(BLib._QuoteString(Message));
+			this.Source.Append(LibBunSystem._QuoteString(Message));
 			this.Source.Append(")");
 		}
 	}

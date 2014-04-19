@@ -1,7 +1,7 @@
 package libbun.util;
 
 
-public class BIntArray extends BObject {
+public class BIntArray extends BunObject {
 	@BField private int    Size;
 	@BField public long[] ArrayValues;
 

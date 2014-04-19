@@ -1,7 +1,7 @@
 package libbun.type;
 
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 import libbun.util.BArray;
 
@@ -14,7 +14,7 @@ public final class BFuncType extends BType {
 
 	private BFuncType() {
 		super(BType.UniqueTypeFlag, "Func", BType.VarType);
-		this.TypeParams = BLib._NewTypeArray(1);
+		this.TypeParams = LibBunSystem._NewTypeArray(1);
 		this.TypeParams[0] = BType.VarType;
 		this.HasUnknownType = true;
 	}

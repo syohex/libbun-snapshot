@@ -16,7 +16,7 @@ import libbun.parser.LibBunLangInfo;
 import libbun.type.BType;
 import libbun.util.BArray;
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Nullable;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
@@ -64,7 +64,7 @@ public abstract class LibBunSourceGenerator extends LibBunGenerator {
 
 	protected final void LoadInlineLibrary(String FileName, String Delim) {
 		@Var String Path = this.LangInfo.GetLibPath2(FileName);
-		BLib._LoadInlineLibrary(Path, this.SymbolMap, Delim);
+		LibBunSystem._LoadInlineLibrary(Path, this.SymbolMap, Delim);
 	}
 
 	public final void ImportLibrary(@Nullable String LibNames) {
@@ -101,7 +101,7 @@ public abstract class LibBunSourceGenerator extends LibBunGenerator {
 			this.Source.AppendNewLine(this.SymbolMap.GetValue("@main", "@main"));
 		}
 		this.Logger.OutputErrorsToStdErr();
-		BLib._WriteTo(this.LangInfo.NameOutputFile(FileName), this.BuilderList);
+		LibBunSystem._WriteTo(this.LangInfo.NameOutputFile(FileName), this.BuilderList);
 		this.InitBuilderList();
 	}
 
@@ -117,13 +117,13 @@ public abstract class LibBunSourceGenerator extends LibBunGenerator {
 			i = i + 1;
 		}
 		this.InitBuilderList();
-		return BLib._SourceBuilderToString(sb);
+		return LibBunSystem._SourceBuilderToString(sb);
 	}
 
 	@Override public void Perform() {
 		this.Logger.OutputErrorsToStdErr();
-		BLib._PrintLine("---");
-		BLib._PrintLine(this.GetSourceText());
+		LibBunSystem._PrintLine("---");
+		LibBunSystem._PrintLine(this.GetSourceText());
 		this.InitBuilderList();
 	}
 
@@ -195,7 +195,7 @@ public abstract class LibBunSourceGenerator extends LibBunGenerator {
 				break;
 			}
 			this.Source.Append(FormText.substring(fromIndex, BeginNum));
-			@Var int Index = (int)BLib._ParseInt(FormText.substring(BeginNum+2, EndNum));
+			@Var int Index = (int)LibBunSystem._ParseInt(FormText.substring(BeginNum+2, EndNum));
 			if(Node.AST[Index] != null) {
 				//this.GenerateCode(FuncType.GetFuncParamType(Index), Node.AST[Index]);
 				this.GenerateExpression(Node.AST[Index]);

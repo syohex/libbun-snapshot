@@ -51,16 +51,16 @@ import libbun.type.BPrototype;
 import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.BIgnored;
-import libbun.util.BLib;
-import libbun.util.BMap;
+import libbun.util.LibBunSystem;
+import libbun.util.BunMap;
 import libbun.util.Nullable;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
 public abstract class LibBunGenerator extends BunVisitor {
-	@BField public BMap<String>        ImportedLibraryMap = new BMap<String>(null);
-	@BField public BMap<String>        SymbolMap = new BMap<String>(null);
-	@BField private final BMap<BFunc>  DefinedFuncMap = new BMap<BFunc>(null);
+	@BField public BunMap<String>        ImportedLibraryMap = new BunMap<String>(null);
+	@BField public BunMap<String>        SymbolMap = new BunMap<String>(null);
+	@BField private final BunMap<BFunc>  DefinedFuncMap = new BunMap<BFunc>(null);
 
 	@BField public final LibBunGamma      RootGamma;
 	@BField public LibBunLogger               Logger;
@@ -169,7 +169,7 @@ public abstract class LibBunGenerator extends BunVisitor {
 			@Var BClassType ClassType = (BClassType)RecvType;
 			@Var BType FieldType = ClassType.GetFieldType(FuncName, null);
 			if(FieldType == null || !FieldType.IsFuncType()) {
-				FuncName = BLib._AnotherName(FuncName);
+				FuncName = LibBunSystem._AnotherName(FuncName);
 				FieldType = ClassType.GetFieldType(FuncName, null);
 				if(FieldType == null || !FieldType.IsFuncType()) {
 					return false;
@@ -232,9 +232,9 @@ public abstract class LibBunGenerator extends BunVisitor {
 
 	public final BFunc GetDefinedFunc(String GlobalName) {
 		@Var BFunc Func = this.DefinedFuncMap.GetOrNull(GlobalName);
-		if(Func == null && BLib._IsLetter(BLib._GetChar(GlobalName, 0))) {
+		if(Func == null && LibBunSystem._IsLetter(LibBunSystem._GetChar(GlobalName, 0))) {
 			//			System.out.println("AnotherName = " + GlobalName + ", " + LibZen._AnotherName(GlobalName));
-			Func = this.DefinedFuncMap.GetOrNull(BLib._AnotherName(GlobalName));
+			Func = this.DefinedFuncMap.GetOrNull(LibBunSystem._AnotherName(GlobalName));
 		}
 		//System.out.println("sinature="+GlobalName+", func="+Func);
 		return Func;
@@ -395,13 +395,13 @@ public abstract class LibBunGenerator extends BunVisitor {
 	}
 
 	public final boolean LoadFile(String FileName, @Nullable BToken SourceToken) {
-		@Var String ScriptText = BLib._LoadTextFile(FileName);
+		@Var String ScriptText = LibBunSystem._LoadTextFile(FileName);
 		if(ScriptText == null) {
 			LibBunLogger._LogErrorExit(SourceToken, "file not found: " + FileName);
 			return false;
 		}
 		if(!this.LoadScript(ScriptText, FileName, 1)) {
-			BLib._Exit(1, "found top level error: " + FileName);
+			LibBunSystem._Exit(1, "found top level error: " + FileName);
 			return false;
 		}
 		return true;
@@ -412,7 +412,7 @@ public abstract class LibBunGenerator extends BunVisitor {
 		@Var String Value = this.ImportedLibraryMap.GetOrNull(Key);
 		if(Value == null) {
 			@Var String Path = this.LangInfo.GetLibPath(LibName);
-			@Var String Script = BLib._LoadTextFile(Path);
+			@Var String Script = LibBunSystem._LoadTextFile(Path);
 			if(Script == null) {
 				LibBunLogger._LogErrorExit(SourceToken, "library not found: " + LibName + " as " + Path);
 				return false;

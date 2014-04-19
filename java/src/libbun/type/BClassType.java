@@ -26,7 +26,7 @@ package libbun.type;
 
 import libbun.parser.BToken;
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 import libbun.util.BArray;
 
@@ -37,7 +37,7 @@ public class BClassType extends BType {
 
 	private BClassType(String ShortName) {
 		super(BType.OpenTypeFlag|BType.UniqueTypeFlag, ShortName, BType.VarType);
-		this.TypeFlag = BLib._UnsetFlag(this.TypeFlag, BType.OpenTypeFlag);
+		this.TypeFlag = LibBunSystem._UnsetFlag(this.TypeFlag, BType.OpenTypeFlag);
 	}
 
 	public BClassType(String ShortName, BType RefType) {

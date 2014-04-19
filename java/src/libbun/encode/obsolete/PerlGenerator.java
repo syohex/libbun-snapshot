@@ -37,7 +37,7 @@ import libbun.parser.BToken;
 import libbun.type.BClassField;
 import libbun.type.BClassType;
 import libbun.type.BType;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 
@@ -194,7 +194,7 @@ public class PerlGenerator extends OldSourceGenerator {
 
 
 	private String ClassKey(BType ClassType) {
-		return BLib._QuoteString(this.NameClass(ClassType));
+		return LibBunSystem._QuoteString(this.NameClass(ClassType));
 	}
 
 	@Override public void VisitClassNode(BunClassNode Node) {
@@ -216,7 +216,7 @@ public class PerlGenerator extends OldSourceGenerator {
 		while (i < Node.GetListSize()) {
 			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
 			this.Source.AppendNewLine();
-			this.Source.Append("$o{", BLib._QuoteString(FieldNode.GetGivenName()), "} = ");
+			this.Source.Append("$o{", LibBunSystem._QuoteString(FieldNode.GetGivenName()), "} = ");
 			this.GenerateExpression(FieldNode.InitValueNode());
 			this.Source.Append(this.SemiColon);
 			i = i + 1;
@@ -230,7 +230,7 @@ public class PerlGenerator extends OldSourceGenerator {
 				this.Source.Append("if (defined $", this.NameMethod(Node.ClassType, ClassField.FieldName), ")");
 				this.Source.OpenIndent(" {");
 				this.Source.AppendNewLine();
-				this.Source.Append("$o{", BLib._QuoteString(ClassField.FieldName), "} = $");
+				this.Source.Append("$o{", LibBunSystem._QuoteString(ClassField.FieldName), "} = $");
 				this.Source.Append(this.NameMethod(Node.ClassType, ClassField.FieldName), this.SemiColon);
 				this.Source.CloseIndent("}");
 			}

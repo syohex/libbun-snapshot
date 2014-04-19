@@ -26,7 +26,7 @@ package libbun.parser;
 
 import libbun.util.BArray;
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 public final class LibBunLogger {
@@ -53,7 +53,7 @@ public final class LibBunLogger {
 			Token.Source.Logger.Report(Message);
 		}
 		else {
-			BLib._Exit(1, Message);
+			LibBunSystem._Exit(1, Message);
 		}
 	}
 
@@ -100,7 +100,7 @@ public final class LibBunLogger {
 		@Var String[] Messages = this.GetReportedErrors();
 		@Var int i = 0;
 		while(i < Messages.length) {
-			BLib._PrintLine(Messages[i]);
+			LibBunSystem._PrintLine(Messages[i]);
 			i = i + 1;
 		}
 	}

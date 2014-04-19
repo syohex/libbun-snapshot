@@ -1,7 +1,7 @@
 package libbun.parser;
 
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 import libbun.util.BIgnored;
 
@@ -34,7 +34,7 @@ public class BToken {
 
 	public final char GetChar() {
 		if(this.Source != null) {
-			return BLib._GetChar(this.Source.SourceText, this.StartIndex);
+			return LibBunSystem._GetChar(this.Source.SourceText, this.StartIndex);
 		}
 		return '\0';
 	}
@@ -60,7 +60,7 @@ public class BToken {
 
 	@BIgnored public final boolean EqualsText(char ch) {
 		if(this.EndIndex - this.StartIndex == 1) {
-			if(BLib._GetChar(this.Source.SourceText, this.StartIndex) == ch) {
+			if(LibBunSystem._GetChar(this.Source.SourceText, this.StartIndex) == ch) {
 				return true;
 			}
 		}
@@ -72,7 +72,7 @@ public class BToken {
 			@Var String s = this.Source.SourceText;
 			@Var int i = 0;
 			while(i < Text.length()) {
-				if(BLib._GetChar(s, this.StartIndex+i) != BLib._GetChar(Text, i)) {
+				if(LibBunSystem._GetChar(s, this.StartIndex+i) != LibBunSystem._GetChar(Text, i)) {
 					return false;
 				}
 				i = i + 1;
@@ -87,7 +87,7 @@ public class BToken {
 			@Var String s = this.Source.SourceText;
 			@Var int i = 0;
 			while(i < Text.length()) {
-				if(BLib._GetChar(s, this.StartIndex+i) != BLib._GetChar(Text, i)) {
+				if(LibBunSystem._GetChar(s, this.StartIndex+i) != LibBunSystem._GetChar(Text, i)) {
 					return false;
 				}
 				i = i + 1;
@@ -115,7 +115,7 @@ public class BToken {
 
 	public final boolean IsNameSymbol() {
 		@Var char ch = this.Source.GetCharAt(this.StartIndex);
-		return BLib._IsSymbol(ch);
+		return LibBunSystem._IsSymbol(ch);
 	}
 
 	public final int GetIndentSize() {

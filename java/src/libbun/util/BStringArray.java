@@ -1,6 +1,6 @@
 package libbun.util;
 
-public class BStringArray extends BObject {
+public class BStringArray extends BunObject {
 	@BField private int    Size;
 	@BField public String[] ArrayValues;
 
@@ -26,7 +26,7 @@ public class BStringArray extends BObject {
 			if(i > 0) {
 				sb.append(", ");
 			}
-			sb.append(BLib._QuoteString(this.ArrayValues[i]));
+			sb.append(LibBunSystem._QuoteString(this.ArrayValues[i]));
 		}
 		sb.append("]");
 	}

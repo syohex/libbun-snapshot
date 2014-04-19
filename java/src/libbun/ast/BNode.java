@@ -36,7 +36,7 @@ import libbun.parser.LibBunVisitor;
 import libbun.type.BFuncType;
 import libbun.type.BType;
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Nullable;
 import libbun.util.Var;
 
@@ -56,7 +56,7 @@ public abstract class BNode {
 		assert(this != ParentNode);
 		this.ParentNode = ParentNode;
 		if(Size > 0) {
-			this.AST = BLib._NewNodeArray(Size);
+			this.AST = LibBunSystem._NewNodeArray(Size);
 		}
 	}
 
@@ -96,7 +96,7 @@ public abstract class BNode {
 	}
 
 	@Override public String toString() {
-		@Var String Self = "#" + BLib._GetClassName(this);
+		@Var String Self = "#" + LibBunSystem._GetClassName(this);
 		if(!this.Type.IsVarType()) {
 			Self = Self + ":" + this.Type;
 		}
@@ -118,7 +118,7 @@ public abstract class BNode {
 						Self = Self + this.AST[i].toString();
 					}
 					else {
-						Self = Self + "*" + BLib._GetClassName(this.AST[i])+"*";
+						Self = Self + "*" + LibBunSystem._GetClassName(this.AST[i])+"*";
 					}
 				}
 				i = i + 1;
@@ -230,7 +230,7 @@ public abstract class BNode {
 			assert(!(Node == Node.ParentNode));
 			//System.out.println("node: " + Node.getClass() + ", " + Node.hashCode() + ", " + SafeCount);
 			Node = Node.ParentNode;
-			if(BLib.DebugMode) {
+			if(LibBunSystem.DebugMode) {
 				SafeCount = SafeCount + 1;
 				assert(SafeCount < 100);
 			}
@@ -244,7 +244,7 @@ public abstract class BNode {
 		while(BlockNode.NullableGamma == null) {
 			@Var BunBlockNode ParentBlockNode = BlockNode.ParentNode.GetScopeBlockNode();
 			BlockNode = ParentBlockNode;
-			if(BLib.DebugMode) {
+			if(LibBunSystem.DebugMode) {
 				SafeCount = SafeCount + 1;
 				assert(SafeCount < 100);
 			}

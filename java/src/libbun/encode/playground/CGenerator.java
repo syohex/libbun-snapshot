@@ -89,7 +89,7 @@ import libbun.type.BClassType;
 import libbun.type.BFunc;
 import libbun.type.BFuncType;
 import libbun.type.BType;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 public class CGenerator extends LibBunSourceGenerator {
@@ -147,7 +147,7 @@ public class CGenerator extends LibBunSourceGenerator {
 
 	@Override
 	public void VisitStringNode(BunStringNode Node) {
-		this.Source.Append(BLib._QuoteString(Node.StringValue));
+		this.Source.Append(LibBunSystem._QuoteString(Node.StringValue));
 	}
 
 	private void GenerateUnaryNode(UnaryOperatorNode Node, String Operator) {
@@ -783,7 +783,7 @@ public class CGenerator extends LibBunSourceGenerator {
 	public void VisitErrorNode(ErrorNode Node) {
 		@Var String Message = LibBunLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.Source.Append("perror(");
-		this.Source.Append(BLib._QuoteString(Message));
+		this.Source.Append(LibBunSystem._QuoteString(Message));
 		this.Source.Append(")");
 	}
 }

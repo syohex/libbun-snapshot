@@ -1,7 +1,7 @@
 package libbun.parser;
 
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 public final class BSourceContext extends LibBunSource {
@@ -12,7 +12,7 @@ public final class BSourceContext extends LibBunSource {
 	}
 
 	public final int GetCharCode() {
-		return BLib._GetTokenMatrixIndex(BLib._GetChar(this.SourceText, this.SourcePosition));
+		return LibBunSystem._GetTokenMatrixIndex(LibBunSystem._GetChar(this.SourceText, this.SourcePosition));
 	}
 
 	public final int GetPosition() {
@@ -24,12 +24,12 @@ public final class BSourceContext extends LibBunSource {
 	}
 
 	public final char GetCurrentChar() {
-		return BLib._GetChar(this.SourceText, this.SourcePosition);
+		return LibBunSystem._GetChar(this.SourceText, this.SourcePosition);
 	}
 
 	public final char GetCharAtFromCurrentPosition(int n) {
 		if(this.SourcePosition+n < this.SourceText.length()) {
-			return BLib._GetChar(this.SourceText, this.SourcePosition+n);
+			return LibBunSystem._GetChar(this.SourceText, this.SourcePosition+n);
 		}
 		return '\0';
 	}
@@ -103,7 +103,7 @@ public final class BSourceContext extends LibBunSource {
 		@Var int RollbackPosition = this.SourcePosition;
 		while(TokenFunc != null) {
 			this.SourcePosition = RollbackPosition;
-			if(BLib._ApplyTokenFunc(TokenFunc.Func, this)) {
+			if(LibBunSystem._ApplyTokenFunc(TokenFunc.Func, this)) {
 				return;
 			}
 			TokenFunc = TokenFunc.ParentFunc;

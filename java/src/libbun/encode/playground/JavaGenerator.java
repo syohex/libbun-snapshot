@@ -65,8 +65,8 @@ import libbun.type.BFuncType;
 import libbun.type.BType;
 import libbun.util.BArray;
 import libbun.util.BField;
-import libbun.util.BLib;
-import libbun.util.BMap;
+import libbun.util.LibBunSystem;
+import libbun.util.BunMap;
 import libbun.util.Var;
 import libbun.util.ZenMethod;
 
@@ -497,7 +497,7 @@ public class JavaGenerator extends LibBunSourceGenerator {
 		return this.GetNativeTypeName(Type);
 	}
 
-	@BField private final BMap<String> FuncNameMap = new BMap<String>(null);
+	@BField private final BunMap<String> FuncNameMap = new BunMap<String>(null);
 
 	String GetFuncTypeClass(BFuncType FuncType) {
 		@Var String ClassName = this.FuncNameMap.GetOrNull(FuncType.GetUniqueName());
@@ -611,7 +611,7 @@ public class JavaGenerator extends LibBunSourceGenerator {
 		this.Source.OpenIndent(" {");
 
 		this.Source.AppendNewLine("super(", ""+FuncType.TypeId, ", ");
-		this.Source.Append(BLib._QuoteString(FuncName), ");");
+		this.Source.Append(LibBunSystem._QuoteString(FuncName), ");");
 		this.Source.CloseIndent("}");
 
 		this.Source.AppendNewLine("");
@@ -717,7 +717,7 @@ public class JavaGenerator extends LibBunSourceGenerator {
 	@Override public void VisitErrorNode(ErrorNode Node) {
 		LibBunLogger._LogError(Node.SourceToken, Node.ErrorMessage);
 		this.Source.Append("ThrowError(");
-		this.Source.Append(BLib._QuoteString(Node.ErrorMessage));
+		this.Source.Append(LibBunSystem._QuoteString(Node.ErrorMessage));
 		this.Source.Append(")");
 	}
 

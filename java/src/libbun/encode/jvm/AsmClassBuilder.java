@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 import libbun.type.BFuncType;
 import libbun.type.BType;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 import org.objectweb.asm.ClassWriter;
@@ -83,7 +83,7 @@ class AsmClassBuilder {
 				}
 			}
 		} catch(Exception e) {
-			BLib._FixMe(e);
+			LibBunSystem._FixMe(e);
 		}
 		return null;
 	}

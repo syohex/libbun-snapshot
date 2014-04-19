@@ -30,7 +30,7 @@ import libbun.ast.error.ErrorNode;
 import libbun.encode.LibBunGenerator;
 import libbun.util.BArray;
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 public final class BTokenContext {
@@ -262,7 +262,7 @@ public final class BTokenContext {
 			this.CurrentPosition = RollbackPosition;
 			this.ApplyingPattern  = CurrentPattern;
 			//			System.out.println("B "+Pattern + "," + ParentNode);
-			ParsedNode = BLib._ApplyMatchFunc(CurrentPattern.MatchFunc, ParentNode, this, LeftNode);
+			ParsedNode = LibBunSystem._ApplyMatchFunc(CurrentPattern.MatchFunc, ParentNode, this, LeftNode);
 			assert(ParsedNode != ParentNode);
 			//			System.out.println("E "+ ParsedNode);
 			this.ApplyingPattern  = null;
@@ -406,7 +406,7 @@ public final class BTokenContext {
 			@Var BToken Token = this.TokenList.ArrayValues[Position];
 			@Var String DumpedToken = "[";
 			DumpedToken = DumpedToken + Position+"] " + Token.toString();
-			BLib._PrintDebug(DumpedToken);
+			LibBunSystem._PrintDebug(DumpedToken);
 			Position = Position + 1;
 			//			ZenLogger.VerboseLog(ZenLogger.VerboseToken,  DumpedToken);
 		}

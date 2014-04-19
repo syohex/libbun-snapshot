@@ -3,7 +3,7 @@ package libbun.encode.jvm;
 import java.util.HashMap;
 
 import libbun.ast.BNode;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 import org.objectweb.asm.Type;
@@ -36,7 +36,7 @@ class AsmClassLoader extends ClassLoader {
 		AsmClassBuilder ClassBuilder = this.ClassBuilderMap.get(name);
 		if(ClassBuilder != null) {
 			byte[] b = ClassBuilder.GenerateBytecode();
-			if(BLib.DebugMode) {
+			if(LibBunSystem.DebugMode) {
 				ClassBuilder.OutputClassFile();
 			}
 			this.ClassBuilderMap.remove(name);
@@ -56,7 +56,7 @@ class AsmClassLoader extends ClassLoader {
 			return this.loadClass(ClassName);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
-			BLib._Exit(1, "generation failed: " + ClassName);
+			LibBunSystem._Exit(1, "generation failed: " + ClassName);
 		}
 		return null;
 	}

@@ -1,4 +1,4 @@
-package libbun.lang.bun;
+package libbun.lang.bun.extra;
 
 import libbun.ast.BNode;
 import libbun.ast.ContainerNode;

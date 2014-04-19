@@ -5,7 +5,7 @@ import libbun.parser.LibBunTypeChecker;
 import libbun.util.Nullable;
 import libbun.util.Var;
 import libbun.util.BArray;
-import libbun.util.BMap;
+import libbun.util.BunMap;
 
 public class BTypePool {
 
@@ -27,8 +27,8 @@ public class BTypePool {
 		return BType.VarType;
 	}
 
-	private final static BMap<BType>     _ClassNameMap = new BMap<BType>(null);
-	private final static BMap<BType[]>   _UniqueTypeSetMap = new BMap<BType[]>(null);
+	private final static BunMap<BType>     _ClassNameMap = new BunMap<BType>(null);
+	private final static BunMap<BType[]>   _UniqueTypeSetMap = new BunMap<BType[]>(null);
 
 	private final static String _MangleType2(BType Type1, BType Type2) {
 		return ":" + Type1.TypeId + ":" + Type2.TypeId;

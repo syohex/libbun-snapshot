@@ -27,7 +27,7 @@ package libbun.encode;
 
 import libbun.util.BArray;
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 public final class LibBunSourceBuilder {
@@ -55,7 +55,7 @@ public final class LibBunSourceBuilder {
 	public final void Append(String Source) {
 		if(!this.IsEmpty(Source)) {
 			this.SourceList.add(Source);
-			this.LastChar = BLib._GetChar(Source, Source.length()-1);
+			this.LastChar = LibBunSystem._GetChar(Source, Source.length()-1);
 		}
 	}
 
@@ -75,7 +75,7 @@ public final class LibBunSourceBuilder {
 	}
 
 	public final void AppendQuotedText(String Text) {
-		this.SourceList.add(BLib._QuoteString(Text));
+		this.SourceList.add(LibBunSystem._QuoteString(Text));
 	}
 
 	public final void AppendLineFeed() {
@@ -99,7 +99,7 @@ public final class LibBunSourceBuilder {
 	public final void CloseIndent() {
 		this.IndentLevel = this.IndentLevel - 1;
 		this.CurrentIndentString = null;
-		BLib._Assert(this.IndentLevel >= 0);
+		LibBunSystem._Assert(this.IndentLevel >= 0);
 	}
 
 	public final void CloseIndent(String Text) {
@@ -118,7 +118,7 @@ public final class LibBunSourceBuilder {
 
 	private final void AppendIndentString() {
 		if (this.CurrentIndentString == null) {
-			this.CurrentIndentString = BLib._JoinStrings(this.Template.Tab, this.IndentLevel);
+			this.CurrentIndentString = LibBunSystem._JoinStrings(this.Template.Tab, this.IndentLevel);
 		}
 		this.SourceList.add(this.CurrentIndentString);
 	}
@@ -180,7 +180,7 @@ public final class LibBunSourceBuilder {
 		@Var int StartIndex = 0;
 		@Var int i = 0;
 		while(i < Source.length()) {
-			@Var char ch = BLib._GetChar(Source, i);
+			@Var char ch = LibBunSystem._GetChar(Source, i);
 			if(ch == '\n') {
 				if(StartIndex < i) {
 					this.SourceList.add(Source.substring(StartIndex, i));
@@ -211,11 +211,11 @@ public final class LibBunSourceBuilder {
 	}
 
 	public final String CopyString(int BeginIndex, int EndIndex) {
-		return BLib._SourceBuilderToString(this, BeginIndex, EndIndex);
+		return LibBunSystem._SourceBuilderToString(this, BeginIndex, EndIndex);
 	}
 
 	@Override public final String toString() {
-		return BLib._SourceBuilderToString(this);
+		return LibBunSystem._SourceBuilderToString(this);
 	}
 	////
 	////	@Deprecated public final void AppendLine(String Text) {

@@ -29,7 +29,7 @@ import java.util.HashMap;
 import libbun.type.BGenericType;
 import libbun.type.BType;
 import libbun.type.BTypePool;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 
 
 public class JavaMethodTable {
@@ -241,7 +241,7 @@ public class JavaMethodTable {
 	public static Method GetBinaryStaticMethod(BType T1, String Op, BType T2) {
 		Method sMethod = MethodMap.get(BinaryKey(T1, Op, T2));
 		while(sMethod == null) {
-			BLib._PrintDebug("unfound binary operator" + T1 + " " + Op + " " + T2);
+			LibBunSystem._PrintDebug("unfound binary operator" + T1 + " " + Op + " " + T2);
 			if(T1.IsVarType()) {
 				sMethod = MethodMap.get(BinaryKey(BType.VarType, Op, BType.VarType));
 				break;

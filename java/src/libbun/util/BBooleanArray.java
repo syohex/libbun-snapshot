@@ -1,7 +1,7 @@
 package libbun.util;
 
 
-public class BBooleanArray extends BObject {
+public class BBooleanArray extends BunObject {
 	@BField private int    Size;
 	@BField public boolean[] ArrayValues;
 

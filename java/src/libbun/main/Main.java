@@ -28,8 +28,8 @@ import java.io.IOException;
 
 import libbun.encode.LibBunGenerator;
 import libbun.parser.LibBunConst;
-import libbun.util.BLib;
 import libbun.util.BStringArray;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 
@@ -39,7 +39,7 @@ public class Main {
 	private static String Target = "bun";
 
 	// -p konoha
-	private static String Parser = "konoha";
+	private static String Parser = "syntax::konoha";
 
 	// -o
 	private static String OutputFileName = null;
@@ -97,7 +97,7 @@ public class Main {
 				continue;
 			}
 			if (Argument.equals("--verbose")) {
-				BLib._SetDebugVerbose(true);
+				LibBunSystem._SetDebugVerbose(true);
 				continue;
 			}
 			ShowUsage("unknown option: " + Argument);
@@ -128,12 +128,12 @@ public class Main {
 		System.out.println("libbun usage :");
 		System.out.println("  --out|-o  FILE          Output filename");
 		System.out.println("  --verbose               Printing Debug infomation");
-		BLib._Exit(0, Message);
+		LibBunSystem._Exit(0, Message);
 	}
 
 	public final static void InvokeLibBun(String[] Args) {
 		ParseCommand(Args);
-		@Var LibBunGenerator Generator = BLib._InitGenerator(Target, Parser);
+		@Var LibBunGenerator Generator = LibBunSystem._InitGenerator(Target, Parser);
 		if(InputFileName != null) {
 			Generator.LoadFile(InputFileName, null);
 		}
@@ -149,10 +149,10 @@ public class Main {
 	}
 
 	public final static void PerformShell(LibBunGenerator Generator) {
-		BLib._PrintLine(LibBunConst.ProgName + LibBunConst.Version + " (" + LibBunConst.CodeName + ") on " + BLib._GetPlatform());
-		BLib._PrintLine(LibBunConst.Copyright);
-		BLib._PrintLine("Accept: " + Generator.LangInfo.GetGrammarInfo());
-		BLib._PrintLine("Produce: " + Generator.LangInfo.LangVersion);
+		LibBunSystem._PrintLine(LibBunConst.ProgName + LibBunConst.Version + " (" + LibBunConst.CodeName + ") on " + LibBunSystem._GetPlatform());
+		LibBunSystem._PrintLine(LibBunConst.Copyright);
+		LibBunSystem._PrintLine("Accept: " + Generator.LangInfo.GetGrammarInfo());
+		LibBunSystem._PrintLine("Produce: " + Generator.LangInfo.LangVersion);
 		@Var int linenum = 1;
 		@Var String Line = null;
 		while ((Line = Main.ReadLine2(">>> ", "    ")) != null) {
@@ -167,7 +167,7 @@ public class Main {
 				linenum = linenum + 1;
 			}
 		}
-		BLib._PrintLine("");
+		LibBunSystem._PrintLine("");
 	}
 
 	private static jline.ConsoleReader ConsoleReader = null;
@@ -207,7 +207,7 @@ public class Main {
 			}
 			if(level < 0) {
 				Line = "";
-				BLib._PrintLine(" .. canceled");
+				LibBunSystem._PrintLine(" .. canceled");
 			}
 		}
 		ConsoleReader.getHistory().addToHistory(Line);

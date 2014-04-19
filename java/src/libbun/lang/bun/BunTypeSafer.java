@@ -106,7 +106,7 @@ import libbun.type.BTypePool;
 import libbun.type.BVarScope;
 import libbun.type.BVarType;
 import libbun.util.BField;
-import libbun.util.BLib;
+import libbun.util.LibBunSystem;
 import libbun.util.Var;
 
 public class BunTypeSafer extends LibBunTypeChecker {
@@ -970,7 +970,7 @@ public class BunTypeSafer extends LibBunTypeChecker {
 			FieldNode.Type = BType.VoidType;
 			i = i + 1;
 		}
-		Node.ClassType.TypeFlag = BLib._UnsetFlag(Node.ClassType.TypeFlag, BType.OpenTypeFlag);
+		Node.ClassType.TypeFlag = LibBunSystem._UnsetFlag(Node.ClassType.TypeFlag, BType.OpenTypeFlag);
 		//System.out.println(" E NodeClass.ToOpen="+Node.ClassType+", IsOpenType="+Node.ClassType.IsOpenType());
 		this.ReturnTypeNode(Node, BType.VoidType);
 	}
