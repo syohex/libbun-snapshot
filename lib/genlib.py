@@ -20,7 +20,7 @@ class Data:
 			print 'ERROR: ' + line
 			return
 		langs = t[0].split(',')
-		macro = t[1].replace('"', '\\"').replace("\\", "\\\\")
+		macro = t[1].replace("\\", "\\\\").replace('"', '\\"')
 		for lang in langs:
 			if not self.LangMap.has_key(lang):
 				self.LangMap[lang] = {}

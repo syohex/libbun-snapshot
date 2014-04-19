@@ -582,6 +582,8 @@ public class BLib {
 		GenMap.put("java", libbun.encode.JavaGenerator.class);
 		GenMap.put("js",  libbun.encode.JavaScriptGenerator.class);
 
+		GenMap.put("lua",  libbun.encode.devel.LuaGenerator.class);
+
 		GenMap.put("pl",  libbun.encode.obsolete.PerlGenerator.class);
 		//GenMap.put("py", libbun.encode.obsolete.OldPythonGenerator.class);
 		GenMap.put("py", libbun.encode.PythonGenerator.class);
