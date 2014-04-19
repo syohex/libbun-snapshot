@@ -553,6 +553,10 @@ public class LibBunSystem {
 	static {
 		ClassMap.put("syntax::bun", libbun.lang.bun.BunGrammar.class);
 		ClassMap.put("syntax::bun.extra", libbun.lang.bun.extra.BunExtraGrammar.class);
+		ClassMap.put("syntax::bun.regex", libbun.lang.bun.regexp.RegExpGrammar.class);
+		ClassMap.put("syntax::bun.shell", libbun.lang.bun.shell.ShellGrammar.class);
+
+		ClassMap.put("syntax::lisp",   libbun.lang.lisp.LispGrammar.class);
 		ClassMap.put("syntax::konoha", libbun.lang.konoha.KonohaGrammar.class);
 		ClassMap.put("syntax::python", libbun.lang.python.PythonGrammar.class);
 

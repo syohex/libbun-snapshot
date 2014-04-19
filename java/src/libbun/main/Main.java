@@ -39,7 +39,7 @@ public class Main {
 	private static String Target = "bun";
 
 	// -p konoha
-	private static String Parser = "syntax::konoha";
+	private static String Parser = "syntax::bun";
 
 	// -o
 	private static String OutputFileName = null;
