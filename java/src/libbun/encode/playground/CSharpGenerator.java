@@ -1,4 +1,4 @@
-package libbun.encode;
+package libbun.encode.playground;
 
 import libbun.ast.BNode;
 import libbun.ast.binary.BunInstanceOfNode;
@@ -19,6 +19,7 @@ import libbun.ast.literal.BunNullNode;
 import libbun.ast.statement.BunReturnNode;
 import libbun.ast.statement.BunThrowNode;
 import libbun.ast.statement.BunTryNode;
+import libbun.encode.LibBunSourceBuilder;
 import libbun.encode.obsolete.OldSourceGenerator;
 import libbun.parser.LibBunLogger;
 import libbun.type.BClassType;

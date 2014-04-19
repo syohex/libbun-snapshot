@@ -23,7 +23,7 @@
 // **************************************************************************
 
 
-package libbun.encode;
+package libbun.encode.playground;
 
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
@@ -84,6 +84,7 @@ import libbun.ast.unary.BunMinusNode;
 import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
+import libbun.encode.LibBunSourceGenerator;
 import libbun.parser.LibBunLangInfo;
 import libbun.parser.LibBunLogger;
 import libbun.type.BClassType;

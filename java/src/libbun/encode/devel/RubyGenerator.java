@@ -1,4 +1,4 @@
-package libbun.encode;
+package libbun.encode.devel;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
