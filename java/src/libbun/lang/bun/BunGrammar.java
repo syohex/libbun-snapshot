@@ -28,6 +28,7 @@ import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.EmptyNode;
 import libbun.ast.GroupNode;
+import libbun.ast.binary.AssignNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAddNode;
 import libbun.ast.binary.BunAndNode;
@@ -60,9 +61,6 @@ import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.GetNameNode;
 import libbun.ast.expression.MethodCallNode;
 import libbun.ast.expression.NewObjectNode;
-import libbun.ast.expression.SetFieldNode;
-import libbun.ast.expression.SetIndexNode;
-import libbun.ast.expression.SetNameNode;
 import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.ast.literal.BunAsmNode;
 import libbun.ast.literal.BunBooleanNode;
@@ -451,6 +449,12 @@ class InstanceOfPatternFunction extends BMatchFunction {
 	}
 }
 
+class AssignPatternFunction extends BMatchFunction {
+	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+		@Var BinaryOperatorNode BinaryNode = new AssignNode(ParentNode);
+		return BinaryNode.SetParsedNode(ParentNode, LeftNode, BinaryNode.GetOperator(), TokenContext);
+	}
+}
 
 class StringLiteralPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
@@ -562,16 +566,18 @@ class GetFieldPatternFunction extends BMatchFunction {
 	}
 }
 
-class SetFieldPatternFunction extends BMatchFunction {
-	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
-		@Var BNode SetterNode = new SetFieldNode(ParentNode, LeftNode);
-		SetterNode = TokenContext.MatchToken(SetterNode, ".", BTokenContext._Required);
-		SetterNode = TokenContext.MatchPattern(SetterNode, SetFieldNode._NameInfo, "$Name$", BTokenContext._Required);
-		SetterNode = TokenContext.MatchToken(SetterNode, "=", BTokenContext._Required);
-		SetterNode = TokenContext.MatchPattern(SetterNode, SetFieldNode._Expr, "$Expression$", BTokenContext._Required);
-		return SetterNode;
-	}
-}
+//class SetFieldPatternFunction extends BMatchFunction {
+//	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+//		@Var BNode SetterNode = new AssignNode(ParentNode);
+//		@Var BNode GetterNode = new GetFieldNode(SetterNode, LeftNode);
+//		GetterNode = TokenContext.MatchToken(GetterNode, ".", BTokenContext._Required);
+//		GetterNode = TokenContext.MatchPattern(GetterNode, GetFieldNode._NameInfo, "$Name$", BTokenContext._Required);
+//		SetterNode.SetNode(BinaryOperatorNode._Left, GetterNode);
+//		SetterNode = TokenContext.MatchToken(SetterNode, "=", BTokenContext._Required);
+//		SetterNode = TokenContext.MatchPattern(SetterNode, BinaryOperatorNode._Right, "$Expression$", BTokenContext._Required);
+//		return SetterNode;
+//	}
+//}
 
 class MethodCallPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
@@ -625,17 +631,19 @@ class GetIndexPatternFunction extends BMatchFunction {
 	}
 }
 
-class SetIndexPatternFunction extends BMatchFunction {
-	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
-		@Var BNode IndexerNode = new SetIndexNode(ParentNode, LeftNode);
-		IndexerNode = TokenContext.MatchToken(IndexerNode, "[", BTokenContext._Required);
-		IndexerNode = TokenContext.MatchPattern(IndexerNode, SetIndexNode._Index, "$Expression$", BTokenContext._Required, BTokenContext._AllowSkipIndent);
-		IndexerNode = TokenContext.MatchToken(IndexerNode, "]", BTokenContext._Required);
-		IndexerNode = TokenContext.MatchToken(IndexerNode, "=", BTokenContext._Required);
-		IndexerNode = TokenContext.MatchPattern(IndexerNode, SetIndexNode._Expr, "$Expression$", BTokenContext._Required);
-		return IndexerNode;
-	}
-}
+//class SetIndexPatternFunction extends BMatchFunction {
+//	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
+//		@Var BNode SetIndexNode = new AssignNode(ParentNode);
+//		@Var BNode IndexerNode = new GetIndexNode(SetIndexNode, LeftNode);
+//		IndexerNode = TokenContext.MatchToken(IndexerNode, "[", BTokenContext._Required);
+//		IndexerNode = TokenContext.MatchPattern(IndexerNode, GetIndexNode._Index, "$Expression$", BTokenContext._Required, BTokenContext._AllowSkipIndent);
+//		IndexerNode = TokenContext.MatchToken(IndexerNode, "]", BTokenContext._Required);
+//		IndexerNode.SetNode(BinaryOperatorNode._Left, IndexerNode);
+//		SetIndexNode = TokenContext.MatchToken(SetIndexNode, "=", BTokenContext._Required);
+//		SetIndexNode = TokenContext.MatchPattern(SetIndexNode, BinaryOperatorNode._Left, "$Expression$", BTokenContext._Required);
+//		return SetIndexNode;
+//	}
+//}
 
 class ArrayLiteralPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
@@ -740,12 +748,12 @@ class AnnotationPatternFunction extends BMatchFunction {
 class SymbolExpressionPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		@Var BToken NameToken = TokenContext.GetToken(BTokenContext._MoveNext);
-		if(TokenContext.IsToken("=")) {
-			return new ErrorNode(ParentNode, TokenContext.GetToken(), "assignment is not en expression");
-		}
-		else {
-			return new GetNameNode(ParentNode, NameToken, NameToken.GetText());
-		}
+		//		if(TokenContext.IsToken("=")) {
+		//			return new ErrorNode(ParentNode, TokenContext.GetToken(), "assignment is not en expression");
+		//		}
+		//		else {
+		return new GetNameNode(ParentNode, NameToken, NameToken.GetText());
+		//		}
 	}
 }
 
@@ -753,15 +761,15 @@ class SymbolStatementPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		@Var BToken NameToken = TokenContext.GetToken(BTokenContext._MoveNext);
 		@Var GetNameNode NameNode = new GetNameNode(ParentNode, NameToken, NameToken.GetText());
-		if(TokenContext.IsToken("=")) {
-			@Var BNode AssignedNode = new SetNameNode(ParentNode, NameNode);
-			AssignedNode = TokenContext.MatchToken(AssignedNode, "=", BTokenContext._Required);
-			AssignedNode = TokenContext.MatchPattern(AssignedNode, SetNameNode._Expr, "$Expression$", BTokenContext._Required);
-			return AssignedNode;
-		}
-		else {
-			return NameNode;
-		}
+		//		if(TokenContext.IsToken("=")) {
+		//			@Var BNode AssignedNode = new SetNameNode(ParentNode, NameNode);
+		//			AssignedNode = TokenContext.MatchToken(AssignedNode, "=", BTokenContext._Required);
+		//			AssignedNode = TokenContext.MatchPattern(AssignedNode, SetNameNode._Expr, "$Expression$", BTokenContext._Required);
+		//			return AssignedNode;
+		//		}
+		//		else {
+		return NameNode;
+		//		}
 	}
 }
 
@@ -1092,6 +1100,8 @@ public class BunGrammar {
 	public final static BMatchFunction MinusPattern = new BunMinusPatternFunction();
 	public final static BMatchFunction ComplementPattern = new BunComplementPatternFunction();
 
+	public final static BMatchFunction AssignPattern = new AssignPatternFunction();
+
 	public final static BMatchFunction EqualsPattern = new BunEqualsPatternFunction();
 	public final static BMatchFunction NotEqualsPattern = new BunNotEqualsPatternFunction();
 	public final static BMatchFunction LessThanPattern = new BunLessThanPatternFunction();
@@ -1124,7 +1134,6 @@ public class BunGrammar {
 	public final static BMatchFunction TypeAnnotationPattern = new TypeAnnotationPatternFunction();
 
 	public final static BMatchFunction GetFieldPattern = new GetFieldPatternFunction();
-	public final static BMatchFunction SetFieldPattern = new SetFieldPatternFunction();
 	public final static BMatchFunction MethodCallPattern = new MethodCallPatternFunction();
 
 	public final static BMatchFunction GroupPattern = new GroupPatternFunction();
@@ -1132,7 +1141,6 @@ public class BunGrammar {
 	public final static BMatchFunction FuncCallPattern = new FuncCallPatternFunction();
 
 	public final static BMatchFunction GetIndexPattern = new GetIndexPatternFunction();
-	public final static BMatchFunction SetIndexPattern = new SetIndexPatternFunction();
 	public final static BMatchFunction ArrayLiteralPattern = new ArrayLiteralPatternFunction();
 	public final static BMatchFunction MapEntryPattern = new MapEntryPatternFunction();
 	public final static BMatchFunction MapLiteralPattern = new MapLiteralPatternFunction();
@@ -1207,6 +1215,7 @@ public class BunGrammar {
 		Gamma.DefineExpression("!", NotPattern);
 		//		Gamma.AppendSyntax("++ --", new Incl"));
 
+		Gamma.DefineRightExpression("=", AssignPattern);
 		Gamma.DefineRightExpression("==", EqualsPattern);
 		Gamma.DefineRightExpression("!=", NotEqualsPattern);
 		Gamma.DefineRightExpression("<", LessThanPattern);
@@ -1240,7 +1249,7 @@ public class BunGrammar {
 		Gamma.DefineExpression("$TypeAnnotation$", TypeAnnotationPattern);
 
 		Gamma.DefineRightExpression(".", GetFieldPattern);
-		Gamma.DefineRightExpression(".", SetFieldPattern);
+		//		Gamma.DefineRightExpression(".", SetFieldPattern);
 		Gamma.DefineRightExpression(".", MethodCallPattern);
 
 		Gamma.DefineExpression("(", GroupPattern);
@@ -1248,7 +1257,7 @@ public class BunGrammar {
 		Gamma.DefineRightExpression("(", FuncCallPattern);
 
 		Gamma.DefineRightExpression("[", GetIndexPattern);
-		Gamma.DefineRightExpression("[", SetIndexPattern);
+		//		Gamma.DefineRightExpression("[", SetIndexPattern);
 		Gamma.DefineExpression("[", ArrayLiteralPattern);
 		Gamma.DefineExpression("$MapEntry$", MapEntryPattern);
 		Gamma.DefineExpression("{", MapLiteralPattern);

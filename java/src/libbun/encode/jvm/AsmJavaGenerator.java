@@ -63,7 +63,7 @@ import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
 import libbun.ast.LocalDefinedNode;
-import libbun.ast.binary.BunInstanceOfNode;
+import libbun.ast.binary.AssignNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAddNode;
 import libbun.ast.binary.BunAndNode;
@@ -74,6 +74,7 @@ import libbun.ast.binary.BunDivNode;
 import libbun.ast.binary.BunEqualsNode;
 import libbun.ast.binary.BunGreaterThanEqualsNode;
 import libbun.ast.binary.BunGreaterThanNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.binary.BunLeftShiftNode;
 import libbun.ast.binary.BunLessThanEqualsNode;
 import libbun.ast.binary.BunLessThanNode;
@@ -89,17 +90,14 @@ import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.decl.TopLevelNode;
 import libbun.ast.error.ErrorNode;
-import libbun.ast.expression.BunFuncNameNode;
 import libbun.ast.expression.BunFormNode;
+import libbun.ast.expression.BunFuncNameNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.GetNameNode;
 import libbun.ast.expression.MethodCallNode;
 import libbun.ast.expression.NewObjectNode;
-import libbun.ast.expression.SetFieldNode;
-import libbun.ast.expression.SetIndexNode;
-import libbun.ast.expression.SetNameNode;
 import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.ast.literal.BunAsmNode;
 import libbun.ast.literal.BunBooleanNode;
@@ -124,11 +122,11 @@ import libbun.ast.unary.BunNotNode;
 import libbun.ast.unary.BunPlusNode;
 import libbun.ast.unary.UnaryOperatorNode;
 import libbun.encode.LibBunGenerator;
-import libbun.parser.LibBunLangInfo;
-import libbun.parser.LibBunLogger;
-import libbun.parser.LibBunGamma;
 import libbun.parser.BSourceContext;
 import libbun.parser.BTokenContext;
+import libbun.parser.LibBunGamma;
+import libbun.parser.LibBunLangInfo;
+import libbun.parser.LibBunLogger;
 import libbun.type.BClassField;
 import libbun.type.BClassType;
 import libbun.type.BFuncType;
@@ -544,10 +542,24 @@ public class AsmJavaGenerator extends LibBunGenerator {
 		this.AsmBuilder.CheckReturnCast(Node, this.AsmBuilder.GetLocalType(Node.GetUniqueName(this)));
 	}
 
-	@Override public void VisitSetNameNode(SetNameNode Node) {
-		@Var String Name = Node.NameNode().GetUniqueName(this);
-		this.AsmBuilder.PushNode(this.AsmBuilder.GetLocalType(Name), Node.ExprNode());
+	private void GenerateAssignNode(GetNameNode Node, BNode ExprNode) {
+		@Var String Name = Node.GetUniqueName(this);
+		this.AsmBuilder.PushNode(this.AsmBuilder.GetLocalType(Name), ExprNode);
 		this.AsmBuilder.StoreLocal(Name);
+	}
+
+
+	@Override public void VisitAssignNode(AssignNode Node) {
+		@Var BNode LeftNode = Node.LeftNode();
+		if(LeftNode instanceof GetNameNode) {
+			this.GenerateAssignNode((GetNameNode)LeftNode, Node.RightNode());
+		}
+		else if(LeftNode instanceof GetFieldNode) {
+			this.GenerateAssignNode((GetFieldNode)LeftNode, Node.RightNode());
+		}
+		else if(LeftNode instanceof GetIndexNode) {
+			this.GenerateAssignNode((GetIndexNode)LeftNode, Node.RightNode());
+		}
 	}
 
 	@Override public void VisitGroupNode(GroupNode Node) {
@@ -585,11 +597,11 @@ public class AsmJavaGenerator extends LibBunGenerator {
 		}
 	}
 
-	@Override public void VisitSetFieldNode(SetFieldNode Node) {
+	private void GenerateAssignNode(GetFieldNode Node, BNode ExprNode) {
 		if(Node.IsUntyped()) {
 			Method sMethod = JavaMethodTable.GetStaticMethod("SetField");
 			BNode NameNode = new BunStringNode(Node, null, Node.GetName());
-			this.AsmBuilder.ApplyStaticMethod(Node, sMethod, new BNode[] {Node.RecvNode(), NameNode, Node.ExprNode()});
+			this.AsmBuilder.ApplyStaticMethod(Node, sMethod, new BNode[] {Node.RecvNode(), NameNode, ExprNode});
 		}
 		else {
 			Class<?> RecvClass = this.GetJavaClass(Node.RecvNode().Type);
@@ -597,25 +609,26 @@ public class AsmJavaGenerator extends LibBunGenerator {
 			String Owner = Type.getType(RecvClass).getInternalName();
 			String Desc = Type.getType(jField.getType()).getDescriptor();
 			if(Modifier.isStatic(jField.getModifiers())) {
-				this.AsmBuilder.PushNode(jField.getType(), Node.ExprNode());
+				this.AsmBuilder.PushNode(jField.getType(), ExprNode);
 				this.AsmBuilder.visitFieldInsn(PUTSTATIC, Owner, Node.GetName(), Desc);
 			}
 			else {
 				this.AsmBuilder.PushNode(null, Node.RecvNode());
-				this.AsmBuilder.PushNode(jField.getType(), Node.ExprNode());
+				this.AsmBuilder.PushNode(jField.getType(), ExprNode);
 				this.AsmBuilder.visitFieldInsn(PUTFIELD, Owner, Node.GetName(), Desc);
 			}
 		}
 	}
+
 
 	@Override public void VisitGetIndexNode(GetIndexNode Node) {
 		Method sMethod = JavaMethodTable.GetBinaryStaticMethod(Node.RecvNode().Type, "[]", Node.IndexNode().Type);
 		this.AsmBuilder.ApplyStaticMethod(Node, sMethod, new BNode[] {Node.RecvNode(), Node.IndexNode()});
 	}
 
-	@Override public void VisitSetIndexNode(SetIndexNode Node) {
+	private void GenerateAssignNode(GetIndexNode Node, BNode ExprNode) {
 		Method sMethod = JavaMethodTable.GetBinaryStaticMethod(Node.RecvNode().Type, "[]=", Node.IndexNode().Type);
-		this.AsmBuilder.ApplyStaticMethod(Node, sMethod, new BNode[] {Node.RecvNode(), Node.IndexNode(), Node.ExprNode()});
+		this.AsmBuilder.ApplyStaticMethod(Node, sMethod, new BNode[] {Node.RecvNode(), Node.IndexNode(), ExprNode});
 	}
 
 	private int GetInvokeType(Method jMethod) {

@@ -1,9 +1,10 @@
 package libbun.parser.ssa;
 
 import libbun.ast.BNode;
+import libbun.ast.binary.AssignNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
-import libbun.ast.expression.SetNameNode;
+import libbun.ast.expression.GetNameNode;
 import libbun.encode.LibBunGenerator;
 import libbun.type.BType;
 
@@ -15,8 +16,8 @@ public class NodeLib {
 		else if(Node instanceof BunVarBlockNode) {
 			return true;
 		}
-		else if(Node instanceof SetNameNode) {
-			return true;
+		else if(Node instanceof AssignNode) {
+			return ((AssignNode)Node).LeftNode() instanceof GetNameNode;
 		}
 		else if(Node instanceof PHINode) {
 			return true;
@@ -33,9 +34,9 @@ public class NodeLib {
 			BunVarBlockNode VNode = (BunVarBlockNode) Node;
 			return VNode.VarDeclNode().DeclType();
 		}
-		else if(Node instanceof SetNameNode) {
-			SetNameNode SNode = (SetNameNode) Node;
-			return SNode.ExprNode().Type;
+		else if(Node instanceof AssignNode) {
+			AssignNode SNode = (AssignNode) Node;
+			return SNode.RightNode().Type;
 		}
 		else if(Node instanceof PHINode) {
 			PHINode PNode = (PHINode) Node;
@@ -53,9 +54,9 @@ public class NodeLib {
 			BunVarBlockNode VNode = (BunVarBlockNode) Node;
 			return VNode.VarDeclNode().GetGivenName();
 		}
-		else if(Node instanceof SetNameNode) {
-			SetNameNode SNode = (SetNameNode) Node;
-			return SNode.NameNode().GetUniqueName(Generator);
+		else if(Node instanceof AssignNode) {
+			AssignNode SNode = (AssignNode) Node;
+			return ((GetNameNode)SNode.LeftNode()).GetUniqueName(Generator);
 		}
 		else if(Node instanceof PHINode) {
 			PHINode PNode = (PHINode) Node;
@@ -71,9 +72,9 @@ public class NodeLib {
 		else if(Node instanceof BunVarBlockNode) {
 			return 0;
 		}
-		else if(Node instanceof SetNameNode) {
-			SetNameNode SNode = (SetNameNode) Node;
-			return SNode.NameNode().VarIndex;
+		else if(Node instanceof AssignNode) {
+			AssignNode SNode = (AssignNode) Node;
+			return ((GetNameNode)SNode.LeftNode()).VarIndex;
 		}
 		else if(Node instanceof PHINode) {
 			PHINode PNode = (PHINode) Node;

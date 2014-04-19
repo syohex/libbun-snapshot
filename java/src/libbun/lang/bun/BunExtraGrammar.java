@@ -4,7 +4,7 @@ import libbun.ast.BNode;
 import libbun.ast.ContainerNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAddNode;
-import libbun.ast.binary.BunAssignNode;
+import libbun.ast.binary.AssignNode;
 import libbun.ast.statement.BunWhileNode;
 import libbun.ast.sugar.BunContinueNode;
 import libbun.parser.BTokenContext;
@@ -77,7 +77,7 @@ class SelfAddPatternFunction extends BMatchFunction {
 	@Override public BNode Invoke(BNode ParentNode, BTokenContext TokenContext, BNode LeftNode) {
 		TokenContext.SkipToken();
 		if(TokenContext.IsToken("=")) {
-			@Var BunAssignNode AssignNode = new BunAssignNode(ParentNode);
+			@Var AssignNode AssignNode = new AssignNode(ParentNode);
 			@Var BinaryOperatorNode BinaryNode = new BunAddNode(AssignNode);
 			@Var BNode RightNode = BinaryNode.SetParsedNode(AssignNode, LeftNode, "=", TokenContext);
 			AssignNode.SetLeftNode(LeftNode);

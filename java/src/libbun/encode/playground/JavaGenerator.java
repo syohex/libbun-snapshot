@@ -3,7 +3,7 @@ package libbun.encode.playground;
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
-import libbun.ast.binary.BunInstanceOfNode;
+import libbun.ast.binary.AssignNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAddNode;
 import libbun.ast.binary.BunAndNode;
@@ -14,6 +14,7 @@ import libbun.ast.binary.BunDivNode;
 import libbun.ast.binary.BunEqualsNode;
 import libbun.ast.binary.BunGreaterThanEqualsNode;
 import libbun.ast.binary.BunGreaterThanNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.binary.BunLeftShiftNode;
 import libbun.ast.binary.BunLessThanEqualsNode;
 import libbun.ast.binary.BunLessThanNode;
@@ -35,9 +36,6 @@ import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.GetNameNode;
 import libbun.ast.expression.MethodCallNode;
 import libbun.ast.expression.NewObjectNode;
-import libbun.ast.expression.SetFieldNode;
-import libbun.ast.expression.SetIndexNode;
-import libbun.ast.expression.SetNameNode;
 import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.ast.literal.BunBooleanNode;
 import libbun.ast.literal.BunFloatNode;
@@ -177,6 +175,31 @@ public class JavaGenerator extends LibBunSourceGenerator {
 		this.GenerateListNode("(", Node, ", ", ")");
 	}
 
+	@Override public void VisitGroupNode(GroupNode Node) {
+		this.GenerateExpression("(", Node.ExprNode(), ")");
+	}
+
+	@Override public void VisitGetNameNode(GetNameNode Node) {
+		this.Source.Append(Node.GetUniqueName(this));
+	}
+
+	@Override public void VisitGetFieldNode(GetFieldNode Node) {
+		this.GenerateExpression(Node.RecvNode());
+		this.Source.Append(".", Node.GetName());
+	}
+
+	@Override public void VisitAssignNode(AssignNode Node) {
+		@Var BNode LeftNode = Node.LeftNode();
+		if(LeftNode instanceof GetIndexNode) {
+			this.GenerateAssignIndex((GetIndexNode)LeftNode, Node.RightNode());
+		}
+		else {
+			this.GenerateExpression(LeftNode);
+			this.Source.Append(" = ");
+			this.GenerateExpression(Node.RightNode());
+		}
+	}
+
 	@Override public void VisitGetIndexNode(GetIndexNode Node) {
 		@Var BType RecvType = Node.GetAstType(GetIndexNode._Recv);
 		if(RecvType.IsStringType()) {
@@ -192,7 +215,7 @@ public class JavaGenerator extends LibBunSourceGenerator {
 		}
 	}
 
-	@Override public void VisitSetIndexNode(SetIndexNode Node) {
+	private void GenerateAssignIndex(GetIndexNode Node, BNode ExprNode) {
 		@Var BType RecvType = Node.GetAstType(GetIndexNode._Recv);
 		this.GenerateExpression(Node.RecvNode());
 		if(RecvType.IsMapType()) {
@@ -203,33 +226,8 @@ public class JavaGenerator extends LibBunSourceGenerator {
 		}
 		this.GenerateExpression(Node.IndexNode());
 		this.Source.Append(", ");
-		this.GenerateExpression(Node.ExprNode());
+		this.GenerateExpression(ExprNode);
 		this.Source.Append(")");
-	}
-
-	@Override public void VisitGroupNode(GroupNode Node) {
-		this.GenerateExpression("(", Node.ExprNode(), ")");
-	}
-
-	@Override public void VisitGetNameNode(GetNameNode Node) {
-		this.Source.Append(Node.GetUniqueName(this));
-	}
-
-	@Override public void VisitSetNameNode(SetNameNode Node) {
-		this.VisitGetNameNode(Node.NameNode());
-		this.Source.Append(" = ");
-		this.GenerateExpression(Node.ExprNode());
-	}
-
-	@Override public void VisitGetFieldNode(GetFieldNode Node) {
-		this.GenerateExpression(Node.RecvNode());
-		this.Source.Append(".", Node.GetName());
-	}
-
-	@Override public void VisitSetFieldNode(SetFieldNode Node) {
-		this.GenerateExpression(Node.RecvNode());
-		this.Source.Append(".", Node.GetName(), " = ");
-		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override public void VisitMethodCallNode(MethodCallNode Node) {

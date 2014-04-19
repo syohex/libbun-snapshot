@@ -30,7 +30,7 @@ import libbun.parser.LibBunVisitor;
 import libbun.util.BField;
 import libbun.util.Var;
 
-public class GetFieldNode extends BNode {
+public class GetFieldNode extends MutableNode {
 	public final static int _Recv = 0;
 	public static final int _NameInfo = 1;
 
@@ -47,6 +47,9 @@ public class GetFieldNode extends BNode {
 
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
 		@Var GetFieldNode NewNode = new GetFieldNode(ParentNode, null);
+		if(TypedClone) {
+			NewNode.IsImmutable = this.IsImmutable;
+		}
 		NewNode.GivenName = this.GivenName;
 		return this.DupField(TypedClone, NewNode);
 	}

@@ -29,13 +29,11 @@ import libbun.ast.decl.BunLetVarNode;
 import libbun.encode.LibBunGenerator;
 import libbun.parser.BToken;
 import libbun.parser.LibBunVisitor;
-import libbun.type.BType;
 import libbun.util.BField;
 import libbun.util.Nullable;
 import libbun.util.Var;
 
-public class GetNameNode extends BNode {
-	@BField public boolean IsCaptured = false;
+public class GetNameNode extends MutableNode {
 	@BField public String  GivenName;
 	@BField @Nullable public BunLetVarNode ResolvedNode = null;
 	@BField public int     VarIndex = 0;
@@ -44,13 +42,12 @@ public class GetNameNode extends BNode {
 		super(ParentNode, 0);
 		this.SourceToken = SourceToken;
 		this.GivenName = GivenName;
-		this.Type = BType.VarType; // FIXME
 	}
 
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
 		@Var GetNameNode NewNode = new GetNameNode(ParentNode, this.SourceToken, this.GivenName);
 		if(TypedClone) {
-			NewNode.IsCaptured = this.IsCaptured;
+			NewNode.IsImmutable = this.IsImmutable;
 			NewNode.ResolvedNode = this.ResolvedNode;
 		}
 		return this.DupField(TypedClone, NewNode);

@@ -4,9 +4,9 @@ import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.DesugarNode;
 import libbun.ast.SyntaxSugarNode;
+import libbun.ast.binary.AssignNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.error.ErrorNode;
-import libbun.ast.expression.SetNameNode;
 import libbun.ast.literal.BunBooleanNode;
 import libbun.ast.statement.BunBreakNode;
 import libbun.ast.statement.BunWhileNode;
@@ -87,19 +87,19 @@ public class BunContinueNode extends SyntaxSugarNode {
 		@Var BunWhileNode ContinueWhile = VarNode.SetNewWhileNode(BNode._AppendIndex, Typer);
 		ContinueWhile.SetNewGetNameNode(BunWhileNode._Cond, Typer, VarName, BType.BooleanType);
 		@Var BunBlockNode WhileBlockNode = ContinueWhile.SetNewBlockNode(BunWhileNode._Block, Typer);
-		WhileBlockNode.Append(new SetNameNode(VarName, new BunBooleanNode(false)));
+		WhileBlockNode.Append(new AssignNode(VarName, new BunBooleanNode(false)));
 		WhileBlockNode.Append(WhileNode);
 
 		@Var BNode[] Nodes = null;
 		if(WhileNode.HasNextNode()) {
 			Nodes = BLib._NewNodeArray(3);
-			Nodes[0] = new SetNameNode(VarName, new BunBooleanNode(true));
+			Nodes[0] = new AssignNode(VarName, new BunBooleanNode(true));
 			Nodes[1] = WhileNode.NextNode();
 			Nodes[2] = new BunBreakNode(null);
 		}
 		else {
 			Nodes = BLib._NewNodeArray(2);
-			Nodes[0] = new SetNameNode(VarName, new BunBooleanNode(true));
+			Nodes[0] = new AssignNode(VarName, new BunBooleanNode(true));
 			Nodes[1] = new BunBreakNode(null);
 		}
 		ParentBlockNode.ReplaceWith(WhileNode, VarNode);

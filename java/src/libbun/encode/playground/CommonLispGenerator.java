@@ -27,7 +27,7 @@ package libbun.encode.playground;
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
-import libbun.ast.binary.BunInstanceOfNode;
+import libbun.ast.binary.AssignNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAddNode;
 import libbun.ast.binary.BunAndNode;
@@ -38,6 +38,7 @@ import libbun.ast.binary.BunDivNode;
 import libbun.ast.binary.BunEqualsNode;
 import libbun.ast.binary.BunGreaterThanEqualsNode;
 import libbun.ast.binary.BunGreaterThanNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.binary.BunLeftShiftNode;
 import libbun.ast.binary.BunLessThanEqualsNode;
 import libbun.ast.binary.BunLessThanNode;
@@ -59,9 +60,6 @@ import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.GetNameNode;
 import libbun.ast.expression.MethodCallNode;
 import libbun.ast.expression.NewObjectNode;
-import libbun.ast.expression.SetFieldNode;
-import libbun.ast.expression.SetIndexNode;
-import libbun.ast.expression.SetNameNode;
 import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.ast.literal.BunBooleanNode;
 import libbun.ast.literal.BunFloatNode;
@@ -187,24 +185,24 @@ public class CommonLispGenerator extends LibBunSourceGenerator {
 		}
 	}
 
-	@Override public void VisitSetIndexNode(SetIndexNode Node) {
-		@Var BType RecvType = Node.RecvNode().Type;
-		if(RecvType.IsMapType()) {
-			this.GenerateExpression("(setf (gethash ", Node.IndexNode(), " ", Node.RecvNode(), ") ", Node.ExprNode(), ")");
-		}
-		else {
-			this.GenerateExpression("(setf (nth ", Node.IndexNode(), " ", Node.RecvNode(), ") ", Node.ExprNode(), ")");
-		}
-	}
+	//	@Override public void VisitSetIndexNode(SetIndexNode Node) {
+	//		@Var BType RecvType = Node.RecvNode().Type;
+	//		if(RecvType.IsMapType()) {
+	//			this.GenerateExpression("(setf (gethash ", Node.IndexNode(), " ", Node.RecvNode(), ") ", Node.ExprNode(), ")");
+	//		}
+	//		else {
+	//			this.GenerateExpression("(setf (nth ", Node.IndexNode(), " ", Node.RecvNode(), ") ", Node.ExprNode(), ")");
+	//		}
+	//	}
 
 	@Override public void VisitGetNameNode(GetNameNode Node) {
 		this.Source.Append(Node.GetUniqueName(this));
 	}
 
-	@Override public void VisitSetNameNode(SetNameNode Node) {
-		this.Source.Append("(setq ");
-		this.VisitGetNameNode(Node.NameNode());
-		this.GenerateExpression(" ", Node.ExprNode(), ")");
+	@Override public void VisitAssignNode(AssignNode Node) {
+		this.Source.Append("(setf ");
+		this.GenerateExpression(Node.LeftNode());
+		this.GenerateExpression(" ", Node.RightNode(), ")");
 	}
 
 	@Override public void VisitGetFieldNode(GetFieldNode Node) {
@@ -212,11 +210,11 @@ public class CommonLispGenerator extends LibBunSourceGenerator {
 		this.Source.Append(".", Node.GetName());
 	}
 
-	@Override public void VisitSetFieldNode(SetFieldNode Node) {
-		this.GenerateExpression(Node.RecvNode());
-		this.Source.Append(".", Node.GetName(), " = ");
-		this.GenerateExpression(Node.ExprNode());
-	}
+	//	@Override public void VisitSetFieldNode(SetFieldNode Node) {
+	//		this.GenerateExpression(Node.RecvNode());
+	//		this.Source.Append(".", Node.GetName(), " = ");
+	//		this.GenerateExpression(Node.ExprNode());
+	//	}
 
 	@Override public void VisitMethodCallNode(MethodCallNode Node) {
 		this.GenerateExpression(Node.RecvNode());

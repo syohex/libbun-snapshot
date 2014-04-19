@@ -28,8 +28,9 @@ import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
 import libbun.ast.LocalDefinedNode;
 import libbun.ast.SyntaxSugarNode;
-import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.binary.BinaryOperatorNode;
+import libbun.ast.binary.AssignNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
@@ -43,9 +44,6 @@ import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.GetNameNode;
 import libbun.ast.expression.MethodCallNode;
 import libbun.ast.expression.NewObjectNode;
-import libbun.ast.expression.SetFieldNode;
-import libbun.ast.expression.SetIndexNode;
-import libbun.ast.expression.SetNameNode;
 import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.ast.literal.BunAsmNode;
 import libbun.ast.literal.BunMapLiteralNode;
@@ -75,11 +73,12 @@ public abstract class LibBunVisitor {
 	public abstract void VisitFormNode(BunFormNode FuncNode);
 
 	public abstract void VisitGetNameNode(GetNameNode Node);
-	public abstract void VisitSetNameNode(SetNameNode Node);
 	public abstract void VisitGetFieldNode(GetFieldNode Node);
-	public abstract void VisitSetFieldNode(SetFieldNode Node);
 	public abstract void VisitGetIndexNode(GetIndexNode Node);
-	public abstract void VisitSetIndexNode(SetIndexNode Node);
+	public abstract void VisitAssignNode(AssignNode Node);
+	//	public abstract void VisitSetIndexNode(SetIndexNode Node);
+	//	public abstract void VisitAssignNode(AssignNode Node);
+	//	public abstract void VisitSetFieldNode(SetFieldNode Node);
 	public abstract void VisitMethodCallNode(MethodCallNode Node);
 
 	public abstract void VisitUnaryNode(UnaryOperatorNode Node);

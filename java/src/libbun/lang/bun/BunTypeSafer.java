@@ -29,7 +29,7 @@ import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
 import libbun.ast.LocalDefinedNode;
-import libbun.ast.binary.BunInstanceOfNode;
+import libbun.ast.binary.AssignNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BitwiseOperatorNode;
 import libbun.ast.binary.BunAddNode;
@@ -41,6 +41,7 @@ import libbun.ast.binary.BunDivNode;
 import libbun.ast.binary.BunEqualsNode;
 import libbun.ast.binary.BunGreaterThanEqualsNode;
 import libbun.ast.binary.BunGreaterThanNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.binary.BunLeftShiftNode;
 import libbun.ast.binary.BunLessThanEqualsNode;
 import libbun.ast.binary.BunLessThanNode;
@@ -63,10 +64,8 @@ import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.GetNameNode;
 import libbun.ast.expression.MethodCallNode;
+import libbun.ast.expression.MutableNode;
 import libbun.ast.expression.NewObjectNode;
-import libbun.ast.expression.SetFieldNode;
-import libbun.ast.expression.SetIndexNode;
-import libbun.ast.expression.SetNameNode;
 import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.ast.literal.BunAsmNode;
 import libbun.ast.literal.BunBooleanNode;
@@ -235,13 +234,17 @@ public class BunTypeSafer extends LibBunTypeChecker {
 		this.ReturnTypeNode(Node, BType.VarType);
 	}
 
-	@Override public void VisitSetNameNode(SetNameNode Node) {
-		this.CheckTypeAt(Node, SetNameNode._NameInfo, BType.VarType);
-		@Var GetNameNode NameNode = Node.NameNode();
-		if(!NameNode.IsUntyped()) {
-			this.CheckTypeAt(Node, SetNameNode._Expr, NameNode.Type);
+	@Override public void VisitAssignNode(AssignNode Node) {
+		this.CheckTypeAt(Node, BinaryOperatorNode._Left, BType.VarType);
+		@Var BNode LeftNode = Node.LeftNode();
+		this.CheckTypeAt(Node, BinaryOperatorNode._Right, LeftNode.Type);
+		if(LeftNode instanceof MutableNode) {
+			if(!((MutableNode)LeftNode).IsImmutable) {
+				this.ReturnTypeNode(Node, BType.VoidType);
+				return;
+			}
 		}
-		this.ReturnTypeNode(Node, BType.VoidType);
+		this.ReturnTypeErrorNode("immutable", LeftNode);
 	}
 
 	private BType GetIndexType(LibBunGamma Gamma, BType RecvType) {
@@ -269,14 +272,6 @@ public class BunTypeSafer extends LibBunTypeChecker {
 		this.CheckTypeAt(Node, GetIndexNode._Recv, BType.VarType);
 		this.CheckTypeAt(Node, GetIndexNode._Index, this.GetIndexType(Gamma, Node.RecvNode().Type));
 		this.ReturnTypeNode(Node, this.GetElementType(Gamma, Node.RecvNode().Type));
-	}
-
-	@Override public void VisitSetIndexNode(SetIndexNode Node) {
-		@Var LibBunGamma Gamma = Node.GetGamma();
-		this.CheckTypeAt(Node, SetIndexNode._Recv, BType.VarType);
-		this.CheckTypeAt(Node, SetIndexNode._Index, this.GetIndexType(Gamma, Node.RecvNode().Type));
-		this.CheckTypeAt(Node, SetIndexNode._Expr, this.GetElementType(Gamma, Node.RecvNode().Type));
-		this.ReturnTypeNode(Node, BType.VoidType);
 	}
 
 	@Override public void VisitGroupNode(GroupNode Node) {
@@ -374,24 +369,6 @@ public class BunTypeSafer extends LibBunTypeChecker {
 		//			}
 		//		}
 		this.ReturnTypeNode(Node, BType.VarType);
-	}
-
-	@Override public void VisitSetFieldNode(SetFieldNode Node) {
-		this.CheckTypeAt(Node, SetFieldNode._Recv, BType.VarType);
-		if(!Node.RecvNode().IsUntyped()) {
-			@Var LibBunGamma Gamma = Node.GetGamma();
-			@Var BType FieldType = this.LookupSetterType(Gamma, Node.GetAstType(SetFieldNode._Recv), Node.GetName());
-			if(FieldType.IsVoidType()) {
-				this.ReturnNode(this.UndefinedFieldNode(Node, Node.GetName()));
-				return;
-			}
-			this.CheckTypeAt(Node, SetFieldNode._Expr, FieldType);
-			this.ReturnTypeNode(Node, BType.VoidType);
-		}
-		else {
-			/* if Recv is Var, type should not be decided */
-			this.ReturnTypeNode(Node, BType.VarType);
-		}
 	}
 
 	private void VisitListAsNativeMethod(BNode Node, BType RecvType, String MethodName, AbstractListNode List) {

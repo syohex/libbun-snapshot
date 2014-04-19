@@ -26,13 +26,12 @@
 package libbun.encode.obsolete;
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
+import libbun.ast.binary.AssignNode;
 import libbun.ast.decl.BunClassNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetNameNode;
-import libbun.ast.expression.SetFieldNode;
-import libbun.ast.expression.SetNameNode;
 import libbun.ast.statement.BunBreakNode;
 import libbun.parser.BToken;
 import libbun.type.BClassField;
@@ -99,11 +98,11 @@ public class PerlGenerator extends OldSourceGenerator {
 		this.Source.Append(this.VariablePrefix(Node.Type), this.NameLocalVariable(Node.GetGamma(), Node.GetUniqueName(this)));
 	}
 
-	@Override public void VisitSetNameNode(SetNameNode Node) {
-		this.Source.Append(this.VariablePrefix(Node.GetAstType(SetNameNode._Expr)));
-		this.VisitGetNameNode(Node.NameNode());
-		this.Source.Append(" = ");
-		this.GenerateExpression(Node.ExprNode());
+	@Override public void VisitAssignNode(AssignNode Node) {
+		//		this.Source.Append(this.VariablePrefix(Node.GetAstType(SetNameNode._Expr)));
+		//		this.GenerateExpression(Node.LeftNode());
+		//		this.Source.Append(" = ");
+		//		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override public void VisitGetFieldNode(GetFieldNode Node) {
@@ -111,11 +110,11 @@ public class PerlGenerator extends OldSourceGenerator {
 		this.Source.Append("->{\'", Node.GetName(), "\'} = ");
 	}
 
-	@Override public void VisitSetFieldNode(SetFieldNode Node) {
-		this.GenerateExpression(Node.RecvNode());
-		this.Source.Append("->{\'", Node.GetName(), "\'}");
-		this.GenerateExpression(Node.ExprNode());
-	}
+	//	@Override public void VisitSetFieldNode(SetFieldNode Node) {
+	//		this.GenerateExpression(Node.RecvNode());
+	//		this.Source.Append("->{\'", Node.GetName(), "\'}");
+	//		this.GenerateExpression(Node.ExprNode());
+	//	}
 
 	@Override
 	protected void VisitVarDeclNode(BunLetVarNode Node) {

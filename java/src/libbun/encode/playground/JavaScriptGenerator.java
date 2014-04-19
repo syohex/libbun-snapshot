@@ -28,6 +28,7 @@ package libbun.encode.playground;
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
+import libbun.ast.binary.AssignNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAddNode;
 import libbun.ast.binary.BunAndNode;
@@ -61,9 +62,6 @@ import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.GetNameNode;
 import libbun.ast.expression.MethodCallNode;
 import libbun.ast.expression.NewObjectNode;
-import libbun.ast.expression.SetFieldNode;
-import libbun.ast.expression.SetIndexNode;
-import libbun.ast.expression.SetNameNode;
 import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.ast.literal.BunBooleanNode;
 import libbun.ast.literal.BunFloatNode;
@@ -437,21 +435,15 @@ public class JavaScriptGenerator extends LibBunSourceGenerator {
 		this.Source.Append(Node.GetUniqueName(this));
 	}
 
-	@Override public void VisitSetNameNode(SetNameNode Node) {
-		this.VisitGetNameNode(Node.NameNode());
+	@Override public void VisitAssignNode(AssignNode Node) {
+		this.GenerateExpression(Node.LeftNode());
 		this.Source.Append(" = ");
-		this.GenerateExpression(Node.ExprNode());
+		this.GenerateExpression(Node.RightNode());
 	}
 
 	@Override public void VisitGetFieldNode(GetFieldNode Node) {
 		this.GenerateExpression(Node.RecvNode());
 		this.Source.Append(".", Node.GetName());
-	}
-
-	@Override public void VisitSetFieldNode(SetFieldNode Node) {
-		this.GenerateExpression(Node.RecvNode());
-		this.Source.Append(".", Node.GetName(), " = ");
-		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override public void VisitGetIndexNode(GetIndexNode Node) {
@@ -470,12 +462,12 @@ public class JavaScriptGenerator extends LibBunSourceGenerator {
 		}
 	}
 
-	@Override
-	public void VisitSetIndexNode(SetIndexNode Node) {
-		this.GenerateExpression(Node.RecvNode());
-		this.GenerateExpression("[", Node.IndexNode(), "] = ");
-		this.GenerateExpression(Node.ExprNode());
-	}
+	//	@Override
+	//	public void VisitSetIndexNode(SetIndexNode Node) {
+	//		this.GenerateExpression(Node.RecvNode());
+	//		this.GenerateExpression("[", Node.IndexNode(), "] = ");
+	//		this.GenerateExpression(Node.ExprNode());
+	//	}
 
 	@Override
 	public void VisitMethodCallNode(MethodCallNode Node) {

@@ -11,7 +11,6 @@ import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.MethodCallNode;
 import libbun.ast.expression.NewObjectNode;
-import libbun.ast.expression.SetIndexNode;
 import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.ast.literal.BunMapEntryNode;
 import libbun.ast.literal.BunMapLiteralNode;
@@ -131,12 +130,6 @@ public class CSharpGenerator extends OldSourceGenerator {
 		}else{
 			this.GenerateExpression("[", Node.IndexNode(), "]");
 		}
-	}
-
-	@Override public void VisitSetIndexNode(SetIndexNode Node) {
-		this.GenerateExpression(Node.RecvNode());
-		this.GenerateExpression("[", Node.IndexNode(), "] = ");
-		this.GenerateExpression(Node.ExprNode());
 	}
 
 	@Override public void VisitFuncCallNode(FuncCallNode Node) {
@@ -348,19 +341,20 @@ public class CSharpGenerator extends OldSourceGenerator {
 		this.GenerateExpression(Node.BlockNode());
 	}
 
-	private void VisitInstanceMethodParameters(BunFunctionNode VargNode){
-		this.Source.Append("(");
-		@Var int i = 1;
-		while(i < VargNode.GetListSize()) {
-			@Var BNode ParamNode = VargNode.GetListAt(i);
-			if (i > 0) {
-				this.Source.Append(this.Camma);
-			}
-			this.GenerateExpression(ParamNode);
-			i = i + 1;
-		}
-		this.Source.Append(")");
-	}
+	// FIXME: unused
+	//	private void VisitInstanceMethodParameters(BunFunctionNode VargNode){
+	//		this.Source.Append("(");
+	//		@Var int i = 1;
+	//		while(i < VargNode.GetListSize()) {
+	//			@Var BNode ParamNode = VargNode.GetListAt(i);
+	//			if (i > 0) {
+	//				this.Source.Append(this.Camma);
+	//			}
+	//			this.GenerateExpression(ParamNode);
+	//			i = i + 1;
+	//		}
+	//		this.Source.Append(")");
+	//	}
 
 	private String GenerateFunctionAsClass(String FuncName, BunFunctionNode Node) {
 		@Var BunLetVarNode FirstParam = Node.GetListSize() == 0 ? null : (BunLetVarNode)Node.GetListAt(0);

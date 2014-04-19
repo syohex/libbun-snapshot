@@ -27,15 +27,15 @@ package libbun.encode.haskell;
 
 import java.util.ArrayList;
 
-import libbun.ast.BunBlockNode;
 import libbun.ast.BNode;
+import libbun.ast.BunBlockNode;
+import libbun.ast.binary.AssignNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.ComparatorNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.expression.FuncCallNode;
 import libbun.ast.expression.GetNameNode;
-import libbun.ast.expression.SetNameNode;
 import libbun.ast.statement.BunReturnNode;
 import libbun.ast.statement.BunThrowNode;
 import libbun.ast.statement.BunTryNode;
@@ -222,18 +222,21 @@ public class HaskellSourceGenerator extends OldSourceGenerator {
 		this.Source.Append(Node.GetUniqueName(this));
 	}
 
-	@Override
-	public void VisitSetNameNode(SetNameNode Node) {
-		this.Source.Append("writeIORef ");
-		this.Source.Append(Node.NameNode().GetUniqueName(this) + "_ref ");
-		this.GenerateExpression(Node.ExprNode());
-		this.Source.AppendLineFeed();
 
-		this.Source.AppendNewLine();
-		this.Source.Append(Node.NameNode().GetUniqueName(this));
-		this.Source.Append(" <- readIORef ");
-		this.Source.Append(Node.NameNode().GetUniqueName(this) + "_ref");
-		this.Source.AppendLineFeed();
+
+	@Override
+	public void VisitAssignNode(AssignNode Node) {
+		// FIXME:
+		//		this.Source.Append("writeIORef ");
+		//		this.Source.Append(Node.NameNode().GetUniqueName(this) + "_ref ");
+		//		this.GenerateExpression(Node.ExprNode());
+		//		this.Source.AppendLineFeed();
+		//
+		//		this.Source.AppendNewLine();
+		//		this.Source.Append(Node.NameNode().GetUniqueName(this));
+		//		this.Source.Append(" <- readIORef ");
+		//		this.Source.Append(Node.NameNode().GetUniqueName(this) + "_ref");
+		//		this.Source.AppendLineFeed();
 	}
 
 	@Override

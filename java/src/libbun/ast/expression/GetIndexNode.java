@@ -26,9 +26,10 @@ package libbun.ast.expression;
 
 import libbun.ast.BNode;
 import libbun.parser.LibBunVisitor;
+import libbun.util.Var;
 
 //E.g., $Recv[$Index]
-public final class GetIndexNode extends BNode {
+public final class GetIndexNode extends MutableNode {
 	public final static int _Recv = 0;
 	public final static int _Index = 1;
 
@@ -38,9 +39,12 @@ public final class GetIndexNode extends BNode {
 	}
 
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
-		return this.DupField(TypedClone, new GetIndexNode(ParentNode, null));
+		@Var GetIndexNode NewNode = new GetIndexNode(ParentNode, null);
+		if(TypedClone) {
+			NewNode.IsImmutable = this.IsImmutable;
+		}
+		return this.DupField(TypedClone, NewNode);
 	}
-
 
 	public final BNode RecvNode() {
 		return this.AST[GetIndexNode._Recv ];

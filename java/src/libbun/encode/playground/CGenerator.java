@@ -28,7 +28,7 @@ package libbun.encode.playground;
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
 import libbun.ast.GroupNode;
-import libbun.ast.binary.BunInstanceOfNode;
+import libbun.ast.binary.AssignNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAddNode;
 import libbun.ast.binary.BunAndNode;
@@ -39,6 +39,7 @@ import libbun.ast.binary.BunDivNode;
 import libbun.ast.binary.BunEqualsNode;
 import libbun.ast.binary.BunGreaterThanEqualsNode;
 import libbun.ast.binary.BunGreaterThanNode;
+import libbun.ast.binary.BunInstanceOfNode;
 import libbun.ast.binary.BunLeftShiftNode;
 import libbun.ast.binary.BunLessThanEqualsNode;
 import libbun.ast.binary.BunLessThanNode;
@@ -60,9 +61,6 @@ import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.GetNameNode;
 import libbun.ast.expression.MethodCallNode;
 import libbun.ast.expression.NewObjectNode;
-import libbun.ast.expression.SetFieldNode;
-import libbun.ast.expression.SetIndexNode;
-import libbun.ast.expression.SetNameNode;
 import libbun.ast.literal.BunArrayLiteralNode;
 import libbun.ast.literal.BunBooleanNode;
 import libbun.ast.literal.BunFloatNode;
@@ -380,25 +378,11 @@ public class CGenerator extends LibBunSourceGenerator {
 	}
 
 	@Override
-	public void VisitSetNameNode(SetNameNode Node) {
-		this.VisitGetNameNode(Node.NameNode());
+	public void VisitAssignNode(AssignNode Node) {
+		this.GenerateExpression(Node.LeftNode());
 		this.Source.Append(" = ");
-		this.GenerateExpression(Node.ExprNode());
+		this.GenerateExpression(Node.RightNode());
 	}
-
-	@Override
-	public void VisitGetFieldNode(GetFieldNode Node) {
-		this.GenerateExpression(Node.RecvNode());
-		this.Source.Append("->", Node.GetName());
-	}
-
-	@Override
-	public void VisitSetFieldNode(SetFieldNode Node) {
-		this.GenerateExpression(Node.RecvNode());
-		this.Source.Append("->", Node.GetName(), " = ");
-		this.GenerateExpression(Node.ExprNode());
-	}
-
 
 	@Override public void VisitGetIndexNode(GetIndexNode Node) {
 		this.Source.Append(this.NameType(Node.GetAstType(GetIndexNode._Recv)) + "GetIndex");
@@ -407,15 +391,11 @@ public class CGenerator extends LibBunSourceGenerator {
 		this.Source.Append(")");
 	}
 
-	@Override public void VisitSetIndexNode(SetIndexNode Node) {
-		this.Source.Append(this.NameType(Node.GetAstType(GetIndexNode._Recv)) + "SetIndex");
-		this.Source.Append("(");
-		this.GenerateExpression(Node.IndexNode());
-		this.Source.Append(",");
-		this.GenerateExpression(Node.ExprNode());
-		this.Source.Append(")");
+	@Override
+	public void VisitGetFieldNode(GetFieldNode Node) {
+		this.GenerateExpression(Node.RecvNode());
+		this.Source.Append("->", Node.GetName());
 	}
-
 
 	@Override
 	public void VisitMethodCallNode(MethodCallNode Node) {

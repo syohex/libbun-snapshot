@@ -10,11 +10,6 @@ public class TypeErrorNode extends ErrorNode {
 		super(ErrorNode.ParentNode, ErrorNode.SourceToken, ErrorMessage);
 		this.ErrorNode = ErrorNode;
 	}
-	//
-	//	public TypeErrorNode(BNode Node, BToken SourceToken, String ErrorMessage) {
-	//		super(Node.ParentNode, SourceToken, ErrorMessage);
-	//		this.ErrorNode = Node;
-	//	}
 	@Override public BNode Dup(boolean TypedClone, BNode ParentNode) {
 		@Var BNode NewErrorNode =  this.ErrorNode.Dup(TypedClone, ParentNode);
 		if(TypedClone) {

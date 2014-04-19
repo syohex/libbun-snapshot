@@ -113,6 +113,10 @@ public abstract class LibBunTypeChecker extends BunVisitor {
 		this.ReturnNode(new ErrorNode(Node.ParentNode, ErrorToken, Message));
 	}
 
+	public final void ReturnTypeErrorNode(String Message, BNode ErrorNode) {
+		this.ReturnNode(new TypeErrorNode(Message, ErrorNode));
+	}
+
 	protected final BNode CreateStupidCastNode(BType Requested, BNode Node, BToken SourceToken, String Message) {
 		@Var BNode ErrorNode = new TypeErrorNode(Message + ": " + Node.Type.GetName() + " must be " + Requested.GetName(), Node);
 		ErrorNode.SourceToken = SourceToken;

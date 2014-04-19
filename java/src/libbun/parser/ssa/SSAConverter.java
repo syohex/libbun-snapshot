@@ -4,12 +4,12 @@ import java.util.HashMap;
 
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
+import libbun.ast.binary.AssignNode;
 import libbun.ast.binary.BunAndNode;
 import libbun.ast.decl.BunFunctionNode;
 import libbun.ast.decl.BunLetVarNode;
 import libbun.ast.decl.BunVarBlockNode;
 import libbun.ast.expression.GetNameNode;
-import libbun.ast.expression.SetNameNode;
 import libbun.ast.statement.BunIfNode;
 import libbun.ast.statement.BunWhileNode;
 import libbun.encode.LibBunGenerator;
@@ -291,12 +291,15 @@ public class SSAConverter extends ZASTTransformer {
 	}
 
 	@Override
-	public void VisitSetNameNode(SetNameNode Node) {
-		@Var Variable OldVal = this.FindVariable(Node.NameNode().GetUniqueName(this.Generator));
-		@Var Variable NewVal = new Variable(OldVal.Name, this.GetRefreshNumber(OldVal), Node);
-		this.UpdateVariable(NewVal);
-		Node.NameNode().VarIndex = NewVal.Index;
-		this.InsertPHI(this.GetCurrentJoinNode(), this.GetCurrentBranchIndex(), OldVal, NewVal);
+	public void VisitAssignNode(AssignNode Node) {
+		if(Node.LeftNode() instanceof GetNameNode) {
+			@Var GetNameNode NameNode = (GetNameNode)Node.LeftNode();
+			@Var Variable OldVal = this.FindVariable(NameNode.GetUniqueName(this.Generator));
+			@Var Variable NewVal = new Variable(OldVal.Name, this.GetRefreshNumber(OldVal), Node);
+			this.UpdateVariable(NewVal);
+			NameNode.VarIndex = NewVal.Index;
+			this.InsertPHI(this.GetCurrentJoinNode(), this.GetCurrentBranchIndex(), OldVal, NewVal);
+		}
 	}
 
 	@Override

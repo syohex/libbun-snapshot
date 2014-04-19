@@ -4,6 +4,7 @@ package libbun.encode.erlang;
 import libbun.ast.AbstractListNode;
 import libbun.ast.BNode;
 import libbun.ast.BunBlockNode;
+import libbun.ast.binary.AssignNode;
 import libbun.ast.binary.BinaryOperatorNode;
 import libbun.ast.binary.BunAndNode;
 import libbun.ast.binary.BunOrNode;
@@ -17,8 +18,6 @@ import libbun.ast.expression.GetFieldNode;
 import libbun.ast.expression.GetIndexNode;
 import libbun.ast.expression.GetNameNode;
 import libbun.ast.expression.NewObjectNode;
-import libbun.ast.expression.SetFieldNode;
-import libbun.ast.expression.SetNameNode;
 import libbun.ast.statement.BunBreakNode;
 import libbun.ast.statement.BunIfNode;
 import libbun.ast.statement.BunReturnNode;
@@ -180,14 +179,15 @@ public class ErlangGenerator extends OldSourceGenerator {
 		this.Source.Append(VarName);
 	}
 
-	@Override public void VisitSetNameNode(SetNameNode Node) {
-		int mark = this.GetLazyMark();
-
-		this.GenerateExpression(Node.ExprNode());
-
-		String VarName = this.ToErlangVarName(Node.NameNode().GetUniqueName(this));
-		this.VarMgr.AssignVariable(VarName);
-		this.AppendLazy(mark, this.VarMgr.GenVariableName(VarName) + " = ");
+	@Override public void VisitAssignNode(AssignNode Node) {
+		// FIXME:
+		//		int mark = this.GetLazyMark();
+		//
+		//		this.GenerateExpression(Node.ExprNode());
+		//
+		//		String VarName = this.ToErlangVarName(Node.NameNode().GetUniqueName(this));
+		//		this.VarMgr.AssignVariable(VarName);
+		//		this.AppendLazy(mark, this.VarMgr.GenVariableName(VarName) + " = ");
 	}
 
 
@@ -199,26 +199,27 @@ public class ErlangGenerator extends OldSourceGenerator {
 		this.Source.Append(this.ToErlangTypeName(Node.GetName()));
 	}
 
-	@Override public void VisitSetFieldNode(SetFieldNode Node) {
-		int mark = this.GetLazyMark();
-
-		GetNameNode GetNameNode = (GetNameNode)Node.RecvNode();
-		this.GenerateExpression(GetNameNode);
-		this.Source.Append("#");
-		this.Source.Append(this.ToErlangTypeName(Node.RecvNode().Type.ShortName));
-		this.Source.Append("{");
-		this.Source.Append(Node.GetName(), " = ");
-		this.GenerateExpression(Node.ExprNode());
-		this.Source.Append("}");
-		this.VarMgr.AssignVariable(GetNameNode.GetUniqueName(this));
-		LibBunSourceBuilder LazyBuilder = new LibBunSourceBuilder(this, this.Source);
-		LibBunSourceBuilder BodyBuilder = this.Source;
-		this.Source = LazyBuilder;
-		this.GenerateExpression(Node.RecvNode());
-		this.Source.Append(" = ");
-		this.Source = BodyBuilder;
-		this.AppendLazy(mark, LazyBuilder.toString());
-	}
+	//  FIXME:
+	//	@Override public void VisitSetFieldNode(SetFieldNode Node) {
+	//		int mark = this.GetLazyMark();
+	//
+	//		GetNameNode GetNameNode = (GetNameNode)Node.RecvNode();
+	//		this.GenerateExpression(GetNameNode);
+	//		this.Source.Append("#");
+	//		this.Source.Append(this.ToErlangTypeName(Node.RecvNode().Type.ShortName));
+	//		this.Source.Append("{");
+	//		this.Source.Append(Node.GetName(), " = ");
+	//		this.GenerateExpression(Node.ExprNode());
+	//		this.Source.Append("}");
+	//		this.VarMgr.AssignVariable(GetNameNode.GetUniqueName(this));
+	//		LibBunSourceBuilder LazyBuilder = new LibBunSourceBuilder(this, this.Source);
+	//		LibBunSourceBuilder BodyBuilder = this.Source;
+	//		this.Source = LazyBuilder;
+	//		this.GenerateExpression(Node.RecvNode());
+	//		this.Source.Append(" = ");
+	//		this.Source = BodyBuilder;
+	//		this.AppendLazy(mark, LazyBuilder.toString());
+	//	}
 
 	// @Override public void VisitMethodCallNode(ZMethodCallNode Node) {
 	// 	this.GenerateSurroundCode(Node.RecvNode());
@@ -604,8 +605,8 @@ public class ErlangGenerator extends OldSourceGenerator {
 		}
 		this.Source.Append(CloseToken);
 	}
-	@Override
-	protected void GenerateListNode(String OpenToken, AbstractListNode VargNode, String CloseToken) {
+
+	@Override protected void GenerateListNode(String OpenToken, AbstractListNode VargNode, String CloseToken) {
 		this.GenerateListNode(OpenToken, VargNode, ", ", CloseToken);
 	}
 
