@@ -270,6 +270,10 @@ public class CommonLispGenerator extends LibBunSourceGenerator {
 	}
 
 	public void GenerateBinaryNode(String Op, BinaryOperatorNode Node, String Extra) {
+		boolean IsDivOp = (Op == "/");
+		if (IsDivOp) {
+			this.Source.Append("(", "floor", " ");
+		}
 		this.Source.Append("(", Op, " ");
 		this.GenerateExpression(Node.LeftNode());
 		this.Source.Append(" ");
@@ -278,6 +282,9 @@ public class CommonLispGenerator extends LibBunSourceGenerator {
 			this.Source.Append(Extra);
 		}
 		this.Source.Append(")");
+		if (IsDivOp) {
+			this.Source.Append(")");
+		}
 	}
 
 	@Override public void VisitInstanceOfNode(BunInstanceOfNode Node) {
