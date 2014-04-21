@@ -208,7 +208,7 @@ _: Func<α[],String>
  cs:  string.Join(string.Empty, $[0])
  py:  unicode($[0])
  js:  $[0].join('')
- c:   libbun.h~libbun_toString($[0])
+ c:   libbun.h~libbun_ArrayToString($[0])
   
 size: Func<α[],int>
  #: a.$$() returns the number of elements in this array

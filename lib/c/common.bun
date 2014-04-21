@@ -21,7 +21,7 @@ define toLowerCase "libbun.h~libbun_toLowerCase($[0])": Func<String,String>
 define toUpperCase "libbun.h~libbun_toUpperCase($[0])": Func<String,String>
 define replace "libbun.h~libbun_replace($[0], $[1], $[2])": Func<String,String,String,String>
 define trim "libbun.h~libbun_trim($[0])": Func<String,String>
-define _ "libbun.h~libbun_toString($[0])": Func<α[],String>
+define _ "libbun.h~libbun_ArrayToString($[0])": Func<α[],String>
 define size "libbun.h~libbun_ArrayLength($[0])": Func<α[],int>
 define size "libbun.h~libbun_ArraySetLength($[0], $[1])": Func<α[],int,void>
 define get "$[0][$[1]]": Func<α[],int,α>

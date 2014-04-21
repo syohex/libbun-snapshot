@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
+
+#include "karray.h"
 #ifndef LIBBUN_LIB_H
 #define LIBBUN_LIB_H
 
@@ -59,4 +62,128 @@ static void *LibZen_Malloc(size_t size)
   // FIXME use libgc
   return malloc(size);
 }
+
+typedef const char *const_char_ptr_t;
+typedef void* void_ptr_t;
+#define DEF_ARRAY_T_OP_NOPOINTER(T) DEF_ARRAY_T(T);DEF_ARRAY_OP_NOPOINTER(T)
+DEF_ARRAY_STRUCT(int);
+DEF_ARRAY_T_OP_NOPOINTER(int);
+DEF_ARRAY_STRUCT(long);
+DEF_ARRAY_T_OP_NOPOINTER(long);
+DEF_ARRAY_STRUCT(double);
+DEF_ARRAY_T_OP_NOPOINTER(double);
+DEF_ARRAY_STRUCT(const_char_ptr_t);
+DEF_ARRAY_T_OP_NOPOINTER(const_char_ptr_t);
+DEF_ARRAY_STRUCT(void_ptr_t);
+DEF_ARRAY_T_OP_NOPOINTER(void_ptr_t);
+
+static ARRAY(int) *LibZen_NewBoolArray(int argc, ...)
+{
+  ARRAY(int) *newary = LibZen_Malloc(sizeof(*newary));
+  ARRAY_init(int, newary, argc);
+  int i;
+  va_list list;
+  va_start(list, argc);
+  for (i = 0; i < argc; i++) {
+    int v = va_arg(list, int);
+    ARRAY_add(int, newary, v);
+  }
+  va_end(list);
+  return newary;
+}
+
+static ARRAY(long) *LibZen_NewIntArray(int argc, ...)
+{
+  ARRAY(long) *newary = LibZen_Malloc(sizeof(*newary));
+  ARRAY_init(long, newary, argc);
+  int i;
+  va_list list;
+  va_start(list, argc);
+  for (i = 0; i < argc; i++) {
+    long v = va_arg(list, long);
+    ARRAY_add(long, newary, v);
+  }
+  va_end(list);
+  return newary;
+}
+
+static ARRAY(double) *LibZen_NewDoubleArray(int argc, ...)
+{
+  ARRAY(double) *newary = LibZen_Malloc(sizeof(*newary));
+  ARRAY_init(double, newary, argc);
+  int i;
+  va_list list;
+  va_start(list, argc);
+  for (i = 0; i < argc; i++) {
+    double v = va_arg(list, double);
+    ARRAY_add(double, newary, v);
+  }
+  va_end(list);
+  return newary;
+}
+
+static ARRAY(const_char_ptr_t) *LibZen_NewStringArray(int argc, ...)
+{
+  ARRAY(const_char_ptr_t) *newary = LibZen_Malloc(sizeof(*newary));
+  ARRAY_init(const_char_ptr_t, newary, argc);
+  int i;
+  va_list list;
+  va_start(list, argc);
+  for (i = 0; i < argc; i++) {
+    const_char_ptr_t v = va_arg(list, const_char_ptr_t);
+    ARRAY_add(const_char_ptr_t, newary, v);
+  }
+  va_end(list);
+  return newary;
+}
+
+static ARRAY(void_ptr_t) *LibZen_NewArray(int argc, ...)
+{
+  ARRAY(void_ptr_t) *newary = LibZen_Malloc(sizeof(*newary));
+  ARRAY_init(void_ptr_t, newary, argc);
+  int i;
+  va_list list;
+  va_start(list, argc);
+  for (i = 0; i < argc; i++) {
+    void_ptr_t v = va_arg(list, void_ptr_t);
+    ARRAY_add(void_ptr_t, newary, v);
+  }
+  va_end(list);
+  return newary;
+}
+
+#define libbun_ArrayLength(A) ARRAY_size((*A))
+
+#define libbun_ArrayAdd(A, V) libbun_ArrayAdd_((ARRAY(long) *)A, (long)V)
+static void libbun_ArrayAdd_(ARRAY(long) *a, long v)
+{
+  ARRAY_add(long, a, v);
+}
+
+#define libbun_ArraySet(A, I, V) libbun_ArraySet_((ARRAY(long) *)A, I, (long)V)
+static void libbun_ArraySet_(ARRAY(long) *a, int idx, long v)
+{
+  ARRAY_set(long, a, idx, v);
+}
+
+#define libbun_ArrayToString(A) libbun_ArrayToString_((ARRAY(long) *)A)
+static char *libbun_ArrayToString_(ARRAY(long) *a)
+{
+  char *tmp, *newstr;
+  char *str = LibZen_Malloc(2);
+  str[0] = '[';
+  str[1] = 0;
+  long *x, *e;
+  FOR_EACH_ARRAY(*a, x, e) {
+    tmp = libbun_i2s(*x);
+    newstr = libbun_concat(str, tmp);
+    free(tmp);
+    free(str);
+    str = newstr;
+  }
+  newstr = libbun_concat(str, "]");
+  free(str);
+  return newstr;
+}
+
 #endif /* end of include guard */

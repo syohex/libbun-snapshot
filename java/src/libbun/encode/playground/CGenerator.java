@@ -200,17 +200,7 @@ public class CGenerator extends LibBunSourceGenerator {
 
 	@Override
 	public void VisitAddNode(BunAddNode Node) {
-		if(Node.LeftNode().Type == BType.StringType) {
-			this.ImportLibrary("libbun.h");
-			this.Source.Append("libbun_concat(");
-			Node.LeftNode().Accept(this);
-			this.Source.Append(", ");
-			Node.RightNode().Accept(this);
-			this.Source.Append(")");
-		}
-		else {
-			this.GenerateBinaryNode(Node, Node.GetOperator());
-		}
+		this.GenerateBinaryNode(Node, Node.GetOperator());
 	}
 
 	@Override
@@ -386,16 +376,50 @@ public class CGenerator extends LibBunSourceGenerator {
 
 	@Override
 	public void VisitAssignNode(AssignNode Node) {
-		this.GenerateExpression(Node.LeftNode());
-		this.Source.Append(" = ");
-		this.GenerateExpression(Node.RightNode());
+		if(Node.LeftNode() instanceof GetIndexNode) {
+			GetIndexNode Left = (GetIndexNode) Node.LeftNode();
+			BType ThisType = Left.GetAstType(GetIndexNode._Recv);
+			if(ThisType.IsArrayType()) {
+				this.Source.Append("ARRAY_set(");
+			} else if(ThisType.IsMapType()) {
+				this.Source.Append("MAP_set(");
+			} else {
+				assert(false); // unreachable
+			}
+			this.Source.Append(this.ParamTypeName(ThisType.GetParamType(0)) + ", ");
+			this.GenerateExpression(Left.RecvNode());
+			this.Source.Append(", ");
+			this.GenerateExpression(Left.IndexNode());
+			this.Source.Append(", ");
+			this.GenerateExpression(Node.RightNode());
+			this.Source.Append(")");
+		}
+		else {
+			this.GenerateExpression(Node.LeftNode());
+			this.Source.Append(" = ");
+			this.GenerateExpression(Node.RightNode());
+		}
 	}
 
 	@Override public void VisitGetIndexNode(GetIndexNode Node) {
-		this.Source.Append(this.NameType(Node.GetAstType(GetIndexNode._Recv)) + "GetIndex");
-		this.Source.Append("(");
-		this.GenerateExpression(Node.IndexNode());
-		this.Source.Append(")");
+		BType ThisType = Node.GetAstType(GetIndexNode._Recv);
+		if(ThisType.IsArrayType() || ThisType.IsMapType()) {
+			if(ThisType.IsArrayType()) {
+				this.Source.Append("ARRAY_get(");
+			} else if(ThisType.IsMapType()) {
+				this.Source.Append("MAP_get(");
+			}
+			this.Source.Append(this.ParamTypeName(ThisType.GetParamType(0)) + ", ");
+			this.GenerateExpression(Node.RecvNode());
+			this.Source.Append(", ");
+			this.GenerateExpression(Node.IndexNode());
+			this.Source.Append(")");
+		} else {
+			this.GenerateExpression(Node.RecvNode());
+			this.Source.Append("[");
+			this.GenerateExpression(Node.IndexNode());
+			this.Source.Append("]");
+		}
 	}
 
 	@Override
@@ -527,7 +551,7 @@ public class CGenerator extends LibBunSourceGenerator {
 
 	private String ParamTypeName(BType Type) {
 		if(Type.IsArrayType()) {
-			return "ArrayOf" + this.ParamTypeName(Type.GetParamType(0));
+			return "ARRAY(" + this.ParamTypeName(Type.GetParamType(0)) + ")";
 		}
 		if(Type.IsMapType()) {
 			return "MapOf" + this.ParamTypeName(Type.GetParamType(0));
@@ -542,13 +566,13 @@ public class CGenerator extends LibBunSourceGenerator {
 			return s + "_";
 		}
 		if(Type.IsIntType()) {
-			return "Int";
+			return "long";
 		}
 		if(Type.IsFloatType()) {
-			return "Float";
+			return "double";
 		}
 		if(Type.IsVoidType()) {
-			return "Void";
+			return "void";
 		}
 		if(Type.IsVarType()) {
 			return "Var";
@@ -607,9 +631,14 @@ public class CGenerator extends LibBunSourceGenerator {
 		}
 		else {
 			this.Source.Append("static ");
-			this.GenerateTypeName(Node.GetAstType(BunLetVarNode._InitValue));
-			this.Source.Append(" ");
-			this.Source.Append(Node.GetUniqueName(this));
+			if(Node.DeclType().IsFuncType()) {
+				this.GenerateFuncTypeName(Node.GetAstType(BunLetVarNode._InitValue), Node.GetUniqueName(this));
+			}
+			else {
+				this.GenerateTypeName(Node.GetAstType(BunLetVarNode._InitValue));
+				this.Source.Append(" ");
+				this.Source.Append(Node.GetUniqueName(this));
+			}
 			this.GenerateExpression(" = ", Node.InitValueNode(), ";");
 		}
 	}
