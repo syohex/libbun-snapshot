@@ -1,5 +1,5 @@
-define math::E "math.h~MATH_E": float
-define math::PI "math.h~MATH_PI": float
+define math::E "math.h~M_E": float
+define math::PI "math.h~M_PI": float
 define math::abs "<stdlib.h>~labs($[0])": Func<int,int>
 define math::abs "math.h~fabs($[0])": Func<float,float>
 define math::sin "math.h~sin($[0])": Func<float,float>

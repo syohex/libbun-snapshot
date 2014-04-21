@@ -723,8 +723,14 @@ public class CGenerator extends LibBunSourceGenerator {
 
 	private void GenerateField(BType DeclType, String FieldName) {
 		this.Source.AppendNewLine();
-		this.GenerateTypeName(DeclType);
-		this.Source.Append(" ", FieldName, ";");
+		if(DeclType.IsFuncType()) {
+			this.GenerateFuncTypeName(DeclType, FieldName);
+		}
+		else {
+			this.GenerateTypeName(DeclType);
+			this.Source.Append(" ", FieldName);
+		}
+		this.Source.Append(";");
 	}
 
 	private void GenerateFields(BClassType ClassType, BType ThisType) {

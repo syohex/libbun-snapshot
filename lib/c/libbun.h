@@ -186,4 +186,33 @@ static char *libbun_ArrayToString_(ARRAY(long) *a)
   return newstr;
 }
 
+static int libbun_startsWith(char *self, char *prefix, size_t toffset)
+{
+  const char *ttext = (self) + toffset;
+  return strncmp(ttext, prefix, strlen(prefix)) == 0;
+}
+
+static int libbun_endsWith(char *self, char *suffix)
+{
+  size_t tlen = strlen(self);
+  size_t slen = strlen(suffix);
+  return strncmp(self + tlen - slen, suffix, slen) == 0;
+}
+
+static char *libbun_substring(char *self, size_t beginIndex, size_t endIndex)
+{
+  size_t len = strlen(self);
+  if(beginIndex > len) {
+    // OutOfBounds
+    return NULL;
+  }
+  if(endIndex > len || beginIndex > endIndex) {
+    // OutOfBounds
+    return NULL;
+  }
+  char *newstr = LibZen_Malloc(endIndex - beginIndex + 1);
+  memcpy(newstr, self + beginIndex, endIndex - beginIndex);
+  return newstr;
+}
+
 #endif /* end of include guard */

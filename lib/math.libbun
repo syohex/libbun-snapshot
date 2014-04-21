@@ -4,7 +4,7 @@
 math-E: float
  bun: math~math::E
  js: Math.E
- c:   math.h~MATH_E
+ c:   math.h~M_E
  cl:  (exp 1)
  java.lang.Math~Math.E
  py: math~math.e
@@ -12,7 +12,7 @@ math-E: float
 math-PI: float
  bun: math~math::PI
  js: Math.PI
- c:   math.h~MATH_PI
+ c:   math.h~M_PI
  cl:  pi
  java: java.lang.Math~Math.PI
  py: math~math.pi
