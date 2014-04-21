@@ -1,6 +1,6 @@
 define math::E "math.h~MATH_E": float
 define math::PI "math.h~MATH_PI": float
-define math::abs "stdlib.h~labs($[0])": Func<int,int>
+define math::abs "<stdlib.h>~labs($[0])": Func<int,int>
 define math::abs "math.h~fabs($[0])": Func<float,float>
 define math::sin "math.h~sin($[0])": Func<float,float>
 define math::cos "math.h~cos($[0])": Func<float,float>
@@ -19,5 +19,5 @@ define math::max "libbun.h~libbun_fmax($[0], $[1])": Func<float,float,float>
 define math::min "libbun.h~libbun_fmin($[0], $[1])": Func<float,float,float>
 define math::max "libbun.h~libbun_imax($[0], $[1])": Func<int,int,int>
 define math::min "libbun.h~libbun_imin($[0], $[1])": Func<int,int,int>
-define math::pow "math.h~pow($[0], $[1]) ": Func<float,float,float>
+define math::pow "math.h~pow($[0], $[1])": Func<float,float,float>
 define math::random "libbun.h~libbun_random($[0])": Func<float,float>
