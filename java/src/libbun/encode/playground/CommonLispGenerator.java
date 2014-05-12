@@ -288,9 +288,12 @@ public class CommonLispGenerator extends LibBunSourceGenerator {
 	}
 
 	@Override public void VisitInstanceOfNode(BunInstanceOfNode Node) {
+		this.Source.Append("(eq ");
+		this.Source.Append("(type-of ");
 		this.GenerateExpression(Node.LeftNode());
-		this.Source.Append(" instanceof ");
+		this.Source.Append(" ) '");
 		this.GenerateTypeName(Node.TargetType());
+		this.Source.Append(")");
 	}
 
 	@Override public void VisitAddNode(BunAddNode Node) {
