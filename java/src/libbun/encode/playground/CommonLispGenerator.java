@@ -486,12 +486,15 @@ public class CommonLispGenerator extends LibBunSourceGenerator {
 	}
 
 	@Override public void VisitTryNode(BunTryNode Node) {
+		this.ImportLibrary("@SoftwareFault");
 		this.Source.Append("(unwind-protect ");
 		this.Source.Append("(handler-case ");
 		this.GenerateExpression(Node.TryBlockNode());
 		if(Node.HasCatchBlockNode()) {
+			this.ImportLibrary("@catch");
 			@Var String VarName = this.NameUniqueSymbol("e");
 			this.Source.AppendNewLine("(error (", VarName, ")");
+			this.Source.AppendNewLine("(setf " + Node.ExceptionName() + " (libbun-catch " + VarName + "))");
 			this.GenerateStmtListNode(Node.CatchBlockNode());
 			this.Source.AppendNewLine(")");
 		}
@@ -555,6 +558,8 @@ public class CommonLispGenerator extends LibBunSourceGenerator {
 
 
 	@Override public void VisitClassNode(BunClassNode Node) {
+		this.ImportLibrary("@extend");
+
 		this.Source.AppendNewLine("(defclass ", Node.ClassName());
 		if(Node.SuperType() != null) {
 			this.Source.Append("(");
