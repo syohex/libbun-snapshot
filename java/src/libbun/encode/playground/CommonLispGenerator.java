@@ -83,6 +83,7 @@ import libbun.ast.unary.UnaryOperatorNode;
 import libbun.encode.LibBunSourceGenerator;
 import libbun.parser.LibBunLangInfo;
 import libbun.parser.LibBunLogger;
+import libbun.type.BClassField;
 import libbun.type.BFuncType;
 import libbun.type.BType;
 import libbun.util.Var;
