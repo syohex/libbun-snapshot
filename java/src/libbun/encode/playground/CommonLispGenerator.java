@@ -202,8 +202,11 @@ public class CommonLispGenerator extends LibBunSourceGenerator {
 	}
 
 	@Override public void VisitGetFieldNode(GetFieldNode Node) {
+		this.Source.Append("(slot-value ");
 		this.GenerateExpression(Node.RecvNode());
-		this.Source.Append(".", Node.GetName());
+		this.Source.Append(" '");
+		this.Source.Append(Node.GetName());
+		this.Source.Append(")");
 	}
 
 	//	@Override public void VisitSetFieldNode(SetFieldNode Node) {
