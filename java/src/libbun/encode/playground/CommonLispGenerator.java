@@ -158,10 +158,10 @@ public class CommonLispGenerator extends LibBunSourceGenerator {
 	}
 
 	@Override public void VisitNewObjectNode(NewObjectNode Node) {
-		// FIXME
-		this.Source.Append("new ");
+		this.Source.Append("(make-instance '");
 		this.GenerateTypeName(Node.Type);
-		this.GenerateListNode("(", Node, ",", ")");
+		//this.GenerateListNode("(", Node, ",", ")");
+		this.Source.Append(")");
 	}
 
 	@Override public void VisitGroupNode(GroupNode Node) {
