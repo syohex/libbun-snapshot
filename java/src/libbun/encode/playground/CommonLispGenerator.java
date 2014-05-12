@@ -543,32 +543,50 @@ public class CommonLispGenerator extends LibBunSourceGenerator {
 				}
 			}
 			if(this.IsMethod(Node.FuncName(), FuncType)) {
-				//				this.CurrentBuilder.Append(this.NameMethod(FuncType.GetRecvType(), Node.FuncName));
-				//				this.CurrentBuilder.Append(" = ", FuncType.StringfySignature(Node.FuncName));
-				//				this.CurrentBuilder.AppendLineFeed();
+				this.Source.AppendNewLine("(setf " + this.NameMethod(FuncType.GetRecvType(), Node.FuncName()));
+				this.Source.Append(" #'");
+				this.Source.Append(FuncType.StringfySignature(Node.FuncName()));
+				this.Source.Append(")");
 			}
 		}
 	}
 
 
 	@Override public void VisitClassNode(BunClassNode Node) {
-		this.Source.AppendNewLine("class ", Node.ClassName());
+		this.Source.AppendNewLine("(defclass ", Node.ClassName());
 		if(Node.SuperType() != null) {
-			this.Source.Append(" extends ");
+			this.Source.Append("(");
 			this.GenerateTypeName(Node.SuperType());
+			this.Source.Append(")");
 		}
-		this.Source.OpenIndent(" {");
+		this.Source.OpenIndent("(");
 		@Var int i = 0;
 		while (i < Node.GetListSize()) {
 			@Var BunLetVarNode FieldNode = Node.GetFieldNode(i);
-			this.Source.AppendNewLine("var ", FieldNode.GetGivenName());
-			this.GenerateTypeAnnotation(FieldNode.DeclType());
-			this.Source.Append(" = ");
-			this.GenerateExpression(FieldNode.InitValueNode());
-			this.GenerateStatementEnd(FieldNode);
+			if(!FieldNode.DeclType().IsFuncType()) {
+				this.Source.Append("(" + FieldNode.GetGivenName());
+				//this.GenerateTypeAnnotation(FieldNode.DeclType());
+				this.Source.Append(" :initform ");
+				this.GenerateExpression(FieldNode.InitValueNode());
+				this.GenerateStatementEnd(FieldNode);
+				this.Source.Append(")");
+			}
 			i = i + 1;
 		}
-		this.Source.CloseIndent("}");
+
+		i = 0;
+		while (i < Node.ClassType.GetFieldSize()) {
+			@Var BClassField ClassField = Node.ClassType.GetFieldAt(i);
+			if(ClassField.FieldType.IsFuncType()) {
+				this.Source.Append("(" + ClassField.FieldName);
+				this.Source.Append(" :initform _");
+				this.Source.Append(this.NameClass(Node.ClassType), "_", ClassField.FieldName);
+				this.Source.Append(")");
+			}
+			i = i + 1;
+		}
+
+		this.Source.CloseIndent("))");
 	}
 
 	@Override public void VisitErrorNode(ErrorNode Node) {
