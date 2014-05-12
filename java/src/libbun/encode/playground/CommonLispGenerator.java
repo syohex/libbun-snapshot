@@ -238,11 +238,15 @@ public class CommonLispGenerator extends LibBunSourceGenerator {
 	}
 
 	@Override public void VisitPlusNode(BunPlusNode Node) {
-		this.VisitUnaryNode(Node);
+		this.Source.Append("(+ ");
+		this.GenerateExpression(Node.RecvNode());
+		this.Source.Append(")");
 	}
 
 	@Override public void VisitMinusNode(BunMinusNode Node) {
-		this.VisitUnaryNode(Node);
+		this.Source.Append("(- ");
+		this.GenerateExpression(Node.RecvNode());
+		this.Source.Append(")");
 	}
 
 	@Override public void VisitComplementNode(BunComplementNode Node) {
