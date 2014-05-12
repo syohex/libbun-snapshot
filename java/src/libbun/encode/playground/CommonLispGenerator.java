@@ -93,6 +93,7 @@ public class CommonLispGenerator extends LibBunSourceGenerator {
 	private boolean hasMain = false;
 	public CommonLispGenerator() {
 		super(new LibBunLangInfo("CommonLisp", "cl"));
+		this.LoadInlineLibrary("inline.cl", ";;");
 	}
 
 	@Override
