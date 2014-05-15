@@ -179,6 +179,10 @@ public class CommonLispGenerator extends LibBunSourceGenerator {
 		else if(RecvType.IsMapType()) {
 			this.GenerateExpression("(gethash ", Node.IndexNode(), " ", Node.RecvNode(), ")");
 		}
+		else if(RecvType.IsArrayType()) {
+			this.ImportLibrary("@arrayget");
+			this.GenerateExpression("(libbun-arrayget ", Node.RecvNode(), " ", Node.IndexNode(), ")");
+		}
 		else {
 			this.GenerateExpression("(nth ", Node.IndexNode(), " ", Node.RecvNode(), ")");
 		}
@@ -199,6 +203,22 @@ public class CommonLispGenerator extends LibBunSourceGenerator {
 	}
 
 	@Override public void VisitAssignNode(AssignNode Node) {
+		if (Node.LeftNode() instanceof GetIndexNode) {
+			@Var GetIndexNode Indexer = (GetIndexNode)Node.LeftNode();
+			@Var BType RecvType = Indexer.GetAstType(GetIndexNode._Recv);
+			if (RecvType.IsArrayType()) {
+				this.ImportLibrary("@arrayset");
+				this.GenerateExpression("(libbun-arrayset ", Indexer.RecvNode(), " ", Indexer.IndexNode(), " ");
+				this.GenerateExpression("", Node.RightNode(), ")");
+				return;
+
+			} else if (RecvType.IsMapType()) {
+				this.Source.Append("(setf ");
+				this.GenerateExpression(Node.LeftNode());
+				this.GenerateExpression(" ", Node.RightNode(), ")");
+				return;
+			}
+		}
 		this.Source.Append("(setf ");
 		this.GenerateExpression(Node.LeftNode());
 		this.GenerateExpression(" ", Node.RightNode(), ")");
