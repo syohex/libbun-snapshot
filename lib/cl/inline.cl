@@ -22,6 +22,13 @@
            e1))
         (t e)))
 
+;; @mapget;@SoftwareFault
+(defun libbun-mapget (m k &optional v)
+  (multiple-value-bind (value found) (gethash k m)
+    (if (not found)
+        (or v (error 'SoftwareFault))
+      value)))
+
 ;; @arrayget;@SoftwareFault
 (defun libbun-arrayget (a i)
   (if (and (>= i 0) (< i (length a)))
