@@ -5,10 +5,12 @@
 (defclass Object () (()))
 
 ;; @Fault
-(defclass Fault () ((msg :initform "Fault")))
+(define-condition Fault (error)
+  ((msg :initarg :msg :reader msg)))
 
 ;; @SoftwareFault;@Fault
-(defclass SoftwareFault (Fault) ())
+(define-condition SoftwareFault (Fault)
+  ())
 
 ;; @catch;@SoftwareFault
 (defun libbun-catch (e)
@@ -19,3 +21,15 @@
            (setf (slot-value e1 'msg) "division-by-zero")
            e1))
         (t e)))
+
+;; @arrayget;@SoftwareFault
+(defun libbun-arrayget (a i)
+  (if (and (>= i 0) (< i (length a)))
+      (nth i a)
+    (error 'SoftwareFault)))
+
+;; @arrayset;@SoftwareFault
+(defun libbun-arrayset (a i v)
+  (if (and (>= i 0) (< i (length a)))
+      (setf (nth i a) v)
+    (error 'SoftwareFault)))
